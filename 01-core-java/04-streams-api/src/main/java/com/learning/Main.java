@@ -71,15 +71,7 @@ public class Main {
         System.out.println("1.1 Stream Interface & Creation Methods");
         System.out.println(SUBSECTION_SEPARATOR);
         StreamInterfaceDemo demo1 = new StreamInterfaceDemo();
-        demo1.demonstrateStreamCreation();
-        demo1.demonstrateStreamLaziness();
-        demo1.demonstrateStreamCharacteristics();
-        demo1.demonstrateSequentialVsParallel();
-        demo1.demonstrateIteratorVsStream();
-        demo1.demonstrateStreamReusability();
-        demo1.demonstrateTerminalOperations();
-        demo1.demonstrativePrimitiveStreams();
-        demo1.demonstrateStreamBuilder();
+        demo1.demonstrateStreamInterface();
         
         // ArrayList Stream Demo
         System.out.println(SUBSECTION_SEPARATOR);
@@ -143,13 +135,8 @@ public class Main {
         System.out.println(SUBSECTION_SEPARATOR);
         System.out.println("3.2 FlatMap Operations");
         System.out.println(SUBSECTION_SEPARATOR);
-        FlatMapOperationsDemo demo2 = new FlatMapOperationsDemo();
+FlatMapOperationsDemo demo2 = new FlatMapOperationsDemo();
         demo2.demonstrateBasicFlatMap();
-        demo2.demonstrateFlatMapWithStrings();
-        demo2.demonstrateFlatMapWithObjects();
-        demo2.demonstrateFlatMapVsMap();
-        demo2.demonstrateFlatMapForCombinations();
-        demo2.demonstrateNestedFlatMap();
     }
     
     /**
@@ -249,7 +236,7 @@ public class Main {
         if (classExists("com.learning.advanced.AdvancedStreamPatterns")) {
             try {
                 AdvancedStreamPatterns demo = new AdvancedStreamPatterns();
-                demo.demonstrateAdvancedPatterns();
+        demo.demonstrateAdvancedPatterns();
             } catch (Exception e) {
                 System.out.println("Skipping advanced patterns (class not fully implemented)");
             }
@@ -272,15 +259,15 @@ public class Main {
             EliteStreamsTraining.demonstrateAll();
 
             System.out.println("\n" + "=".repeat(70));
-            System.out.println("🎓 ELITE TRAINING DEMONSTRATION COMPLETE!");
+            System.out.println("ðŸŽ“ ELITE TRAINING DEMONSTRATION COMPLETE!");
             System.out.println("=".repeat(70));
             System.out.println("\nYou have mastered:");
-            System.out.println("  ✓ 12 advanced stream processing problems");
-            System.out.println("  ✓ Top K frequent elements pattern");
-            System.out.println("  ✓ Complex grouping and partitioning");
-            System.out.println("  ✓ Custom collectors and statistics");
-            System.out.println("  ✓ Parallel stream optimization");
-            System.out.println("  ✓ Stream pipeline performance tuning");
+            System.out.println("  âœ“ 12 advanced stream processing problems");
+            System.out.println("  âœ“ Top K frequent elements pattern");
+            System.out.println("  âœ“ Complex grouping and partitioning");
+            System.out.println("  âœ“ Custom collectors and statistics");
+            System.out.println("  âœ“ Parallel stream optimization");
+            System.out.println("  âœ“ Stream pipeline performance tuning");
             System.out.println("\nCompanies covered: Google, Amazon, Meta, Microsoft, Netflix, LinkedIn");
             System.out.println("Difficulty levels: Easy, Medium, Hard");
             System.out.println("=".repeat(70));
@@ -307,23 +294,23 @@ public class Main {
      */
     private static void printHeader() {
         System.out.println("\n");
-        System.out.println("╔════════════════════════════════════════════════════════════════════╗");
-        System.out.println("║       ELITE STREAMS API LEARNING MODULE v3.0 - FAANG READY          ║");
-        System.out.println("║                                                                    ║");
-        System.out.println("║  This module covers:                                               ║");
-        System.out.println("║  • Stream creation and characteristics                              ║");
-        System.out.println("║  • Intermediate operations (filter, map, flatMap, peek)             ║");
-        System.out.println("║  • Terminal operations (collect, reduce, forEach, match)            ║");
-        System.out.println("║  • Collectors and grouping operations                               ║");
-        System.out.println("║  • Optional patterns and best practices                             ║");
-        System.out.println("║  • Parallel stream processing                                       ║");
-        System.out.println("║  • Advanced patterns and performance optimization                   ║");
-        System.out.println("║  • 12 ELITE INTERVIEW PROBLEMS from Google, Amazon, Meta, etc.      ║");
-        System.out.println("║                                                                    ║");
-        System.out.println("║  Total Classes: 17 demonstration + 15 test classes                  ║");
-        System.out.println("║  Test Coverage Target: 80%+ with 198+ test methods                  ║");
-        System.out.println("║                                                                    ║");
-        System.out.println("╚════════════════════════════════════════════════════════════════════╝\n");
+        System.out.println("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—");
+        System.out.println("â•‘       ELITE STREAMS API LEARNING MODULE v3.0 - FAANG READY          â•‘");
+        System.out.println("â•‘                                                                    â•‘");
+        System.out.println("â•‘  This module covers:                                               â•‘");
+        System.out.println("â•‘  â€¢ Stream creation and characteristics                              â•‘");
+        System.out.println("â•‘  â€¢ Intermediate operations (filter, map, flatMap, peek)             â•‘");
+        System.out.println("â•‘  â€¢ Terminal operations (collect, reduce, forEach, match)            â•‘");
+        System.out.println("â•‘  â€¢ Collectors and grouping operations                               â•‘");
+        System.out.println("â•‘  â€¢ Optional patterns and best practices                             â•‘");
+        System.out.println("â•‘  â€¢ Parallel stream processing                                       â•‘");
+        System.out.println("â•‘  â€¢ Advanced patterns and performance optimization                   â•‘");
+        System.out.println("â•‘  â€¢ 12 ELITE INTERVIEW PROBLEMS from Google, Amazon, Meta, etc.      â•‘");
+        System.out.println("â•‘                                                                    â•‘");
+        System.out.println("â•‘  Total Classes: 17 demonstration + 15 test classes                  â•‘");
+        System.out.println("â•‘  Test Coverage Target: 80%+ with 198+ test methods                  â•‘");
+        System.out.println("â•‘                                                                    â•‘");
+        System.out.println("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n");
     }
     
     /**
@@ -331,28 +318,28 @@ public class Main {
      */
     private static void printFooter() {
         System.out.println("\n");
-        System.out.println("╔════════════════════════════════════════════════════════════════════╗");
-        System.out.println("║                    MODULE DEMONSTRATION COMPLETE                    ║");
-        System.out.println("║                                                                    ║");
-        System.out.println("║  🎓 You have completed:                                             ║");
-        System.out.println("║  ✓ How to create streams from various sources                       ║");
-        System.out.println("║  ✓ How intermediate operations work (lazy evaluation)                ║");
-        System.out.println("║  ✓ How to use terminal operations to produce results                ║");
-        System.out.println("║  ✓ Advanced collectors and grouping patterns                        ║");
-        System.out.println("║  ✓ Proper Optional usage and patterns                               ║");
-        System.out.println("║  ✓ When and how to use parallel streams                             ║");
-        System.out.println("║  ✓ 12 Elite interview problems from FAANG companies                 ║");
-        System.out.println("║  ✓ Custom collectors and stream optimization                        ║");
-        System.out.println("║                                                                    ║");
-        System.out.println("║  🚀 Next Steps:                                                     ║");
-        System.out.println("║  1. Practice all 12 elite problems on your own                      ║");
-        System.out.println("║  2. Review EliteStreamsTrainingTest for edge cases                  ║");
-        System.out.println("║  3. Study time/space complexity for each solution                   ║");
-        System.out.println("║  4. Prepare for behavioral questions about streams                  ║");
-        System.out.println("║  5. Move to Module 05: Concurrency & Multithreading                 ║");
-        System.out.println("║                                                                    ║");
-        System.out.println("║  You are now ready for FAANG-level Streams API interviews! 🎉       ║");
-        System.out.println("║                                                                    ║");
-        System.out.println("╚════════════════════════════════════════════════════════════════════╝\n");
+        System.out.println("â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—");
+        System.out.println("â•‘                    MODULE DEMONSTRATION COMPLETE                    â•‘");
+        System.out.println("â•‘                                                                    â•‘");
+        System.out.println("â•‘  ðŸŽ“ You have completed:                                             â•‘");
+        System.out.println("â•‘  âœ“ How to create streams from various sources                       â•‘");
+        System.out.println("â•‘  âœ“ How intermediate operations work (lazy evaluation)                â•‘");
+        System.out.println("â•‘  âœ“ How to use terminal operations to produce results                â•‘");
+        System.out.println("â•‘  âœ“ Advanced collectors and grouping patterns                        â•‘");
+        System.out.println("â•‘  âœ“ Proper Optional usage and patterns                               â•‘");
+        System.out.println("â•‘  âœ“ When and how to use parallel streams                             â•‘");
+        System.out.println("â•‘  âœ“ 12 Elite interview problems from FAANG companies                 â•‘");
+        System.out.println("â•‘  âœ“ Custom collectors and stream optimization                        â•‘");
+        System.out.println("â•‘                                                                    â•‘");
+        System.out.println("â•‘  ðŸš€ Next Steps:                                                     â•‘");
+        System.out.println("â•‘  1. Practice all 12 elite problems on your own                      â•‘");
+        System.out.println("â•‘  2. Review EliteStreamsTrainingTest for edge cases                  â•‘");
+        System.out.println("â•‘  3. Study time/space complexity for each solution                   â•‘");
+        System.out.println("â•‘  4. Prepare for behavioral questions about streams                  â•‘");
+        System.out.println("â•‘  5. Move to Module 05: Concurrency & Multithreading                 â•‘");
+        System.out.println("â•‘                                                                    â•‘");
+        System.out.println("â•‘  You are now ready for FAANG-level Streams API interviews! ðŸŽ‰       â•‘");
+        System.out.println("â•‘                                                                    â•‘");
+        System.out.println("â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•\n");
     }
 }
