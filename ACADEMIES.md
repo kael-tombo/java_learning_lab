@@ -230,6 +230,45 @@ Real-world projects demonstrating production-ready skills.
 
 ---
 
+## 🏭 Production Engineering Academy (`labs/production-engineering/`)
+
+Senior Java Architect track — everything that matters in real production systems.
+
+> **Target Audience**: Senior Java engineers, Staff engineers, Principal architects  
+> **Level**: Advanced to Expert | **Total**: 200+ hours
+
+### Lab Index
+
+| Lab | Title | Domain | Hours | Level |
+|-----|-------|---------|-------|-------|
+| 01 | [JVM Memory Architecture & GC Mastery](./production-engineering/01-jvm-memory-gc/) | JVM Internals | 12h | ⭐⭐⭐⭐⭐ |
+| 02 | [Thread Concurrency & Virtual Threads in Prod](./production-engineering/02-concurrency-production/) | Concurrency | 10h | ⭐⭐⭐⭐⭐ |
+| 03 | [Production Debugging & Profiling](./production-engineering/03-production-debugging/) | Observability | 12h | ⭐⭐⭐⭐⭐ |
+| 04 | [Distributed Systems Failures & Resilience](./production-engineering/04-distributed-resilience/) | Architecture | 10h | ⭐⭐⭐⭐⭐ |
+| 05 | [Database Performance & Connection Pools](./production-engineering/05-database-production/) | Data Layer | 10h | ⭐⭐⭐⭐⭐ |
+| 06 | [Microservices Architecture at Scale](./production-engineering/06-microservices-scale/) | Architecture | 12h | ⭐⭐⭐⭐⭐ |
+| 07 | [Kubernetes for Java Architects](./production-engineering/07-kubernetes-java/) | Infrastructure | 10h | ⭐⭐⭐⭐⭐ |
+| 08 | [Observability — Logs, Metrics, Traces](./production-engineering/08-observability-sre/) | SRE | 10h | ⭐⭐⭐⭐⭐ |
+| 09 | [Security Engineering in Production](./production-engineering/09-security-production/) | Security | 10h | ⭐⭐⭐⭐⭐ |
+| 10 | [API Design & Evolution at Scale](./production-engineering/10-api-design-scale/) | Architecture | 8h | ⭐⭐⭐⭐ |
+| 11 | [Event-Driven Architecture & Kafka in Prod](./production-engineering/11-event-driven-production/) | Messaging | 10h | ⭐⭐⭐⭐⭐ |
+| 12 | [Caching Strategies & Cache Invalidation](./production-engineering/12-caching-production/) | Performance | 8h | ⭐⭐⭐⭐ |
+| 13 | [CI/CD Pipelines & Release Engineering](./production-engineering/13-cicd-release-engineering/) | DevOps | 8h | ⭐⭐⭐⭐ |
+| 14 | [Production Incident Response & RCA](./production-engineering/14-incident-response/) | SRE | 10h | ⭐⭐⭐⭐⭐ |
+| 15 | [Performance Engineering & Load Testing](./production-engineering/15-performance-engineering/) | Performance | 10h | ⭐⭐⭐⭐⭐ |
+| 16 | [Cost Engineering & Cloud Optimization](./production-engineering/16-cost-engineering/) | Infrastructure | 8h | ⭐⭐⭐⭐ |
+| 17 | [Data Architecture & Migration Patterns](./production-engineering/17-data-architecture/) | Data | 10h | ⭐⭐⭐⭐⭐ |
+| 18 | [Chaos Engineering & Fault Injection](./production-engineering/18-chaos-engineering/) | SRE | 8h | ⭐⭐⭐⭐ |
+| 19 | [Java Architect Decision Framework](./production-engineering/19-architect-decisions/) | Architecture | 10h | ⭐⭐⭐⭐⭐ |
+| 20 | [Production Readiness & SLO Engineering](./production-engineering/20-production-readiness/) | SRE | 10h | ⭐⭐⭐⭐⭐ |
+
+### Per-Lab Structure
+
+Each lab contains 9 files:
+`README.md` · `THEORY.md` · `PRODUCTION_SCENARIOS.md` · `CODE_DEEP_DIVE.md` · `ARCHITECTURE_DECISIONS.md` · `RUNBOOKS.md` · `INTERVIEW_QUESTIONS.md` · `EXERCISES.md` · `ANTI_PATTERNS.md` · `CHECKLIST.md`
+
+---
+
 ## 🎯 Quick Navigation
 
 | Academy | Labs | Hours |
@@ -239,5 +278,6 @@ Real-world projects demonstrating production-ready skills.
 | Math Academy | 10 | 80 |
 | System Design | 8 | 64 |
 | Data Science | 7 | 56 |
+| **Production Engineering** | **20** | **200+** |
 
-**Total: 53 labs, 450+ hours of content**
+**Total: 73 labs, 650+ hours of content**
