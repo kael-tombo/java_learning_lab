@@ -62,3 +62,7 @@ venv/
 .env
 .env.local
 .env.*.local
+
+# Agent / Tool Artifacts
+.freebuff/
+.kilo/

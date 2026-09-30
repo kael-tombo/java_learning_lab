@@ -39,8 +39,8 @@ public class Lab {
         System.out.println("\n@FunctionalInterface - Ensures single abstract method:");
         System.out.println("  @FunctionalInterface interface Calculator { int calc(int a, int b); }");
 
-        System.out.println("\n@SafeVariance - Java 8+ for type annotations:");
-        System.out.println("  @SafeVariance List<? super Integer> consumer;");
+        System.out.println("\n@SafeVarargs - Java 7+ suppresses heap pollution warnings:");
+        System.out.println("  @SafeVarargs final <T> void printAll(T... items) { ... }");
     }
 
     static void part2CustomAnnotations() {
@@ -74,15 +74,19 @@ public class Lab {
     }
 
     @Test(description = "This is a test method", priority = 1)
-    public void sampleTestMethod() {
+    public static void sampleTestMethod() {
         System.out.println("  Running test method");
     }
 
-    static void demonstrateCustomAnnotationUsage() throws Exception {
-        Method method = Lab.class.getMethod("sampleTestMethod");
-        Test test = method.getAnnotation(Test.class);
-        if (test != null) {
-            System.out.println("  Found @Test: description='" + test.description() + "', priority=" + test.priority());
+    static void demonstrateCustomAnnotationUsage() {
+        try {
+            Method method = Lab.class.getMethod("sampleTestMethod");
+            Test test = method.getAnnotation(Test.class);
+            if (test != null) {
+                System.out.println("  Found @Test: description='" + test.description() + "', priority=" + test.priority());
+            }
+        } catch (NoSuchMethodException e) {
+            System.out.println("  Error: " + e.getMessage());
         }
     }
 
@@ -123,10 +127,10 @@ public class Lab {
         System.out.println("  getCanonicalName(): " + c.getCanonicalName());
 
         System.out.println("\nChecking class modifiers:");
-        System.out.println("  isPublic(): " + c.isPublic());
-        System.out.println("  isAbstract(): " + c.isAbstract());
-        System.out.println("  isFinal(): " + c.isFinal());
-        System.out.println("  isInterface(): " + c.isInterface());
+        System.out.println("  Note: Class has no isPublic/isAbstract/isFinal - use Modifier flags:");
+        System.out.println("  isPublic:    " + Modifier.isPublic(c.getModifiers()));
+        System.out.println("  isFinal:     " + Modifier.isFinal(c.getModifiers()));
+        System.out.println("  isInterface: " + c.isInterface());
 
         System.out.println("\nGetting package and superclass:");
         System.out.println("  getPackage(): " + c.getPackage());
@@ -290,7 +294,7 @@ public class Lab {
 
     // Supporting classes for demonstration
 
-    class Person {
+    static class Person {
         private String name;
         private int age;
 
@@ -313,10 +317,10 @@ public class Lab {
     }
 
     @ServiceInfo(name = "SampleService", version = "2.0")
-    class SampleService {}
+    static class SampleService {}
 
     @ServiceInfo(name = "AnotherService")
-    class AnotherService {}
+    static class AnotherService {}
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
@@ -325,7 +329,7 @@ public class Lab {
         String description() default "";
     }
 
-    class SampleService2 {
+    static class SampleService2 {
         @Execute(order = 1, description = "Initialize")
         public void init() {}
 
@@ -340,7 +344,7 @@ public class Lab {
         String defaultValue() default "";
     }
 
-    class Config {
+    static class Config {
         @Property(key = "db.url", defaultValue = "localhost")
         private String dbUrl;
 
@@ -358,7 +362,7 @@ public class Lab {
         int maxValue() default Integer.MAX_VALUE;
     }
 
-    class User {
+    static class User {
         @Validate(minLength = 2, maxLength = 50)
         private String name;
 
@@ -379,12 +383,12 @@ public class Lab {
     @Target(ElementType.FIELD)
     @interface Autowired {}
 
-    class InjectMe {
+    static class InjectMe {
         @Autowired
         private SomeDependency dependency;
     }
 
-    class SomeDependency {
+    static class SomeDependency {
         public SomeDependency() {}
     }
 }

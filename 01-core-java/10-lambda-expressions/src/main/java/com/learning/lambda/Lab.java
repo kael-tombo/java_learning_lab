@@ -56,11 +56,7 @@ public class Lab {
         System.out.println("\n### PART 2: Functional Interfaces ###\n");
 
         System.out.println("Functional interface = single abstract method (SAM):");
-
-        @FunctionalInterface
-        interface MathOperation {
-            int operate(int a, int b);
-        }
+        System.out.println("  (MathOperation is a package-level @FunctionalInterface - see MathOperation.java)");
 
         MathOperation add = (a, b) -> a + b;
         MathOperation multiply = (a, b) -> a * b;

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -83,6 +83,8 @@
         <module>01-core-java/06-exception-handling</module>
         <module>01-core-java/07-file-io</module>
         <module>01-core-java/08-generics</module>
+        <module>01-core-java/09-annotations</module>
+        <module>01-core-java/10-lambda-expressions</module>
         <module>01-core-java/11-design-patterns</module>
         <module>01-core-java/12-java-21-features</module>
         <module>01-core-java/13-advanced-inheritance</module>

@@ -1,346 +1,146 @@
-# 📚 Core Java 21+ - Complete Learning Path
+# Core Java Learning Path
 
-<div align="center">
+A practical, hands-on curriculum for learning Java from fundamentals to modern Java 21+ features. This section is designed to help you build strong programming foundations, improve code quality, and gain confidence with real-world Java exercises.
 
-![Java](https://img.shields.io/badge/Java_21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)
-![Modules](https://img.shields.io/badge/Modules-10-blue?style=for-the-badge)
+## Overview
 
-**Master Core Java from fundamentals to advanced Java 21+ features**
+This directory groups the foundational Java modules for the learning lab. It is intended to be used as a guided progression from beginner topics to advanced concepts such as concurrency, generics, reflection, and modern language features.
 
-</div>
+The goal is not only to understand syntax, but to develop good habits around:
 
----
+- clean and readable code
+- object-oriented design
+- testing and debugging
+- performance awareness
+- practical Java tooling
 
-## 🎯 Overview
+## How to use this section
 
-This section covers everything you need to master Core Java, from basic syntax to advanced Java 21+ features including Virtual Threads, Pattern Matching, Records, and more.
+1. Start with the basics and complete each module in order.
+2. Read the module README before writing code.
+3. Practice the examples and complete the exercises.
+4. Revisit advanced topics after you feel comfortable with the fundamentals.
+5. Use the project folders and lab exercises to reinforce what you learn.
 
----
+## Prerequisites
 
-## 📋 Module List
+Before starting, make sure you have:
 
-### 1️⃣ [Java Basics](./01-java-basics)
-**Duration:** 4-6 hours | **Difficulty:** 🟢 Beginner
+- Java 21 LTS or newer installed
+- Maven 3.8+ or Gradle 7+ available
+- An IDE such as IntelliJ IDEA, VS Code, or Eclipse
+- Git for version control and project tracking
 
-Learn Java fundamentals including:
-- Variables, Data Types, and Operators
-- Control Flow (if-else, switch, loops)
-- Methods and Parameters
-- Arrays and Strings
-- Input/Output basics
+## Recommended learning path
 
-**Key Topics:**
-- ✅ Java syntax and structure
-- ✅ Primitive and reference types
-- ✅ String manipulation
-- ✅ Basic I/O operations
+### Beginner path
+1. [01-java-basics](./01-java-basics)
+2. [02-oop-concepts](./02-oop-concepts)
+3. [03-collections-framework](./03-collections-framework)
+4. [10-lambda-expressions](./10-lambda-expressions)
 
----
+### Intermediate path
+1. [04-streams-api](./04-streams-api)
+2. [06-exception-handling](./06-exception-handling)
+3. [07-file-io](./07-file-io)
+4. [08-generics](./08-generics)
+5. [09-annotations](./09-annotations)
 
-### 2️⃣ [Object-Oriented Programming](./02-oop-concepts)
-**Duration:** 6-8 hours | **Difficulty:** 🟡 Intermediate
+### Advanced path
+1. [05-concurrency](./05-concurrency)
+2. [11-design-patterns](./11-design-patterns)
+3. [12-java-21-features](./12-java-21-features)
+4. [14-reflection-introspection](./14-reflection-introspection)
+5. [15-jvm-internals](./15-jvm-internals)
 
-Master OOP principles:
-- Classes and Objects
-- Encapsulation, Inheritance, Polymorphism
-- Abstraction and Interfaces
-- Access Modifiers
-- Static and Final keywords
+> Use the folders inside this section as the source of truth. Some subfolders in this curriculum are exploratory or advanced extensions and may not follow the exact numbering in older materials.
 
-**Key Topics:**
-- ✅ Class design principles
-- ✅ Inheritance hierarchies
-- ✅ Interface implementation
-- ✅ Abstract classes vs Interfaces
+## Module map
 
----
+| Module | Folder | Focus | Difficulty |
+| --- | --- | --- | --- |
+| Java Basics | [01-java-basics](./01-java-basics) | Syntax, variables, control flow, methods | Beginner |
+| OOP Concepts | [02-oop-concepts](./02-oop-concepts) | Classes, objects, inheritance, polymorphism | Beginner |
+| Collections | [03-collections-framework](./03-collections-framework) | Lists, sets, maps, iteration | Intermediate |
+| Streams API | [04-streams-api](./04-streams-api) | Functional processing and pipelines | Intermediate |
+| Exception Handling | [06-exception-handling](./06-exception-handling) | Errors, try-catch, custom exceptions | Intermediate |
+| File I/O | [07-file-io](./07-file-io) | Reading, writing, and managing files | Intermediate |
+| Generics | [08-generics](./08-generics) | Reusable, type-safe code | Intermediate |
+| Annotations | [09-annotations](./09-annotations) | Metadata and framework usage | Intermediate |
+| Lambda Expressions | [10-lambda-expressions](./10-lambda-expressions) | Functional interfaces and lambdas | Intermediate |
+| Design Patterns | [11-design-patterns](./11-design-patterns) | Reusable solutions to common problems | Advanced |
+| Concurrency | [05-concurrency](./05-concurrency) | Threads, synchronization, executors | Advanced |
+| Java 21 Features | [12-java-21-features](./12-java-21-features) | Virtual threads, pattern matching, modern APIs | Advanced |
+| Reflection | [14-reflection-introspection](./14-reflection-introspection) | Runtime inspection and metadata-driven code | Advanced |
+| JVM Internals | [15-jvm-internals](./15-jvm-internals) | Memory, bytecode, garbage collection basics | Advanced |
 
-### 3️⃣ [Collections Framework](./03-collections-framework)
-**Duration:** 8-10 hours | **Difficulty:** 🟡 Intermediate
+## Quick start
 
-Deep dive into Java Collections:
-- List, Set, Map interfaces
-- ArrayList, LinkedList, HashSet, TreeSet
-- HashMap, TreeMap, LinkedHashMap
-- Queue and Deque
-- Collections utility class
+Use the commands below as a general pattern when working in a module folder:
 
-**Key Topics:**
-- ✅ Collection interfaces and implementations
-- ✅ Performance characteristics
-- ✅ Choosing the right collection
-- ✅ Custom comparators
-
----
-
-### 4️⃣ [Streams API](./04-streams-api)
-**Duration:** 6-8 hours | **Difficulty:** 🟡 Intermediate
-
-Master functional programming with Streams:
-- Stream creation and operations
-- Intermediate operations (map, filter, flatMap)
-- Terminal operations (collect, reduce, forEach)
-- Parallel streams
-- Stream performance
-
-**Key Topics:**
-- ✅ Functional programming concepts
-- ✅ Stream pipelines
-- ✅ Collectors and reduction
-- ✅ Performance optimization
-
----
-
-### 5️⃣ [Lambda Expressions](./05-lambda-expressions)
-**Duration:** 4-6 hours | **Difficulty:** 🟡 Intermediate
-
-Learn functional interfaces and lambdas:
-- Lambda syntax
-- Functional interfaces
-- Method references
-- Built-in functional interfaces
-- Closures and scope
-
-**Key Topics:**
-- ✅ Lambda expressions syntax
-- ✅ Predicate, Function, Consumer, Supplier
-- ✅ Method and constructor references
-- ✅ Effectively final variables
-
----
-
-### 6️⃣ [Concurrency & Multithreading](./06-concurrency)
-**Duration:** 10-12 hours | **Difficulty:** 🔴 Advanced
-
-Master concurrent programming:
-- Thread creation and lifecycle
-- Synchronization and locks
-- Executor framework
-- Concurrent collections
-- CompletableFuture
-- Virtual Threads (Java 21)
-
-**Key Topics:**
-- ✅ Thread safety
-- ✅ Synchronization mechanisms
-- ✅ Thread pools
-- ✅ Async programming
-- ✅ Virtual threads
-
----
-
-### 7️⃣ [Java I/O & NIO](./07-java-io-nio)
-**Duration:** 6-8 hours | **Difficulty:** 🟡 Intermediate
-
-Master file and network I/O:
-- File I/O operations
-- Streams (byte and character)
-- Buffered I/O
-- NIO.2 (Path, Files)
-- Serialization
-
-**Key Topics:**
-- ✅ File operations
-- ✅ Stream types
-- ✅ NIO.2 API
-- ✅ Object serialization
-
----
-
-### 8️⃣ [Generics](./08-generics)
-**Duration:** 6-8 hours | **Difficulty:** 🟡 Intermediate
-
-Deep dive into Java Generics:
-- Generic classes and methods
-- Bounded type parameters
-- Wildcards (?, extends, super)
-- Type erasure
-- Generic restrictions
-
-**Key Topics:**
-- ✅ Type safety
-- ✅ Generic collections
-- ✅ Bounded wildcards
-- ✅ PECS principle
-
----
-
-### 9️⃣ [Reflection & Annotations](./09-reflection-annotations)
-**Duration:** 6-8 hours | **Difficulty:** 🔴 Advanced
-
-Learn metaprogramming in Java:
-- Reflection API
-- Class, Method, Field inspection
-- Custom annotations
-- Annotation processing
-- Dynamic proxies
-
-**Key Topics:**
-- ✅ Runtime type inspection
-- ✅ Dynamic invocation
-- ✅ Custom annotations
-- ✅ Annotation processors
-
----
-
-### 🔟 [Java 21 Features](./10-java-21-features)
-**Duration:** 8-10 hours | **Difficulty:** 🔴 Advanced
-
-Explore cutting-edge Java 21+ features:
-- Virtual Threads (Project Loom)
-- Pattern Matching for switch
-- Record Patterns
-- Sequenced Collections
-- String Templates (Preview)
-- Structured Concurrency
-
-**Key Topics:**
-- ✅ Virtual threads
-- ✅ Pattern matching
-- ✅ Records and sealed classes
-- ✅ Modern Java syntax
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
 ```bash
-☕ Java 21+ installed
-📦 Maven 3.8+ or Gradle 7+
-🔧 IDE (IntelliJ IDEA recommended)
+# Confirm Java is installed
+java -version
+
+# Navigate to a module
+cd 01-core-java/01-java-basics
+
+# If the module uses Maven
+mvn clean test
+
+# If the module uses Gradle
+./gradlew test
 ```
 
-### Quick Start
-```bash
-# Navigate to any module
-cd 01-java-basics
+If a specific module contains its own instructions, follow that module's README before running commands.
 
-# Compile and run
-javac src/main/java/com/learning/*.java
-java -cp src/main/java com.learning.Main
+## Learning outcomes
 
-# Or use Maven
-mvn clean compile
-mvn exec:java
-```
+By the end of this section, you should be able to:
 
----
+- write clean Java programs using core language syntax
+- design classes and apply object-oriented principles
+- use collection types appropriately
+- work with streams and functional programming concepts
+- handle exceptions and file operations safely
+- apply generics and annotations effectively
+- reason about concurrency and thread safety
+- leverage modern Java 21+ capabilities with confidence
 
-## 📊 Learning Path
+## Progress tracker
 
-```mermaid
-graph LR
-    A[Java Basics] --> B[OOP Concepts]
-    B --> C[Collections]
-    C --> D[Streams API]
-    D --> E[Lambda Expressions]
-    E --> F[Concurrency]
-    F --> G[I/O & NIO]
-    G --> H[Generics]
-    H --> I[Reflection]
-    I --> J[Java 21 Features]
-    
-    style A fill:#4CAF50
-    style J fill:#FF9800
-```
+- [x] [Java Basics](./01-java-basics)
+- [x] [OOP Concepts](./02-oop-concepts)
+- [x] [Collections Framework](./03-collections-framework)
+- [x] [Streams API](./04-streams-api)
+- [x] [Concurrency](./05-concurrency)
+- [x] [Exception Handling](./06-exception-handling)
+- [x] [File I/O](./07-file-io)
+- [x] [Generics](./08-generics)
+- [x] [Annotations](./09-annotations)
+- [x] [Lambda Expressions](./10-lambda-expressions)
+- [x] [Design Patterns](./11-design-patterns)
+- [x] [Java 21 Features](./12-java-21-features)
+- [x] [Reflection & Introspection](./14-reflection-introspection)
+- [x] [JVM Internals](./15-jvm-internals)
 
----
+## Best practices for this learning path
 
-## 🎯 Learning Objectives
+- Prefer understanding concepts before copying code.
+- Rebuild examples from memory to reinforce learning.
+- Use small, focused exercises instead of large, vague ones.
+- Keep code readable and well named.
+- Practice debugging with a clear mental model of execution flow.
+- Review Java documentation when a concept feels unclear.
 
-By completing this section, you will:
+## Useful references
 
-✅ Write clean, efficient Java code  
-✅ Understand OOP principles deeply  
-✅ Master Java Collections Framework  
-✅ Use functional programming effectively  
-✅ Write concurrent and parallel code  
-✅ Handle I/O operations efficiently  
-✅ Use generics for type safety  
-✅ Apply reflection and annotations  
-✅ Leverage modern Java 21+ features  
-
----
-
-## 📚 Recommended Learning Order
-
-### For Beginners
-1. Java Basics
-2. OOP Concepts
-3. Collections Framework
-4. Lambda Expressions
-5. Streams API
-
-### For Intermediate Developers
-1. Concurrency & Multithreading
-2. I/O & NIO
-3. Generics
-4. Java 21 Features
-
-### For Advanced Developers
-1. Reflection & Annotations
-2. Java 21 Features
-3. Performance Optimization
-4. Design Patterns
-
----
-
-## 🏆 Projects
-
-Each module includes hands-on projects:
-
-1. **Calculator Application** (Basics)
-2. **Library Management System** (OOP)
-3. **Student Grade Analyzer** (Collections)
-4. **Data Processing Pipeline** (Streams)
-5. **Task Scheduler** (Concurrency)
-6. **File Manager** (I/O)
-7. **Generic Data Structures** (Generics)
-8. **Plugin System** (Reflection)
-9. **Modern Java Application** (Java 21)
-
----
-
-## 📖 Additional Resources
-
-### Books
-- "Effective Java" by Joshua Bloch
-- "Java Concurrency in Practice" by Brian Goetz
-- "Core Java Volume I & II" by Cay S. Horstmann
-
-### Online Resources
 - [Oracle Java Tutorials](https://docs.oracle.com/javase/tutorial/)
-- [Java Documentation](https://docs.oracle.com/en/java/)
+- [Java SE Documentation](https://docs.oracle.com/en/java/)
 - [Baeldung Java Tutorials](https://www.baeldung.com/)
+- [LeetCode Java Track](https://leetcode.com/)
+- [Exercism Java Track](https://exercism.org/tracks/java)
 
-### Practice Platforms
-- [LeetCode](https://leetcode.com/)
-- [HackerRank](https://www.hackerrank.com/domains/java)
-- [Exercism](https://exercism.org/tracks/java)
+## Next step
 
----
-
-## ✅ Progress Tracker
-
-- [ ] Module 01: Java Basics
-- [ ] Module 02: OOP Concepts
-- [ ] Module 03: Collections Framework
-- [ ] Module 04: Streams API
-- [ ] Module 05: Lambda Expressions
-- [ ] Module 06: Concurrency
-- [ ] Module 07: I/O & NIO
-- [ ] Module 08: Generics
-- [ ] Module 09: Reflection & Annotations
-- [ ] Module 10: Java 21 Features
-
----
-
-<div align="center">
-
-**Ready to master Core Java?**
-
-[Start with Module 01 →](./01-java-basics)
-
-</div>
+Start with [01-java-basics](./01-java-basics) and work through the modules in sequence. If you already know the basics, jump to the advanced topics after completing the foundational exercises.
