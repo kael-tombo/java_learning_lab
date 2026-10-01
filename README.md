@@ -250,112 +250,32 @@ Real-world portfolio-grade projects with Docker, Kubernetes, CI/CD:
 
 ---
 
-## 🏗️ Repository Structure
+## 🏗️ Repository Structure (actual on-disk layout)
 
 ```
-JavaLearning/
-├── 📁 01-core-java/                    # Core Java 21+ Features (10 modules)
-├── 📁 02-spring-boot/                  # Spring Boot Ecosystem (10 modules)
-├── 📁 03-quarkus-learning/             # Quarkus Framework (19 modules) ✅
-├── 📁 04-vertx-learning/               # Eclipse Vert.x (32 modules) ✅
-├── 📁 05-micronaut-learning/           # Micronaut Framework (5 modules)
-├── 📁 06-microservices/                # Microservices Architecture (6 modules)
-├── 📁 07-databases/                    # Database Technologies (7 modules)
-├── 📁 08-messaging/                    # Messaging Systems (5 modules)
-├── 📁 09-testing/                      # Testing Strategies (6 modules)
-├── 📁 10-cloud-native/                 # Cloud Native Development (6 modules)
-├── 📁 11-security/                     # Security & Authentication (5 modules)
-├── 📁 12-performance/                  # Performance Optimization (5 modules)
-├── 📁 13-design-patterns/              # Design Patterns (4 modules)
-├── 📁 14-reactive-programming/         # Reactive Programming (4 modules)
-├── 📁 15-advanced-topics/              # Advanced Topics (5 modules)
-│
-├── 📁 16-apache-camel/                 # 🆕 Apache Camel (5 modules) ✅
-│   ├── 01-camel-basics/
-│   ├── 02-enterprise-integration-patterns/
-│   ├── 03-component-integration/
-│   ├── 04-error-handling-retry/
-│   └── 05-testing-camel/
-│
-├── 📁 17-jhipster/                     # 🆕 JHipster (5 modules)
-│   ├── 01-jhipster-basics/
-│   ├── 02-microservices-generation/
-│   ├── 03-frontend-integration/
-│   ├── 04-security-oauth2/
-│   └── 05-production-deployment/
-│
-├── 📁 18-helidon/                      # 🆕 Helidon (5 modules)
-│   ├── 01-helidon-se-basics/
-│   ├── 02-helidon-mp-microprofile/
-│   ├── 03-rest-websocket-apis/
-│   ├── 04-database-integration/
-│   └── 05-cloud-deployment/
-│
-├── 📁 19-javalin/                      # 🆕 Javalin (4 modules)
-│   ├── 01-javalin-basics/
-│   ├── 02-rest-api-development/
-│   ├── 03-websocket-support/
-│   └── 04-openapi-integration/
-│
-├── 📁 20-axon-framework/               # 🆕 Axon Framework (5 modules)
-│   ├── 01-cqrs-implementation/
-│   ├── 02-event-sourcing/
-│   ├── 03-saga-pattern/
-│   ├── 04-event-handling/
-│   └── 05-testing-strategies/
-│
-├── 📁 21-hazelcast/                    # 🆕 Hazelcast (4 modules)
-│   ├── 01-distributed-caching/
-│   ├── 02-distributed-computing/
-│   ├── 03-stream-processing/
-│   └── 04-cluster-management/
-│
-├── 📁 22-apache-pulsar/                # 🆕 Apache Pulsar (4 modules)
-│   ├── 01-message-streaming/
-│   ├── 02-multi-tenancy/
-│   ├── 03-geo-replication/
-│   └── 04-functions-connectors/
-│
-├── 📁 23-testcontainers-advanced/      # 🆕 Testcontainers Advanced (5 modules)
-│   ├── 01-database-testing/
-│   ├── 02-message-broker-testing/
-│   ├── 03-cloud-service-mocking/
-│   ├── 04-network-testing/
-│   └── 05-performance-testing/
-│
-├── 📁 24-graalvm-advanced/             # 🆕 GraalVM Advanced (5 modules)
-│   ├── 01-native-image-compilation/
-│   ├── 02-polyglot-programming/
-│   ├── 03-performance-optimization/
-│   ├── 04-debugging-native-images/
-│   └── 05-production-deployment/
-│
-├── 📁 25-project-loom-advanced/        # 🆕 Project Loom Advanced (4 modules)
-│   ├── 01-virtual-threads-deep-dive/
-│   ├── 02-structured-concurrency/
-│   ├── 03-scoped-values/
-│   └── 04-performance-benchmarking/
-│
-├── 📁 26-architecture-patterns/        # 🆕 Architecture Patterns (10 modules)
-│   ├── 01-hexagonal-architecture/
-│   ├── 02-clean-architecture/
-│   ├── 03-onion-architecture/
-│   ├── 04-cqrs-pattern/
-│   ├── 05-event-sourcing/
-│   ├── 06-saga-pattern/
-│   ├── 07-strangler-fig-pattern/
-│   ├── 08-bff-pattern/
-│   ├── 09-api-gateway-pattern/
-│   └── 10-service-mesh-architecture/
-│
-├── 📁 27-advanced-design-patterns/     # 🆕 Advanced Design Patterns (10 modules)
-├── 📁 28-distributed-systems/          # 🆕 Distributed Systems (10 modules)
-├── 📁 29-performance-optimization/     # 🆕 Performance Optimization (10 modules)
-├── 📁 30-security-compliance/          # 🆕 Security & Compliance (10 modules)
-└── 📁 31-cloud-native-devops/          # 🆕 Cloud-Native & DevOps (10 modules)
-
-**Total: 120+ Modules across 31 Categories!**
+java_learning_lab/
+├── 📁 01-core-java/                    # Core Java labs 01-75 (basics → capstone + LLM integration)
+├── 📁 02-spring-ecosystem/             # Spring Batch / Cloud Config / Gateway
+├── 📁 23-observability/ … 59-webassembly/  # Infra & framework labs (see pom.xml modules)
+│   ├── 31-mongodb/ 32-redis/ 33-postgresql/ 34-rabbitmq/
+│   ├── 37-keycloak/ 38-prometheus/ 39-grafana/ 40-jaeger/
+│   ├── 42-testcontainers/ … 50-junit5/  # testing
+│   └── 51-quarkus/ 52-micronaut/ 53-helidon/ 54-vertx/ 55-kafka/ 56-k8s/ …
+├── 📁 labs/                            # 26 engineering academies (~550 labs, see INDEX.md)
+│   ├── java/ backend/ algorithms/ data-structures/ ai/ math/
+│   ├── databases/ security/ devops/ cloud/ system-design/ …
+│   └── capstones/ real-production-scenarios/ mlops/ genai/ …
+├── 📁 capstones/                       # 10 portfolio projects (banking … ai-assistant)
+├── 📁 java-master-lab/ quarkus-learning/ EclipseVert.XLearning/
+├── 📁 k8s-manifests/ docs/ scripts/ tools/
+├── pom.xml                             # Parent POM (~115 modules)
+└── pom-aggregator.xml                  # Fast reactor: 12 core-java labs
 ```
+
+> Historical note: older docs referenced `02-spring-boot/`, `03-quarkus-learning/`,
+> `04-vertx-learning/` … `31-cloud-native-devops/` and `16-apache-camel` … `22-apache-pulsar`.
+> Those paths do **not** exist. Use the layout above (`02-spring-ecosystem`,
+> `51-quarkus`, `54-vertx`, `quarkus-learning/`, `labs/*`).
 
 ---
 
@@ -493,14 +413,16 @@ cd JavaLearning
 # Start with Core Java
 cd 01-core-java/01-java-basics
 
-# Or jump to Spring Boot
-cd 02-spring-boot/01-spring-boot-basics
+# Or jump to Spring ecosystem
+cd 02-spring-ecosystem
 
 # Or explore Quarkus
-cd 03-quarkus-learning
+cd quarkus-learning/quarkus-getting-started
+# or
+cd 51-quarkus
 
 # Or try Vert.x
-cd 04-vertx-learning
+cd 54-vertx
 ```
 
 3. **Run Examples**

@@ -274,7 +274,7 @@ public class SystemDesignTraining {
             System.out.println("  B) " + quizzes[i][2]);
             System.out.println("  C) " + quizzes[i][3]);
             System.out.println("  Answer: " + quizzes[i][4] + ") " + 
-                quizzes[i][Integer.parseInt(quizzes[i][4]) - 1]);
+                quizzes[i][quizzes[i][4].charAt(0) - 'A' + 1]);
             System.out.println();
             correct++;
         }

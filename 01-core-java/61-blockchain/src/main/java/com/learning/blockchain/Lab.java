@@ -26,7 +26,7 @@ public class Lab {
         }
 
         String calculateHash() {
-            return sha256(index + timestamp + transactions + previousHash + nonce);
+            return sha256("" + index + timestamp + transactions + previousHash + nonce);
         }
 
         static String sha256(String input) {
@@ -136,8 +136,8 @@ public class Lab {
         System.out.println("    Index: " + block.index);
         System.out.println("    Timestamp: " + block.timestamp);
         System.out.println("    Transactions: " + block.transactions.size());
-        System.out.println("    Previous Hash: " + block.previousHash.substring(0, 16) + "...");
-        System.out.println("    Hash: " + block.hash.substring(0, 16) + "...");
+        System.out.println("    Previous Hash: " + block.previousHash.substring(0, Math.min(16, block.previousHash.length())) + "...");
+        System.out.println("    Hash: " + block.hash.substring(0, Math.min(16, block.hash.length())) + "...");
         System.out.println("    Nonce: " + block.nonce);
     }
 
@@ -152,7 +152,7 @@ public class Lab {
         System.out.println("  Blocks: " + chain.size());
         for (var block : chain.chain) {
             System.out.printf("    Block %d: %s... -> %s...%n",
-                block.index, block.previousHash.substring(0, 8), block.hash.substring(0, 8));
+                block.index, block.previousHash.substring(0, Math.min(8, block.previousHash.length())), block.hash.substring(0, Math.min(8, block.hash.length())));
         }
 
         chain.tamper(1, "hacked");

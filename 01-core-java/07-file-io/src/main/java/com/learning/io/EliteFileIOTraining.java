@@ -303,12 +303,38 @@ public class EliteFileIOTraining {
                 ByteBuffer buffer2 = channel2.map(
                     FileChannel.MapMode.READ_ONLY, position, remaining);
 
-                if (!buffer1.equals(buffer2)) {
-                    return false;
+                try {
+                    if (!buffer1.equals(buffer2)) {
+                        return false;
+                    }
+                } finally {
+                    unmap(buffer1);
+                    unmap(buffer2);
                 }
             }
 
             return true;
+        }
+    }
+
+    /**
+     * Force-unmaps a mapped buffer so Windows releases the file lock.
+     * Without this, {@code @TempDir} cleanup fails on Windows because the
+     * mapping keeps the file open even after the channel is closed.
+     * Uses {@code sun.misc.Unsafe#invokeCleaner} (public API since Java 9,
+     * no {@code --add-opens} required).
+     */
+    private static void unmap(ByteBuffer buffer) {
+        if (buffer instanceof MappedByteBuffer mapped) {
+            try {
+                Class<?> unsafeClass = Class.forName("sun.misc.Unsafe");
+                java.lang.reflect.Field theUnsafe = unsafeClass.getDeclaredField("theUnsafe");
+                theUnsafe.setAccessible(true);
+                Object unsafe = theUnsafe.get(null);
+                unsafeClass.getMethod("invokeCleaner", ByteBuffer.class).invoke(unsafe, mapped);
+            } catch (Exception ignored) {
+                // Best-effort: GC will eventually release the mapping.
+            }
         }
     }
 
@@ -597,6 +623,7 @@ public class EliteFileIOTraining {
         }
 
         public void close() throws IOException {
+            unmap(buffer);
             channel.close();
         }
     }

@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.*;
 
 public class Lab {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         System.out.println("=== Reactive Streams Lab ===\n");
 
         flowApi();

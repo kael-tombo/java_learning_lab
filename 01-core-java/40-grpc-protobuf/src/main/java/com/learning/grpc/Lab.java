@@ -21,14 +21,19 @@ public class Lab {
                 dos.writeByte(entry.getKey());
                 var val = entry.getValue();
                 if (val instanceof String s) {
+                    dos.writeByte(0);
                     dos.writeUTF(s);
                 } else if (val instanceof Integer i) {
+                    dos.writeByte(1);
                     dos.writeInt(i);
                 } else if (val instanceof Long l) {
+                    dos.writeByte(2);
                     dos.writeLong(l);
                 } else if (val instanceof Boolean b) {
+                    dos.writeByte(3);
                     dos.writeBoolean(b);
                 } else if (val instanceof Double d) {
+                    dos.writeByte(4);
                     dos.writeDouble(d);
                 }
             }
@@ -40,7 +45,8 @@ public class Lab {
             var dis = new DataInputStream(new ByteArrayInputStream(data));
             while (dis.available() > 0) {
                 int fieldNum = dis.readByte();
-                var val = switch (fieldNum % 4) {
+                int typeTag = dis.readByte();
+                var val = switch (typeTag) {
                     case 0 -> dis.readUTF();
                     case 1 -> dis.readInt();
                     case 2 -> dis.readLong();

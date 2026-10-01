@@ -115,7 +115,8 @@ public class Lab {
         System.out.println("\n--- Reflection Configuration ---");
         var target = new NativeAwareBean("reflective");
 
-        var method = NativeAwareBean.class.getMethod("setProperty", String.class, Object.class);
+        var method = NativeAwareBean.class.getDeclaredMethod("setProperty", String.class, Object.class);
+        method.setAccessible(true);
         method.invoke(target, "key1", "value1");
 
         var field = NativeAwareBean.class.getDeclaredField("properties");

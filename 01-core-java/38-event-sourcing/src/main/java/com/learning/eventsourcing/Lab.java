@@ -125,7 +125,7 @@ public class Lab {
         System.out.println("  First balance: $" + acct.getBalance());
 
         var replayed = new BankAccount("acc-2", store);
-        for (var e : store.read("acc-2")) {
+        for (var e : List.copyOf(store.read("acc-2"))) {
             if (e.type.equals("AccountCreated")) replayed.deposit(0);
             if (e.type.equals("Deposited")) replayed.deposit((int) e.data.get("amount"));
             if (e.type.equals("Withdrawn")) replayed.withdraw((int) e.data.get("amount"));

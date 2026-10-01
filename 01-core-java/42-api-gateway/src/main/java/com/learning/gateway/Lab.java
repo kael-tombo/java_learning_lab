@@ -38,13 +38,17 @@ public class Lab {
                 return new Response(200, "OK from " + target.get().getValue(), Map.of());
             };
 
-            NextFilter pipeline = req -> {
+            // Use a mutable holder to allow self-reference in lambda
+            class Holder { NextFilter value; }
+            Holder holder = new Holder();
+            holder.value = req -> {
+                if (holder.value == null) return finalHandler.next(req); // safety
                 if (chain.isEmpty()) return finalHandler.next(req);
                 var filter = chain.removeFirst();
-                return filter.filter(req, pipeline);
+                return filter.filter(req, holder.value);
             };
 
-            return pipeline.next(request);
+            return holder.value.next(request);
         }
     }
 

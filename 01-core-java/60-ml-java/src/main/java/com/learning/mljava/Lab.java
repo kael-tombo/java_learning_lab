@@ -137,11 +137,22 @@ public class Lab {
 
     static void dataPreprocessing() {
         System.out.println("\n--- Data Preprocessing ---");
-        var raw = List.<Map<String, Object>>of(
-            Map.of("age", 25, "income", 50000.0, "city", "NYC"),
-            Map.of("age", null, "income", 60000.0, "city", "SF"),
-            Map.of("age", 35, "income", null, "city", "NYC")
-        );
+        var raw = new ArrayList<Map<String, Object>>();
+        var row1 = new HashMap<String, Object>();
+        row1.put("age", 25);
+        row1.put("income", 50000.0);
+        row1.put("city", "NYC");
+        var row2 = new HashMap<String, Object>();
+        row2.put("age", null);
+        row2.put("income", 60000.0);
+        row2.put("city", "SF");
+        var row3 = new HashMap<String, Object>();
+        row3.put("age", 35);
+        row3.put("income", null);
+        row3.put("city", "NYC");
+        raw.add(row1);
+        raw.add(row2);
+        raw.add(row3);
 
         System.out.println("  Raw data: " + raw);
 
@@ -152,8 +163,8 @@ public class Lab {
 
         var cleaned = raw.stream().map(m -> {
             var copy = new HashMap<>(m);
-            copy.put("age", copy.getOrDefault("age", (int) ages));
-            copy.put("income", copy.getOrDefault("income", incomes));
+            if (copy.get("age") == null) copy.put("age", (int) ages);
+            if (copy.get("income") == null) copy.put("income", incomes);
             return copy;
         }).toList();
 

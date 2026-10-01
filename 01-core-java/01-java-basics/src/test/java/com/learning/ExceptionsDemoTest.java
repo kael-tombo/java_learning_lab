@@ -349,4 +349,10 @@ class ExceptionsDemoTest {
             }
         });
     }
+
+    @Test
+    @DisplayName("Demo entry point executes all scenarios without throwing")
+    void testDemonstrateExceptionsCoversDemoPaths() {
+        assertDoesNotThrow(ExceptionsDemo::demonstrateExceptions);
+    }
 }

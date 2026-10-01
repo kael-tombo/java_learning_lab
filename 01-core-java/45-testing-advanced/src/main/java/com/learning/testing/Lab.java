@@ -4,8 +4,13 @@ import java.util.*;
 import java.util.function.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
+import java.util.Objects;
 
 public class Lab {
+
+    // Test result tracking (moved out of record to avoid conflicts)
+    static int passed = 0;
+    static int failed = 0;
 
     static class Calculator {
         int add(int a, int b) { return a + b; }
@@ -37,30 +42,27 @@ public class Lab {
         }
     }
 
-    record TestResult(String name, boolean passed, String reason) {
-        static int passed = 0;
-        static int failed = 0;
+    record TestResult(String name, boolean passed, String reason) {}
 
-        static void assertTrue(String name, boolean condition) {
-            if (condition) { passed++; System.out.println("  PASS: " + name); }
-            else { failed++; System.out.println("  FAIL: " + name); }
-        }
+    static void assertTrue(String name, boolean condition) {
+        if (condition) { passed++; System.out.println("  PASS: " + name); }
+        else { failed++; System.out.println("  FAIL: " + name); }
+    }
 
-        static void assertEquals(String name, Object expected, Object actual) {
-            assertTrue(name, Objects.equals(expected, actual));
-        }
+    static void assertEquals(String name, Object expected, Object actual) {
+        assertTrue(name, Objects.equals(expected, actual));
+    }
 
-        static void assertThrows(String name, Class<? extends Throwable> exType, Runnable block) {
-            try { block.run(); failed++; System.out.println("  FAIL: " + name + " (no exception)"); }
-            catch (Exception e) {
-                if (exType.isInstance(e)) { passed++; System.out.println("  PASS: " + name + " [" + e.getClass().getSimpleName() + "]"); }
-                else { failed++; System.out.println("  FAIL: " + name + " (wrong exception: " + e.getClass().getSimpleName() + ")"); }
-            }
+    static void assertThrows(String name, Class<? extends Throwable> exType, Runnable block) {
+        try { block.run(); failed++; System.out.println("  FAIL: " + name + " (no exception)"); }
+        catch (Exception e) {
+            if (exType.isInstance(e)) { passed++; System.out.println("  PASS: " + name + " [" + e.getClass().getSimpleName() + "]"); }
+            else { failed++; System.out.println("  FAIL: " + name + " (wrong exception: " + e.getClass().getSimpleName() + ")"); }
         }
+    }
 
-        static void report() {
-            System.out.println("\n  Results: " + passed + " passed, " + failed + " failed");
-        }
+    static void report() {
+        System.out.println("\n  Results: " + passed + " passed, " + failed + " failed");
     }
 
     public static void main(String[] args) throws Exception {
@@ -78,18 +80,18 @@ public class Lab {
         System.out.println("--- Unit Testing ---");
         var calc = new Calculator();
 
-        TestResult.assertEquals("add(2,3) == 5", 5, calc.add(2, 3));
-        TestResult.assertEquals("add(-1,1) == 0", 0, calc.add(-1, 1));
-        TestResult.assertEquals("fib(5) first", 0, calc.fibonacci(5)[0]);
-        TestResult.assertEquals("fib(5) last", 3, calc.fibonacci(5)[4]);
-        TestResult.assertEquals("fib(0).length", 0, calc.fibonacci(0).length);
+        assertEquals("add(2,3) == 5", 5, calc.add(2, 3));
+        assertEquals("add(-1,1) == 0", 0, calc.add(-1, 1));
+        assertEquals("fib(5) first", 0, calc.fibonacci(5)[0]);
+        assertEquals("fib(5) last", 3, calc.fibonacci(5)[4]);
+        assertEquals("fib(0).length", 0, calc.fibonacci(0).length);
 
         var cart = new ShoppingCart();
         cart.add("apple", 2);
-        TestResult.assertEquals("cart contains apple", true, cart.contains("apple"));
-        TestResult.assertEquals("cart total", 2, cart.totalItems());
+        assertEquals("cart contains apple", true, cart.contains("apple"));
+        assertEquals("cart total", 2, cart.totalItems());
         cart.remove("apple");
-        TestResult.assertEquals("cart empty after remove", false, cart.contains("apple"));
+        assertEquals("cart empty after remove", false, cart.contains("apple"));
     }
 
     static void parameterizedTests() {
@@ -101,7 +103,7 @@ public class Lab {
         );
 
         for (var tc : testCases) {
-            TestResult.assertEquals("add(" + tc[0] + "," + tc[1] + ") == " + tc[2],
+            assertEquals("add(" + tc[0] + "," + tc[1] + ") == " + tc[2],
                 tc[2], calc.add(tc[0], tc[1]));
         }
     }
@@ -110,9 +112,9 @@ public class Lab {
         System.out.println("\n--- Exception Testing ---");
         var calc = new Calculator();
 
-        TestResult.assertThrows("divide by zero", ArithmeticException.class,
+        assertThrows("divide by zero", ArithmeticException.class,
             () -> calc.divide(5, 0));
-        TestResult.assertEquals("divide(10,2)", 5, calc.divide(10, 2));
+        assertEquals("divide(10,2)", 5, calc.divide(10, 2));
     }
 
     static void mocking() {
@@ -125,36 +127,36 @@ public class Lab {
             }
         };
         spyCart.add("test-item", 1);
-        TestResult.assertEquals("spy tracked item", true, spyCart.contains("test-item"));
+        assertEquals("spy tracked item", true, spyCart.contains("test-item"));
         System.out.println("""
-  Mockito: @Mock, @InjectMocks, verify()
-  Stub: when(mock.getX()).thenReturn(value)
-  Spy: partial real + partial mock
-    """);
+            Mockito: @Mock, @InjectMocks, verify()
+            Stub: when(mock.getX()).thenReturn(value)
+            Spy: partial real + partial mock
+              """);
     }
 
     static void asyncTesting() throws Exception {
-        System.out.println("--- Async Testing ---");
+        System.out.println("\n--- Async Testing ---");
         var svc = new AsyncService();
         var result = svc.fetchData("key-1").get(1, TimeUnit.SECONDS);
-        TestResult.assertEquals("async fetch", "data-for-key-1", result);
+        assertEquals("async fetch", "data-for-key-1", result);
 
         var combined = svc.fetchData("a").thenCombine(svc.fetchData("b"), (a, b) -> a + "|" + b);
         var combo = combined.get(1, TimeUnit.SECONDS);
-        TestResult.assertEquals("combined async", "data-for-a|data-for-b", combo);
+        assertEquals("combined async", "data-for-a|data-for-b", combo);
     }
 
     static void integrationTest() {
         System.out.println("\n--- Integration Test Approach ---");
         System.out.println("""
-  @SpringBootTest - loads full context
-  @WebMvcTest - controller layer only
-  @DataJpaTest - repository layer only
-  @Testcontainers - real DB in Docker
-  @RestClientTest - REST client mocking
-  WireMock - stub external HTTP services
-  Test pyramid: unit >> integration >> e2e
-    """);
-        TestResult.report();
+            @SpringBootTest - loads full context
+            @WebMvcTest - controller layer only
+            @DataJpaTest - repository layer only
+            @Testcontainers - real DB in Docker
+            @RestClientTest - REST client mocking
+            WireMock - stub external HTTP services
+            Test pyramid: unit >> integration >> e2e
+              """);
+        report();
     }
 }

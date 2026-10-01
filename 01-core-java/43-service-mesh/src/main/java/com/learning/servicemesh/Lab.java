@@ -135,14 +135,15 @@ public class Lab {
         var proxy = new ServiceProxy("faulty-service");
 
         for (int i = 0; i < 6; i++) {
+            final int attempt = i; // effectively final for lambda capture
             try {
                 var result = cb.call(() -> {
-                    if (i >= 2 && i <= 4) throw new RuntimeException("Service error");
-                    return proxy.call("op", "req-" + i).result();
+                    if (attempt >= 2 && attempt <= 4) throw new RuntimeException("Service error");
+                    return proxy.call("op", "req-" + attempt).result();
                 });
-                System.out.println("  [" + i + "] Success: " + result);
+                System.out.println("  [" + attempt + "] Success: " + result);
             } catch (Exception e) {
-                System.out.println("  [" + i + "] " + e.getMessage());
+                System.out.println("  [" + attempt + "] " + e.getMessage());
             }
         }
     }

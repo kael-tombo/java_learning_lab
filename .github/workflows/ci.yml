@@ -23,4 +23,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-m2-
       - name: Build all labs (aggregator)
-        run: mvn -f pom.xml clean verify -DskipTests=false
+        run: mvn -f pom-aggregator.xml clean verify -DskipTests=false

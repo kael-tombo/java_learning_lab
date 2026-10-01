@@ -18,10 +18,11 @@
     <module>01-core-java/03-collections-framework</module>
     <module>01-core-java/04-streams-api</module>
     <module>01-core-java/05-concurrency</module>
-    <module>01-core-java/05-concurrency-multithreading</module>
     <module>01-core-java/06-exception-handling</module>
     <module>01-core-java/07-file-io</module>
     <module>01-core-java/08-generics</module>
+    <module>01-core-java/09-annotations</module>
+    <module>01-core-java/10-lambda-expressions</module>
     <module>01-core-java/11-design-patterns</module>
     <module>01-core-java/12-java-21-features</module>
 

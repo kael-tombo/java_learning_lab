@@ -1,0 +1,12 @@
+server:
+  port: 0
+
+spring:
+  application:
+    name: spring-boot-basics-test
+
+app:
+  greeting:
+    message: "Test Greeting"
+  feature-flags:
+    advanced-mode: false

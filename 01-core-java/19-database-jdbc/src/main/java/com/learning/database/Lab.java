@@ -60,6 +60,7 @@ public class Lab {
                 ps.setDouble(3, 72000.00);
                 ps.setDate(4, Date.valueOf("2024-01-10"));
                 ps.executeUpdate();
+                keys = ps.getGeneratedKeys();
                 if (keys.next()) System.out.println("Inserted employee id: " + keys.getInt(1));
             }
 

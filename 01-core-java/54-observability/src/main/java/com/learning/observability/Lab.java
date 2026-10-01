@@ -59,7 +59,9 @@ public class Lab {
         }
 
         record Span(String name, String traceId, long startTime) {
-            Span { startTime = System.nanoTime(); }
+            Span(String name, String traceId) {
+                this(name, traceId, System.nanoTime());
+            }
         }
 
         void report() {

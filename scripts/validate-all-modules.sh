@@ -36,85 +36,17 @@ FAILED_MODULES=0
 # Module Lists
 ###############################################################################
 
-# Core Java Modules
-CORE_JAVA_MODULES=(
-    "01-core-java/01-hello-world"
-    "01-core-java/02-variables-datatypes"
-    "01-core-java/03-operators"
-    "01-core-java/04-control-flow"
-    "01-core-java/05-arrays"
-    "01-core-java/06-strings"
-    "01-core-java/07-oop-basics"
-    "01-core-java/08-inheritance"
-    "01-core-java/09-polymorphism"
-    "01-core-java/10-abstraction"
-)
-
-# Spring Boot Modules
-SPRING_BOOT_MODULES=(
-    "02-spring-boot/01-spring-basics"
-    "02-spring-boot/02-dependency-injection"
-    "02-spring-boot/03-rest-api"
-    "02-spring-boot/04-data-jpa"
-    "02-spring-boot/05-security"
-    "02-spring-boot/06-testing"
-    "02-spring-boot/07-microservices"
-    "02-spring-boot/08-messaging"
-    "02-spring-boot/09-caching"
-    "02-spring-boot/10-monitoring"
-)
-
-# Quarkus Modules
-QUARKUS_MODULES=(
-    "quarkus-learning/01-Introduction-to-Quarkus/hello-quarkus"
-    "quarkus-learning/02-Quarkus-Core/quarkus-config-demo"
-    "quarkus-learning/03-Dependency-Injection/cdi-demo"
-    "quarkus-learning/04-REST-Services/user-management-api"
-    "quarkus-learning/05-Database-Panache/book-management-api"
-    "quarkus-learning/06-DevServices/product-catalog"
-    "quarkus-learning/07-Reactive-Programming/reactive-api"
-    "quarkus-learning/08-Kafka-Messaging/event-driven-app"
-    "quarkus-learning/09-Security-JWT/secure-api"
-    "quarkus-learning/10-Testing-Strategies/testing-demo"
-    "quarkus-learning/11-Quarkus-Cloud-Native/cloud-native-app"
-    "quarkus-learning/12-Advanced-Topics/advanced-app"
-    "quarkus-learning/13-WebSockets-RealTime/realtime-chat-app"
-    "quarkus-learning/15-File-Upload-Storage/file-storage-app"
-    "quarkus-learning/16-Caching-Strategies/caching-demo"
-    "quarkus-learning/17-Rate-Limiting-Throttling/rate-limiting-demo"
-    "quarkus-learning/19-Email-Notification-Services/email-notification-service"
-)
-
-# Vert.x Modules
-VERTX_MODULES=(
-    "EclipseVert.XLearning/01-vertx-basics"
-    "EclipseVert.XLearning/02-event-bus"
-    "EclipseVert.XLearning/03-http-server"
-    "EclipseVert.XLearning/04-async-futures"
-    "EclipseVert.XLearning/05-database-integration"
-    "EclipseVert.XLearning/06-websockets"
-    "EclipseVert.XLearning/07-microservices"
-    "EclipseVert.XLearning/08-auth-jwt"
-    "EclipseVert.XLearning/09-security"
-    "EclipseVert.XLearning/10-kafka"
-    "EclipseVert.XLearning/11-rabbitmq"
-    "EclipseVert.XLearning/12-redis"
-    "EclipseVert.XLearning/13-mongodb"
-    "EclipseVert.XLearning/14-graphql"
-    "EclipseVert.XLearning/15-grpc"
-    "EclipseVert.XLearning/28-advanced-testing"
-    "EclipseVert.XLearning/29-data-validation"
-    "EclipseVert.XLearning/32-api-versioning"
-)
-
-# Micronaut Modules
-MICRONAUT_MODULES=(
-    "micronaut-learning/01-hello-micronaut"
-    "micronaut-learning/02-dependency-injection"
-    "micronaut-learning/03-rest-api"
-    "micronaut-learning/04-data-access"
-    "micronaut-learning/05-security"
-)
+# Core Java Modules (auto-discovered: every 01-core-java/*/pom.xml on disk)
+# NOTE: historic hard-coded lists (01-hello-world, 02-spring-boot/*,
+# hello-quarkus, EclipseVert.XLearning, micronaut-learning) were removed
+# because those paths do not exist. Modules are discovered dynamically below.
+CORE_JAVA_MODULES=()
+SPRING_BOOT_MODULES=()
+QUARKUS_MODULES=()
+VERTX_MODULES=()
+MICRONAUT_MODULES=()
+# When set to 1, discover all leaf Maven modules via find instead of lists.
+DISCOVER_MODULES=1
 
 ###############################################################################
 # Helper Functions
@@ -234,12 +166,24 @@ main() {
     echo "╚══════════════════════════════════════════════════════════════════╝" >> "$SUMMARY_FILE"
     echo "" >> "$SUMMARY_FILE"
     
-    # Validate all categories
-    validate_category "Core Java Modules" "${CORE_JAVA_MODULES[@]}"
-    validate_category "Spring Boot Modules" "${SPRING_BOOT_MODULES[@]}"
-    validate_category "Quarkus Modules" "${QUARKUS_MODULES[@]}"
-    validate_category "Vert.x Modules" "${VERTX_MODULES[@]}"
-    validate_category "Micronaut Modules" "${MICRONAUT_MODULES[@]}"
+    # Validate all categories (dynamic discovery — never stale)
+    if [ "$DISCOVER_MODULES" = "1" ]; then
+        print_category_header "All Maven Modules (auto-discovered)"
+        while IFS= read -r pom; do
+            module_dir=$(dirname "$pom")
+            # Skip root poms; validate leaf modules only
+            if [ "$module_dir" = "." ]; then
+                continue
+            fi
+            validate_module "$module_dir"
+        done < <(find "$PROJECT_ROOT" -name pom.xml -not -path "*/target/*" -not -path "*/.git/*" | sed "s|^$PROJECT_ROOT/||" | sort)
+    else
+        validate_category "Core Java Modules" "${CORE_JAVA_MODULES[@]}"
+        validate_category "Spring Boot Modules" "${SPRING_BOOT_MODULES[@]}"
+        validate_category "Quarkus Modules" "${QUARKUS_MODULES[@]}"
+        validate_category "Vert.x Modules" "${VERTX_MODULES[@]}"
+        validate_category "Micronaut Modules" "${MICRONAUT_MODULES[@]}"
+    fi
     
     # Print final summary
     print_final_summary

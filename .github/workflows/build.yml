@@ -20,7 +20,7 @@ jobs:
     
     strategy:
       matrix:
-        java-version: [21]
+        java-version: [21, 23, 25]
       fail-fast: false
     
     steps:
@@ -46,7 +46,6 @@ jobs:
 
     - name: Generate JaCoCo coverage report
       run: mvn jacoco:report -B -q
-      continue-on-error: true
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
@@ -85,20 +84,16 @@ jobs:
 
     - name: Run Checkstyle
       run: mvn checkstyle:check -B -q -DfailOnViolation=true
-      continue-on-error: true
 
     - name: Run PMD
       run: mvn pmd:check -B -q
-      continue-on-error: true
 
     - name: Run SpotBugs
       run: mvn spotbugs:check -B -q
-      continue-on-error: true
 
     - name: Dependency vulnerability scan (OWASP)
       run: |
         mvn dependency-check:check -B -q || echo "Vulnerabilities found - review required"
-      continue-on-error: true
 
   dependency-check:
     name: Dependency & Security Check
@@ -177,6 +172,10 @@ jobs:
       run: |
         if [ "${{ needs.build.result }}" = "failure" ]; then
           echo "Build failed"
+          exit 1
+        fi
+        if [ "${{ needs.quality.result }}" = "failure" ]; then
+          echo "Quality gates failed"
           exit 1
         fi
     

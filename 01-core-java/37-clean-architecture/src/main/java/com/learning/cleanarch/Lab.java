@@ -132,6 +132,9 @@ public class Lab {
 
         record Request(String method, String path, String body) {}
         record Response(int status, String body) {}
+        record CreateInput(String name, String email) {}
+        record CreateOutput(String id, String name, String email) {}
+        interface CreateUserUC { CreateOutput exec(CreateInput input); }
 
         class UserController {
             final CreateUserUC uc;
@@ -149,11 +152,6 @@ public class Lab {
             }
         }
 
-        // Need these adapted to match use case context
-        record CreateInput(String name, String email) {}
-        record CreateOutput(String id, String name, String email) {}
-        interface CreateUserUC { CreateOutput exec(CreateInput input); }
-
         class RealUC implements CreateUserUC {
             public CreateOutput exec(CreateInput input) {
                 return new CreateOutput(UUID.randomUUID().toString(), input.name(), input.email());
@@ -161,7 +159,8 @@ public class Lab {
         }
 
         var ctrl = new UserController(new RealUC() {
-            CreateOutput exec(CreateInput input) {
+            @Override
+            public CreateOutput exec(CreateInput input) {
                 System.out.println("    Use case: creating " + input.name());
                 return new CreateOutput(UUID.randomUUID().toString(), input.name(), input.email());
             }

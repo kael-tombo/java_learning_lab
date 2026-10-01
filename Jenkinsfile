@@ -1,39 +1,37 @@
 pipeline {
     agent any
+    tools {
+        maven 'maven-3.9'
+        jdk 'jdk-21'
+    }
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        timestamps()
+        timeout(time: 30, unit: 'MINUTES')
+    }
+    triggers {
+        pollSCM('H/15 * * * *')
+    }
     stages {
-        stage('Data Validation') {
-            steps { sh 'java -cp . com.mlops.lab09.DataValidationLab' }
+        stage('Checkout') {
+            steps { checkout scm }
         }
-        stage('Feature Engineering') {
-            steps { sh 'java -cp . com.mlops.lab04.FeatureStoreLab' }
-        }
-        stage('Model Training') {
-            steps { sh 'java -cp . com.mlops.lab01.MLOpsPipelineOrchestrationLab' }
-        }
-        stage('Model Evaluation') {
+        stage('Verify Tools') {
             steps {
-                script {
-                    def accuracy = sh(script: 'echo 0.947', returnStdout: true).trim()
-                    def champion = sh(script: 'echo 0.935', returnStdout: true).trim()
-                    if (accuracy.toDouble() < champion.toDouble()) {
-                        error "Model accuracy ${accuracy} below champion ${champion}"
-                    }
-                }
+                sh 'java -version'
+                sh 'mvn -version'
             }
         }
-        stage('Deploy to Staging') {
-            steps { sh 'echo "Deploying..."' }
+        stage('Build Core Labs') {
+            steps { sh 'mvn -f pom-aggregator.xml clean verify -B -V' }
         }
-        stage('Integration Tests') {
-            steps { sh 'echo "Running shadow tests..."' }
-        }
-        stage('Deploy to Production') {
-            when { branch 'main' }
-            steps { sh 'echo "Promoting to production..."' }
+        stage('Build Full Reactor (no tests)') {
+            steps { sh 'mvn -f pom.xml clean install -B -DskipTests=true' }
         }
     }
     post {
-        failure { sh 'echo "Pipeline failed — notifying team"' }
-        success { sh 'echo "Pipeline succeeded"' }
+        always { junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml' }
+        failure { echo 'Pipeline failed — see stage logs and surefire reports.' }
+        success { echo 'Pipeline succeeded.' }
     }
 }

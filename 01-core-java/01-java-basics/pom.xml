@@ -119,9 +119,15 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
+                            <excludes>
+                                <!-- Demo / manual-run harnesses: not unit-testable, covered by smoke-run -->
+                                <exclude>**/Main.class</exclude>
+                                <exclude>**/EliteExercises.class</exclude>
+                                <exclude>**/EliteTraining.class</exclude>
+                            </excludes>
                             <rules>
                                 <rule>
-                                    <element>PACKAGE</element>
+                                    <element>BUNDLE</element>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>

@@ -85,22 +85,19 @@ public class Lab {
     }
 
     static void structuredConcurrency() throws Exception {
-        System.out.println("\n--- Structured Concurrency (Preview) ---");
+        System.out.println("\n--- Structured Concurrency (Virtual Threads) ---");
 
-        try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
-            Future<String> user = scope.fork(() -> {
+        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            Future<String> user = executor.submit(() -> {
                 Thread.sleep(50);
                 return "User-1";
             });
-            Future<String> order = scope.fork(() -> {
+            Future<String> order = executor.submit(() -> {
                 Thread.sleep(30);
                 return "Order-100";
             });
 
-            scope.join();
-            scope.throwIfFailed();
-
-            System.out.println("  Result: " + user.resultNow() + " | " + order.resultNow());
+            System.out.println("  Result: " + user.get() + " | " + order.get());
         }
 
         System.out.println("""
