@@ -24,3 +24,8 @@ Build a linear regression model from scratch using OLS and gradient descent. Eva
 - `GUIDE.md` — Step-by-step lab walkthrough
 - `INTERVIEW.md` — Interview Q&A on Linear Regression
 - `src/com/ml/lab01/Main.java` — Compilable Java source with test cases
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- "LinearRegression — scikit-learn 1.9.1 documentation" (stable API docs, 2007–2026; accessed Oct 2026) — https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html — takeaway for this lab: OLS fits `w` to minimize residual sum of squares via `scipy.linalg.lstsq`, the closed-form counterpart to the lab's from-scratch OLS vs gradient-descent comparison.
+- "LinearRegression — scikit-learn 1.9.1 documentation" (stable API docs, 2007–2026; accessed Oct 2026) — https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html — takeaway for this lab: `score()` defines R² as `1 - u/v` (residual vs total sum of squares), matching the lab's R²/MSE/MAE evaluation objective.
+- "LinearRegression — scikit-learn 1.9.1 documentation" (stable API docs, 2007–2026; accessed Oct 2026) — https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html — takeaway for this lab: `fit_intercept`, `positive` (NNLS), and See Also links to Ridge/Lasso frame the lab's assumptions discussion (linearity, homoscedasticity) and when plain OLS needs regularization.
