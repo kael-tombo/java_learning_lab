@@ -1,169 +1,529 @@
-# G1 Garbage Collector — Mathematical Foundation
+# MATH_FOUNDATION — G1 GC Mathematics
 
-## 1. Asymptotic Complexity Analysis
+## 1. Region Sizing
 
-### Big-O Notation
-All complexity analysis uses standard asymptotic notation:
+### Region Size Calculation
 
-- **O(1)**: Constant time — independent of input size
-- **O(log n)**: Logarithmic — typical for balanced tree operations
-- **O(n)**: Linear — proportional to input size
-- **O(n log n)**: Log-linear — sorting, heap operations
-- **O(n^2)**: Quadratic — nested iterations
+```
+Region_Size = Heap_Size / 2048  (target ~2048 regions)
+Clamped to [1MB, 32MB]
+```
 
-### Amortized Analysis
-Amortized analysis considers the average cost of an operation over a sequence:
+| Heap Size | Region Size | Region Count |
+|-----------|-------------|--------------|
+| 4 GB      | 2 MB        | 2048         |
+| 8 GB      | 4 MB        | 2048         |
+| 16 GB     | 8 MB        | 2048         |
+| 32 GB     | 16 MB       | 2048         |
+| 64 GB     | 32 MB       | 2048         |
 
-    T_amortized(n) = (1/n) * sum(t_i for i=1 to n)
+---
 
-Where t_i is the cost of the i-th operation.
+## 1. Region Sizing Mathematics
 
-#### Accounting Method
-Each operation pays a small additional cost into a bank account. Expensive operations draw from this account.
+### Region Count Formula
 
-#### Potential Method
-A potential function Phi(D_i) maps data structure state D_i to a real number. The amortized cost is:
+```
+Target_Regions = 2048 (default)
+Region_Size = Heap_Size / Target_Regions
+Clamped to [1MB, 32MB]
+```
 
-    c_i + Phi(D_i) - Phi(D_{i-1})
+### Region State Machine
 
-### Case Study: ArrayList Growth
-For ArrayList with 1.5x growth factor:
-- Insertions 1 to n cost: n (insertions) + sum of resize costs
-- Resize costs: 1 + 2 + 3 + ... + n * (2/3)^k which sums to approximately n
-- Amortized cost per insertion: O(1)
+```
+Free → Eden → Survivor → Old → Humongous
+     ↓
+   Free (after GC)
+```
 
-## 2. Probability Fundamentals
+---
 
-### Hash Functions and Collisions
-For a hash table with m buckets and n elements:
+## 1. Region Sizing Mathematics
 
-- Probability of no collision when inserting k elements: prod((m-i)/m for i=0 to k-1)
-- Expected number of collisions: n - m + m((m-1)/m)^n
-- Load factor: alpha = n/m
+### Region Count Formula
 
-### Birthday Paradox
-With 23 people in a room, probability of shared birthday > 50%. For hash tables:
+```
+Target_Regions = 2048 (default)
+Region_Size = Heap_Size / Target_Regions
+Clamped to [1MB, 32MB]
+```
 
-    P(collision) approx 1 - exp(-n(n-1)/(2m))
+### Example Calculations
 
-When n > sqrt(2m), collisions are likely.
+| Heap Size | Region Size | Region Count |
+|-----------|-------------|--------------|
+| 4 GB      | 2 MB        | 2048         |
+| 8 GB      | 4 MB        | 2048         |
+| 16 GB     | 8 MB        | 2048         |
+| 32 GB     | 16 MB       | 2048         |
+| 64 GB     | 32 MB       | 2048         |
 
-## 3. Graph Theory for Tree Structures
+---
 
-### Tree Properties
-- A tree with n nodes has n-1 edges
-- Height of a perfect binary tree: floor(log_2 n)
-- Number of leaves in a perfect binary tree of height h: 2^h
-- Internal nodes in a full binary tree: n - 1
+## 2. Pause Time Model
 
-### Red-Black Tree Height
-A red-black tree with n internal nodes has height at most 2*log_2(n+1).
-This guarantee comes from the red-black properties:
-1. Every node is either red or black
-2. The root is black
-3. All leaves (NIL) are black
-4. If a node is red, both its children are black
-5. Every path from a node to its descendant leaves has the same number of black nodes
+### Pause Time Components
 
-## 4. Number Theory
+```
+Total_Pause = Scan_Roots + Update_RSets + Copy_Live + Update_Refs + Post_GC
+```
 
-### Prime Numbers for Hash Tables
-Using prime-sized hash tables reduces collision probability when hash function distribution is unknown.
-The multiplicative hash: h(k) = floor(m * (k * A mod 1)) where A is the golden ratio (sqrt(5)-1)/2.
+### Target Pause Time
 
-### Modulo Arithmetic for Index Calculation
-The index is calculated as: index = hash & (capacity - 1) when capacity is a power of two.
-This is equivalent to hash mod capacity, but much faster as it's a single bitwise operation.
+```
+Target_Pause = MaxGCPauseMillis (default 200ms)
+```
 
-## 5. Probability for Bloom Filters
+G1 adjusts young generation size to meet target:
+```
+Young_Gen_Size = f(Live_Data, Target_Pause, Throughput_Goal)
+```
 
-### False Positive Rate
-For a Bloom filter with m bits, n elements, k hash functions:
+### Young GC Pause Model
 
-    P_FP = (1 - (1 - 1/m)^(kn))^k approx (1 - exp(-kn/m))^k
+```
+Young_Pause ≈ (Eden_Size + Survivor_Size) / Copy_Rate + RS_Update
+```
 
-### Optimal Hash Functions
-    k_optimal = (m/n) * ln(2)
+---
 
-## Summary
-These mathematical foundations underpin the theoretical guarantees and practical performance
-characteristics of the G1 Garbage Collector. Understanding them enables informed design decisions and
-accurate performance predictions. The key takeaway is that data structure selection should be
-guided by mathematical analysis of the expected workload patterns.
+## 1. Pause Time Model
 
+### Pause Time Components
 
-## Further Exploration
+```
+Total_Pause = Root_Scan + RS_Update + Copy + Ref_Update + Cleanup
+```
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+### Target Pause Time
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+```
+Target_Pause = MaxGCPauseMillis (default 200ms)
+```
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+G1 adjusts young generation size to meet target:
+```
+Young_Gen_Size ≈ Target_Pause × Copy_Rate / (1 + Survivor_Ratio)
+```
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+---
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## 2. Mixed GC Mathematics
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+### Old Region Selection
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+Old regions selected for mixed GC based on **liveness**:
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+```
+Liveness = 1 - (Free_Space / Region_Size)
+
+Region selected if: Liveness < G1MixedGCLiveThresholdPercent (default 85%)
+```
+
+### Mixed GC Region Count
+
+```
+Max_Regions_Per_Mixed = (Target_Pause - Young_Pause) / Avg_Old_Region_Pause
+```
+
+---
+
+## 2. Mixed GC Mathematics
+
+### Liveness Threshold
+
+```
+Liveness = 1 - (Free_Space / Region_Size)
+
+Region selected if: Liveness < G1MixedGCLiveThresholdPercent (default 85%)
+```
+
+### Regions Per Mixed GC
+
+```
+Regions_Per_Mixed = (Target_Pause - Young_Pause) / Avg_Old_Region_Time
+```
+
+---
+
+## 2. RSet Mathematics
+
+### RSet Cardinality
+
+```
+RSet_Size ≈ Outgoing_Refs / Region_Size
+```
+
+Typical: 1-100 entries per region.
+
+### RSet Scan Cost
+
+```
+Young_GC_Cost ≈ Σ Young_Region_RSet_Size
+```
+
+---
+
+## 2. Remembered Set (RSet) Mathematics
+
+### RSet Cardinality
+
+```
+RSet_Size ≈ Outgoing_Refs / Region_Size
+```
+
+Typical: 1-100 entries per region.
+
+### RSet Scan Cost
+
+```
+Young_GC_Cost ≈ Σ Young_Region_RSet_Size
+```
+
+---
+
+## 2. Humongous Object Mathematics
+
+### Humongous Threshold
+
+```
+Humongous_Threshold = Region_Size / 2
+```
+
+### Region Count for Humongous Object
+
+```
+Regions_Needed = ceil(Object_Size / Region_Size)
+```
+
+---
+
+## 2. Humongous Object Mathematics
+
+### Humongous Threshold
+
+```
+Humongous_Threshold = Region_Size / 2
+```
+
+### Regions Needed
+
+```
+Regions_Needed = ceil(Object_Size / Region_Size)
+```
+
+---
+
+## 2. SATB Barrier Cost
+
+### Snapshot-At-The-Beginning
+
+```
+Pre-Write Barrier:
+  if (field != new_value) {
+      SATB_Queue.enqueue(old_value);
+  }
+```
+
+### Queue Processing
+
+```
+Queue_Capacity = Threads × Buffer_Size
+Flush_Threshold = 75% capacity
+```
+
+---
+
+## 2. SATB Barrier Cost
+
+### Snapshot-At-The-Beginning
+
+```
+Pre-Write Barrier:
+  if (field != new_value) SATB_Queue.enqueue(old_value);
+```
+
+### Queue Sizing
+
+```
+Queue_Capacity = Threads × Buffer_Size
+Flush_Threshold = 75% capacity
+```
+
+---
+
+## 3. Pause Time Prediction
+
+### Young GC Pause Prediction
+
+```
+Young_Pause ≈ (Eden_Size + Survivor_Size) / Copy_Rate + RS_Update_Time
+```
+
+Target: `Pause ≤ MaxGCPauseMillis` (default 200ms)
+
+---
+
+## 2. Pause Time Model
+
+### Young GC Pause Prediction
+
+```
+Young_Pause ≈ (Eden_Size + Survivor_Size) / Copy_Rate + RS_Update_Time
+```
+
+Target: `Pause ≤ MaxGCPauseMillis` (default 200ms)
+
+G1 adjusts young gen size:
+```
+Young_Gen_Size ≈ Target_Pause × Copy_Rate / (1 + Survivor_Ratio)
+```
+
+---
+
+## 3. Mixed GC Region Selection
+
+### Liveness Calculation
+
+```
+Liveness = 1 - (Free_Space / Region_Size)
+
+Region selected if: Liveness < G1MixedGCLiveThresholdPercent (default 85%)
+```
+
+### Regions Per Mixed GC
+
+```
+Regions_Per_Mixed = (Target_Pause - Young_Pause) / Avg_Old_Region_Time
+```
+
+---
+
+## 3. Mixed GC Region Selection
+
+### Liveness Threshold
+
+```
+Liveness = 1 - (Free_Space / Region_Size)
+
+Selected if: Liveness < G1MixedGCLiveThresholdPercent (default 85%)
+```
+
+### Regions Per Mixed GC
+
+```
+Regions_Per_Mixed = (Target_Pause - Young_Pause) / Avg_Old_Region_Time
+```
+
+---
+
+## 4. Humongous Object Mathematics
+
+### Threshold
+
+```
+Humongous_Threshold = Region_Size / 2
+```
+
+### Region Count
+
+```
+Regions_Needed = ceil(Object_Size / Region_Size)
+```
+
+### Allocation Cost
+
+```
+Cost = Regions_Needed × Region_Size + Metadata_Overhead
+```
+
+---
+
+## 3. Humongous Object Mathematics
+
+### Humongous Threshold
+
+```
+Humongous_Threshold = Region_Size / 2
+```
+
+### Regions Needed
+
+```
+Regions_Needed = ceil(Object_Size / Region_Size)
+```
+
+### Allocation Cost
+
+```
+Cost = Regions_Needed × Region_Size + Metadata_Overhead
+```
+
+---
+
+## 3. RSet Mathematics
+
+### RSet Cardinality
+
+```
+RSet_Size ≈ Outgoing_Refs / Region_Size
+```
+
+Typical: 1-100 entries per region.
+
+### RSet Scan Cost
+
+```
+Young_GC_Cost ≈ Σ Young_Region_RSet_Size
+```
+
+---
+
+## 3. RSet Mathematics
+
+### RSet Cardinality
+
+```
+RSet_Size ≈ Outgoing_Refs / Region_Size
+```
+
+Typical: 1-100 entries per region.
+
+### RSet Scan Cost
+
+```
+Young_GC_Cost ≈ Σ Young_Region_RSet_Size
+```
+
+---
+
+## 3. SATB Barrier Cost
+
+### Snapshot-At-The-Beginning
+
+```
+Pre-Write Barrier:
+  if (field != new_value) {
+      SATB_Queue.enqueue(old_value);
+  }
+```
+
+### Queue Processing
+
+```
+Queue_Capacity = Threads × Buffer_Size
+Flush_Threshold = 75% capacity
+```
+
+---
+
+## 3. SATB Barrier Cost
+
+### Snapshot-At-The-Beginning
+
+```
+Pre-Write Barrier:
+  if (field != new_value) {
+      SATB_Queue.enqueue(old_value);
+  }
+```
+
+### Queue Sizing
+
+```
+Queue_Capacity = Threads × Buffer_Size
+Flush_Threshold = 75% capacity
+```
+
+---
+
+## 4. Predictive Pause Model
+
+### Young GC Pause
+
+```
+Pause = (Eden + Survivor) / Copy_Rate + RS_Update
+```
+
+Target: ≤ `MaxGCPauseMillis` (default 200ms)
+
+---
+
+## 3. Pause Time Prediction
+
+### Young GC Pause Prediction
+
+```
+Pause = (Eden + Survivor) / Copy_Rate + RS_Update
+```
+
+Target: `Pause ≤ MaxGCPauseMillis` (default 200ms)
+
+---
+
+## 4. Humongous Object Mathematics
+
+### Humongous Threshold
+
+```
+Humongous_Threshold = Region_Size / 2
+```
+
+### Regions Needed
+
+```
+Regions_Needed = ceil(Object_Size / Region_Size)
+```
+
+### Allocation Cost
+
+```
+Cost = Regions_Needed × Region_Size + Metadata_Overhead
+```
+
+---
+
+## 4. Humongous Object Mathematics
+
+### Humongous Threshold
+
+```
+Humongous_Threshold = Region_Size / 2
+```
+
+### Regions Needed
+
+```
+Regions_Needed = ceil(Object_Size / Region_Size)
+```
+
+### Allocation Cost
+
+```
+Cost = Regions_Needed × Region_Size + Metadata_Overhead
+```
+
+---
+
+## 5. Predictive Pause Model
+
+### Young GC Pause
+
+```
+Pause = (Eden + Survivor) / Copy_Rate + RS_Update
+```
+
+Target: `Pause ≤ MaxGCPauseMillis` (default 200ms)
+
+---
+
+## 5. Predictive Pause Model
+
+### Young GC Pause
+
+```
+Pause = (Eden + Survivor) / Copy_Rate + RS_Update
+```
+
+Target: `Pause ≤ MaxGCPauseMillis` (default 200ms)

@@ -1,154 +1,126 @@
-# JIT Compilation — Exercises
+# EXERCISES — JIT Compilation
 
-## Beginner Exercises
+## 1. Observing Compilation (Beginner)
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of JIT Compilation.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
+**Goal**: Observe JIT compilation in action.
+
+```bash
+# Run with compilation logging
+java -XX:+PrintCompilation -XX:+PrintInlining MyApp
+
+# Run with tiered compilation disabled (C1 only)
+java -XX:TieredStopAtLevel=1 MyApp
+
+# Run with C2 only
+java -XX:TieredStopAtLevel=4 MyApp
 ```
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
+**Tasks**:
+1. Run a simple benchmark with `-XX:+PrintCompilation`
+2. Identify which methods get compiled at which tier
+3. Observe inlining decisions in output
+4. Compare startup time with/without tiered compilation
+
+---
+
+## 2. Inlining Analysis (Intermediate)
+
+**Goal**: Understand inlining decisions.
+
+```bash
+# Detailed inlining output
+java -XX:+PrintCompilation -XX:+PrintInlining MyApp
+
+# Focus on specific method
+java -XX:+PrintCompilation -XX:+PrintInlining -XX:CompileCommand=inline,MyClass.myMethod MyApp
 ```
 
-## Intermediate Exercises
+**Tasks**:
+1. Run a benchmark with `-XX:+PrintInlining`
+2. Identify which methods get inlined vs not
+3. Use `-XX:MaxInlineSize=100` to force more inlining, observe effect
+4. Use `-XX:MaxInlineSize=10` to restrict inlining, measure impact
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+---
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
+## 3. Escape Analysis & Scalar Replacement (Intermediate)
+
+**Goal**: Observe escape analysis and scalar replacement.
+
+```bash
+# Enable escape analysis logging
+-XX:+UnlockDiagnosticVMOptions -XX:+PrintEscapeAnalysis
+
+# Or use JFR
+-XX:StartFlightRecording:filename=profile.jfr
 ```
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
+**Tasks**:
+1. Write a benchmark that creates objects in a loop
+2. Run with `-XX:+DoEscapeAnalysis` (default on) and `-XX:-DoEscapeAnalysis`
+3. Compare allocation rates and GC pressure
+3. Use JFR to visualize allocation sites
+
+---
+
+## 4. Deoptimization Analysis (Advanced)
+
+**Goal**: Observe deoptimization events.
+
+```bash
+# Log deoptimizations
+java -XX:+PrintDeoptimizationDetails -XX:+UnlockDiagnosticVMOptions MyApp
+
+# Or with JFR
+-XX:StartFlightRecording:filename=profile.jfr,duration=60s
 ```
 
-## Advanced Exercises
+**Tasks**:
+1. Write code that triggers deoptimization (e.g., polymorphic call site that becomes megamorphic)
+2. Observe deoptimization events
+3. Measure recompilation overhead
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+---
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 5. Tiered Compilation Experiments (Advanced)
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
+**Goal**: Compare compilation tiers.
+
+```bash
+# Interpreter only
+java -Xint MyApp
+
+# C1 only
+java -XX:TieredStopAtLevel=1 MyApp
+
+# C1 + C2 (default)
+java -XX:TieredStopAtLevel=4 MyApp
+
+# C2 only (after warmup)
+java -XX:TieredStopAtLevel=4 -XX:InitialCodeCacheSize=64m MyApp
 ```
 
-## Challenge Exercises
+**Tasks**:
+1. Benchmark same workload at each tier
+2. Measure startup time, peak throughput, steady-state throughput
+3. Plot compilation activity over time (use JFR)
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+---
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+## 6. Assembly Output (Advanced)
 
-## Bonus Exercises
+**Goal**: Read generated assembly.
 
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
+```bash
+# Requires hsdis library
+java -XX:+UnlockDiagnosticVMOptions -XX:+PrintAssembly MyApp
 
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
+# Focus on specific method
+-XX:CompileCommand=print,MyClass.myMethod
+```
 
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**Tasks**:
+1. Install hsdis for your platform
+2. Print assembly for a hot method
+3. Identify: loop unrolling, vectorization, bounds check elimination
+4. Compare C1 vs C2 output for same method

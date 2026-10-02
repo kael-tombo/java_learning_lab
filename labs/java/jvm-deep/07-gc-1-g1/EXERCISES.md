@@ -1,154 +1,196 @@
-# G1 Garbage Collector — Exercises
+# EXERCISES — G1 GC
 
-## Beginner Exercises
+## 1. Region Sizing (Beginner)
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of G1 Garbage Collector.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
+**Goal**: Calculate region size for various heap sizes.
+
+**Tasks**:
+1. Calculate region size and count for heaps: 2GB, 8GB, 32GB, 64GB
+2. What happens if you set `-XX:G1HeapRegionSize=4m` on a 4GB heap?
+3. Why does G1 target ~2048 regions?
+
+---
+
+## 2. Pause Time Tuning (Beginner)
+
+**Goal**: Tune G1 pause target.
+
+```bash
+# Test different pause targets
+-XX:MaxGCPauseMillis=50
+-XX:MaxGCPauseMillis=200  # default
+-XX:MaxGCPauseMillis=500
 ```
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
+**Tasks**:
+1. Run a load test with different pause targets
+2. Measure: young GC frequency, mixed GC frequency, throughput
+3. Find the sweet spot for your workload
+
+---
+
+## 2. RSet Size Analysis (Beginner)
+
+**Goal**: Monitor RSet sizes.
+
+```bash
+-XX:+PrintGCDetails -XX:+PrintGCDetails -XX:+PrintReferenceGC
 ```
 
-## Intermediate Exercises
+**Tasks**:
+1. Enable GC logging with RSet stats
+2. Plot RSet size per region over time
+3. Correlate RSet size with young GC duration
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+---
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
+## 2. RSet Monitoring (Beginner)
+
+**Goal**: Monitor Remembered Set sizes.
+
+```bash
+-XX:+PrintGCDetails -XX:+PrintGCDetails -XX:+PrintReferenceGC
 ```
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
+**Tasks**:
+1. Enable GC logging with RSet stats
+2. Plot RSet size per region over time
+3. Correlate RSet size with young GC duration
+
+---
+
+## 3. Humongous Object Handling (Intermediate)
+
+**Goal**: Understand humongous object impact.
+
+```bash
+# Create humongous objects
+-XX:G1HeapRegionSize=4m  # 4MB regions
+# Allocate 3MB object → humongous
 ```
 
-## Advanced Exercises
+**Tasks**:
+1. Create objects of various sizes (2MB, 4MB, 8MB, 16MB) with 4MB regions
+2. Observe allocation behavior (humongous vs regular)
+3. Measure allocation cost difference
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+---
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 3. Humongous Object Impact (Intermediate)
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
+**Goal**: Measure humongous object overhead.
+
+```bash
+# 4MB regions → 2MB humongous threshold
+# Allocate 3MB, 4MB, 8MB objects
 ```
 
-## Challenge Exercises
+**Tasks**:
+1. Create objects at sizes: 2MB, 3MB, 4MB, 8MB with 4MB regions
+2. Measure allocation latency
+3. Observe humongous region allocation vs regular allocation
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+---
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+## 3. Humongous Object Tuning (Intermediate)
 
-## Bonus Exercises
+**Goal**: Optimize humongous object handling.
 
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
+```bash
+# Tune region size for humongous objects
+-XX:G1HeapRegionSize=16m  # Larger regions = fewer humongous objects
+```
 
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
+**Tasks**:
+1. Test with 4MB vs 16MB regions for workload with large objects
+2. Measure allocation throughput and GC pause impact
+3. Determine optimal region size for your object size distribution
 
+---
 
-## Further Exploration
+## 4. Mixed GC Tuning (Intermediate)
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+**Goal**: Tune mixed GC behavior.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+```bash
+# Tune mixed GC trigger
+-XX:InitiatingHeapOccupancyPercent=30  # earlier mixed GCs
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+# Tune liveness threshold
+-XX:G1MixedGCLiveThresholdPercent=75  # more aggressive
+```
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+**Tasks**:
+1. Reduce `InitiatingHeapOccupancyPercent` to 30, observe mixed GC frequency
+2. Lower `G1MixedGCLiveThresholdPercent` to 75, observe old gen reclamation
+3. Monitor: mixed GC frequency, old gen occupancy, pause times
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+---
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## 4. Mixed GC Tuning (Intermediate)
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+**Goal**: Tune mixed GC aggressiveness.
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+```bash
+# Earlier mixed GCs
+-XX:InitiatingHeapOccupancyPercent=30
+
+# More aggressive old gen reclamation
+-XX:G1MixedGCLiveThresholdPercent=75
+```
+
+**Tasks**:
+1. Reduce `InitiatingHeapOccupancyPercent` to 30, observe mixed GC frequency
+2. Lower `G1MixedGCLiveThresholdPercent` to 75, observe old gen reclamation
+3. Monitor: mixed GC frequency, old gen occupancy, pause times
+
+---
+
+## 4. SATB Barrier Overhead (Advanced)
+
+**Goal**: Measure SATB overhead.
+
+```bash
+# Compare with/without SATB (requires custom JVM build or -XX:-UseSATBBarrier)
+# Not directly testable in stock JDK, but can approximate:
+```
+
+**Tasks**:
+1. Profile SATB queue size during GC
+2. Measure barrier overhead with `-XX:+PrintSATBStatistics` (if available)
+3. Estimate overhead: queue size × flush frequency
+
+---
+
+## 4. SATB Barrier Overhead (Advanced)
+
+**Goal**: Measure SATB overhead.
+
+```bash
+# Not directly testable in stock JDK, but can approximate:
+-XX:+PrintSATBStatistics  # if available in debug builds
+```
+
+**Tasks**:
+1. Profile SATB queue size during GC
+2. Measure barrier overhead with custom JVM build or approximation
+3. Correlate queue flushes with GC pause time
+
+---
+
+## 5. Mixed GC Tuning (Advanced)
+
+**Goal**: Optimize mixed GC behavior.
+
+```bash
+# Earlier mixed GCs
+-XX:InitiatingHeapOccupancyPercent=30
+
+# More aggressive old gen reclamation
+-XX:G1MixedGCLiveThresholdPercent=75
+```
+
+**Tasks**:
+1. Reduce `InitiatingHeapOccupancyPercent` to 30, observe mixed GC frequency
+2. Lower `G1MixedGCLiveThresholdPercent` to 75, observe old gen reclamation
+3. Monitor: mixed GC frequency, old gen occupancy, pause times

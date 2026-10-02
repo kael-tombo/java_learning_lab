@@ -1,169 +1,278 @@
-# JIT Compilation — Mathematical Foundation
+# MATH_FOUNDATION — JIT Compilation Mathematics
 
-## 1. Asymptotic Complexity Analysis
+## 1. Compilation Tier Mathematics
 
-### Big-O Notation
-All complexity analysis uses standard asymptotic notation:
+### Compilation Thresholds
 
-- **O(1)**: Constant time — independent of input size
-- **O(log n)**: Logarithmic — typical for balanced tree operations
-- **O(n)**: Linear — proportional to input size
-- **O(n log n)**: Log-linear — sorting, heap operations
-- **O(n^2)**: Quadratic — nested iterations
+| Transition | Counter | Default Threshold |
+|------------|---------|-------------------|
+| 0 → 1 (Interp → C1) | Invocation count | 1,500 |
+| 1 → 2 (C1 profiled) | Invocation + back-edge | 5,000 / 10,000 |
+| 2 → 3 (C1 → C2) | Invocation + back-edge | 10,000 / 20,000 |
+| 3 → 4 (C2 → Full C2) | Invocation + back-edge | 15,000 / 30,000 |
 
-### Amortized Analysis
-Amortized analysis considers the average cost of an operation over a sequence:
+### Counter Mathematics
 
-    T_amortized(n) = (1/n) * sum(t_i for i=1 to n)
+```
+Invocation Counter: increments on method entry
+Back-edge Counter: increments on loop back-edge (branch to loop header)
 
-Where t_i is the cost of the i-th operation.
+Total Score = Invocation_Count + Back_Edge_Count
+```
 
-#### Accounting Method
-Each operation pays a small additional cost into a bank account. Expensive operations draw from this account.
+---
 
-#### Potential Method
-A potential function Phi(D_i) maps data structure state D_i to a real number. The amortized cost is:
+## 1. Compilation Thresholds
 
-    c_i + Phi(D_i) - Phi(D_{i-1})
+### Invocation Counting
 
-### Case Study: ArrayList Growth
-For ArrayList with 1.5x growth factor:
-- Insertions 1 to n cost: n (insertions) + sum of resize costs
-- Resize costs: 1 + 2 + 3 + ... + n * (2/3)^k which sums to approximately n
-- Amortized cost per insertion: O(1)
+```
+Interpreter → C1:  invocation_count > CompileThreshold (default 1500)
+C1 → C2: invocation_count > CompileThreshold * 10 (default 10,000)
+```
 
-## 2. Probability Fundamentals
+### Back-Edge Counting
 
-### Hash Functions and Collisions
-For a hash table with m buckets and n elements:
+```
+Loop back-edge counter increments on each backward branch.
+C1 → C2 when: back_edge_count > BackEdgeThreshold (default 10,000)
+```
 
-- Probability of no collision when inserting k elements: prod((m-i)/m for i=0 to k-1)
-- Expected number of collisions: n - m + m((m-1)/m)^n
-- Load factor: alpha = n/m
+---
 
-### Birthday Paradox
-With 23 people in a room, probability of shared birthday > 50%. For hash tables:
+## 2. Inlining Mathematics
 
-    P(collision) approx 1 - exp(-n(n-1)/(2m))
+### Inlining Decision Function
 
-When n > sqrt(2m), collisions are likely.
+```
+Inline if: (benefit > cost) AND (size < threshold) AND (hotness > threshold)
 
-## 3. Graph Theory for Tree Structures
+Benefit ≈ call_overhead_saved × frequency
+Cost = code_size_increase
+```
 
-### Tree Properties
-- A tree with n nodes has n-1 edges
-- Height of a perfect binary tree: floor(log_2 n)
-- Number of leaves in a perfect binary tree of height h: 2^h
-- Internal nodes in a full binary tree: n - 1
+### Inlining Thresholds
 
-### Red-Black Tree Height
-A red-black tree with n internal nodes has height at most 2*log_2(n+1).
-This guarantee comes from the red-black properties:
-1. Every node is either red or black
-2. The root is black
-3. All leaves (NIL) are black
-4. If a node is red, both its children are black
-5. Every path from a node to its descendant leaves has the same number of black nodes
+| Compiler | Max Inline Size | Frequent Threshold |
+|----------|----------------|-------------------|
+| C1 | 35 bytes | 1,500 invocations |
+| C2 | 325 bytes | 10,000 |
 
-## 4. Number Theory
+### Inlining Benefit Formula
 
-### Prime Numbers for Hash Tables
-Using prime-sized hash tables reduces collision probability when hash function distribution is unknown.
-The multiplicative hash: h(k) = floor(m * (k * A mod 1)) where A is the golden ratio (sqrt(5)-1)/2.
+```
+Benefit = Call_Overhead × Frequency × Inline_Probability
+Cost = Code_Size_Increase × ICache_Pressure
 
-### Modulo Arithmetic for Index Calculation
-The index is calculated as: index = hash & (capacity - 1) when capacity is a power of two.
-This is equivalent to hash mod capacity, but much faster as it's a single bitwise operation.
+Inline if: Benefit > Cost × Threshold_Factor
+```
 
-## 5. Probability for Bloom Filters
+---
 
-### False Positive Rate
-For a Bloom filter with m bits, n elements, k hash functions:
+## 1. Inlining Decision Mathematics
 
-    P_FP = (1 - (1 - 1/m)^(kn))^k approx (1 - exp(-kn/m))^k
+### Inlining Benefit/Cost Model
 
-### Optimal Hash Functions
-    k_optimal = (m/n) * ln(2)
+```
+Benefit = Call_Overhead_Saved × Execution_Frequency
+Cost = Code_Size_Increase × I_Cache_Pressure
 
-## Summary
-These mathematical foundations underpin the theoretical guarantees and practical performance
-characteristics of the JIT Compilation. Understanding them enables informed design decisions and
-accurate performance predictions. The key takeaway is that data structure selection should be
-guided by mathematical analysis of the expected workload patterns.
+Inline if: Benefit > Cost × Threshold
+```
 
+### Inlining Thresholds (Default)
 
-## Further Exploration
+| Compiler | Max Inline Size | Frequent Threshold |
+|----------|----------------|-------------------|
+| C1 | 35 bytes | 1,500 calls |
+| C2 | 325 bytes | 10,000 calls |
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+### Inlining Benefit Formula
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+```
+Benefit = Call_Overhead_Saved × Execution_Frequency
+Cost = Code_Size_Increase × I_Cache_Pressure
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+Inline if: Benefit > Cost × Threshold_Factor
+```
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+---
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## 2. Escape Analysis Mathematics
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+### Escape State Lattice
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+```
+NoEscape < ArgEscape < GlobalEscape
+```
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- **NoEscape**: Object doesn't escape method → scalar replacement
+- **ArgEscape**: Passed as argument but not stored globally
+- **GlobalEscape**: Stored in heap, returned, or thrown
+
+### Scalar Replacement Benefit
+
+```
+Allocation Eliminated = Object_Size × Allocation_Frequency
+GC_Pressure_Reduction = Allocation_Rate × Object_Size
+```
+
+---
+
+## 2. Escape Analysis Mathematics
+
+### Escape State Lattice
+
+```
+NoEscape < ArgEscape < GlobalEscape
+```
+
+- **NoEscape**: Object never escapes method → scalar replacement
+- **ArgEscape**: Passed as argument but not stored
+- **GlobalEscape**: Stored in heap, returned, or thrown
+
+### Scalar Replacement Benefit
+
+```
+Allocation_Eliminated = Object_Size × Allocation_Rate
+GC_Pressure_Reduction = Allocation_Rate × Object_Size
+```
+
+---
+
+## 2. Amdahl's Law for JIT Optimization
+
+### Speedup Formula
+
+```
+Speedup = 1 / ((1 - f) + f/s)
+
+f = fraction of execution time in optimized code
+s = speedup factor for optimized portion
+```
+
+### Example: Inlining Hotspot
+
+If a method takes 30% of runtime (f=0.3) and inlining gives 2x speedup (s=2):
+```
+Speedup = 1 / (0.7 + 0.3/2) = 1 / 0.85 = 1.176x (17.6% faster)
+```
+
+---
+
+## 2. Amdahl's Law for JIT
+
+### Speedup Formula
+
+```
+Speedup = 1 / ((1 - f) + f/s)
+
+f = fraction of time in optimized code
+s = speedup factor of optimized portion
+```
+
+### Example
+
+| Hotspot % (f) | Speedup (s=2) | Speedup (s=10) |
+|---------------|---------------|----------------|
+| 10% | 1.05x | 1.11x |
+| 30% | 1.23x | 1.43x |
+| 50% | 1.33x | 1.82x |
+| 80% | 1.60x | 5.00x |
+| 90% | 1.82x | 9.1x |
+
+**Lesson**: Profile first — small hotspots give diminishing returns.
+
+---
+
+## 2. Amdahl's Law for Optimization
+
+### Speedup Formula
+
+```
+Speedup = 1 / ((1 - f) + f/s)
+
+f = fraction of runtime in optimized code
+s = speedup factor of optimized portion
+```
+
+### Example: Inlining 30% Hotspot at 2x
+
+```
+Speedup = 1 / (0.7 + 0.3/2) = 1 / 0.85 = 1.176x (17.6% faster)
+```
+
+### Inlining Benefit Calculation
+
+```
+Benefit = Call_Overhead × Frequency × Inline_Probability
+Cost = Code_Size_Increase × I_Cache_Pressure
+
+Inline if: Benefit > Cost × Threshold
+```
+
+---
+
+## 3. Queueing Theory for Thread Pools
+
+### M/M/c Queue Model
+
+Thread pool = M/M/c queue:
+- Arrival: λ (Poisson)
+- Service: μ (exponential)
+- Servers: c threads
+
+**Key metrics**:
+- Utilization: ρ = λ / (cμ)
+- Queue probability: Erlang C formula
+- Mean wait: Wq = P(queue) / (cμ - λ)
+
+---
+
+## 3. Queueing Theory for Thread Pools
+
+### M/M/c Model
+
+```
+Utilization: ρ = λ / (cμ)
+Queue Probability: Erlang C formula
+Mean Wait: Wq = P(queue) / (cμ - λ)
+```
+
+**Profiling insight**: If ρ > 0.7, queue builds rapidly. Thread pool scaling needed.
+
+---
+
+## 3. Queueing Theory for Thread Pools
+
+### M/M/c Queue Model
+
+Thread pool = M/M/c queue:
+- Arrival: Poisson (λ)
+- Service: Exponential (μ)
+- Servers: c threads
+
+**Metrics**:
+- Utilization: `ρ = λ / (cμ)`
+- Queue prob: Erlang C formula
+- Wait time: `Wq = P(queue) / (cμ - λ)`
+
+**Profiling insight**: If ρ > 0.7, queue builds rapidly → scale threads.
+
+---
+
+## 3. Queueing Theory for Thread Pools
+
+### M/M/c Queue Model
+
+Thread pool = M/M/c queue:
+- Arrival: Poisson (λ)
+- Service: Exponential (μ)
+- Servers: c threads
+
+**Key metrics**:
+- Utilization: `ρ = λ / (cμ)`
+- Queue prob: Erlang C formula
+- Mean wait: `Wq = P(queue) / (cμ - λ)`
+
+**Profiling insight**: If `ρ > 0.7`, queue builds rapidly → scale threads.

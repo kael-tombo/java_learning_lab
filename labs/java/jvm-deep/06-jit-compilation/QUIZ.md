@@ -1,120 +1,81 @@
-# JIT Compilation — Quiz
+# QUIZ — JIT Compilation
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in JIT Compilation?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## 1. What are the compilation tiers in tiered compilation?
+<details><summary>Answer</summary>0: Interpreter, 1: C1 (Client), 2: C1 (profiled), 3: C2 (Server), 4: C2 (fully optimized).
+</details>
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## 2. What triggers compilation from tier 0 to tier 1?
+<details><summary>Answer</summary>Invocation counter reaches threshold (~1,500 by default).
+</details>
 
-## Question 3: Memory
-How much additional memory overhead does JIT Compilation have per element (approximately)?
+## 2. What triggers C1 → C2 compilation?
+<details><summary>Answer</summary>Invocation counter + back-edge counter exceed thresholds (e.g., 10k/20k).
+</details>
 
-## Question 4: Concurrency
-Is JIT Compilation safe for concurrent access without external synchronization? Explain why or why not.
+## 3. What is the primary difference between C1 and C2?
+<details><summary>Answer</summary>C1: fast compilation, basic optimizations. C2: aggressive optimizations with profiling data, speculative optimizations.
+</details>
 
-## Question 5: Scalability
-How does JIT Compilation perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## 3. What is the main difference between C1 and C2?
+<details><summary>Answer</summary>C1: fast compilation, basic optimizations. C2: aggressive optimizations with profiling data, speculative optimizations.
+</details>
 
-## Question 6: Design
-Why was JIT Compilation designed this way? What alternatives were considered during its development?
+## 4. What is escape analysis?
+<details><summary>Answer</summary>Determines if an object escapes the method/thread. If not, enables scalar replacement (eliminates allocation).
+</details>
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## 4. What is scalar replacement?
+<details><summary>Answer</summary>Replaces object allocation with scalar variables (fields become local variables), eliminating allocation and GC pressure.
+</details>
 
-## Question 8: Comparison
-Compare JIT Compilation with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## 5. What is speculative optimization?
+<details><summary>Answer</summary>C2 assumes invariants (monomorphic call, null check always true) and optimizes; if wrong, deoptimizes.
+</details>
 
-## Question 9: Real-World
-Describe a real-world scenario where JIT Compilation is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## 5. What is deoptimization?
+<details><summary>Answer</summary>When speculative assumption fails, JVM discards compiled code, reverts to interpreter, recompiles with weaker assumptions.
+</details>
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+## 6. What is the "breaking latency" metric?
+<details><summary>Answer</summary>Point where latency grows exponentially with throughput; used by Atlassian as JIT benchmark metric.
+</details>
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## 5. What is an uncommon trap?
+<details><summary>Answer</summary>Deoptimization trigger when speculative assumption fails; transfers control to interpreter.
+</details>
 
+## 6. What is tiered compilation?
+<details><summary>Answer</summary>Multiple compilation levels (Interpreter → C1 → C2) with increasing optimization; balances startup vs peak performance.
+</details>
 
-## Further Exploration
+## 6. What is `TieredStopAtLevel`?
+<details><summary>Answer</summary>JVM flag to stop compilation at specific tier (0=interpreter, 1=C1, 4=full C2).
+</details>
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 7. What is `PrintCompilation`?
+<details><summary>Answer</summary>JVM flag to log compilation events (method, tier, size, time).
+</details>
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 7. What is `PrintInlining`?
+<details><summary>Answer</summary>JVM flag to log inlining decisions (what was inlined, what wasn't, why).
+</details>
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 8. What is an uncommon trap?
+<details><summary>Answer</summary>Deoptimization trigger when speculative assumption fails; transfers to interpreter.
+</details>
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 8. What is an uncommon trap?
+<details><summary>Answer</summary>Deoptimization trigger when speculative assumption fails; transfers control to interpreter.
+</details>
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## 9. What is `PrintAssembly`?
+<details><summary>Answer</summary>Prints generated assembly code (requires hsdis library).
+</details>
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## 9. What is `PrintAssembly`?
+<details><summary>Answer</summary>Prints generated assembly code (requires hsdis library).
+</details>
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## 10. What is `TieredStopAtLevel`?
+<details><summary>Answer</summary>JVM flag to stop compilation at specific tier (0=interpreter, 1=C1, 4=full).
+</details>
