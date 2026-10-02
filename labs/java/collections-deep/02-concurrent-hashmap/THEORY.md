@@ -163,3 +163,10 @@ future capacity expansions.
 - [ ] toString() implementation for debugging
 - [ ] Serializable implementation if needed
 - [ ] Performance considerations documented
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- **ConcurrentHashMap.java, OpenJDK master (written by Doug Lea, JSR-166)** — https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/concurrent/ConcurrentHashMap.java (fetched via raw.githubusercontent mirror Oct 2026) — first-node insertion into an empty bin is a lock-free CAS (`casTabAt`), locking only on bin collision using the first node as the lock; verify in `src/main/java/com/javalab/02/ConcurrentHashMapSimulator.java` that disjoint-key puts scale while same-bin puts serialize.
+- **Same source, class-level "Overview" comment (Poisson distribution table)** — under uniform hashes, ~60% of bins are empty and contention for two threads on distinct elements is ≈ 1/(8 × #elements); use this in `MATH_FOUNDATION.md`/`EXERCISES.md` to predict when `StripedLockMap.java` should converge to CHM behavior and to justify `initialCapacity` sizing in `ConcurrentHashMapInternalsDemo.java`.
+- **Same source, `TREEIFY_THRESHOLD = 8` / `MIN_TREEIFY_CAPACITY = 64`** — bins convert list→red-black tree only past 8 nodes (and resize instead below capacity 64), bounding hostile-hash worst case to ~O(log N); craft a same-`hashCode()` key test in `ConcurrentHashMapSimulatorTest.java` showing throughput collapse without treeification and recovery with it.
+- **Same source, `computeIfAbsent` + `LongAdder` frequency-map recipe** (`freqs.computeIfAbsent(key, k -> new LongAdder()).increment()`) — replaces read-modify-write races; port this into `src/main/java/com/javalab/02/ComputeIfAbsentExample.java` and contrast against a `get`-then-`put` version under `TESTS/` concurrency stress.

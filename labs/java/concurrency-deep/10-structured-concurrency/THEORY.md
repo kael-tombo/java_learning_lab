@@ -163,3 +163,9 @@ future capacity expansions.
 - [ ] toString() implementation for debugging
 - [ ] Serializable implementation if needed
 - [ ] Performance considerations documented
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- **JEP 453: Structured Concurrency (Preview)** (OpenJDK, Ron Pressler & Alan Bateman, created 2023-04-21, delivered in JDK 21) — https://openjdk.org/jeps/453 — The JEP's `handle()`/`ShutdownOnFailure` example shows subtask lifetimes confined to the `try (scope)` block with automatic short-circuit cancellation; apply that pattern in `src/main/java/com/javalab/10/MainImplementation.java` instead of manually cancelling `Future`s. Re-run `EXERCISES.md` Exercise 5 (concurrent access) and confirm no thread leaks when one subtask fails.
+- **JEP 453 § "Task structure should reflect code structure"** (same source/URL) — single-threaded `handle()` only starts `fetchOrder()` after `findUser()` completes, so failure implicitly skips the rest; mirror that in `SOLUTION/` by composing scope results only after `scope.join().throwIfFailed()`. Use `INTERVIEW.md` Q&A on "why not ExecutorService?" with the JEP's answer: `Future` permits unstructured join-by-any-thread, while `Subtask.get()` never blocks and is only valid post-join.
+- **JEP 453 § Observability (`jcmd Thread.dump_to_file -format=json`)** (same source/URL) — scopes render as a thread tree with parent references, unlike flat `ExecutorService` dumps; wire this into `DEBUGGING.md` by capturing a dump of a nested-scope run from `MainImplementation.java` and checking the forked threads appear as children of the scope owner.

@@ -35,3 +35,9 @@ EBS uses concurrent managers to run background requests. Each request has a phas
 ## 3. Summary
 
 This lab builds a solid theoretical foundation for understanding EBS Security Controls within the broader EBS ecosystem. All subsequent labs will reference these concepts.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Oracle E-Business Suite Security Guide, R12.2 (Oracle Docs, E22952) — https://docs.oracle.com/cd/E26401_01/doc.122/e22952/toc.htm — Takeaway tied to lab §1.2/§2: Function Security + Data Security + RBAC is the official model behind the lab's separation-of-concerns and MOAC notes; design responsibilities first, then menus/functions.
+- Access Control with Oracle User Management: roles, permission sets, delegated administration (same Oracle EBS Security Guide, R12.2) — https://docs.oracle.com/cd/E26401_01/doc.122/e22952/toc.htm — Takeaway tied to lab §1.3 FND/APPS discussion: grants on objects and instance sets are how APPS-schema code enforces row-level access without forking code.
+- Secure Configuration + Auditing and Logging checklists: Sign-On Audit, Audit Trail shadow tables, Secure Configuration Console (same Oracle EBS Security Guide, R12.2) — https://docs.oracle.com/cd/E26401_01/doc.122/e22952/toc.htm — Takeaway tied to lab §1.4 concurrent processing: pair request phase/status tracking with sign-on audit and audit-trail purging/reporting so security reviews are queries, not archaeology.

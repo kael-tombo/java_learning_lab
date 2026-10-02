@@ -163,3 +163,10 @@ future capacity expansions.
 - [ ] toString() implementation for debugging
 - [ ] Serializable implementation if needed
 - [ ] Performance considerations documented
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- **Java Microbenchmark Harness (JMH), OpenJDK Code Tools (Aleksey Shipilev et al., project active since 2013)** — https://github.com/openjdk/jmh — the README mandates a standalone Maven-archetype project (`mvn archetype:generate … jmh-java-benchmark-archetype`, build to `target/benchmarks.jar`) because IDE/in-project runs give unreliable results; restructure `BENCHMARK/` in this lab to follow that archetype and document the `java -jar target/benchmarks.jar -h` invocation in `HOW_IT_WORKS.md`.
+- **Same source, README "Pre-Requisite Steps" (samples + peer review)** — JMH samples (https://github.com/openjdk/jmh/tree/master/jmh-samples) are "essential reading" and "a nice harness will [not] magically free you from benchmarking pitfalls"; add an `EXERCISES.md` task that ports one lab benchmark from `src/main/java/com/javalab/02/MainImplementation.java` to a `@Benchmark` with `@State`, `@Warmup`, `@Measurement`, `@Fork`, and Blackhole consumption, then peer-review it per `CODE_DEEP_DIVE.md`.
+- **JMH Devoxx 2013 talk slides by Aleksey Shipilev ("Java Microbenchmark Harness — the lesser of two evils")** (2013-11, surfaced in search output) — https://shipilev.net/talks/devoxx-Nov2013-benchmarking.pdf — catalogs dead-code elimination, constant folding, and loop peeling/inlining-budget traps with `doWork`/`doMeasure` examples; reproduce one DCE trap (unconsumed return vs. Blackhole) in `BENCHMARK/` and log the before/after scores in `PERFORMANCE.md`.
+- **Same JMH repo, `jmh-samples` + `jmh-core-benchmarks` modules** (same URL) — canonical patterns for `Blackhole`, `@OperationsPerInvocation`, and concurrent benchmarks; map each to a `SOLUTION/` variant and note in `COMMON_MISTAKES.md` why hand-rolled `System.nanoTime()` loops in `MainImplementationTest.java` cannot substitute for forked, warmed-up JMH runs.

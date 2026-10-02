@@ -163,3 +163,10 @@ future capacity expansions.
 - [ ] toString() implementation for debugging
 - [ ] Serializable implementation if needed
 - [ ] Performance considerations documented
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- **How the JIT compiler boosts Java performance in OpenJDK** (Red Hat Developer, Roland Westrelin, 2021-06-23) — https://developers.redhat.com/articles/2021/06/23/how-jit-compiler-boosts-java-performance-openjdk — HotSpot runs interpreted-first, then C1 (quick, tiers 1–3) for warm methods and C2 (optimizing, tier 4) for hot ones; reproduce the article's `-XX:+PrintCompilation` HelloWorld walkthrough against `src/main/java/com/javalab/06/MainImplementation.java` and note in `HOW_IT_WORKS.md` which tier each method reaches on a short run.
+- **Same source, § "Deoptimization and speculation" (null-check example)** — C2 speculates NPEs never occur and deoptimizes (uncommon trap) on violation, dropping the compiled method; encode this in `DEBUGGING.md` as an exercise feeding a null path into a hot method from `MainImplementationTest.java` and observing the `made not entrant` / recompile line.
+- **Same source, § "Class hierarchy analysis" (CHA)** — a virtual call compiled when only `C` is loaded is devirtualized with a dependency, then deoptimized asynchronously when a subclass loads; demonstrate with two runs in `BENCHMARK/` (monomorphic vs. subclass-loaded) and record the deopt in `PERFORMANCE.md`.
+- **Same source, § "Safepoints and deoptimization"** — compiled code can only deoptimize/GC at safepoints (returns, calls, loop back-edges), so over-safepointing constrains optimization; tie to `INTERNALS.md` by mapping where safepoints must exist in the lab's hottest loop and why a counted loop behaves differently from an uncounted one.

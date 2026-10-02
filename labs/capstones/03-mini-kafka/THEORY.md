@@ -52,3 +52,9 @@ The architecture follows SOLID principles with single-responsibility classes, op
 
 Operations are O(1) for hash-based lookups, O(log n) for tree-based structures, and O(n) for linear scans. Memory usage is proportional to the number of stored elements with per-entry overhead for indexing structures. Concurrent access patterns use lock striping and non-blocking algorithms where possible to minimize contention.
 
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Monitoring Kafka performance metrics (Datadog, published Apr 6, 2016, updated Feb 2, 2026) — https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ — Takeaway tied to lab TopicPartition/LogSegment: Kafka's append-only partitioned log is why the lab's offset-per-partition and active-segment tracking matter; monitor log-end vs. committed offset per partition.
+- Consumer lag as the key health signal: offsets, fetch purgatory, and rebalance behavior (same Datadog Kafka guide, 2016/2026) — https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ — Takeaway tied to lab ConsumerClient/ConsumerGroup/OffsetManager: the lab's poll-timeout, max-poll-records, auto-offset-reset, and round-robin rebalance directly control lag; alert lag in time-behind, not just message count.
+- Broker health: UnderReplicatedPartitions, ISR shrink/expand, OfflinePartitionsCount, ActiveControllerCount (same Datadog Kafka guide, 2016/2026) — https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ — Takeaway tied to lab MessageBroker/ProducerClient batching: `UnderReplicatedPartitions > 0` or ISR flapping means produce-with-acks and replication assumptions in the lab no longer hold — investigate before tuning batch/linger.
+
