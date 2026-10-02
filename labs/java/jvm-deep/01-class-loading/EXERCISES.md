@@ -1,111 +1,181 @@
-# Custom ClassLoader & Class Loading — Exercises
+# EXERCISES — Class Loading
 
-## Exercise 1: Directory-Based ClassLoader
-Implement `DirectoryClassLoader extends ClassLoader`:
-- Constructor: `Path classDir, ClassLoader parent`
-- Override `findClass(String name)`: read `.class` file from `classDir`, call `defineClass(name, bytes, 0, bytes.length)`
-- Test: Compile a `Hello.java` to `out/`, load it via your ClassLoader, invoke `main()` via reflection.
+## 1. Custom ClassLoader (Beginner)
 
-**Challenge**: Support nested packages (directories) and JAR files (use `JarFile` to read entries).
+Create a `FileSystemClassLoader` that loads `.class` files from a directory:
 
----
-
-## Exercise 2: ClassLoader Isolation Demo
-Create two `DirectoryClassLoader` instances pointing to different directories, each containing a different version of `com.example.Version`:
-- `v1/Version.class` → `String get() { return "v1"; }`
-- `v2/Version.class` → `String get() { return "v2"; }`
-
-Load both, instantiate, call `get()`. Verify they are different classes:
 ```java
-Class<?> v1Class = loader1.loadClass("com.example.Version");
-Class<?> v2Class = loader2.loadClass("com.example.Version");
-assert v1Class != v2Class;
-assert !v1Class.isInstance(v2Class.newInstance());
+class DirClassLoader extends ClassLoader {
+    private final Path root;
+
+    public DirClassLoader(Path root) {
+        this.root = root;
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        Path path = root.resolve(name.replace('.', '/') + ".class");
+        byte[] bytes = Files.readAllBytes(path);
+        return defineClass(null, bytes, 0, bytes.length);
+    }
+}
 ```
 
-**Insight**: Class identity includes the defining ClassLoader.
+**Test**: Create a class file in temp dir, load it, instantiate.
 
 ---
 
-## Exercise 3: Breaking Delegation (Anti-Pattern)
-Create a `ChildFirstClassLoader` that overrides `loadClass()` to check its own repository **before** delegating to parent.
-- Place a class `com.example.OverrideMe` in both parent (system) and child loader directories with different behavior
-- Show that child-first loads its own version
-- Demonstrate the danger: load `java.lang.String` from child repo → `SecurityException` or `LinkageError`
+## 2. Class Loader Hierarchy (Beginner)
 
-**Reflection**: Why does Java enforce parent-first? (Security, consistency, avoid core class spoofing)
-
----
-
-## Exercise 4: ServiceLoader with Context ClassLoader
-Implement a simple plugin system:
-1. Define interface `Plugin { String name(); void execute(); }`
-2. Create two JARs with `META-INF/services/com.example.Plugin` listing implementations
-3. Use `ServiceLoader.load(Plugin.class)` — fails if plugins only in child ClassLoader
-4. Set `Thread.currentThread().setContextClassLoader(pluginLoader)` then `ServiceLoader.load()`
-5. Verify plugins are discovered
-
-**Real-world**: This is how JDBC drivers, logging frameworks, and JAXP parsers are discovered.
-
----
-
-## Exercise 5: Hot-Reload Simulation
-Build a mini hot-reload system:
-1. `DirectoryClassLoader` watches a directory for `.class` file changes (use `WatchService`)
-2. On change: create **new** ClassLoader instance, load updated class
-3. Keep a reference to the **old** ClassLoader for existing instances
-4. New requests use new ClassLoader; old instances remain functional
-5. Simulate: run a loop that calls `Plugin.execute()` every 500ms; modify `.class` file; observe new behavior without restart
-
-**Challenge**: Handle state migration — e.g., serialize old instance, deserialize into new class version.
-
----
-
-## Starter Code Snippets
+Write a program that prints the classloader hierarchy:
 
 ```java
-// WatchService for hot reload
-WatchService watcher = FileSystems.getDefault().newWatchService();
-dir.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
+ClassLoader cl = MyClass.class.getClassLoader();
+while (cl != null) {
+    System.out.println(cl.getClass().getName() + " -> " + cl.getParent());
+    cl = cl.getParent();
+}
+```
 
-while (true) {
-    WatchKey key = watcher.take();
-    for (WatchEvent<?> event : key.pollEvents()) {
-        Path changed = dir.resolve((Path) event.context());
-        if (changed.toString().endsWith(".class")) {
-            // Trigger reload: create new ClassLoader
+**Observe**: Bootstrap (null) → Platform → App → Custom
+
+---
+
+## 3. Delegation Order (Intermediate)
+
+Create a `ChildFirstLoader` that loads from its own path BEFORE delegating:
+
+```java
+class ChildFirstLoader extends ClassLoader {
+    @Override
+    protected Class<?> loadClass(String name, boolean resolve) 
+            throws ClassNotFoundException {
+        // Try self first
+        Class<?> c = findLoadedClass(name);
+        if (c != null) return c;
+
+        try {
+            return findClass(name);
+        } catch (ClassNotFoundException e) {
+            // Fall back to parent
+        }
+        return super.loadClass(name, true);
+    }
+}
+```
+
+**Test**: Create a class in both parent and child paths. Which wins?
+
+---
+
+## 3. Classloader Leak Detection (Intermediate)
+
+Create a leak:
+```java
+// Leaks: static reference holds classloader
+static List<Class<?>> leaked = new ArrayList<>();
+for (int i = 0; i < 1000; i++) {
+    ClassLoader cl = new MyLoader();
+    Class<?> c = cl.loadClass("SomeClass");
+    leaked.add(c); // Holds reference to classloader!
+}
+```
+
+**Detect**: Use `jcmd <pid> GC.class_histogram` or `jmap -histo:live <pid>`. Look for accumulating classloaders.
+
+**Fix**: Use `WeakReference`, clear caches, or `ClassLoader.getDefinedPackage()`.
+
+---
+
+## 4. Hot Reload (Advanced)
+
+Implement hot-reload for a service:
+
+```java
+class HotReloadManager {
+    private volatile Class<?> currentImpl;
+    private final Path classDir;
+    private final WatchService watcher;
+
+    public void watch(Path dir) throws IOException {
+        watcher = FileSystems.getDefault().newWatchService();
+        dir.register(watcher, ENTRY_MODIFY);
+        new Thread(this::watchLoop).start();
+    }
+
+    private void watchLoop() {
+        while (true) {
+            WatchKey key = watcher.take();
+            for (WatchEvent<?> e : key.pollEvents()) {
+                if (e.kind() == ENTRY_MODIFY) {
+                    reload();
+                }
+            }
+            key.reset();
         }
     }
-    key.reset();
+
+    private void reload() {
+        ClassLoader cl = new URLClassLoader(new URL[]{dir.toUri().toURL()});
+        Class<?> newImpl = cl.loadClass("com.example.ServiceImpl");
+        currentImpl = newImpl; // Atomic swap
+    }
 }
-```
-
-```java
-// ServiceLoader pattern
-// META-INF/services/com.example.Plugin contains:
-// com.example.plugin.AuthPlugin
-// com.example.plugin.LoggingPlugin
-
-ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class, contextClassLoader);
-for (Plugin plugin : loader) {
-    plugin.execute();
-}
-```
-
-```xml
-<!-- For compiling test classes at runtime -->
-<dependency>
-    <groupId>org.apache.commons</groupId>
-    <artifactId>commons-jexl</artifactId>
-    <version>3.2.1</version>
-</dependency>
-<!-- Or use javax.tools.JavaCompiler API -->
 ```
 
 ---
 
-## Reflection Questions
-1. Why does `Class.forName("com.example.Foo", true, customLoader)` initialize the class, but `customLoader.loadClass("com.example.Foo")` does not (by default)?
-2. What happens to static fields when a class is reloaded via a new ClassLoader?
-3. Why can't you cast an object loaded by `loader1` to a class loaded by `loader2`, even if bytecode is identical?
-4. In a web container (Tomcat/Jetty), how does each web app get its own ClassLoader hierarchy?
+## 5. Plugin System (Advanced)
+
+Build a plugin framework:
+
+```java
+interface Plugin {
+    String name();
+    void execute();
+}
+
+class PluginManager {
+    private final List<Plugin> plugins = new ArrayList<>();
+
+    void loadPlugins(Path pluginsDir) throws IOException {
+        try (Stream<Path> files = Files.list(pluginsDir)) {
+            files.filter(p -> p.toString().endsWith(".jar"))
+                 .forEach(this::loadPlugin);
+        }
+    }
+
+    private void loadPlugin(Path jar) {
+        URLClassLoader cl = new URLClassLoader(new URL[]{jar.toUri().toURL()}, 
+            getClass().getClassLoader());
+        ServiceLoader<Plugin> loader = ServiceLoader.load(Plugin.class, cl);
+        loader.forEach(plugins::add);
+    }
+}
+```
+
+---
+
+## 6. Debugging Classloader Issues (Challenge)
+
+Write a diagnostic tool that prints:
+
+1. All classloaders in hierarchy
+2. Classes loaded by each
+3. Which loader loaded a given class
+4. Detects duplicate classes across loaders
+
+```java
+class ClassLoaderDiagnostic {
+    static void diagnose(Class<?> clazz) {
+        ClassLoader cl = clazz.getClassLoader();
+        System.out.println("Class: " + clazz.getName());
+        System.out.println("Loader: " + cl);
+        System.out.println("Loader class: " + cl.getClass().getName());
+        System.out.println("Protection domain: " + clazz.getProtectionDomain());
+        System.out.println("Code source: " + clazz.getProtectionDomain().getCodeSource());
+    }
+}
+```
+
+**Bonus**: Detect duplicate classes across loaders (same class name, different loaders).

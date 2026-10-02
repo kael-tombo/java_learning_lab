@@ -1,120 +1,65 @@
-# Profiling with async-profiler — Quiz
+# QUIZ — Async Profiling
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Profiling with async-profiler?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## 1. What does a virtual thread run on?
+<details><summary>Answer</summary>A carrier thread (platform thread). Multiple virtual threads multiplex onto fewer carrier threads.
+</details>
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## 2. What is pinning?
+<details><summary>Answer</summary>Virtual thread blocks carrier thread (e.g., `synchronized`, native call), preventing other virtual threads from using that carrier.
+</details>
 
-## Question 3: Memory
-How much additional memory overhead does Profiling with async-profiler have per element (approximately)?
+## 3. How to detect pinning in a flame graph?
+<details><summary>Answer</summary>Search for `Thread.isVirtualThreadPinned()` or look for long-running `synchronized`/`native` frames on carrier threads.
+</details>
 
-## Question 4: Concurrency
-Is Profiling with async-profiler safe for concurrent access without external synchronization? Explain why or why not.
+## 3. What does StructuredTaskScope provide?
+<details><summary>Answer</summary>Parent-child relationship for async tasks, automatic error propagation/cancellation, structured concurrency.
+</details>
 
-## Question 5: Scalability
-How does Profiling with async-profiler perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## 4. How to propagate context across async boundaries?
+<details><summary>Answer</summary>OpenTelemetry Context API, `Context.current()`, `Context.makeCurrent()`, or framework-specific (Spring `TransactionSynchronizationManager`, Reactor `Context`).
+</details>
 
-## Question 6: Design
-Why was Profiling with async-profiler designed this way? What alternatives were considered during its development?
+## 4. What does `StructuredTaskScope.ShutdownOnFailure` do?
+<details><summary>Answer</summary>Cancels all forks if any fails; propagates first exception.
+</details>
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## 5. How to trace CompletableFuture chains?
+<details><summary>Answer</summary>OpenTelemetry context propagation + async-profiler correlation, or `CompletableFuture` stack trace analysis.
+</details>
 
-## Question 8: Comparison
-Compare Profiling with async-profiler with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## 5. What is backpressure in reactive streams?
+<details><summary>Answer</summary>Consumer signals demand (`request(n)`) to producer; producer respects demand, preventing overflow.
+</details>
 
-## Question 9: Real-World
-Describe a real-world scenario where Profiling with async-profiler is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## 6. How to profile Reactor backpressure?
+<details><summary>Answer</summary>Add `Hooks.onOperatorDebug()`, profile `request(n)` latency, monitor queue sizes between operators.
+</details>
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+## 6. What is pinning in virtual threads?
+<details><summary>Answer</summary>Virtual thread blocks carrier thread (synchronized, native call, file I/O), preventing carrier reuse.
+</details>
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## 7. How to detect pinning?
+<details><summary>Answer</summary>Search flame graph for `Thread.isVirtualThreadPinned()`, enable `-XX:+LogVirtualThreadEvents`.
+</details>
 
+## 7. What causes pinning?
+<details><summary>Answer</summary>`synchronized` blocks, native calls, file I/O in virtual threads.
+</details>
 
-## Further Exploration
+## 8. Fix for pinning?
+<details><summary>Answer</summary>Replace `synchronized` with `ReentrantLock`, use `StampedLock`, avoid native/file I/O in VT.
+</details>
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 8. How to profile Reactor pipelines?
+<details><summary>Answer</summary>`Hooks.onOperatorDebug()`, Micrometer Timers on operators, async-profiler with operator tags.
+</details>
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 9. What is backpressure?
+<details><summary>Answer</summary>Consumer signals demand (`request(n)`) to producer; producer respects demand, preventing overflow.
+</details>
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## 10. StructuredTaskScope vs CompletableFuture?
+<details><summary>Answer</summary>StructuredTaskScope: structured concurrency, auto-cancellation, error propagation. CompletableFuture: ad-hoc, manual composition.
+</details>

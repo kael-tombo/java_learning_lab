@@ -1,169 +1,216 @@
-# Method Handles — Mathematical Foundation
+# MATH_FOUNDATION — Method Handles & invokedynamic
 
-## 1. Asymptotic Complexity Analysis
+## 1. Method Handle Performance
 
-### Big-O Notation
-All complexity analysis uses standard asymptotic notation:
+### Call Site Mechanics
 
-- **O(1)**: Constant time — independent of input size
-- **O(log n)**: Logarithmic — typical for balanced tree operations
-- **O(n)**: Linear — proportional to input size
-- **O(n log n)**: Log-linear — sorting, heap operations
-- **O(n^2)**: Quadratic — nested iterations
+```
+invokedynamic site → BootstrapMethod → CallSite → Target MethodHandle
+```
 
-### Amortized Analysis
-Amortized analysis considers the average cost of an operation over a sequence:
+**Cost breakdown**:
+| Operation | Cost |
+|-----------|------|
+| Bootstrap (first call) | ~100-500μs |
+| CallSite.getTarget() | ~1-5ns (JIT) |
+| MethodHandle.invokeExact() | ~1-3ns (intrinsic) |
+| MethodHandle.invoke() | ~5-10ns (boxing) |
 
-    T_amortized(n) = (1/n) * sum(t_i for i=1 to n)
+### Invocation Overhead
 
-Where t_i is the cost of the i-th operation.
+| Call Type | Relative Cost |
+|-----------|--------------|
+| Direct call | 1x (baseline) |
+| MethodHandle.invokeExact() | 1.0-1.5x |
+| MethodHandle.invoke() | 2-5x (boxing) |
+| Reflection | 10-50x |
+| lambda (JDK 8+) | ~1x (intrinsic) |
 
-#### Accounting Method
-Each operation pays a small additional cost into a bank account. Expensive operations draw from this account.
+---
 
-#### Potential Method
-A potential function Phi(D_i) maps data structure state D_i to a real number. The amortized cost is:
+## 1. Method Handle Invocation Overhead
 
-    c_i + Phi(D_i) - Phi(D_{i-1})
+### Direct vs Indirect Call Cost
 
-### Case Study: ArrayList Growth
-For ArrayList with 1.5x growth factor:
-- Insertions 1 to n cost: n (insertions) + sum of resize costs
-- Resize costs: 1 + 2 + 3 + ... + n * (2/3)^k which sums to approximately n
-- Amortized cost per insertion: O(1)
+| Call Type | Relative Cost | Notes |
+|-----------|---------------|-------|
+| Direct method call | 1.0x | JIT inlines |
+| MethodHandle.invokeExact() | 1.0-1.5x | Intrinsic, often inlined |
+| MethodHandle.invoke() | 2-5x | Boxing/unboxing |
+| Reflection (Method.invoke) | 10-50x | No inlining, security checks |
+| Reflection (setAccessible) | 5-20x | Still slow |
 
-## 2. Probability Fundamentals
+### Invocation Overhead Breakdown
 
-### Hash Functions and Collisions
-For a hash table with m buckets and n elements:
+```
+MethodHandle.invokeExact():
+  1. Type check (eliminated by JIT)
+  2. Direct jump to target (inlined)
+  
+MethodHandle.invoke():
+  1. Box primitives → Object[]
+  2. Type check
+  3. Invoke target
+  3. Unbox result
+```
 
-- Probability of no collision when inserting k elements: prod((m-i)/m for i=0 to k-1)
-- Expected number of collisions: n - m + m((m-1)/m)^n
-- Load factor: alpha = n/m
+---
 
-### Birthday Paradox
-With 23 people in a room, probability of shared birthday > 50%. For hash tables:
+## 2. invokedynamic Mechanics
 
-    P(collision) approx 1 - exp(-n(n-1)/(2m))
+### Bootstrap Method Cost
 
-When n > sqrt(2m), collisions are likely.
+```
+First call:  BootstrapMethod() → CallSite → cache
+Subsequent:  CallSite.getTarget() → invokeExact() → target
+```
 
-## 3. Graph Theory for Tree Structures
+| Phase | Cost | Notes |
+|-------|------|-------|
+| Bootstrap (first call) | ~100-500μs | Class loading, linkage |
+| CallSite.getTarget() | ~1-5ns | Inlined by JIT |
+| invokeExact() | ~1-3ns | Intrinsic |
 
-### Tree Properties
-- A tree with n nodes has n-1 edges
-- Height of a perfect binary tree: floor(log_2 n)
-- Number of leaves in a perfect binary tree of height h: 2^h
-- Internal nodes in a full binary tree: n - 1
+### Call Site Types
 
-### Red-Black Tree Height
-A red-black tree with n internal nodes has height at most 2*log_2(n+1).
-This guarantee comes from the red-black properties:
-1. Every node is either red or black
-2. The root is black
-3. All leaves (NIL) are black
-4. If a node is red, both its children are black
-5. Every path from a node to its descendant leaves has the same number of black nodes
+| Type | Target Mutability | Use Case |
+|--------|-------------------|----------|
+| ConstantCallSite | Immutable | Lambdas, constants |
+| VolatileCallSite | Volatile read | Hot-reload, config |
+| MutableCallSite | Synchronized | Dynamic dispatch |
 
-## 4. Number Theory
+---
 
-### Prime Numbers for Hash Tables
-Using prime-sized hash tables reduces collision probability when hash function distribution is unknown.
-The multiplicative hash: h(k) = floor(m * (k * A mod 1)) where A is the golden ratio (sqrt(5)-1)/2.
+## 2. Method Handle Transformation Costs
 
-### Modulo Arithmetic for Index Calculation
-The index is calculated as: index = hash & (capacity - 1) when capacity is a power of two.
-This is equivalent to hash mod capacity, but much faster as it's a single bitwise operation.
+### Transformation Overhead
 
-## 5. Probability for Bloom Filters
+| Operation | Cost | Notes |
+|-----------|------|-------|
+| `filterArguments` | ~5-10ns | Small adapter |
+| `filterReturnValue` | ~5-10ns | Small adapter |
+| `bindTo` | ~1ns | Field set |
+| `asSpreader` | ~5-20ns | Array allocation |
+| `asCollector` | ~5-20ns | Array allocation |
+| `guardWithTest` | ~10-20ns | Branch + call |
 
-### False Positive Rate
-For a Bloom filter with m bits, n elements, k hash functions:
+### Transformation Composition
 
-    P_FP = (1 - (1 - 1/m)^(kn))^k approx (1 - exp(-kn/m))^k
+Chaining transformations adds overhead:
+```
+mh.filterArguments(f).filterReturnValue(g).bindTo(x)
+```
+Each layer: ~5-10ns overhead. Keep chains short in hot paths.
 
-### Optimal Hash Functions
-    k_optimal = (m/n) * ln(2)
+---
 
-## Summary
-These mathematical foundations underpin the theoretical guarantees and practical performance
-characteristics of the Method Handles. Understanding them enables informed design decisions and
-accurate performance predictions. The key takeaway is that data structure selection should be
-guided by mathematical analysis of the expected workload patterns.
+## 2. invokedynamic Bootstrap Cost
 
+### First Call Overhead
 
-## Further Exploration
+```
+invokedynamic #1:
+  1. Resolve bootstrap method (class loading if needed)
+  2. Execute bootstrap method
+  2. Create CallSite (ConstantCallSite ~100ns)
+  4. Cache in constant pool cache
+  5. Invoke target
+  
+Total first call: ~100-500μs (cold) → ~1-5μs (warm classloader)
+```
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+### Constant Pool Cache
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+JVM caches CallSite per `invokedynamic` instruction. Subsequent calls:
+- Read from constant pool cache: ~1ns
+- `CallSite.getTarget()` → inline target
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+---
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 3. Lambda vs MethodHandle Performance
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+### Lambda vs MethodHandle vs Anonymous Class
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+| Implementation | Throughput (ops/s) | Memory |
+|----------------|-------------------|--------|
+| Lambda (Java 8+) | 1.0x (baseline) | Low |
+| MethodHandle.invokeExact | 0.95-1.0x | Low |
+| Anonymous class | 0.8-1.0x | Medium (class load) |
+| Reflection | 0.02-0.1x | High |
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+**Key insight**: Lambdas compile to `invokedynamic` + `LambdaMetafactory` → `ConstantCallSite` → direct MethodHandle. Performance ≈ direct call after JIT.
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+---
+
+## 3. Lambda vs MethodHandle vs Reflection
+
+### Performance Comparison
+
+| Approach | Throughput | Memory | Use Case |
+|----------|------------|--------|----------|
+| Lambda (Java 8+) | 1.0x | Low | Preferred |
+| MethodHandle.invokeExact | 0.95-1.0x | Low | Dynamic |
+| Anonymous class | 0.8-1.0x | Medium | Legacy |
+| Reflection (Method.invoke) | 0.02-0.1x | High | Dynamic/unknown |
+
+### Lambda Compilation
+
+```
+Lambda → invokedynamic → LambdaMetafactory.metafactory
+  → ConstantCallSite → MethodHandle → invokeExact
+```
+
+JIT inlines the entire chain → equivalent to direct call.
+
+---
+
+## 3. Lambda vs MethodHandle vs Reflection
+
+### Throughput Comparison (normalized to lambda = 1.0)
+
+| Implementation | Relative Throughput | Memory |
+|----------------|--------------------|--------|
+| Lambda (Java 8+) | 1.00x | Low |
+| MethodHandle.invokeExact | 0.95-1.00x | Low |
+| Anonymous inner class | 0.80-1.00x | Medium |
+| Reflection (Method.invoke) | 0.02-0.10x | High |
+
+**Why lambda wins**: `invokedynamic` → `LambdaMetafactory` → `ConstantCallSite` → direct MethodHandle → JIT inlines completely.
+
+---
+
+## 4. Bootstrap Method Cost
+
+### First Call Overhead
+
+```
+invokedynamic #1:
+  1. Resolve bootstrap method (class loading if needed)
+  2. Execute bootstrap method
+  3. Create CallSite (ConstantCallSite ~100ns)
+  4. Cache in constant pool cache
+  4. Invoke target
+
+Total first call: ~100-500μs (cold) → ~1-5μs (warm classloader)
+```
+
+### Constant Pool Cache
+
+JVM caches CallSite per `invokedynamic` instruction. Subsequent calls:
+- Read from constant pool cache: ~1ns
+- `CallSite.getTarget()` → inline target
+
+---
+
+## 4. Lambda vs MethodHandle Performance
+
+### Benchmark Data (relative)
+
+| Operation | Relative Throughput | Notes |
+|-----------|---------------------|-------|
+| Lambda (Java 8+) | 1.00x | Baseline |
+| MethodHandle.invokeExact | 0.95-1.00x | Best for dynamic |
+| Anonymous class | 0.80-1.00x | Class load overhead |
+| Reflection (Method.invoke) | 0.02-0.10x | Slow |
+
+**Why lambda wins**: `invokedynamic` → `LambdaMetafactory` → `ConstantCallSite` → direct MethodHandle → JIT inlines completely. Equivalent to direct call after warmup.

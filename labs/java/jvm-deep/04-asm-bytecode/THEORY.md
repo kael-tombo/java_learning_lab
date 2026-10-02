@@ -1,165 +1,202 @@
-# ASM Bytecode — Theoretical Foundation
+# THEORY — ASM Bytecode Manipulation
 
-## Core Concepts
+## Overview
 
-### 1. Fundamental Principle
-ASM Core API vs Tree API, ClassReader/ClassWriter/ClassVisitor, MethodVisitor, advice adapter, code weaving
+ASM is a lightweight, high-performance Java bytecode manipulation framework. It uses the **Visitor pattern** to traverse and transform class files.
 
-### 2. Theoretical Foundation
-The ASM Bytecode is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+---
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+## 1. Core Architecture
 
-### 3. Algorithmic Details
+### Visitor Pattern
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+ASM uses the Visitor pattern to separate structure traversal from operations:
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+```java
+ClassReader cr = new ClassReader("MyClass");
+ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
 
-### 4. Trade-offs
+// Visitor chain: ClassReader → ClassVisitor → MethodVisitor → ...
+ClassVisitor cv = new ClassVisitor(Opcodes.ASM9, cw) {
+    @Override
+    public MethodVisitor visitMethod(int access, String name, 
+                                     String desc, String sig, String[] exc) {
+        MethodVisitor mv = cv.visitMethod(access, name, desc, sig, exc);
+        return new MethodVisitor(Opcodes.ASM9, mv) {
+            @Override
+            public void visitInsn(int opcode) {
+                if (opcode == Opcodes.RETURN) {
+                    mv.visitFieldInsn(Opcodes.GETSTATIC, 
+                        "java/lang/System", "out", "Ljava/io/PrintStream;");
+                    mv.visitLdcInsn("Method exit");
+                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
+                        "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
+                }
+                mv.visitInsn(opcode);
+            }
+        };
+    }
+};
+cr.accept(cv, 0);
+byte[] modified = cw.toByteArray();
+```
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+### Core Visitors
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+| Visitor | Purpose |
+|---------|---------|
+| `ClassVisitor` | Visit class structure (fields, methods, annotations) |
+| `MethodVisitor` | Visit method bytecode instructions |
+| `FieldVisitor` | Visit fields |
+| `AnnotationVisitor` | Visit annotations |
+| `TypeAnnotationVisitor` | Visit type annotations |
 
-### 5. Mathematical Basis
+---
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+## 2. ClassReader / ClassWriter
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+### ClassReader
 
-## Summary
-The ASM Bytecode represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+```java
+// Read from file
+ClassReader cr = new ClassReader("MyClass");
 
-## Key Theorems
+// From byte array
+ClassReader cr = new ClassReader(bytes);
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+// Skip debug info, frames for speed
+ClassReader cr = new ClassReader(bytes);
+cr.accept(cv, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+```
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+### ClassWriter
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+```java
+// COMPUTE_MAXS: auto-calculate max_stack/max_locals
+// COMPUTE_FRAMES: auto-generate stack map frames
+ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+```
 
-## Key Insights
+---
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+## 3. MethodVisitor — Instruction Manipulation
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+### Instruction Visiting
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+```java
+public class MyMethodVisitor extends MethodVisitor {
+    @Override
+    public void visitInsn(int opcode) {
+        if (opcode == Opcodes.INVOKEVIRTUAL) {
+            // Intercept virtual calls
+        }
+        super.visitInsn(opcode);
+    }
+}
+```
 
+### Common Opcodes
 
-## Further Exploration
+| Category | Opcodes |
+|----------|---------|
+| **Constants** | `iconst_m1`, `iconst_0-5`, `bipush`, `sipush`, `ldc` |
+| **Load/Store** | `iload`, `istore`, `aload`, `astore`, `lload`, `lastore` |
+| **Arithmetic** | `iadd`, `isub`, `imul`, `idiv`, `irem` |
+| **Logic** | `iand`, `ior`, `ixor`, `ishl`, `ishr` |
+| **Stack** | `dup`, `pop`, `swap`, `dup2` |
+| **Control** | `goto`, `ifeq`, `ifne`, `iflt`, `if_icmpeq`, `tableswitch` |
+| **Calls** | `invokevirtual`, `invokestatic`, `invokespecial`, `invokeinterface`, `invokedynamic` |
+| **Objects** | `new`, `newarray`, `checkcast`, `instanceof` |
+| **Fields** | `getfield`, `putfield`, `getstatic`, `putstatic` |
+| **Arrays** | `newarray`, `anewarray`, `iaload`, `iastore` |
+| **Return** | `return`, `ireturn`, `areturn`, `lreturn`, `dreturn`, `freturn` |
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+---
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 4. Practical Patterns
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+### 1. Method Timing Adapter
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+```java
+class TimingAdapter extends MethodVisitor {
+    @Override
+    public void visitCode() {
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
+        super.visitCode();
+    }
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+    @Override
+    public void visitInsn(int opcode) {
+        if (opcode >= IRETURN && opcode <= RETURN) {
+            mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv.visitLdcInsn("Method took: ");
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
+            mv.visitInsn(LSUB);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(J)V", false);
+        }
+        super.visitInsn(opcode);
+    }
+}
+```
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+### 2. Null Check Injection
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+```java
+public class NullCheckAdapter extends MethodVisitor {
+    @Override
+    public void visitVarInsn(int opcode, int var) {
+        if (opcode == ALOAD) {
+            mv.visitInsn(DUP);
+            mv.visitInsn(ACONST_NULL);
+            mv.visitJumpInsn(IF_ACMPNE, new Label());
+            mv.visitTypeInsn(NEW, "java/lang/NullPointerException");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/NullPointerException", "<init>", "()V", false);
+            mv.visitInsn(ATHROW);
+            mv.visitLabel(new Label());
+        }
+        super.visitVarInsn(opcode, var);
+    }
+}
+```
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+---
+
+## 5. ClassWriter Flags
+
+| Flag | Purpose |
+|------|---------|
+| `COMPUTE_MAXS` | Auto-calculate max_stack/max_locals |
+| `COMPUTE_FRAMES` | Auto-generate stack map frames |
+| `COMPOSITE` | Combine with other flags |
+
+```java
+ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+```
+
+---
+
+## 6. Debugging Tips
+
+```bash
+# Verify modified class
+java -Xverify:all -cp modified.jar MyClass
+
+# Dump bytecode
+javap -c -p -v MyClass
+
+# ASMifier: generate ASM code from existing class
+java -cp asm.jar org.objectweb.asm.util.ASMifier MyClass
+```
+
+---
+
+## Common Pitfalls
+
+| Pitfall | Solution |
+|---------|----------|
+| Stack map frames missing | Use `COMPUTE_FRAMES` |
+| max_stack/max_locals wrong | Use `COMPUTE_MAXS` |
+| Stack map frames invalid | Ensure `COMPUTE_FRAMES` + valid bytecode |
+| Local variable table missing | Use `ClassWriter.COMPUTE_MAXS` |
+| Verify error | Run `java -Xverify:all` |

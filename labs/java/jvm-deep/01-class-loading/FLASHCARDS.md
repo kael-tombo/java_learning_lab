@@ -1,28 +1,27 @@
-# Custom ClassLoader & Class Loading — Flashcards
+# FLASHCARDS — Class Loading
 
-| # | Question | Answer |
-|---|----------|--------|
-| 1 | **Standard delegation model?** | Parent-first: parent `loadClass()` first, then `findClass()` |
-| 2 | **Method to override for custom loading?** | `findClass(String name)` |
-| 3 | **`defineClass()` does?** | Converts byte[] → Class<?>; verifies, links, initializes |
-| 4 | **Same class name, two loaders = ?** | Distinct types — `instanceof` fails, casts fail |
-| 5 | **Bootstrap ClassLoader loads?** | Core JDK (`java.*`, `javax.*`) — native, no parent (`null`) |
-| 6 | **Platform ClassLoader loads?** | Platform modules / extensions — child of bootstrap |
-| 7 | **System ClassLoader loads?** | Application classpath (`-cp`, `-jar`) — child of platform |
-| 8 | **Override `loadClass()` without `super` = ?** | Breaks delegation — duplicate loading, security risk, LinkageError |
-| 9 | **ClassNotFoundException vs NoClassDefFoundError?** | CNFE: checked, class not found by loader; NCDFE: error, class missing at runtime (static init failed / loader mismatch) |
-| 10 | **Get defining ClassLoader?** | `MyClass.class.getClassLoader()` — returns `null` for bootstrap |
-| 11 | **Class identity = ?** | Fully qualified name + defining ClassLoader |
-| 12 | **LinkageError cause?** | Same class loaded by two loaders in same hierarchy; or incompatible binary changes |
-| 13 | **Custom ClassLoader use cases?** | Hot reload, encrypted bytecode, network/db loading, plugin isolation, JSP compilation |
-| 14 | **`defineClass` protection domain?** | Can pass `ProtectionDomain` for security permissions (sandboxing) |
-| 15 | **`resolveClass(Class)` does?** | Triggers linking (verification, preparation, resolution) |
-| 16 | **Class loading phases?** | Load → Link (Verify → Prepare → Resolve) → Initialize |
-| 17 | **When is `<clinit>` run?** | Initialization phase — first active use (new, static field access, static method call, reflection) |
-| 18 | **Context ClassLoader?** | `Thread.getContextClassLoader()` — for SPI/service loading (JDBC, JAXP, logging) |
-| 19 | **Why context ClassLoader?** | Parent delegation can't find SPI impls on app classpath; context loader bridges |
-| 20 | **Hot reload pattern?** | New ClassLoader per reload; old classes become unreachable (GC); instances must be recreated |
-
----
-
-**Study tip**: Cover the Answer column and quiz yourself. Shuffle by picking random numbers.
+| # | Front | Back |
+|---|-------|------|
+| 1 | Bootstrap loader parent? | `null` (native) |
+| 2 | Delegation order? | Bootstrap → Platform → App → Custom |
+| 3 | Init trigger? | First active use: `new`, static access, `Class.forName()` |
+| 4 | Passive use? | Accessing `static final` compile-time constant |
+| 4 | Parent-first delegation? | Child asks parent FIRST, then `findClass()` |
+| 5 | Child-first loader? | Override `loadClass()`, call `findClass()` before `super.loadClass()` |
+| 6 | `LinkageError` cause? | Same class + two loaders, or binary incompatibility |
+| 6 | Classloader leak? | Static ref to class → loader + classes stuck in Metaspace |
+| 6 | Leak fix? | Clear static refs, `WeakReference`, clear `ThreadLocal`, clear TCCL |
+| 6 | Init triggers? | `new`, static access, `Class.forName()`, subclass init |
+| 6 | Passive use? | `static final` compile-time constant access |
+| 6 | Leak fix | Clear statics, `WeakReference`, clear `ThreadLocal`, clear TCCL |
+| 6 | Init order? | Parent class before child; `<clinit>` once per class |
+| 6 | `<clinit>` runs? | Once per class, thread-safe, before first active use |
+| 6 | `ClassLoader` identity? | Class identity = (binary name, classloader) |
+| 6 | `LinkageError`? | Same class + two loaders, or binary incompatibility |
+| 6 | Java 9+ modules? | Each module has own loader; `requires` = delegation edge |
+| 7 | `defineClass` vs `loadClass`? | `defineClass`: bytes→Class; `loadClass`: delegates + finds |
+| 8 | `ClassLoader` leak fix? | Clear statics, `WeakReference`, clear `ThreadLocal`, clear TCCL |
+| 8 | `Class` identity? | Binary name + defining loader |
+| 8 | Hot reload pattern? | New loader per version, atomic swap, old loader GC'd |
+| 9 | Module loader? | Each module has own loader; `requires` = delegation edge |
+| 10 | Debug: `java -verbose:class` | Shows every class load |

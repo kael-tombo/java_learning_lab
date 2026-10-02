@@ -1,120 +1,85 @@
-# Method Handles — Quiz
+# QUIZ — Method Handles & invokedynamic
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Method Handles?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## 1. What does `MethodHandles.lookup()` return?
+<details><summary>Answer</summary>A `Lookup` object with the access permissions of the caller's class.
+</details>
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## 2. What is a `MethodType`?
+<details><summary>Answer</summary>Describes a method signature: `(parameterTypes...)returnType`. Immutable.
+</details>
 
-## Question 3: Memory
-How much additional memory overhead does Method Handles have per element (approximately)?
+## 2. Difference between `findVirtual` and `findStatic`?
+<details><summary>Answer</summary>`findVirtual`: instance method (receiver first arg). `findStatic`: static method (no receiver).
+</details>
 
-## Question 4: Concurrency
-Is Method Handles safe for concurrent access without external synchronization? Explain why or why not.
+## 3. What does `MethodHandle.bindTo(x)` do?
+<details><summary>Answer</summary>Binds first argument to `x` (currying). `(A,B)->R` + `bindTo(a)` → `(B)->R` where first arg is fixed to `a`.
+</details>
 
-## Question 5: Scalability
-How does Method Handles perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## 3. What is `asSpreader`?
+<details><summary>Answer</summary>Converts array argument to spread arguments: `(A[]) -> R` becomes `(A,A,A) -> R`.
+</details>
 
-## Question 6: Design
-Why was Method Handles designed this way? What alternatives were considered during its development?
+## 4. What is `asCollector`?
+<details><summary>Answer</summary>Opposite of `asSpreader`: collects multiple arguments into array. `(A,A,A) -> R` becomes `(A[]) -> R`.
+</details>
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## 4. What is `MethodHandle.bindTo(x)`?
+<details><summary>Answer</summary>Curries first argument: `(A,B)->R` + `bindTo(a)` → `(B)->R` where A=a fixed.
+</details>
 
-## Question 8: Comparison
-Compare Method Handles with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## 5. What does `asSpreader` do?
+<details><summary>Answer</summary>Converts array argument to spread arguments: `(A[]) -> R` becomes `(A,A,A) -> R`.
+</details>
 
-## Question 9: Real-World
-Describe a real-world scenario where Method Handles is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## 5. What is `invokedynamic`?
+<details><summary>Answer</summary>JVM instruction for dynamic method invocation; bootstrap method links call site to target MethodHandle.
+</details>
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+## 5. What is `invokedynamic`?
+<details><summary>Answer</summary>JVM instruction for dynamic method invocation; bootstrap method links call site to target MethodHandle.
+</details>
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## 6. What are the three CallSite types?
+<details><summary>Answer</summary>`ConstantCallSite` (immutable), `VolatileCallSite` (volatile target), `MutableCallSite` (mutable target).
+</details>
 
+## 6. What is a CallSite?
+<details><summary>Answer</summary>Holder for a MethodHandle target; `invokedynamic` links to a CallSite whose target can be invoked.
+</details>
 
-## Further Exploration
+## 7. What is a bootstrap method?
+<details><summary>Answer</summary>Static method called once per `invokedynamic` site to create the CallSite; receives Lookup, name, MethodType, static args.
+</details>
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 7. What is a bootstrap method?
+<details><summary>Answer</summary>Static method called once per `invokedynamic` to create the CallSite; receives Lookup, name, MethodType, static args.
+</details>
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 8. What is `MethodHandle.bindTo(x)`?
+<details><summary>Answer</summary>Curries first argument: `(A,B)->R` + `bindTo(a)` → `(B)->R`.
+</details>
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 8. What is `asSpreader` vs `asCollector`?
+<details><summary>Answer</summary>`asSpreader`: array → spread args. `asCollector`: multiple args → array.
+</details>
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 8. What is `asSpreader`?
+<details><summary>Answer</summary>Converts array argument to spread arguments: `(A[]) -> R` → `(A,A,A) -> R`.
+</details>
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## 9. Lambda → invokedynamic: what's the bootstrap?
+<details><summary>Answer</summary>`LambdaMetafactory.metafactory` — creates `CallSite` with target MethodHandle for lambda body.
+</details>
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## 9. What is `LambdaMetafactory.metafactory`?
+<details><summary>Answer</summary>Bootstrap method for lambdas; creates CallSite with lambda implementation as target.
+</details>
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+## 10. `MethodHandle.bindTo(x)` does what?
+<details><summary>Answer</summary>Curries first argument: `(A,B)->R` + `bindTo(a)` → `(B)->R`.
+</details>
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## 10. What does `MethodHandles.filterArguments` do?
+<details><summary>Answer</summary>Transforms arguments before calling target: `(A,B)->R` + filter on arg 0 → `(A',B)->R`.
+</details>

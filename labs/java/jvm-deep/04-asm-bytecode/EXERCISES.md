@@ -1,154 +1,131 @@
-# ASM Bytecode — Exercises
+# EXERCISES — ASM Bytecode Manipulation
 
-## Beginner Exercises
+## 1. Class Reader/Writer (Beginner)
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of ASM Bytecode.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
+**Goal**: Read a class, modify it, write it back.
+
+```bash
+# 1. Compile a simple class
+javac Hello.java
+
+# 2. Use ASM to read and write
+java -cp asm.jar:asm-util.jar:. ReadWriteClass Hello.class HelloModified.class
+
+# 3. Verify
+javap -c HelloModified
 ```
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
+**Tasks**:
+1. Write a program that reads a .class file and writes it back
+2. Verify the output class works identically
+3. Add `COMPUTE_MAXS` and `COMPUTE_FRAMES` flags, verify they work
+
+---
+
+## 2. Method Timer Adapter (Beginner)
+
+**Goal**: Create a MethodVisitor that adds timing to every method.
+
 ```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
+public class TimingAdapter extends MethodVisitor {
+    @Override
+    public void visitCode() {
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
+        super.visitCode();
+    }
+
+    @Override
+    public void visitInsn(int opcode) {
+        if (opcode >= IRETURN && opcode <= RETURN) {
+            mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            mv.visitLdcInsn("Method took: ");
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
+            mv.visitInsn(LSUB);
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(J)V", false);
+        }
+        super.visitInsn(opcode);
+    }
+}
 ```
 
-## Intermediate Exercises
+**Tasks**:
+1. Apply to a class with multiple methods
+2. Run the modified class, verify timing output
+3. Handle void, primitive, and object return types
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+---
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
+## 2. Null Check Injection (Intermediate)
+
+**Goal**: Inject null checks before field access.
+
 ```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
+public class NullCheckAdapter extends MethodVisitor {
+    @Override
+    public void visitVarInsn(int opcode, int var) {
+        if (opcode == ALOAD) {
+            mv.visitInsn(DUP);
+            mv.visitInsn(ACONST_NULL);
+            mv.visitJumpInsn(IF_ACMPNE, new Label());
+            mv.visitTypeInsn(NEW, "java/lang/NullPointerException");
+            mv.visitInsn(DUP);
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/NullPointerException", "<init>", "()V", false);
+            mv.visitInsn(ATHROW);
+            mv.visitLabel(new Label());
+        }
+        super.visitVarInsn(opcode, var);
+    }
+}
 ```
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
+**Tasks**:
+1. Apply to a class with field accesses
+2. Test with null and non-null values
+3. Verify NPE thrown at correct location
+
+---
+
+## 3. ASMifier (Intermediate)
+
+**Goal**: Use ASMifier to generate ASM code from existing class.
+
+```bash
+# Generate ASM code for a class
+java -cp asm.jar:asm-util.jar org.objectweb.asm.util.ASMifier MyClass
 ```
 
-## Advanced Exercises
+**Tasks**:
+1. Run ASMifier on a simple class
+2. Examine generated code
+3. Modify generated code to add a feature
+3. Recompile and test
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+---
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 3. Custom ClassLoader (Advanced)
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
+**Goal**: Create a ClassLoader that loads modified bytecode.
+
 ```java
-// Use GraphLayout.parseInstance() to measure memory
+class ASMClassLoader extends ClassLoader {
+    private final Map<String, byte[]> modifiedClasses = new HashMap<>();
+
+    public void register(String className, byte[] bytes) {
+        modifiedClasses.put(className, bytes);
+    }
+
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        byte[] bytes = modifiedClasses.get(name);
+        if (bytes != null) {
+            return defineClass(name, bytes, 0, bytes.length);
+        }
+        return super.findClass(name);
+    }
+}
 ```
 
-## Challenge Exercises
-
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
-
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
-
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**Tasks**:
+1. Implement ASMClassLoader
+2. Register a modified class
+3. Load and execute it

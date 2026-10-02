@@ -1,154 +1,142 @@
-# Method Handles — Exercises
+# EXERCISES — Method Handles & invokedynamic
 
-## Beginner Exercises
+## 1. Basic Method Handle Lookup (Beginner)
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of Method Handles.
+**Goal**: Look up and invoke various method handles.
+
 ```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
+// Find and invoke:
+MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+// Static method
+MethodHandle sqrt = lookup.findStatic(Math.class, "sqrt", 
+    MethodType.methodType(double.class, double.class));
+double result = (double) sqrt.invokeExact(16.0); // 4.0
+
+// Instance method
+MethodHandle substring = lookup.findVirtual(String.class, "substring",
+    MethodType.methodType(String.class, int.class, int.class));
+String result = (String) substring.invokeExact("hello", 1, 4); // "ell"
 ```
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
+**Tasks**:
+1. Look up and invoke `String.length()` via MethodHandle
+2. Look up `ArrayList.add(E)` and invoke on a list
+3. Create a MethodHandle for `Integer.parseInt(String)` and test it
+
+---
+
+## 2. MethodHandle Transformations (Intermediate)
+
+**Goal**: Practice MethodHandle transformations.
+
 ```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
+MethodHandles.Lookup lookup = MethodHandles.lookup();
+MethodHandle sqrt = lookup.findStatic(Math.class, "sqrt", 
+    MethodType.methodType(double.class, double.class));
+
+// 1. Filter argument: sqrt(x * x)
+MethodHandle squared = MethodHandles.filterArguments(sqrt, 0,
+    MethodHandles.insertArguments(
+        lookup.findStatic(Math.class, "multiplyExact", 
+            MethodType.methodType(int.class, int.class, int.class)),
+        0, 2  // multiply by 2
+    ));
+
+// 2. Bind first argument
+MethodHandle sqrtOf2 = sqrt.bindTo(2.0); // sqrt(2.0) = 1.414...
+double result = (double) sqrtOf2.invokeExact();
+
+// 3. Spread array to arguments
+MethodHandle spread = lookup.findStatic(Arrays.class, "asList",
+    MethodType.methodType(List.class, Object[].class))
+    .asSpreader(Object[].class, 3);
+List<String> list = (List<String>) spread.invokeExact("a", "b", "c");
 ```
 
-## Intermediate Exercises
+**Tasks**:
+1. Create a MethodHandle that doubles its input
+2. Create a MethodHandle that takes an int[] and returns sum
+3. Use `asSpreader` and `asCollector` for varargs-style handling
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+---
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
+## 2. Guarded Invocation (Intermediate)
+
+**Goal**: Implement conditional method handle execution.
+
 ```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
+MethodHandle mh = lookup.findVirtual(String.class, "toUpperCase", 
+    MethodType.methodType(String.class));
+
+MethodHandle guard = lookup.findVirtual(String.class, "isEmpty",
+    MethodType.methodType(boolean.class));
+
+MethodHandle fallback = MethodHandles.constant(String.class, "EMPTY");
+
+MethodHandle guarded = MethodHandles.guardWithTest(guard, mh, fallback);
+
+// Test
+assert "HELLO".equals(guarded.invokeExact("hello"));
+assert "EMPTY".equals(guarded.invokeExact(""));
 ```
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
+**Tasks**:
+1. Create a guarded MethodHandle that returns "N/A" for null inputs
+2. Chain multiple guards with different conditions
+
+---
+
+## 3. Lambda & invokedynamic (Advanced)
+
+**Goal**: Understand lambda compilation.
+
 ```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
+// This lambda:
+Runnable r = () -> System.out.println("hello");
+
+// Compiles to invokedynamic:
+// Bootstrap: LambdaMetafactory.metafactory
+// Static args: (Ljava/lang/Runnable;)V, ()V, ()V
+// Dynamic args: captured variables (none here)
+
+// Manual equivalent:
+MethodHandle impl = lookup.findVirtual(
+    MyClass.class, "lambda$0", MethodType.methodType(void.class));
+CallSite site = LambdaMetafactory.metafactory(
+    lookup, "run", MethodType.methodType(Runnable.class),
+    MethodType.methodType(void.class), impl, MethodType.methodType(void.class));
+Runnable r = (Runnable) site.getTarget().invokeExact();
 ```
 
-## Advanced Exercises
+**Tasks**:
+1. Write a program that uses `LambdaMetafactory` to create a `Comparator<Integer>` dynamically
+2. Compare performance: direct lambda vs MethodHandle vs reflection
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+---
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 3. Custom Bootstrap Method (Advanced)
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
+**Goal**: Implement custom `invokedynamic` bootstrap.
+
 ```java
-// Use GraphLayout.parseInstance() to measure memory
+public class MyBootstrap {
+    public static CallSite bootstrap(MethodHandles.Lookup caller,
+                                     String name, MethodType type) {
+        // Custom logic: e.g., return constant, lookup from registry, etc.
+        MethodHandle target = MethodHandles.constant(String.class, "dynamic!");
+        return new ConstantCallSite(MethodHandles.convertArguments(
+            MethodHandles.constant(String.class, "hello"), type));
+    }
+}
+
+// In bytecode (via ASM):
+// invokedynamic "myMethod":(I)Ljava/lang/String; 
+//   BootstrapMethods:
+//     #0 MyBootstrap.bootstrap (I)Ljava/lang/String;
 ```
 
-## Challenge Exercises
-
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
-
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
-
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**Tasks**:
+1. Write a bootstrap that returns a random number as String
+2. Create a class with `invokedynamic` using ASM
+3. Verify it works at runtime

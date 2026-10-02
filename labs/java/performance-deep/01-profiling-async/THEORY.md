@@ -1,165 +1,109 @@
-# Profiling with async-profiler — Theoretical Foundation
+# THEORY — Async Profiling
 
-## Core Concepts
+## Overview
 
-### 1. Fundamental Principle
-async-profiler CPU/wall-clock/allocation profiling, flame graph generation, frame folding, perf_events
+Async profiling extends traditional profiling to non-blocking, reactive, and async code paths — where traditional stack sampling misses context due to thread hopping, completion stages, and virtual threads.
 
-### 2. Theoretical Foundation
-The Profiling with async-profiler is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+---
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+## 1. The Async Profiling Challenge
 
-### 3. Algorithmic Details
+Traditional profilers sample stack traces at safepoints. In async code:
+- Stack traces are fragmented across thread boundaries
+- Completion stages create logical but not physical call stacks
+- Virtual threads park/unpark, confusing traditional samplers
+- Reactive streams decouple producer/consumer threads
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+**Result**: Traditional flame graphs show fragmented, misleading pictures.
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+---
 
-### 4. Trade-offs
+## 2. Async Profiling Strategies
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+### 1. Context Propagation
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+Pass correlation IDs through async boundaries:
 
-### 5. Mathematical Basis
+```java
+// Manual context propagation
+var ctx = Context.current(); // OpenTelemetry context
+CompletableFuture.supplyAsync(() -> doWork(), executor)
+    .thenApplyAsync(result -> process(result), executor);
+```
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+### 2. Structured Concurrency (JEP 453)
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+```java
+try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+    var future1 = scope.fork(() -> serviceA.call());
+    var future2 = scope.fork(() -> serviceB.call());
+    scope.join();           // Wait for both
+    scope.throwIfFailed();  // Propagate first exception
+}
+```
 
-## Summary
-The Profiling with async-profiler represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+StructuredTaskScope preserves parent-child relationships in stack traces.
 
-## Key Theorems
+---
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+## 3. Virtual Threads & Profiling
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+Virtual threads (JEP 444) change profiling dynamics:
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+| Aspect | Platform Threads | Virtual Threads |
+|--------|------------------|-----------------|
+| Count | ~1000s | Millions |
+| Stack trace | Native frames | Virtual + carrier |
+| Sampling | OS thread = carrier | Carrier thread = sampling unit |
+| Pinning | N/A | `synchronized`, native calls |
 
-## Key Insights
+**Profiling tips**:
+- Use `-XX:+UnlockDiagnosticVMOptions -XX:+LogVirtualThreadEvents`
+- Sample carrier threads, correlate with virtual thread IDs
+- Pinning detection: `Thread.isVirtual()` + `Thread.isVirtualThreadPinned()`
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+---
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+## 4. Reactive Streams Profiling
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+Reactor / RxJava / Flow profiling challenges:
 
+| Challenge | Solution |
+|-----------|----------|
+| Operator chain fragmentation | Tag operators with `.tag("stage")` |
+| Backpressure signals | Profile `request(n)` / `onNext` latency |
+| Scheduler hops | Tag `subscribeOn` / `publishOn` boundaries |
+| Operator fusion | Profile fused vs unfused paths |
 
-## Further Exploration
+**Tools**: Reactor's `Hooks.onOperatorDebug()`, Micrometer `Timer` on operators.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+---
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 5. Distributed Tracing Integration
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+Profile across service boundaries:
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+```java
+// OpenTelemetry + W3C TraceContext
+var tracer = GlobalOpenTelemetry.getTracer("my-service");
+var span = tracer.spanBuilder("operation").startSpan();
+try (var scope = span.makeCurrent()) {
+    // async work
+} finally {
+    span.end();
+}
+```
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+**Tools**: OpenTelemetry Java Agent, Jaeger, Zipkin, Tempo.
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+---
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+## 6. Profiling Tool Matrix for Async
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+| Tool | Async Support | Best For |
+|------|---------------|----------|
+| async-profiler | Virtual threads, CompletableFuture, Reactor | Prod CPU/memory |
+| JFR | Virtual threads, CompletableFuture, Reactor | Prod all-around |
+| JProfiler | Async stacks, Reactor | Dev deep-dive |
+| YourKit | Virtual threads, async stacks | Dev deep-dive |
+| OpenTelemetry | Distributed traces | Prod tracing |

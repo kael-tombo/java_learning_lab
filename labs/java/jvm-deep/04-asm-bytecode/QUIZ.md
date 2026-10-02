@@ -1,120 +1,73 @@
-# ASM Bytecode — Quiz
+# QUIZ — ASM Bytecode Manipulation
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in ASM Bytecode?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## 1. What is the Visitor pattern in ASM?
+<details><summary>Answer</summary>Separates traversal (ClassReader) from operations (ClassVisitor/MethodVisitor) — enables composable transformations.
+</details>
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## 2. What does ClassWriter.COMPUTE_MAXS do?
+<details><summary>Answer</summary>Automatically calculates max_stack and max_locals for methods, so you don't have to compute them manually.
+</details>
 
-## Question 3: Memory
-How much additional memory overhead does ASM Bytecode have per element (approximately)?
+## 2. What does ClassWriter.COMPUTE_FRAMES do?
+<details><summary>Answer</summary>Automatically generates StackMapTable attributes (stack map frames) for methods.
+</details>
 
-## Question 4: Concurrency
-Is ASM Bytecode safe for concurrent access without external synchronization? Explain why or why not.
+## 3. What's the difference between ClassReader and ClassWriter?
+<details><summary>Answer</summary>ClassReader reads/parses .class files; ClassWriter generates/writes .class files. ClassReader accepts a ClassVisitor to traverse the class.
+</details>
 
-## Question 5: Scalability
-How does ASM Bytecode perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## 3. What is a MethodVisitor?
+<details><summary>Answer</summary>Visitor interface for visiting method bytecode instructions; extends MethodVisitor to modify/inspect instructions.
+</details>
 
-## Question 6: Design
-Why was ASM Bytecode designed this way? What alternatives were considered during its development?
+## 4. How do you add a method timer with ASM?
+<details><summary>Answer</summary>Extend MethodVisitor, override visitCode() to insert System.nanoTime() at start, visitInsn() to insert timing code before RETURN/ARETURN/IRETURN/LRETURN.
+</details>
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## 4. What is the Visitor pattern in ASM?
+<details><summary>Answer</summary>ClassReader traverses class structure, calling visit methods on ClassVisitor/MethodVisitor; subclasses override visit methods to inspect/modify.
+</details>
 
-## Question 8: Comparison
-Compare ASM Bytecode with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## 5. What's the difference between ClassReader and ClassWriter?
+<details><summary>Answer</summary>ClassReader parses .class files and drives Visitors; ClassWriter generates .class bytes from Visitor calls.
+</details>
 
-## Question 9: Real-World
-Describe a real-world scenario where ASM Bytecode is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## 5. What does COMPUTE_MAXS do?
+<details><summary>Answer</summary>Automatically calculates max_stack and max_locals for each method.
+</details>
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+## 6. What does COMPUTE_FRAMES do?
+<details><summary>Answer</summary>Generates StackMapTable attributes (stack map frames) for stack map verification.
+</details>
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## 6. What is a MethodVisitor?
+<details><summary>Answer</summary>Visitor for method bytecode; override visitInsn, visitVarInsn, etc. to inspect/modify instructions.
+</details>
 
+## 7. How to inject code before a method return?
+<details><summary>Answer</summary>Override visitInsn(), check for RETURN/ARETURN/IRETURN/LRETURN/DRETURN/FRETURN, insert code before super.visitInsn().
+</details>
 
-## Further Exploration
+## 7. What is a ClassVisitor?
+<details><summary>Answer</summary>Visitor for class-level elements: fields, methods, annotations, inner classes.
+</details>
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 8. How to inject a null check before field access?
+<details><summary>Answer</summary>In visitVarInsn(ALOAD, var), insert DUP, ACONST_NULL, IF_ACMPNE, then throw NPE if null.
+</details>
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 8. What is the purpose of ClassWriter.COMPUTE_MAXS?
+<details><summary>Answer</summary>Automatically calculates max_stack and max_locals for each method.
+</details>
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 9. How does ASMifier work?
+<details><summary>Answer</summary>Reads a .class file and prints Java code that uses ASM API to generate an identical class.
+</details>
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 9. What is ASMifier?
+<details><summary>Answer</summary>Tool that reads a .class file and generates Java code that uses ASM API to recreate it.
+</details>
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## 10. How to fix StackMapTable errors?
+<details><summary>Answer</summary>Use ClassWriter.COMPUTE_FRAMES flag; ensure bytecode is valid (stack depth consistent).
+</details>

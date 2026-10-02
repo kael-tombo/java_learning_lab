@@ -1,56 +1,60 @@
-# Custom ClassLoader & Class Loading — Quiz
+# QUIZ — Class Loading
 
-> **Instructions**: Answer each question before revealing the solution.
-
-<details>
-<summary><strong>1. What is the standard class-loading delegation model?</strong></summary>
-**Answer: Parent-first** — `loadClass()` delegates to parent ClassLoader first; only if parent fails, `findClass()` is called. Prevents core class spoofing.
+## 1. What is the delegation order in standard class loading?
+<details><summary>Answer</summary>
+Bootstrap → Platform → Application → Custom. Parent-first delegation.
 </details>
 
-<details>
-<summary><strong>2. Which method must a custom ClassLoader override to define custom loading logic?</strong></summary>
-**Answer: `findClass(String name)`** — Called by `loadClass()` after parent delegation fails. Should read bytecode and call `defineClass()`.
+## 2. Which classloader has no parent?
+<details><summary>Answer</summary>
+Bootstrap ClassLoader (returns `null` for `getParent()`). Implemented in native code.
 </details>
 
-<details>
-<summary><strong>3. What does `defineClass(byte[] bytecode, ...)` do?</strong></summary>
-**Answer: Converts raw bytecode into a `Class<?>` object** — JVM verifies format, resolves symbolic references, prepares static fields. Returns the defined Class.
+## 3. When is a class initialized?
+<details><summary>Answer</summary>On first **active use**: `new`, static field access, static method call, `Class.forName()`, or subclass initialization.
 </details>
 
-<details>
-<summary><strong>4. Can two different ClassLoaders load the same class name?</strong></summary>
-**Answer: Yes — they are distinct types at runtime.** `ClassA` loaded by `Loader1` ≠ `ClassA` loaded by `Loader2`. `instanceof` and casts fail across loaders.
+## 4. What triggers class initialization vs loading?
+<details><summary>Answer</summary>
+Loading: finding/reading `.class` bytes. Initialization: running `<clinit>`, static initializers. Loading happens first, init on first **active use**.
 </details>
 
-<details>
-<summary><strong>5. What is the bootstrap ClassLoader?</strong></summary>
-**Answer: Loads core JDK classes (`java.*`, `javax.*`)** — Implemented in native code (C++), has no parent, represented as `null` in Java.
+## 3. What breaks parent-first delegation?
+<details><summary>Answer</summary>
+Overriding `loadClass()` to call `findClass()` before `super.loadClass()`. Used in OSGi, app servers, hot reload.
 </details>
 
-<details>
-<summary><strong>6. What is the platform (extension) ClassLoader?</strong></summary>
-**Answer: Loads platform modules / extension classes** — Child of bootstrap. In Java 9+, replaces the old extension mechanism.
+## 4. What causes `LinkageError`?
+<details><summary>Answer</summary>
+Same class loaded by two different classloaders (identity includes classloader). Or binary incompatibility between loaded classes.
 </details>
 
-<details>
-<summary><strong>7. What is the system (application) ClassLoader?</strong></summary>
-**Answer: Loads classes from classpath (`-cp`, `-jar`)** — Child of platform ClassLoader. Default parent for custom ClassLoaders.
+## 4. What causes `ClassLoader` memory leak?
+<details><summary>Answer</summary>
+Static reference to a class loaded by a custom classloader prevents GC of the classloader and its classes. `Metaspace` OOM.
 </details>
 
-<details>
-<summary><strong>8. What happens if you override `loadClass()` without calling `super.loadClass()`?</strong></summary>
-**Answer: Breaks delegation model** — Parent is not consulted first. Can lead to duplicate loading, security issues, or `LinkageError` if same class loaded twice.
+## 5. How to fix classloader leak?
+<details><summary>Answer</summary>
+Clear static references, use `WeakReference`, avoid `ThreadLocal` with classloader-reachable keys, clear thread context classloader.
 </details>
 
-<details>
-<summary><strong>9. What is `ClassNotFoundException` vs `NoClassDefFoundError`?</strong></summary>
-**Answer: `ClassNotFoundException` — checked, thrown when class not found by ClassLoader (e.g., `Class.forName()`). `NoClassDefFoundError` — error, thrown when class existed at compile time but missing at runtime (static init failed, or loader mismatch).**
+## 6. What triggers class initialization?
+<details><summary>Answer</summary>
+First **active use**: `new`, static field/method access, `Class.forName()`, subclass init, reflection. NOT: accessing `static final` compile-time constants.
 </details>
 
-<details>
-<summary><strong>10. How do you access the ClassLoader that loaded a given class?</strong></summary>
-**Answer: `MyClass.class.getClassLoader()`** — Returns the defining ClassLoader, or `null` for bootstrap-loaded classes.
+## 8. How does parent-first delegation work?
+<details><summary>Answer</summary>
+Child asks parent first. If parent can't load, child tries `findClass()`. Ensures core classes loaded by bootstrap, prevents spoofing.
 </details>
 
----
-*Quiz complete. Review incorrect answers and re-read the THEORY.md for deeper understanding.*
+## 9. How to break delegation (child-first)?
+<details><summary>Answer</summary>
+Override `loadClass()`, call `findClass()` before `super.loadClass()`. Used in OSGi, app servers for isolation.
+</details>
+
+## 10. What causes `LinkageError`?
+<details><summary>Answer</summary>
+Same class loaded by two classloaders (identity = class + loader), or binary incompatibility between linked classes.
+</details>

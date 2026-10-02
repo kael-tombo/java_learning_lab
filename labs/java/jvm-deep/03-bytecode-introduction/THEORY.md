@@ -1,165 +1,284 @@
-# Bytecode Introduction — Theoretical Foundation
+# THEORY — JVM Bytecode Introduction
 
-## Core Concepts
+## Overview
 
-### 1. Fundamental Principle
-JVM instruction set, iconst/bi/push/sipush/ldc, aload/astore, invokevirtual/invokespecial/invokeinterface/invokestatic/invokedynamic
+This lab introduces JVM bytecode fundamentals — the instruction set, execution model, and how Java source maps to bytecode. Understanding bytecode is essential for debugging, performance tuning, and building tools.
 
-### 2. Theoretical Foundation
-The Bytecode Introduction is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+---
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+## 1. JVM Execution Model
 
-### 3. Algorithmic Details
+### Stack-Based Architecture
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+The JVM is a **stack machine** — operations push/pop values on an operand stack rather than using registers.
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+```
+iload 1      // Push local variable 1 onto stack
+iconst 2     // Push constant 2
+iadd         // Pop two, add, push result
+istore 3     // Store result in local variable 3
+```
 
-### 4. Trade-offs
+### Stack vs Register Machines
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+| Aspect | Stack Machine (JVM) | Register Machine (x86, ARM) |
+|--------|---------------------|----------------------------|
+| Instruction size | Compact (1-3 bytes) | Larger (registers in opcode) |
+| Portability | High (abstract) | Architecture-specific |
+| Execution | Stack manipulation | Register allocation |
+| JIT potential | High (easy to optimize) | Complex |
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+---
 
-### 5. Mathematical Basis
+## 2. Bytecode Structure
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+### Class File Format
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+```
+ClassFile {
+    u4 magic;              // 0xCAFEBABE
+    u2 minor_version;
+    u2 major_version;
+    u2 constant_pool_count;
+    cp_info constant_pool[];
+    u2 access_flags;
+    u2 this_class;
+    u2 super_class;
+    u2 interfaces_count;
+    u2 interfaces[];
+    u2 fields_count;
+    field_info fields[];
+    u2 methods_count;
+    method_info methods[];
+    u2 attributes_count;
+    attribute_info attributes[];
+}
+```
 
-## Summary
-The Bytecode Introduction represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+### Method Structure
 
-## Key Theorems
+```
+method_info {
+    u2 access_flags;
+    u2 name_index;
+    u2 descriptor_index;
+    u2 attributes_count;
+    attribute_info attributes[];
+}
+```
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+### Code Attribute
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+```java
+Code_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1 code[code_length];
+    u2 exception_table_length;
+    exception_table[];
+    u2 attributes_count;
+    attribute_info attributes[];
+}
+```
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+---
 
-## Key Insights
+## 2. Bytecode Instructions
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+### Instruction Categories
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+| Category | Examples | Purpose |
+|----------|----------|---------|
+| **Load/Store** | `iload`, `istore`, `aload`, `astore` | Move data between stack and locals |
+| **Arithmetic** | `iadd`, `isub`, `imul`, `idiv` | Integer math |
+| **Stack** | `dup`, `pop`, `swap` | Stack manipulation |
+| **Control** | `goto`, `if_icmpge`, `tableswitch` | Branching |
+| **Method** | `invokevirtual`, `invokestatic`, `invokedynamic` | Method calls |
+| **Object** | `new`, `getfield`, `putfield`, `checkcast` | Object ops |
+| **Array** | `newarray`, `iaload`, `iastore` | Array ops |
+| **Conversion** | `i2l`, `l2d`, `d2i` | Type conversion |
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+---
 
+## 3. Method Descriptors
 
-## Further Exploration
+### Descriptor Grammar
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+```
+MethodDescriptor = "(" {ParameterDescriptor} ")" ReturnDescriptor
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+ParameterDescriptor = BaseType | ObjectType | ArrayType
+ReturnDescriptor = ParameterDescriptor | "V" (void)
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+BaseType: B=byte, C=char, D=double, F=float, I=int, J=long, S=short, Z=boolean
+ObjectType: L fully-qualified-class-name ;
+ArrayType: [ Descriptor
+```
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+### Examples
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+| Java Signature | Descriptor |
+|----------------|------------|
+| `void main(String[])` | `([Ljava/lang/String;)V` |
+| `int add(int, int)` | `(II)I` |
+| `String concat(String, String)` | `(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;` |
+| `List<String> get()` | `()Ljava/util/List;` |
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+---
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+## 3. Constant Pool
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+The constant pool is the "symbol table" of a class file:
+
+| Tag | Type | Description |
+|-----|------|-------------|
+| 1 | `CONSTANT_Utf8` | UTF-8 string |
+| 3 | `CONSTANT_Integer` | 4-byte int |
+| 4 | `CONSTANT_Float` | 4-byte float |
+| 5 | `CONSTANT_Long` | 8-byte long |
+| 6 | `CONSTANT_Double` | 8-byte double |
+| 7 | `CONSTANT_Class` | Class reference |
+| 8 | `CONSTANT_String` | String literal |
+| 9 | `CONSTANT_Fieldref` | Field reference |
+| 10 | `CONSTANT_Methodref` | Method reference |
+| 11 | `CONSTANT_InterfaceMethodref` | Interface method |
+| 11 | `CONSTANT_InvokeDynamic` | invokedynamic bootstrap |
+
+---
+
+## 3. Stack Map Frames (Java 6+)
+
+Stack map frames enable **type verification without interpretation**:
+
+```
+StackMapTable {
+    u2 number_of_entries;
+    stack_map_frame entries[];
+}
+```
+
+Frame types:
+- `same_frame`: Same locals, empty stack
+- `same_locals_1_stack_item`: Same locals, 1 stack item
+- `full_frame`: Full locals + stack state
+
+Enables **single-pass verification** — critical for startup performance.
+
+---
+
+## 4. Bytecode Verification
+
+### Verification Phases
+
+1. **Format check**: Valid class file structure
+2. **Constraint check**: Final fields, finalize, superclass, etc.
+3. **Bytecode verification**: Type safety, stack consistency
+4. **Symbolic reference resolution**: On first use (lazy)
+
+### Verification Types
+
+| Type | When | Scope |
+|------|------|-------|
+| **Static** | Class load | Full bytecode scan |
+| **Dynamic** | Runtime | Link-time resolution |
+
+---
+
+## 4. Invokedynamic & Method Handles
+
+### invokedynamic (JEP 292)
+
+```java
+// Java source
+Runnable r = () -> System.out.println("hello");
+
+// Compiles to invokedynamic:
+// Bootstrap: LambdaMetafactory.metafactory
+// Static args: (Ljava/lang/Runnable;)V, ()V
+```
+
+### Method Handles
+
+```java
+MethodHandles.Lookup lookup = MethodHandles.lookup();
+MethodHandle mh = lookup.findStatic(Math.class, "sqrt", 
+    MethodType.methodType(double.class, double.class));
+double result = (double) mh.invokeExact(4.0); // 2.0
+```
+
+---
+
+## 4. ASM Bytecode Manipulation
+
+### ASM Core API
+
+```java
+// Read class
+ClassReader cr = new ClassReader("MyClass");
+ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+
+// Visitor pattern
+ClassVisitor cv = new ClassVisitor(Opcodes.ASM9, cw) {
+    @Override
+    public MethodVisitor visitMethod(int access, String name, 
+                                     String desc, String signature, 
+                                     String[] exceptions) {
+        MethodVisitor mv = cv.visitMethod(access, name, desc, sig, exc);
+        return new MethodVisitor(Opcodes.ASM9, mv) {
+            @Override
+            public void visitInsn(int opcode) {
+                if (opcode == Opcodes.RETURN) {
+                    mv.visitFieldInsn(Opcodes.GETSTATIC, 
+                        "java/lang/System", "out", "Ljava/io/PrintStream;");
+                    mv.visitLdcInsn("Method exit");
+                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
+                        "java/io/PrintStream", "println", 
+                        "(Ljava/lang/String;)V", false);
+                }
+                mv.visitInsn(opcode);
+            }
+        };
+    }
+};
+cr.accept(cv, 0);
+byte[] modified = cw.toByteArray();
+```
+
+### Core Visitors
+
+| Visitor | Purpose |
+|---------|---------|
+| `ClassVisitor` | Visit class structure |
+| `MethodVisitor` | Visit method bytecode |
+| `AnnotationVisitor` | Visit annotations |
+| `FieldVisitor` | Visit fields |
+
+---
+
+## 5. Bytecode Verification
+
+### Verification Phases
+
+1. **Format check**: Valid class file structure
+2. **Constraint check**: Final fields, finalize, superclass
+3. **Bytecode verification**: Type safety, stack consistency
+4. **Symbolic reference resolution**: Lazy, on first use
+
+### Stack Map Frames
+
+Enable single-pass verification:
+
+```java
+// Frame types
+same_frame                    // Same locals, empty stack
+same_locals_1_stack_item      // Same locals, 1 stack item
+same_locals_1_stack_item_extended
+same_locals_1_stack_item_extended
+append_frame                  // New locals
+full_frame                    // Full locals + stack
+```
+
+Enables single-pass verification — critical for startup performance.

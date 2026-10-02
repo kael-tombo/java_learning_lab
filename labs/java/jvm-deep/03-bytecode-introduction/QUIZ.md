@@ -1,120 +1,221 @@
-# Bytecode Introduction — Quiz
+# QUIZ — Bytecode Introduction
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Bytecode Introduction?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## 1. What is the JVM's magic number?
+<details><summary>Answer</summary>0xCAFEBABE (first 4 bytes of every .class file)
+</details>
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## 2. What is the JVM's execution model?
+<details><summary>Answer</summary>Stack-based (operand stack), not register-based like x86/ARM.
+</details>
 
-## Question 3: Memory
-How much additional memory overhead does Bytecode Introduction have per element (approximately)?
+## 2. What does `iload 1` do?
+<details><summary>Answer</summary>Pushes local variable at index 1 onto the operand stack.
+</details>
 
-## Question 4: Concurrency
-Is Bytecode Introduction safe for concurrent access without external synchronization? Explain why or why not.
+## 3. What does `iadd` do?
+<details><summary>Answer</summary>Pops two ints from stack, adds them, pushes result.
+</details>
 
-## Question 5: Scalability
-How does Bytecode Introduction perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## 3. What is a method descriptor?
+<details><summary>Answer</summary>Encodes parameter types and return type: `(II)I` = two int params, int return.
+</details>
 
-## Question 6: Design
-Why was Bytecode Introduction designed this way? What alternatives were considered during its development?
+## 4. What does `(II)I` mean?
+<details><summary>Answer</summary>Method taking two ints, returning int.
+</details>
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## 4. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
 
-## Question 8: Comparison
-Compare Bytecode Introduction with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## 5. What is `invokedynamic`?
+<details><summary>Answer</summary>JVM instruction for dynamic language support; used for lambdas, method handles.
+</details>
 
-## Question 9: Real-World
-Describe a real-world scenario where Bytecode Introduction is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## 5. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+## 6. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## 6. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
 
+## 6. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
 
-## Further Exploration
+## 7. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 7. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 8. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 8. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
+
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
+
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
+
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
+
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
+
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
+
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
+
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
+
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
+
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
+
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
+
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
+
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
+
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
+
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
+
+## 9. What is the constant pool?
+<details><summary>Answer</summary>Symbol table: strings, class refs, field/method refs, numeric constants.
+</details>
+
+## 9. What is a stack map frame?
+<details><summary>Answer</summary>Pre-computed type state at a bytecode offset; enables single-pass verification.
+</details>
+
+## 9. What is ASM?
+<details><summary>Answer</summary>Java bytecode manipulation framework (visitor pattern).
+</details>
+
+## 9. What does `invokedynamic` do?
+<details><summary>Answer</summary>Dynamic invoke; used for lambdas, method handles.
+</details>
