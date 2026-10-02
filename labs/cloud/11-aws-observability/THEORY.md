@@ -122,3 +122,9 @@ AMG is a fully managed Grafana service:
 3. Prometheus is the standard for Kubernetes monitoring with a powerful query language
 4. AMP provides managed Prometheus with automatic scaling and AWS integration
 5. AMG unifies dashboards across multiple AWS and third-party data sources
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- Monitoring — Google SRE Workbook Ch. 4 (2018; O'Reilly, CC BY-NC-ND 4.0) — https://sre.google/workbook/monitoring/ — Takeaway for CloudWatch alarm exercises: monitor to alert, investigate/diagnose, visualize, track trends, and compare before/after changes; keep data fresher than ~4–5 min for incident response.
+- Metrics vs logs sources — Google SRE Workbook Ch. 4 (2018) — https://sre.google/workbook/monitoring/ — Takeaway for metrics/CloudWatch-Logs/X-Ray exercises: use near-real-time metrics (counters + windowed rates, percentiles not means) for alerts/dashboards and granular logs for root-cause; increment a counter metric even for single exceptional events.
+- Purposeful metrics + golden signals — Google SRE Workbook Ch. 4 (2018) — https://sre.google/workbook/monitoring/ — Takeaway for PromQL/AMP exercises: export latency/error/traffic/saturation per dependency (bytes, latency, codes, RPC method), track binary/config versions for change correlation, and alert on SLO-burn plus resource-exhaustion thresholds.
+- Managing monitoring as code — Google SRE Workbook Ch. 4 (2018) — https://sre.google/workbook/monitoring/ — Takeaway for Grafana/AMG dashboard exercises: store monitoring config in version control, converge on one framework with consistent basic metrics, and loosely couple collection/storage/alerting/visualization (e.g., Prometheus + long-term store + Alertmanager + Grafana).

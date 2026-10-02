@@ -64,3 +64,9 @@ Amazon Web Services (AWS) is the world's most comprehensive and widely adopted c
 3. IAM controls who can access what resources
 4. VPC provides network isolation and security
 5. Always follow security best practices
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- AWS Well-Architected Framework introduction (Publication date: 2024-11-06) — https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html — Takeaway for EC2/S3/IAM/VPC exercises: evaluate every workload against the six pillars (operational excellence, security, reliability, performance efficiency, cost optimization, sustainability) as a review conversation, not an audit.
+- The pillars of the framework — AWS docs (2024-11-06) — https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html — Takeaway for IAM/VPC exercises: neglecting any pillar undermines the system like a weak building foundation; apply least-privilege, isolation, and recovery planning from the start.
+- AWS Well-Architected Tool — AWS docs (2024-11-06) — https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html — Takeaway for lab reviews: use the no-charge WA Tool to consistently measure a lab architecture and record remediation for reliability/security/efficiency gaps.
+- AWS Well-Architected Labs — AWS docs (2024-11-06) — https://www.wellarchitectedlabs.com/ — Takeaway for hands-on exercises: replicate EC2/S3 patterns from the Labs repo to get code-level practice implementing the framework's best practices.

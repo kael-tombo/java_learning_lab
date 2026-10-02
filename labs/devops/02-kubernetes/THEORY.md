@@ -20,3 +20,9 @@
 - **kubelet**: Agent that ensures containers are running in Pods.
 - **kube-proxy**: Network proxy maintaining network rules on each node.
 - **Container runtime**: containerd, CRI-O, or Docker (via cri-dockerd).
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- Concepts overview — Kubernetes docs (living reference, accessed Oct 2026) — https://kubernetes.io/docs/concepts/ — Takeaway for Pod/Deployment exercises: Pods are the smallest deployable unit with a defined lifecycle; use Deployment/ReplicaSet controllers rather than managing Pods directly.
+- Declarative desired state — Kubernetes docs / What Kubernetes is not (living reference, accessed Oct 2026) — https://kubernetes.io/docs/concepts/overview/ — Takeaway for rolling-update/rollback exercises: declare desired state and let controllers drive actual → desired at a controlled rate instead of scripting A-then-B-then-C orchestration.
+- Services, load balancing and networking — Kubernetes docs (living reference, accessed Oct 2026) — https://kubernetes.io/docs/concepts/services-networking/ — Takeaway for Service/Ingress exercises: Service gives a stable endpoint over changing Pod IPs; Ingress/Gateway API exposes HTTP routes while NetworkPolicy controls Pod-to-Pod traffic.
+- Cluster components — Kubernetes docs (living reference, accessed Oct 2026) — https://kubernetes.io/docs/concepts/overview/components/ — Takeaway for kube-apiserver/etcd/scheduler/kubelet/kube-proxy exercises: all control-plane traffic flows through kube-apiserver with etcd as state store and kubelet/kube-proxy as per-node agents.

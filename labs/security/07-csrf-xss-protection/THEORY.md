@@ -41,3 +41,9 @@ Authorization determines what an authenticated user is allowed to do. This can b
 ### Cryptography
 
 Cryptographic operations ensure data confidentiality, integrity, and authenticity. Java provides strong cryptographic support through the JCA framework.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- OWASP Cross-Site Request Forgery Prevention Cheat Sheet — living document (accessed Oct 2026) — https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html — Takeaway tied to lab: implement synchronizer-token pattern (per-session/per-request CSPRNG token validated server-side) for state-changing POST/PUT/DELETE in the Spring Security filter-chain exercise; never put the token in a cookie or URL.
+- OWASP Cross Site Scripting Prevention Cheat Sheet — living document (accessed Oct 2026) — https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html — Takeaway tied to lab: any XSS defeats CSRF tokens, so pair CSRF-token exercises with context-sensitive output encoding/CSP from this sheet before testing bypasses.
+- OWASP Cross-Site Request Forgery (CSRF) attack page — living document (accessed Oct 2026) — https://community.owasp.org/attacks/csrf — Takeaway tied to lab: use it to frame the login-form CSRF exercise (attacker forges an authenticated browser request via auto-sent session cookies) and to justify SameSite + Origin/Referer defense-in-depth checks alongside tokens.

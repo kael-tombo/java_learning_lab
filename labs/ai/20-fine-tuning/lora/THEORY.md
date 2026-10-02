@@ -31,3 +31,9 @@ We reduced the number of trainable parameters from 16.7 Million to 65 Thousand (
 ## 📦 Deployment Benefits
 Because the base model is frozen, the final output of LoRA training is just the tiny adapter weights (often just 50MB to 100MB).
 You can load the massive base model into RAM once, and seamlessly swap different 50MB LoRA adapters in and out at runtime depending on whether the user wants to talk to the "Lawyer Bot" or the "HR Bot".
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- LoRA: Low-Rank Adaptation of Large Language Models (17 Jun 2021) — https://arxiv.org/abs/2106.09685 — Takeaway for adapter-injection exercises: freeze pretrained weights and inject trainable rank-decomposition matrices (B×A) into each Transformer layer, training only the adapters as the lab describes for Query/Value matrices.
+- LoRA: Low-Rank Adaptation of Large Language Models (17 Jun 2021) — https://arxiv.org/abs/2106.09685 — Takeaway for rank-selection exercises: using rank r=8–16 cuts trainable parameters ~10,000× (GPT-3 175B example) and GPU memory ~3× while matching full fine-tuning on RoBERTa/DeBERTa/GPT-2/GPT-3; sweep r in the lab and record quality vs. parameter count.
+- LoRA: Low-Rank Adaptation of Large Language Models (17 Jun 2021) — https://arxiv.org/abs/2106.09685 — Takeaway for deployment exercises: BA can be merged back into base weights at inference, so unlike adapters there is no added latency — verify by benchmarking swapped-adapter serving (Lawyer vs. HR bot) with and without merging.
+- LoRA: Low-Rank Adaptation of Large Language Models (17 Jun 2021) — https://arxiv.org/abs/2106.09685 — Takeaway for efficacy-analysis exercises: the paper's rank-deficiency investigation justifies why low-rank updates suffice; replicate by logging intrinsic-rank behavior when adapting attention weights vs. MLP weights.
