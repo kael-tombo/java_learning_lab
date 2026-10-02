@@ -114,3 +114,9 @@ AWS offers multiple compute services to handle diverse workload requirements fro
 - Hybrid cloud workloads
 - ML/AI workloads
 - Complex orchestration needs
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- Best practices for working with AWS Lambda functions — AWS Lambda Developer Guide (evergreen; verified Oct 2026) — https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-code — Takeaway for the Lambda section (cold starts, handlers, layers): initialize SDK clients and connections outside the handler and reuse the execution environment instead of storing per-user state in it.
+- Best practices for working with AWS Lambda functions — AWS Lambda Developer Guide (evergreen; verified Oct 2026) — https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-configuration — Takeaway for the Lambda limits section (15-min timeout, 128MB–10GB memory): size memory from the CloudWatch REPORT `Max Memory Used` field and load-test timeouts; memory increases scale CPU proportionally.
+- Best practices for working with AWS Lambda functions — AWS Lambda Developer Guide (evergreen; verified Oct 2026) — https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#function-scalability — Takeaway for the Scaling Strategies section (concurrency, provisioned/reserved concurrency): cap blast radius with reserved concurrency and build throttle tolerance via retries with backoff/jitter.
+- Best practices for working with AWS Lambda functions — AWS Lambda Developer Guide (evergreen; verified Oct 2026) — https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html#stream-events — Takeaway for Lambda invocation types (sync/async/event-source mapping): tune batch size and windowing for stream sources, expect at-least-once delivery, and write idempotent handlers.

@@ -77,3 +77,9 @@ public class OrderView {
     private Instant lastUpdated;
 }
 ```
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- CQRS — Martin Fowler bliki (14 July 2011) — https://martinfowler.com/bliki/CQRS.html — Use a different model to update information than to read it (command side vs query side), which is exactly the lab's `PlaceOrderCommand`/`PlaceOrderHandler` vs `GetOrderQuery`/`GetOrderHandler` and normalized `Order` vs denormalized `OrderView` split.
+- CQRS — Martin Fowler bliki (14 July 2011) — https://martinfowler.com/bliki/CQRS.html — Apply CQRS only to specific BoundedContexts where the complexity pays off; most CRUD-shaped domains should stay on a shared model rather than adopting the lab's dual-model layout wholesale.
+- CQRS — Martin Fowler bliki (14 July 2011) — https://martinfowler.com/bliki/CQRS.html — Separate models imply a sync mechanism (events, Event Sourcing, eventual consistency, or a ReportingDatabase for read offload) — the lab's `viewRepository` must be kept current via command-side events, not assumed in sync.

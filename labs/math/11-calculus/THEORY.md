@@ -101,3 +101,10 @@ f'(x) = lim(h→0) [f(x+h) - f(x)]/h
 - Curl: ∇×F
 - Line integrals
 - Green's, Stokes', Divergence theorems
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- MIT OCW Scholar 18.01SC Single Variable Calculus (Fall 2010, Prof. David Jerison et al.) — https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010 — Unit 1 (differentiation: definition, basic rules) maps directly onto lab §3 derivative rules; work the secant/tangent worked examples before coding the difference quotient.
+- MIT OCW Scholar 18.01SC Unit 2, Part B: Optimization, Related Rates and Newton's Method — https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/pages/unit-2-applications-of-differentiation/part-b-optimization-related-rates-and-newtons-method/ — use its optimization problem sets to ground lab §3.3 (tangent line, related rates, optimization) exercises.
+- MIT OCW Scholar 18.01SC Unit 3 (definite integral + Fundamental Theorems) and Unit 4 (integration techniques) — https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/pages/unit-3-the-definite-integral-and-its-applications/ — mirrors lab §4 techniques (substitution, parts, partial fractions); attempt the Unit 3–4 problem sets alongside the lab's area/volume drills.
+- MIT OCW Scholar 18.01SC Unit 5, Part B: Taylor Series — https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/pages/unit-5-exploring-the-infinite/part-b-taylor-series/ — pairs with lab §5.3 power/Taylor series; check radius-of-convergence examples against the lab's geometric/p-series convergence exercises.

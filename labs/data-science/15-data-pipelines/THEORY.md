@@ -150,3 +150,9 @@ A: Use one-hot encoding for nominal categories and ordinal encoding for ordered 
 ## 14. Glossary
 
 Bias: Error due to overly simplistic model assumptions. Variance: Error due to sensitivity to training data fluctuations. Regularization: Technique to prevent overfitting by penalizing model complexity. Hyperparameter: Configuration parameter set before training. Convergence: When iterative optimization reaches a stationary point. Cross-validation: Technique for estimating model performance on unseen data.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- dbt Developer Hub, "Add data tests to your DAG" (updated 16 Sep 2026) — https://docs.getdbt.com/docs/build/data-tests — takeaway for this lab: generic tests (unique, not_null, accepted_values, relationships) map directly to the lab's pipeline imputation/encoding/scaling checks — assert primary keys on every model.
+- dbt Developer Hub, "Singular vs generic data tests" section (updated 16 Sep 2026) — https://docs.getdbt.com/docs/build/data-tests — takeaway for this lab: singular SELECT-for-failing-rows tests encode business logic (e.g. total_amount >= 0); prefer reusable generic tests once the same shape repeats across pipeline models.
+- dbt Developer Hub, "Storing failures / running tests" guidance (updated 16 Sep 2026) — https://docs.getdbt.com/docs/build/data-tests — takeaway for this lab: run `dbt test` on every code change and production run, use `--store-failures` into `dbt_test__audit` schema and `test_type:data` selectors to debug pipeline regressions fast.

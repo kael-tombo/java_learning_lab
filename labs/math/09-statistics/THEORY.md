@@ -73,3 +73,10 @@ If repeated sampling, (1-α)% of intervals contain true parameter
 ### 6.2 R-squared
 - Proportion of variance explained
 - R² = 1 - SSE/SST
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- StatQuest Video Index — Statistics Fundamentals (Josh Starmer) — https://statquest.org/video_index.html — "Hypothesis Testing and the Null Hypothesis", "p-values: What they are and how to interpret them", and "Confidence Intervals" entries map onto lab §4 (H0/H1, z/t/chi-square tests, Type I/II errors) and §5 (x̄ ± z·σ/√n); watch them before the hypothesis-testing drills.
+- StatQuest "The Central Limit Theorem" + "Standard Deviation vs Standard Error" — https://statquest.org/video_index.html — clarifies lab §3.1 sampling distributions and the §5 confidence-interval denominator (σ/√n); use the CLT video to check when t- vs. z-intervals apply.
+- StatQuest "Covariance / Pearson's Correlation" + "The Essence of Linear Regression / R-squared explained" — https://statquest.org/video_index.html — grounds lab §2.2 (r = Cov(X,Y)/(σX·σY)) and §6 (ŷ = β₀ + β₁x, R² = 1 − SSE/SST); follow the regression playlist when implementing the least-squares slope formula.
+- StatQuest "Boxplots, Clearly Explained" + "Bootstrapping Part 1–2" — https://statquest.org/video_index.html — pairs with lab §1–2 (five-number summary, histograms, box plots); use the boxplot video to validate Q1/median/Q3/IQR computations on lab datasets.

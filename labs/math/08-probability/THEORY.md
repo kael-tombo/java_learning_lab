@@ -65,3 +65,10 @@ For large n, sum/average of i.i.d. variables approximates normal distribution re
 ## 7. Law of Large Numbers
 
 As n → ∞, sample mean → expected value
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Seeing Theory Ch. 1: Basic Probability — Chance Events, Expectation, Variance (Brown University, Daniel Kunin et al.) — https://seeing-theory.brown.edu — interactive expectation/variance visualizations map onto lab §2–3 (random variables, E[X], Var(X)); run the Expectation tile before coding discrete vs. continuous expected-value drills.
+- Seeing Theory Ch. 2: Compound Probability — Set Theory, Counting, Conditional Probability — https://seeing-theory.brown.edu — complements lab §1 (sample space, events, axioms) and §5 (Bayes); use the Conditional Probability tile to sanity-check prior/posterior/likelihood exercises.
+- Seeing Theory Ch. 3: Probability Distributions — Random Variables, Discrete and Continuous, Central Limit Theorem — https://seeing-theory.brown.edu/probability-distributions/index.html — directly supports lab §4 (Bernoulli/Binomial/Poisson/Normal) and §6 (CLT); compare the CLT sampler against the lab's i.i.d.-average normality claim.
+- Seeing Theory Ch. 5: Bayesian Inference — Bayes' Theorem, Likelihood, Prior to Posterior — https://seeing-theory.brown.edu/bayesian-inference/index.html — use the disease-test example and prior-to-posterior slider to verify lab §5 Bayes-rule calculations (P(A|B) = P(B|A)P(A)/P(B)).

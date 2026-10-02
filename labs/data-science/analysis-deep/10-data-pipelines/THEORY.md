@@ -68,3 +68,9 @@ Data Pipelines connects deeply with differential equations, optimization, probab
 
 ## 6. Summary
 The theoretical foundations of Data Pipelines provide the rigorous basis needed for correct computational implementation and real-world application.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Great Expectations, "GX Core: Open Source Data Quality Platform" (fetched Oct 2026) — https://greatexpectations.io/ — takeaway for this lab: Expectations (e.g. column values between bounds) turn pipeline assumptions into testable, versioned assertions instead of reactive debugging.
+- Great Expectations, "Data Docs / communicate better" section (fetched Oct 2026) — https://greatexpectations.io/ — takeaway for this lab: auto-rendered validation results in plain language give the lab's pipeline stakeholders a shared, human-readable data-quality record.
+- Great Expectations, "Take action 24/7 / integrations" section (fetched Oct 2026) — https://greatexpectations.io/ — takeaway for this lab: pair Expectations with Actions and orchestrator (Airflow/Databricks/Snowflake) integration so bad data is blocked or alerted at detection time, not downstream.

@@ -14,3 +14,8 @@ Standard: 1 day Time Travel. Enterprise: 90 days. Fail-safe: additional 7 days (
 
 ## Zero-Copy Cloning
 Creates metadata-only snapshot pointing to same storage fragments. Copy-on-write: only new/modified data consumes additional storage. Metadata-only operation completes in seconds regardless of table size.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- Micro-partitions & Data Clustering — Snowflake Documentation (evergreen; verified Oct 2026) — https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions#label-what-are-micropartitions — Takeaway for the Micro-Partitioning section (50–500 MB units): micro-partitioning is automatic on every table with per-column min/max/distinct metadata, so no upfront static-partition design is needed unlike a traditional warehouse.
+- Micro-partitions & Data Clustering — Snowflake Documentation (evergreen; verified Oct 2026) — https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions#label-micropartitions-query-pruning — Takeaway for the architecture/warehouse-sizing section: pruning skips whole micro-partitions plus unreferenced columns at runtime, so filter-heavy queries scale by scanning ~the selected fraction (e.g. one hour of a year ≈ 1/8760th) rather than full tables.
+- Micro-partitions & Data Clustering — Snowflake Documentation (evergreen; verified Oct 2026) — https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions#label-clustering-depth — Takeaway for large-table performance work: monitor clustering depth/overlap via SYSTEM$CLUSTERING_INFORMATION and add clustering keys only when sustained DML degrades pruning on multi-terabyte tables, since depth alone is not an absolute health score.

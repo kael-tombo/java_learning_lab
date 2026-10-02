@@ -90,3 +90,9 @@ public class OrderSagaOrchestrator {
     }
 }
 ```
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Pattern: Saga — Microservices.io (undated living pattern reference; accessed Oct 2026) — https://microservices.io/patterns/data/saga.html — Choreography (domain events trigger next step) vs orchestration (central orchestrator sends command/reply) maps directly onto this lab's two Java saga listings; choose choreography for simple flows, orchestration when the step graph branches.
+- Pattern: Saga — Microservices.io (undated living pattern reference; accessed Oct 2026) — https://microservices.io/patterns/data/saga.html — No automatic rollback: every step followed by a fallible step needs an explicit compensating transaction, which is exactly what the lab's `compensateReservation` / `rejectOrder` handlers model — audit that each forward step has its compensator.
+- Pattern: Saga — Microservices.io (undated living pattern reference; accessed Oct 2026) — https://microservices.io/patterns/data/saga.html — Each step must atomically update its DB *and* publish the event (Transactional Outbox or Event Sourcing); the lab's bare `eventPublisher.publish(...)` calls after `save(...)` need an outbox in production to avoid publish-after-commit gaps.

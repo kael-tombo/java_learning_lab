@@ -89,3 +89,8 @@ AWS provides comprehensive storage solutions for different use cases - object, b
 | Access | HTTP/HTTPS | Block device | NFS |
 | Multi-AZ | Yes (replication) | No | Yes |
 | Scalability | Automatic | Manual resize | Automatic |
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- Understanding and managing Amazon S3 storage classes — AWS S3 User Guide (evergreen; verified Oct 2026) — https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html#sc-freq-data-access — Takeaway for the S3 section (Standard, durability, latency): S3 Standard is the default for frequently accessed data; S3 Express One Zone targets single-digit-millisecond latency-sensitive workloads in a single AZ.
+- Understanding and managing Amazon S3 storage classes — AWS S3 User Guide (evergreen; verified Oct 2026) — https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html#sc-dynamic-data-access — Takeaway for the S3 storage-classes/lifecycle section: S3 Intelligent-Tiering auto-moves objects between Frequent/Infrequent/Archive-Instant tiers when access patterns are unknown or changing, with no retrieval fee.
+- Understanding and managing Amazon S3 storage classes — AWS S3 User Guide (evergreen; verified Oct 2026) — https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html#sc-compare — Takeaway for the S3 vs EBS vs EFS comparison and Glacier rows: use the comparison table (durability, AZ count, minimum duration/size, retrieval fees) to justify Standard-IA vs One Zone-IA vs Glacier Instant/Flexible/Deep Archive placement per access pattern.

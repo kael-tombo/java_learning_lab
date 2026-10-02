@@ -68,3 +68,9 @@ Model Monitoring connects deeply with differential equations, optimization, prob
 
 ## 6. Summary
 The theoretical foundations of Model Monitoring provide the rigorous basis needed for correct computational implementation and real-world application.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Evidently AI, "What is data drift in ML, and how to detect and handle it" (updated 9 Jan 2025) — https://www.evidentlyai.com/ml-in-production/data-drift — takeaway for this lab: treats feature/prediction drift as proxy monitoring when ground-truth labels are delayed, matching the lab's monitoring-vs-evaluation gap.
+- Evidently AI, "Data drift vs. concept drift / prediction drift" section (updated 9 Jan 2025) — https://www.evidentlyai.com/ml-in-production/data-drift — takeaway for this lab: data drift (input shift) vs concept drift (input-output relationship change) often co-occur; monitor both rather than input statistics alone.
+- Evidently AI, "How to detect / handle data drift" sections (updated 9 Jan 2025) — https://www.evidentlyai.com/ml-in-production/data-drift — takeaway for this lab: combine summary stats, statistical tests (KS/chi-square), distance metrics (PSI/Wasserstein), and rule checks; on drift, verify data quality first, then retrain or intervene (thresholds, human-in-loop).

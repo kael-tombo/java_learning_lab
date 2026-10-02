@@ -68,3 +68,9 @@ Feature Stores connects deeply with differential equations, optimization, probab
 
 ## 6. Summary
 The theoretical foundations of Feature Stores provide the rigorous basis needed for correct computational implementation and real-world application.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Google, "Rules of Machine Learning: Best Practices for ML Engineering" by M. Zinkevich (living guide, fetched Oct 2026) — https://developers.google.com/machine-learning/guides/rules-of-ml — takeaway for this lab: Rule #4/#5 keep the first model simple and test infrastructure independently — a feature store earns its keep by making training/serving feature delivery reliable first.
+- Google, "Rules of Machine Learning" Rules #29/#32 on training-serving skew (living guide, fetched Oct 2026) — https://developers.google.com/machine-learning/guides/rules-of-ml — takeaway for this lab: log features at serving time and reuse code between training and serving; directly motivates point-in-time-correct feature-store joins.
+- Google, "Rules of Machine Learning" Rules #8/#10/#11 on freshness, silent failures, feature ownership (living guide, fetched Oct 2026) — https://developers.google.com/machine-learning/guides/rules-of-ml — takeaway for this lab: document feature owners, monitor staleness/coverage (e.g. 90%-to-60% drops), and set freshness SLOs for store refreshes.

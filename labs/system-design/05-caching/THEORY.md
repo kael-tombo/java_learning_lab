@@ -171,3 +171,9 @@ public class CacheWarmingService {
 3. **Distribute**: Consistent hashing, Redis cluster
 4. **Warm**: Preload hot data on startup
 5. **Monitor**: Hit rate, latency, memory usage
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Design of a Modern Cache (Benjamin Manes, HighScalability, 25 Jan 2016) — https://highscalability.com/design-of-a-modern-cache/ — Window-TinyLFU admission filter (Count-Min Sketch frequency check) plus Segmented LRU retention beats plain LRU on database/search traces — consider Caffeine-style policies before assuming the lab's default LRU is near-optimal.
+- Design of a Modern Cache (Benjamin Manes, HighScalability, 25 Jan 2016) — https://highscalability.com/design-of-a-modern-cache/ — Prefer fixed-duration TTLs organized on O(1) write-order/access-order queues with lazy expiry during maintenance, which backs the lab's TTL-per-scenario table (e.g. user-profile 300s, session 1800s) and its scavenger/scheduled-refresh notes.
+- Design of a Modern Cache (Benjamin Manes, HighScalability, 25 Jan 2016) — https://highscalability.com/design-of-a-modern-cache/ — Scale concurrent access with buffered async replay (striped ring buffers for reads, MPSC queue for writes) so reads scale linearly with CPUs — relevant when the lab's Redis-cluster/consistent-hashing section meets hot-key contention.

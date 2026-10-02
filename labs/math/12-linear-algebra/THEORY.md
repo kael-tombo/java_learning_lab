@@ -33,3 +33,9 @@ The linear algebra package (com.math12) provides production-quality implementati
 - **Total: ~9.5 hours**
 
 ## Difficulty: ★★★★☆ (Advanced)
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- MIT OCW Scholar 18.06SC Linear Algebra (Fall 2011, Prof. Gilbert Strang) — https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011 — Unit I (Ax=b and the four subspaces) parallels this lab's vectors/matrices/transformations scope; watch the Geometry of Linear Equations + Column Space and Nullspace sessions before the EXERCISES.md elimination problem sets.
+- Strang 18.06SC Unit II: Least Squares, Determinants and Eigenvalues — https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/pages/least-squares-determinants-and-eigenvalues/ — matches the lab's eigenvalues/QR/least-squares topics; use its Projection Matrices and Least Squares problem-solving videos alongside the MINI_PROJECT.
+- Strang 18.06SC Unit III: Singular Value Decomposition; Change of Basis / Image Compression — https://ocw.mit.edu/courses/18-06sc-linear-algebra-fall-2011/pages/positive-definite-matrices-and-applications/singular-value-decomposition/ — grounds the lab's SVD coverage; replicate the image-compression example as a check on the REAL_WORLD_PROJECT implementation.

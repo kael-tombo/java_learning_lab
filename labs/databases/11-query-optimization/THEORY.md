@@ -39,3 +39,8 @@ for (Department d : depts) {
 - **Join methods**: Nested Loop, Hash Join, Merge Join
 - **Sorting**: In-memory vs disk-based sort
 - **Data locality**: Sequential vs random I/O
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- "Index-Only Scan: Avoiding Table Access" — Use-The-Index-Luke by Markus Winand (evergreen guide, site © 2010–2026; fetched Oct 2026) — https://use-the-index-luke.com/sql/clustering/index-only-scan-covering-index — Takeaway tied to covering indexes in this lab: a covering index must contain all columns in the query (WHERE + SELECT); the fetched example builds `(subsidiary_id, eur_value)` to answer `SUM(eur_value) ... WHERE subsidiary_id = ?` with an index-only scan and no table access.
+- "Index-Only Scan: Avoiding Table Access" (same source, fetched Oct 2026) — https://use-the-index-luke.com/sql/clustering/index-only-scan-covering-index — Takeaway tied to EXPLAIN plan reading in this lab: plans showing `INDEX RANGE SCAN` without `TABLE ACCESS BY INDEX ROWID` signal an index-only scan; when a new `WHERE sale_date > ?` column is not in the index, the plan regresses to table fetch/Index-scan-plus-table-access despite fewer rows returned.
+- "INCLUDE: Non-key Columns" section (same source, PostgreSQL 11+ / SQL Server; fetched Oct 2026) — https://use-the-index-luke.com/sql/clustering/index-only-scan-covering-index — Takeaway tied to Covering/INCLUDE index type in this lab: non-key `INCLUDE(phone_number, first_name)` columns live only in leaf nodes to enable index-only scans without becoming access predicates or widening key limits (e.g. PostgreSQL B-tree ~2713-byte / 32-column limits).
