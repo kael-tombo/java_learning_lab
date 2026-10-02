@@ -169,3 +169,9 @@ Post-mortem remediation items must not be vague platitudes ("remind team to be c
 └────────────────────────────────────────────────────────────────────────┘
 ```
 **FinOps & SRE Standard**: At least $70\%$ of post-mortem action items must fall into **Level 1, 2, or 3** (Automated Engineering Controls).
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Postmortem Culture: Learning from Failure, Ch. 15 Google SRE Book (O'Reilly, 2017) — https://sre.google/sre-book/postmortem-culture/ — Takeaway tied to lab §4 blameless/Just Culture: assume good intentions with the information available and fix systems, not people — the lab's proxy/linter/ephemeral-credential remediations are textbook Level-1–3 controls.
+- Postmortem triggers and review bar: user-visible degradation, data loss, on-call intervention, slow resolution, monitoring gaps (same Google SRE Ch. 15, 2017) — https://sre.google/sre-book/postmortem-culture/ — Takeaway tied to lab §2 MTTD/MTTA/MTTR and §5 hierarchy: define triggers before the incident and require review for impact completeness, root-cause depth, and action-item priority.
+- No postmortem left unreviewed: collaborate in the doc, close comments, share broadly, mine trends (same Google SRE Ch. 15, 2017) — https://sre.google/sre-book/postmortem-culture/ — Takeaway tied to lab ICS roles (§1 Scribe/Comms Lead): the scribe timeline plus shared template/metadata is what makes Five-Whys (§4.1) auditable and lets monthly reviews and Wheel-of-Misfortune drills compound.
