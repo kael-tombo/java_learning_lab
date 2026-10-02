@@ -45,3 +45,26 @@ Synthesized, not quoted: public engineering-blog consensus from these shops, ref
 **Principle:** Build internal platforms (base images, flag standards, deploy pipelines, cost dashboards); buy managed data, CDN, and observability backends unless you are in the business of running them.
 
 **Reasoning:** Netflix/Amazon/Google/Uber/LinkedIn all run large internal platforms *on top of* managed or specialized infrastructure — none hand-rolls databases for CRUD services anymore. The build-vs-buy line sits exactly at VISION.md's managed-service gravity: buy the database/CDN/trace backend (their economies of scale crush yours), build the thin adapter + portability seam so the purchase stays reversible. The COST_REALITY.md models assume this split: compute is yours to optimize (JVM/native/CRaC, ARM, rightsizing); data durability and global bytes are bought.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Netflix virtual threads on Java 21 (via InfoQ summary of the Netflix
+  JVM Ecosystem TechBlog post, Aug 2024): Spring Boot 3 + embedded Tomcat
+  hung with `closeWait` pile-up; `jcmd Thread.dump_to_file` revealed
+  thousands of blank never-scheduled virtual threads — per-request
+  threads pinned on `synchronized` with all ForkJoinPool carriers held, a
+  deadlock shape with no heap-dump lock owner. Takeaways adopted into this
+  lab: ReentrantLock-over-`synchronized` rule (THEORY), the pinning demo
+  (EXERCISES), generational ZGC (JEP 439) as the companion upgrade, Atlas
+  Streaming Eval as the alerting that caught it.
+  <https://www.infoq.com/news/2024/08/netflix-performance-case-study/>
+- Atlassian Jira/Confluence → Graviton4 (Nov 2025, 3000+ instances): three
+  methodology rules worth stealing — no micro-benchmark rabbit holes, no
+  passive benchmarking, one agreed metric up front ("throughput at
+  breaking latency"); PMU-led root causes (L3 thrashing → smaller JIT code
+  cache 64–128 MB + tiered compilation; TLB pressure → Transparent Huge
+  Pages); workload-split capacity strategy (sync on G4, async on older
+  generations, x86 fallback via mixed launch templates); result ~30%
+  fewer instances, P90 −12%, ~9.8% fleet savings. Directly backs the
+  lab's Graviton-benchmark-first rule and the ICE/fallback exercise.
+  <https://www.atlassian.com/blog/how-we-build/migrating-the-jira-and-confluence-applications-to-aws-graviton>

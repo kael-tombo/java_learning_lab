@@ -61,3 +61,41 @@ Quotable principles with the reasoning behind each. Treat every quote as a revie
 3. Scale on user pain (latency/lag), and break the scaler on purpose.
 4. JVM flags and IAM bindings are code — review and canary them.
 5. Data-store choice comes from the query list; chaos cadence turns all of the above from docs into proof.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Atlassian, "Migrating the Jira and Confluence applications to AWS
+  Graviton" (Nov 2025, 3000+ EC2 instances): prior G2/G3 attempts failed
+  on *unexplained* slowness (L3-miss suspicion, `synchronized` folklore)
+  until the team banned micro- and passive-benchmarking and defined one
+  metric — **throughput at breaking latency**. PMU data then showed ~25%
+  higher L3-mpki on G3 (cache thrashing) → fix was *smaller* JIT code
+  cache (64–128 MB via `InitialCodeCacheSize`/`ReservedCodeCacheSize`) +
+  `TieredCompilation` + Transparent Huge Pages for TLB pressure. Outcome
+  on G4 (c8g): ~30% fewer instances, P90 down >12%, pilot throughput
+  +20–30%, fleet savings ~9.8% (25% on hot shards). Confluence *regressed*
+  on c7g in prod (p50 19→22 ms, p99 262→347 ms) after passing tests —
+  same-binary-different-workload lesson. Capacity: 10–15k ICE errors/hour
+  at their scale; mitigation = sync/async workload split (async on older
+  Gravitons) + mixed-instance ASGs with x86 fallback.
+  <https://www.atlassian.com/blog/how-we-build/migrating-the-jira-and-confluence-applications-to-aws-graviton>
+  Lab actions: cap code cache + tiered compilation in the lab-53
+  Dockerfile JAVA_OPTS variant; add an ICE/fallback exercise (mixed
+  instances policy) to EXERCISES.md §5; treat any Graviton claim as
+  guilty-until-PMU-proven.
+- Netflix virtual-threads incident via InfoQ summary of the Netflix JVM
+  Ecosystem TechBlog post (Aug 2024): Java 21 + Spring Boot 3 + embedded
+  Tomcat hung with `closeWait` socket pile-up; `jcmd Thread.dump_to_file`
+  showed thousands of *blank* (never-scheduled) virtual threads — Tomcat
+  minted per-request virtual threads that pinned on `synchronized` blocks
+  while all ForkJoinPool carriers were held: classic deadlock shape with
+  no lock owner in the heap dump. Fix path: reproducible test case
+  (gist by Daniel Thomas, linked in article) + JDK-side pinning fixes in
+  later releases; same fleet also adopted generational ZGC (JEP 439) for
+  pause control with Atlas Streaming Eval alerting catching the bad
+  instances.
+  <https://www.infoq.com/news/2024/08/netflix-performance-case-study/>
+  (primary: `netflixtechblog.com/java-21-virtual-threads-dude-wheres-my-lock-…`)
+  Lab actions: the lab's pinning exercise (53/EXERCISES) and ReentrantLock
+  rule now have a named production casualty; add `jcmd` dump reading to
+  the virtual-threads deep-dive follow-up.

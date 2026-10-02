@@ -51,3 +51,21 @@ Quotable principles from how the Microsoft-ecosystem hyperscalers actually run J
 **Reasoning.** Microsoft's internal FinOps and the Azure Cost Management model agree: per-service attribution (tags on every resource group, Budgets + anomaly alerts wired to the owning team) turns cost into a code-reviewable signal. Reservation and saving-plan purchases follow *measured-steady* baselines only (MATH_FOUNDATION.md §4) — buying down hoped-for load is repeatedly documented as the classic enterprise waste motion. LinkedIn's capacity planning makes the same point with utilization-gated commitments.
 
 **Application.** Every resource in the lab's Bicep carries `service/env/owner` tags; the MINI_PROJECT 7-day tagged bill (AKS vs Container Apps split) is the reservation input, and COST_REALITY.md works the three-scale math showing exactly where reservations vs pay-as-you-go win.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- Microsoft Learn, KEDA on AKS (managed add-on; AKS Automatic ships it
+  preconfigured): KEDA is the *only* allowed external metrics adapter per
+  cluster; do **not** combine a KEDA `ScaledObject` with a plain HPA on
+  the same workload (they fight — KEDA already drives an HPA underneath).
+  `ScaledJob` variant creates one Job per batch of messages (example:
+  100 messages → 10 jobs at messageCount 10) with rollout `gradual` +
+  foreground propagation so running jobs finish. Auth via
+  `TriggerAuthentication` + workload identity (`azure.workload.identity/use`,
+  `azure-servicebus` scaler, `messageCount`/`queueLength` thresholds,
+  `pollingInterval`/`cooldownPeriod`, `restoreToOriginalReplicaCount`).
+  Directly backs the lab's KEDA-vs-HPA split, the messageCount-derivation
+  exercise, and the poison/DLQ drill's scaling half.
+  <https://learn.microsoft.com/en-us/azure/aks/keda-about>
+  <https://learn.microsoft.com/en-us/azure/aks/keda-workload-identity>
+  <https://microsoft.github.io/k8s-on-azure-workshop/lab-3/7_keda/>

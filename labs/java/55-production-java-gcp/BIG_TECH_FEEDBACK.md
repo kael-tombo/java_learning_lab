@@ -115,3 +115,31 @@ explicitly rather than discovered at noon on sale day.
 
 **Action:** Publish cold-start latency beside every benchmark; the
 concurrency sweep (EXERCISES.md §2) is invalid without the cold column.
+
+## 8. Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- GoogleCloudPlatform `serverless-production-readiness-java-gcp` (living
+  repo, 397 commits): production-ready = stable, reliable, scalable,
+  performant, fault-tolerant, monitored, documented, secured — and
+  optimization is always *for something* (startup, latency, memory/CPU,
+  concurrency, image size, cost). The repo's framing matches this lab's
+  THEORY split; use its `services/` multi-service sample (quotes/audit/
+  reference/faulty/BFF on Cloud SQL + Firestore) as the reference
+  implementation for the MINI_PROJECT dual-deploy.
+  <https://github.com/GoogleCloudPlatform/serverless-production-readiness-java-gcp>
+- Cloud Run Java tips (official docs): container-aware JVM (8u192+,
+  11/17 GA), AppCDS/shared archives, smaller thread stacks (1 MB default
+  × thread count adds up fast), reactive-or-bounded pools (blocking code
+  on 2–4 event-loop threads tanks throughput; unbounded pools thrash),
+  background tasks don't run under request-based billing (JDBC eviction,
+  trace/metric batching, `@Scheduled`, Pub/Sub streaming pull all stall
+  at zero QPS), lazy init + Spring AOT/GraalVM for startup, explicit GC
+  choice (G1 default ≥ ~1.8 GB/2 CPU; Serial below — know which you got).
+  <https://docs.cloud.google.com/run/docs/tips/java>
+- Cloud Run concurrency (official docs): default max 80 (CLI/Terraform),
+  cost ≈ billable instance-time — higher concurrency usually lowers cost
+  *until* contention raises latency; match memory to concurrency; avoid
+  mutable global state without locks; iterate 8 → up with load tests to
+  maximum *stable* concurrency. Directly backs EXERCISES.md §2's sweep
+  method and the COST_REALITY Run math.
+  <https://docs.cloud.google.com/run/docs/about-concurrency>
