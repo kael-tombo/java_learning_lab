@@ -1,61 +1,133 @@
-# Flashcards: Platform Engineering
+# Platform Engineering Flashcards
 
-## Front: What is the 
-**Back:** An architectural pattern that provides structured approaches to building distributed systems with clear boundaries, standardized interactions, and incremental evolution capabilities.
+## Fundamentals
 
-## Front: What are the key benefits?
-**Back:** Improved maintainability, independent deployability, fault isolation, team autonomy, and evolutionary architecture.
+**Q: What is Platform Engineering?**
+**A:** Building an Internal Developer Platform (IDP) as a product for internal developers. Reduces cognitive load, provides paved roads, self-service.
 
-## Front: When should you avoid this pattern?
-**Back:** Simple applications with single deployment, small teams with limited resources, early-stage products, and systems with strong consistency requirements.
+**Q: Platform Engineering vs DevOps?**
+**A:** DevOps = culture/practices. Platform Eng = product team building reusable platform. Platform enables DevOps at scale.
 
-## Front: What is the most common implementation mistake?
-**Back:** Over-engineering by applying the pattern where simpler solutions suffice, or under-engineering by ignoring the pattern where it provides clear benefits.
+**Q: What is an IDP?**
+**A:** Internal Developer Platform — unified layer of tools, APIs, workflows for: deploy, infra, secrets, observability, policy.
 
-## Front: What testing strategy is recommended?
-**Back:** Comprehensive testing pyramid: unit tests for core logic, integration tests for component interactions, contract tests for APIs, and end-to-end tests for critical paths.
+**Q: Platform as a Product?**
+**A:** Treat platform like a product: customers (developers), PM, roadmap, metrics, feedback loops, documentation, support.
 
-## Front: How does this pattern handle state?
-**Back:** State is managed through clear boundaries: request-scoped for single operations, session-scoped for client interactions, and database-persisted for durable storage.
+**Q: Cognitive Load?**
+**A:** Mental effort to complete a task. Platform reduces it by abstracting complexity (K8s, networking, infra).
 
-## Front: What security measures are important?
-**Back:** Authentication at entry points, authorization at service boundaries, encryption (TLS) for all communication, secrets management, and input validation.
+---
 
-## Front: How does the pattern scale?
-**Back:** Horizontal scaling through stateless design, vertical scaling for compute-bound tasks, caching for read-heavy workloads, and auto-scaling for demand-based capacity.
+## Golden Paths
 
-## Front: What is the role of monitoring?
-**Back:** Monitoring provides visibility into system health, performance, and behavior. Key metrics include throughput, latency, error rates, and resource utilization.
+**Q: What is a Golden Path?**
+**A:** Opinionated, supported path for common tasks (e.g., "Java microservice to prod"). Includes templates, CI/CD, policies, observability.
 
-## Front: How does this pattern handle failures?
-**Back:** Circuit breakers prevent cascading failures. Bulkheads isolate failures. Retries with backoff handle transient failures. Graceful degradation maintains partial functionality.
+**Q: Golden Path components?**
+**A:** Template (scaffold), CI pipeline, CD pipeline, policies (guardrails), observability defaults, docs.
 
-## Front: What is the Strangler Fig pattern?
-**Back:** An incremental migration pattern where new functionality is built alongside legacy systems. Traffic is gradually routed to the new system until the legacy system can be decommissioned.
+**Q: Why not "Golden Cage"?**
+**A:** Must allow escape hatches for special cases. Guardrails, not gates. Developers can opt out with approval.
 
-## Front: What is the difference between orchestration and choreography?
-**Back:** Orchestration uses a central coordinator to direct workflow. Choreography uses distributed events where each service reacts to events independently.
+**Q: Template example (Backstage)?**
+**A:** `template.yaml` → generates: Git repo, Dockerfile, Helm chart, Tekton pipeline, ArgoCD Application, README.
 
-## Front: What is the Backend for Frontend pattern?
-**Back:** A pattern where dedicated backend services are created for each client type (web, mobile, IoT), optimizing data shape and protocol for each specific client.
+---
 
-## Front: What is a sidecar proxy?
-**Back:** A helper process deployed alongside the main application that handles cross-cutting concerns like service discovery, traffic management, and observability without modifying application code.
+## Self-Service Infrastructure
 
-## Front: What is the Circuit Breaker pattern?
-**Back:** A resilience pattern that detects failures and prevents cascading by stopping requests to failing services until they recover. States: CLOSED, OPEN, HALF_OPEN.
+**Q: CrossPlane core concepts?**
+**A:** 
+- **XRD** (CompositeResourceDefinition): Custom API (e.g., `XPostgreSQL`)
+- **XR** (CompositeResource): Instance of XRD
+- **Composition**: Maps XR → managed resources (RDS, CloudSQL, CNPG)
+- **Provider**: K8s controller for external API (AWS, GCP, Azure, K8s)
 
-## Front: What is the Saga pattern?
-**Back:** A pattern for managing distributed transactions through sequences of local transactions with compensating actions for rollback. Supports eventual consistency.
+**Q: CrossPlane vs Terraform Controller?**
+**A:** CrossPlane = native K8s API, continuous reconciliation, composition engine. Terraform = plan/apply cycle, state file, less K8s-native.
 
-## Front: What is a golden path in platform engineering?
-**Back:** A recommended, well-supported approach for common development tasks that reduces decision fatigue and ensures consistency across teams.
+**Q: GitOps for Infra?**
+**A:** ArgoCD/Flux watches Git → applies manifests. Infra as Code in Git. Drift detection + auto-heal.
 
-## Front: What is Backstage?
-**Back:** An open-source developer portal by Spotify that provides a software catalog, templates, documentation, and self-service capabilities for internal developer platforms.
+**Q: App of Apps pattern?**
+**A:** Root Application manages child Applications (per team, env, cluster). Single source of truth for cluster state.
 
-## Front: What is service mesh?
-**Back:** A dedicated infrastructure layer for managing service-to-service communication. Provides traffic management, security, observability, and policy enforcement via sidecar proxies.
+---
 
-## Front: What is the difference between control plane and data plane?
-**Back:** Control plane manages configuration and policies across the system. Data plane handles actual traffic and request processing. They are separated for security and scalability.
+## Developer Portal (Backstage)
+
+**Q: Backstage core plugins?**
+**A:** Software Catalog, Software Templates (Scaffolder), TechDocs, Kubernetes, ArgoCD, Cost, Search.
+
+**Q: Software Catalog?**
+**A:** Graph of entities: Component, API, Resource, System, Domain, User, Group. Ingested from Git, K8s, cloud.
+
+**Q: Scaffolder?**
+**A:** Executes template → creates repo, files, CI/CD, registers in catalog. Steps: fetch, template, publish, register.
+
+**Q: TechDocs?**
+**A:** MkDocs-based, docs live in repo (`/docs`), built and published automatically on merge.
+
+**Q: Backstage + ArgoCD?**
+**A:** ArgoCD plugin shows sync status, health, history in catalog entity page. One-click sync.
+
+---
+
+## Policy as Code
+
+**Q: Kyverno vs OPA Gatekeeper?**
+**A:** 
+- Kyverno: K8s-native, YAML policies, easier debugging (PolicyReport), mutate + validate + generate.
+- OPA: Rego language, more powerful, separate audit scan, steeper learning curve.
+
+**Q: Kyverno policy types?**
+**A:** `validate` (enforce/audit), `mutate` (add defaults, labels), `generate` (create resources), `verifyImages` (sigstore).
+
+**Q: Admission control flow?**
+**A:** Request → AuthN → AuthZ → MutatingWebhook (Kyverno mutate) → ValidatingWebhook (Kyverno validate/OPA) → Etcd.
+
+**Q: Policy testing?**
+**A:** `kyverno test` (unit tests), `kyverno apply --dry-run`, PolicyReport for cluster audit.
+
+---
+
+## Secrets Management
+
+**Q: SealedSecrets flow?**
+**A:** `kubeseal` encrypts Secret → SealedSecret (safe in Git) → Controller in cluster decrypts → creates Secret.
+
+**Q: External Secrets Operator (ESO)?**
+**A:** `SecretStore` (Vault/AWS/GCP) + `ExternalSecret` (specifies what to sync) → Controller creates K8s Secret.
+
+**Q: Vault Agent Injector?**
+**A:** Sidecar + init container. Authenticates to Vault, writes secrets to shared volume (file/env). App reads from volume.
+
+**Q: Rotation strategies?**
+**A:** SealedSecrets: manual. ESO: auto (poll interval, webhook). Vault Agent: template re-render on change (fsnotify).
+
+---
+
+## Observability & Metrics
+
+**Q: Platform metrics (DORA +)?**
+**A:** Deployment Frequency, Lead Time, MTTR, Change Failure Rate + Onboarding Time, Adoption %, Self-Service Ratio.
+
+**Q: Platform SLIs/SLOs?**
+**A:** API latency (p99 < 500ms), availability (99.9%), build queue time (< 5 min), deploy success rate (> 99%).
+
+---
+
+## Day 2 Operations
+
+**Q: Control plane upgrade strategy?**
+**A:** Test in staging → backup etcd → upgrade K8s masters → upgrade controllers (ArgoCD, Crossplane, Kyverno) → rolling worker upgrade → validate.
+
+**Q: Cost optimization?**
+**A:** Right-sizing (VPA), spot instances, cluster autoscaler, idle resource cleanup (janitor), FinOps dashboard.
+
+**Q: Security patching?**
+**A:** Base image updates (Dependabot/Renovate), node image upgrades, CVE scanning (Trivy/Grype), policy enforcement.
+
+**Q: Developer support?**
+**A:** Slack channel, office hours, platform docs, onboarding buddy, feedback surveys, incident retrospectives.

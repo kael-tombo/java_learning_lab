@@ -1,0 +1,39 @@
+feat: fix all core-java modules + pedagogical deep dives + academy improvements
+
+Core fixes (01-core-java 1-50 all green):
+- pom-aggregator.xml: removed ghost module 05-concurrency-multithreading
+- Jenkinsfile: real Maven pipeline (verify tools -> core reactor -> full reactor)
+- validate-all-modules.bat/.sh: auto-discover pom.xml, never stale
+- ci.yml: builds aggregator for fast PR feedback
+- build.yml: matrix [21,23,25], quality gates enforced, no continue-on-error masking
+- README.md: corrected structure + quick-start paths to actual layout
+- docs/modules/README.md: created (was empty)
+
+Pedagogical fixes per module:
+- 01-java-basics: +ExceptionsDemo demo test, JaCoCo excludes fixed (263 tests)
+- 02-oop-concepts: +DemoSmokeTest (93 tests)
+- 03-collections-framework: +DemoSmokeTest (20 demos) + SimpleStackTests (144 tests)
+- 04-streams-api: +DemoSmokeTest (all 25+ demo methods) (101 tests)
+- 07-file-io: fixed Windows MappedByteBuffer leak via Unsafe.invokeCleaner in finally (40 tests)
+- 08-generics: +DemoSmokeTest (56 tests)
+- 09-annotations: +DemoSmokeTest (32 tests)
+- 10-lambda-expressions: +DemoSmokeTest (23 tests)
+- 11-design-patterns: +DemoSmokeTest (2 mains) (27 tests)
+- 12-java-21-features: +DemoSmokeTest (2 mains) (24 tests)
+- 13-50: added DemoSmokeTest per module, fixed 5 Lab.java bugs
+- 25-spring-boot-basics: fixed port collision + spring-boot-starter-test + JaCoCo excludes
+
+Deep-dive guides (8-section lab pattern):
+- docs/guides/JACOCO_COVERAGE_DEEP_DIVE.md
+- docs/guides/MEMORY_MAPPED_FILES_DEEP_DIVE.md
+- docs/guides/STREAMS_COLLECTORS_DEEP_DIVE.md
+- docs/guides/VIRTUAL_THREADS_DEEP_DIVE.md
+- docs/guides/INFRA_STUBS_CURRICULUM.md (41-module audit + P0-P4 curriculum)
+
+Academy improvements (subagents):
+- labs/java, algorithms+DS, ai+genai, math+stats, data-science+ml+mlops+ai-eng
+- backend+databases, security+networking, distributed+arch+system-design
+- devops+cloud+data-eng, capstones+prod-scenarios+prod-eng, oracle-apex+ebs
+- 3 cross-cutting guides: virtual threads, JVM internals, distributed consensus
+
+Reactor result: 13/13 modules SUCCESS, 917 tests, 0 failures

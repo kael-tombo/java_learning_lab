@@ -1,110 +1,111 @@
-# Quiz: Service Mesh Architecture
+# Service Mesh Architecture Quiz
 
-## Section 1: Fundamentals
+## Questions
 
-### Question 1
-What is the primary problem addressed by this pattern?
-A) Performance optimization
-B) System decomposition and migration
-C) Data consistency
-D) User interface design
+1. **Data Plane vs Control Plane**: Explain the separation. What runs in the data plane (sidecar)? What runs in the control plane? Why is this separation critical for security and scalability?
 
-### Question 2
-Which of the following is a key principle of this pattern?
-A) Monolithic deployment
-B) Single point of control
-C) Incremental adoption
-D) Synchronous communication
+2. **Sidecar Proxy Responsibilities**: List 5 responsibilities of the sidecar proxy (Envoy). Which are L4 vs L7? Which require service registry integration?
 
-### Question 3
-When should you avoid using this pattern?
-A) Multiple client types
-B) Simple applications with clear boundaries
-C) Complex distributed systems
-D) Large-scale migrations
+3. **mTLS Implementation**: How does a service mesh implement mutual TLS? Describe the certificate lifecycle: issuance, rotation, revocation. What is SPIFFE/SPIRE?
 
-### Question 4
-What is the primary trade-off of this pattern?
-A) Increased operational complexity vs. migration safety
-B) Better performance vs. data consistency
-C) Simplicity vs. flexibility
-D) Security vs. usability
+4. **Traffic Splitting**: You want to canary deploy v2 of a service (10% traffic). Show the VirtualService/DestinationRule (Istio) or HTTPRoute (Gateway API) config. How does the mesh ensure session affinity if needed?
 
-## Section 2: Implementation
+5. **Retry + Timeout + Circuit Breaker**: In Istio, you configure `retries: 3, perTryTimeout: 2s, timeout: 10s`. A request fails 3 times with 1.5s each. Total time? What if the 3rd retry takes 3s? How does circuit breaker (outlier detection) interact?
 
-### Question 5
-Which Java feature is most relevant for implementing this pattern efficiently?
-A) Reflection
-B) Virtual threads
-C) Serialization
-D) Annotations
+6. **Authorization Policies**: Difference between `PeerAuthentication` (mTLS), `AuthorizationPolicy` (RBAC), and `RequestAuthentication` (JWT). When to use each? Show a policy allowing only `payment-service` to call `billing-service` on `/charge`.
 
-### Question 6
-How should configuration be managed?
-A) Hard-coded constants
-B) Externalized with validation
-C) Database stored
-D) Runtime system properties
+7. **Observability - Distributed Tracing**: How does the mesh inject trace context? What headers (W3C trace-context, B3)? If application doesn't propagate headers, what breaks? How to fix?
 
-### Question 7
-What testing strategy is most appropriate?
-A) Only unit tests
-B) Unit, integration, and end-to-end tests
-C) Manual testing only
-D) Performance testing only
+8. **Multi-Cluster / Multi-Network**: Two clusters in different VPCs. How does service mesh handle cross-cluster service discovery? What is `ServiceEntry` / `ClusterEntry`? Describe the control plane replication model.
 
-### Question 8
-How should errors be handled?
-A) Silent catch blocks
-B) Custom exception hierarchy
-C) Generic exceptions only
-D) Log and continue
+9. **Performance Overhead**: Sidecar adds ~2-5ms latency per hop. For a 10-hop request chain, that's 20-50ms. What optimizations exist? (e.g., protocol upgrade, ztunnel, ambient mesh). When would you NOT use a service mesh?
 
-## Section 3: Architecture
+10. **Incident**: All sidecars in namespace `prod` show `503` for external egress. Control plane is healthy. Debugging steps: check `Envoy` config dump, `istioctl proxy-config`, egress gateway, `ServiceEntry` for external domains.
 
-### Question 9
-What is the role of monitoring in this pattern?
-A) Optional nice-to-have
-B) Essential for operational visibility
-C) Only for production issues
-D) Developer-only tool
+---
 
-### Question 10
-How does this pattern handle state?
-A) Stateless only
-B) Stateful with clear boundaries
-C) No state management
-D) Global shared state
+## Answers
 
-### Question 11
-What is the recommended deployment strategy?
-A) Big bang deployment
-B) Incremental with rollback capability
-C) Manual deployment
-D) No deployment strategy
+1. **Data Plane**: Sidecar proxies (Envoy) in each pod — handle actual traffic (L4/L7 proxy, mTLS, retries, metrics). **Control Plane**: Istiod/Linkerd controller — config distribution, certificate management, service discovery, policy enforcement. **Separation**: Data plane scales with workloads; control plane scales with config complexity. Security: compromise of one sidecar doesn't expose control plane.
 
-## Section 4: Advanced Topics
+2. **Sidecar Responsibilities**:
+   - L4: TCP proxy, mTLS termination, load balancing (round-robin, least request)
+   - L7: HTTP routing, retries, timeouts, fault injection, rate limiting, authz
+   - Observability: metrics (Prometheus), traces (headers), access logs
+   - Service registry: SDS (Secret Discovery Service), EDS (Endpoint Discovery Service)
 
-### Question 12
-How does this pattern interact with distributed tracing?
-A) No interaction
-B) Propagates trace context through operations
-C) Replaces tracing
-D) Only works with specific tracers
+3. **mTLS Flow**:
+   - Control plane (Istiod) acts as CA or integrates with SPIRE
+   - Workload identity: `spiffe://cluster.local/ns/default/sa/payment-service`
+   - Certs issued via SDS API, rotated every 24h (default), 1h before expiry
+   - Revocation: CRL or short-lived certs (no revocation needed)
+   - **SPIFFE**: Standard for workload identity. **SPIRE**: Implementation (agent + server).
 
-### Question 13
-What security considerations apply?
-A) No security concerns
-B) Authentication and authorization at boundaries
-C) Only encryption
-D) Only access control
+4. **Canary Config (Istio)**:
+```yaml
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+spec:
+  hosts: ["billing-service"]
+  http:
+  - route:
+    - destination: { host: billing-service, subset: v1 }
+      weight: 90
+    - destination: { host: billing-service, subset: v2 }
+      weight: 10
+---
+kind: DestinationRule
+spec:
+  host: billing-service
+  subsets:
+  - name: v1
+    labels: { version: v1 }
+  - name: v2
+    labels: { version: v2 }
+```
+Session affinity: `consistentHash` on header/cookie in `DestinationRule`.
 
-### Question 14
-How does this pattern handle scaling?
-A) Vertical scaling only
-B) Horizontal scaling with stateless design
-C) No scaling support
-D) Manual scaling
+5. **Timing**: 
+   - 3 retries × 1.5s = 4.5s < 10s timeout → succeeds on 3rd retry
+   - If 3rd retry 3s: 1.5+1.5+3 = 6s < 10s → succeeds
+   - If total > 10s: timeout triggers, request fails
+   - **Outlier detection** (circuit breaker): Tracks 5xx per endpoint. If > threshold, ejects host from LB pool. Independent of retry policy.
 
-## Answer Key
-1-B, 2-C, 3-B, 4-A, 5-B, 6-B, 7-B, 8-B, 9-B, 10-B, 11-B, 12-B, 13-B, 14-B
+6. **Policy Types**:
+   - `PeerAuthentication`: mTLS mode (STRICT, PERMISSIVE)
+   - `RequestAuthentication`: JWT validation (issuer, audiences)
+   - `AuthorizationPolicy`: RBAC (allow/deny rules on source, path, method)
+```yaml
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata: { name: billing-auth, namespace: prod }
+spec:
+  selector: { matchLabels: { app: billing-service } }
+  rules:
+  - from:
+    - source: { principals: ["cluster.local/ns/prod/sa/payment-service"] }
+    to:
+    - operation: { paths: ["/charge"], methods: ["POST"] }
+```
+
+7. **Trace Context**: Sidecar injects `traceparent`, `tracestate` (W3C) or `x-b3-*` (B3) on ingress. **App must propagate** headers on outbound calls. If not: trace breaks at that service. Fix: auto-instrumentation (OpenTelemetry Java agent) or middleware.
+
+8. **Multi-Cluster**:
+   - **Primary-Remote**: Single control plane (primary) manages remote clusters via secrets
+   - **Multi-Primary**: Each cluster has control plane, share config via federation
+   - Cross-cluster discovery: `ServiceEntry` with `endpoints` from remote cluster
+   - `ClusterEntry` (Gateway API): Standardized multi-cluster service import
+
+9. **Optimizations**:
+   - **Ambient Mesh** (Istio): ztunnel (L4) per node + waypoint (L7) per namespace — no sidecar per pod
+   - **Protocol upgrade**: h2c, HTTP/3
+   - **Connection pooling**: Reuse upstream connections
+   - **Don't use mesh**: Simple apps (< 10 services), high-perf requirements (sub-ms), team lacks ops capacity
+
+10. **Debugging Egress 503**:
+    1. `istioctl proxy-config listener <pod> -n prod` — check egress listeners
+    2. `istioctl proxy-config route <pod> -n prod` — check virtual outbound routes
+    3. Verify `ServiceEntry` for external domain exists
+    4. Check egress gateway logs (if used)
+    5. `istioctl x authz check <pod>` — verify authz policies
+    6. Capture Envoy config dump: `istioctl proxy-config all <pod> -o json`

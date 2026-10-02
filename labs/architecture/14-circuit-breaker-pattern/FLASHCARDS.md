@@ -1,61 +1,137 @@
-# Flashcards: Circuit Breaker Pattern
+# Circuit Breaker Pattern Flashcards
 
-## Front: What is the 
-**Back:** An architectural pattern that provides structured approaches to building distributed systems with clear boundaries, standardized interactions, and incremental evolution capabilities.
+## Core Concepts
 
-## Front: What are the key benefits?
-**Back:** Improved maintainability, independent deployability, fault isolation, team autonomy, and evolutionary architecture.
+**Q: What is the Circuit Breaker pattern?**
+**A:** A resilience pattern that detects failures and stops requests to a failing service, preventing cascading failures. Three states: CLOSED (normal), OPEN (blocking), HALF_OPEN (testing recovery).
 
-## Front: When should you avoid this pattern?
-**Back:** Simple applications with single deployment, small teams with limited resources, early-stage products, and systems with strong consistency requirements.
+**Q: What problem does it solve?**
+**A:** Cascading failures — when a downstream service is slow/down, upstream callers block threads waiting, exhausting resources (thread pools, connections).
 
-## Front: What is the most common implementation mistake?
-**Back:** Over-engineering by applying the pattern where simpler solutions suffice, or under-engineering by ignoring the pattern where it provides clear benefits.
+**Q: Three states & meanings?**
+**A:** 
+- **CLOSED**: Normal operation, requests pass through, failures counted
+- **OPEN**: Short-circuiting, requests fail fast immediately, timer running
+- **HALF_OPEN**: Trial period after timeout, limited probe requests allowed
 
-## Front: What testing strategy is recommended?
-**Back:** Comprehensive testing pyramid: unit tests for core logic, integration tests for component interactions, contract tests for APIs, and end-to-end tests for critical paths.
+**Q: CLOSED → OPEN transition?**
+**A:** Failure threshold reached (count-based: N failures, or rate-based: X% failures in sliding window).
 
-## Front: How does this pattern handle state?
-**Back:** State is managed through clear boundaries: request-scoped for single operations, session-scoped for client interactions, and database-persisted for durable storage.
+**Q: OPEN → HALF_OPEN transition?**
+**A:** `waitDurationInOpenState` elapsed (configurable timeout).
 
-## Front: What security measures are important?
-**Back:** Authentication at entry points, authorization at service boundaries, encryption (TLS) for all communication, secrets management, and input validation.
+**Q: HALF_OPEN → CLOSED transition?**
+**A:** Probe request(s) succeed (configurable `permittedNumberOfCallsInHalfOpenState`).
 
-## Front: How does the pattern scale?
-**Back:** Horizontal scaling through stateless design, vertical scaling for compute-bound tasks, caching for read-heavy workloads, and auto-scaling for demand-based capacity.
+**Q: HALF_OPEN → OPEN transition?**
+**A:** Probe request fails.
 
-## Front: What is the role of monitoring?
-**Back:** Monitoring provides visibility into system health, performance, and behavior. Key metrics include throughput, latency, error rates, and resource utilization.
+---
 
-## Front: How does this pattern handle failures?
-**Back:** Circuit breakers prevent cascading failures. Bulkheads isolate failures. Retries with backoff handle transient failures. Graceful degradation maintains partial functionality.
+## Configuration
 
-## Front: What is the Strangler Fig pattern?
-**Back:** An incremental migration pattern where new functionality is built alongside legacy systems. Traffic is gradually routed to the new system until the legacy system can be decommissioned.
+**Q: Sliding window types?**
+**A:** 
+- **COUNT_BASED**: Last N calls (e.g., 100 calls)
+- **TIME_BASED**: Last N seconds (e.g., 10 seconds)
 
-## Front: What is the difference between orchestration and choreography?
-**Back:** Orchestration uses a central coordinator to direct workflow. Choreography uses distributed events where each service reacts to events independently.
+**Q: When to use COUNT_BASED vs TIME_BASED?**
+**A:** COUNT_BASED for high-throughput (stable statistics). TIME_BASED for low-throughput (avoids stale windows).
 
-## Front: What is the Backend for Frontend pattern?
-**Back:** A pattern where dedicated backend services are created for each client type (web, mobile, IoT), optimizing data shape and protocol for each specific client.
+**Q: failureRateThreshold vs failureThreshold?**
+**A:** 
+- `failureRateThreshold`: Percentage (e.g., 50%) — rate-based
+- `failureThreshold`: Absolute count (e.g., 5 failures) — count-based
 
-## Front: What is a sidecar proxy?
-**Back:** A helper process deployed alongside the main application that handles cross-cutting concerns like service discovery, traffic management, and observability without modifying application code.
+**Q: What is waitDurationInOpenState?**
+**A:** Time circuit stays OPEN before attempting recovery (HALF_OPEN). Typical: 10-60s.
 
-## Front: What is the Circuit Breaker pattern?
-**Back:** A resilience pattern that detects failures and prevents cascading by stopping requests to failing services until they recover. States: CLOSED, OPEN, HALF_OPEN.
+**Q: What is permittedNumberOfCallsInHalfOpenState?**
+**A:** Max probe requests allowed in HALF_OPEN (typically 1-10). Limits blast radius if still failing.
 
-## Front: What is the Saga pattern?
-**Back:** A pattern for managing distributed transactions through sequences of local transactions with compensating actions for rollback. Supports eventual consistency.
+**Q: slowCallRateThreshold & slowCallDurationThreshold?**
+**A:** Treat slow calls as failures. e.g., > 2s = slow, > 50% slow = trip. Prevents thread exhaustion from latency.
 
-## Front: What is a golden path in platform engineering?
-**Back:** A recommended, well-supported approach for common development tasks that reduces decision fatigue and ensures consistency across teams.
+---
 
-## Front: What is Backstage?
-**Back:** An open-source developer portal by Spotify that provides a software catalog, templates, documentation, and self-service capabilities for internal developer platforms.
+## Implementation Patterns
 
-## Front: What is service mesh?
-**Back:** A dedicated infrastructure layer for managing service-to-service communication. Provides traffic management, security, observability, and policy enforcement via sidecar proxies.
+**Q: Circuit Breaker + Retry — correct order?**
+**A:** **Retry inside Circuit Breaker** (or CB wraps Retry). 
+- If Retry outside CB: retries count as separate failures → trips CB faster
+- If CB outside Retry: CB sees only final result after retries
 
-## Front: What is the difference between control plane and data plane?
-**Back:** Control plane manages configuration and policies across the system. Data plane handles actual traffic and request processing. They are separated for security and scalability.
+**Resilience4j**: `@CircuitBreaker` → `@Retry` (CB outer, Retry inner)
+
+**Q: Circuit Breaker + Bulkhead — relationship?**
+**A:** Complementary. Bulkhead limits **concurrency** (semaphore/thread pool). CB limits **calls over time**. Use both.
+
+**Q: Fallback for read vs write operations?**
+**A:** 
+- **Read**: Return cache, default, stale data — safe
+- **Write**: Never fake success. Queue (outbox), return error, async processing
+
+**Q: How to make fallback thread-safe?**
+**A:** Fallback runs on caller thread. Must be fast, non-blocking. No external calls.
+
+**Q: Distributed Circuit Breaker — shared state?**
+**A:** Each instance has own CB state. For global view: aggregate metrics (Prometheus), alert on fleet-wide OPEN. Don't share CB state (split-brain risk).
+
+---
+
+## Monitoring & Operations
+
+**Q: Key metrics to export?**
+**A:** State (0/1/2), failure rate, slow call rate, call throughput, latency p50/p99, buffer capacity (bulkhead).
+
+**Q: Alerting on CB state?**
+**A:** Alert if OPEN > 1 minute. HALF_OPEN → OPEN repeatedly = flapping.
+
+**Q: How to test CB in production?**
+**A:** 
+- Chaos: inject latency/errors in downstream
+- Observe: state transitions, fallback activation, recovery
+- Verify: no thread exhaustion, graceful degradation
+
+**Q: Common misconfigurations?**
+**A:** 
+- Window too small → flapping
+- waitDuration too short → hammer recovering service
+- No slow call threshold → latency kills threads silently
+- Fallback does I/O → blocks caller thread
+
+---
+
+## Advanced
+
+**Q: Circuit Breaker for async/reactive?**
+**A:** Works on `Mono`/`Flux` (Project Reactor) or `CompletableFuture`. Trips on error signals. Fallback returns alternative publisher.
+
+**Q: CB for gRPC / HTTP/2?**
+**A:** Same principles. Per-method CB useful (some RPCs critical, others not). Use `io.github.resilience4j:resilience4j-grpc`.
+
+**Q: CB in Service Mesh (Istio/Linkerd)?**
+**A:** Mesh provides **outlier detection** (similar to CB) at sidecar level. Application CB still needed for business logic fallbacks.
+
+**Q: CB for batch/stream processing?**
+**A:** Different model — checkpointing, backpressure. CB applies to external service calls within processing.
+
+---
+
+## Failure Injection Testing
+
+**Q: What failures to inject?**
+**A:** 
+- Network: latency (100ms, 1s, 10s), packet loss, partition
+- Service: HTTP 5xx, timeout, connection reset, slow response
+- Resource: CPU saturation, OOM, thread pool exhaustion
+
+**Q: Expected CB behavior under injection?**
+**A:** 
+- Latency injection → slow call rate triggers OPEN
+- Error injection → failure rate triggers OPEN
+- Partition → connection failures trigger OPEN
+- Recovery → HALF_OPEN probes succeed → CLOSED
+
+**Q: Metrics to verify during chaos?**
+**A:** State transitions logged, fallback invoked, no thread pool exhaustion, upstream latency bounded.

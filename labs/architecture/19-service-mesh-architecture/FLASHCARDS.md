@@ -1,61 +1,110 @@
-# Flashcards: Service Mesh Architecture
+# Service Mesh Architecture Flashcards
 
-## Front: What is the 
-**Back:** An architectural pattern that provides structured approaches to building distributed systems with clear boundaries, standardized interactions, and incremental evolution capabilities.
+## Fundamentals
 
-## Front: What are the key benefits?
-**Back:** Improved maintainability, independent deployability, fault isolation, team autonomy, and evolutionary architecture.
+**Q: What is a service mesh?**
+**A:** Dedicated infrastructure layer for service-to-service communication. Provides traffic management, security, observability via sidecar proxies.
 
-## Front: When should you avoid this pattern?
-**Back:** Simple applications with single deployment, small teams with limited resources, early-stage products, and systems with strong consistency requirements.
+**Q: Data plane vs Control plane?**
+**A:** Data plane = sidecar proxies (Envoy) handling traffic. Control plane = config distribution, cert management, service discovery (Istiod).
 
-## Front: What is the most common implementation mistake?
-**Back:** Over-engineering by applying the pattern where simpler solutions suffice, or under-engineering by ignoring the pattern where it provides clear benefits.
+**Q: Why sidecar pattern?**
+**A:** Transparent to application. No code changes. Language-agnostic. Uniform policy enforcement.
 
-## Front: What testing strategy is recommended?
-**Back:** Comprehensive testing pyramid: unit tests for core logic, integration tests for component interactions, contract tests for APIs, and end-to-end tests for critical paths.
+**Q: What is Envoy?**
+**A:** High-performance L4/L7 proxy. Core of Istio, Linkerd, Consul Connect, AWS App Mesh.
 
-## Front: How does this pattern handle state?
-**Back:** State is managed through clear boundaries: request-scoped for single operations, session-scoped for client interactions, and database-persisted for durable storage.
+---
 
-## Front: What security measures are important?
-**Back:** Authentication at entry points, authorization at service boundaries, encryption (TLS) for all communication, secrets management, and input validation.
+## Traffic Management
 
-## Front: How does the pattern scale?
-**Back:** Horizontal scaling through stateless design, vertical scaling for compute-bound tasks, caching for read-heavy workloads, and auto-scaling for demand-based capacity.
+**Q: VirtualService vs DestinationRule (Istio)?**
+**A:** VirtualService = routing rules (match, rewrite, split). DestinationRule = LB policy, subsets, circuit breaker, TLS.
 
-## Front: What is the role of monitoring?
-**Back:** Monitoring provides visibility into system health, performance, and behavior. Key metrics include throughput, latency, error rates, and resource utilization.
+**Q: Traffic splitting for canary?**
+**A:** VirtualService with weighted routes to subsets (v1: 90%, v2: 10%).
 
-## Front: How does this pattern handle failures?
-**Back:** Circuit breakers prevent cascading failures. Bulkheads isolate failures. Retries with backoff handle transient failures. Graceful degradation maintains partial functionality.
+**Q: Retry policy config?**
+**A:** `retries`, `perTryTimeout`, `retryOn` (connect-failure, refused-stream, 5xx, retriable-4xx).
 
-## Front: What is the Strangler Fig pattern?
-**Back:** An incremental migration pattern where new functionality is built alongside legacy systems. Traffic is gradually routed to the new system until the legacy system can be decommissioned.
+**Q: Timeout vs Retry interaction?**
+**A:** Total time = sum of perTryTimeout × attempts. Bounded by global `timeout`.
 
-## Front: What is the difference between orchestration and choreography?
-**Back:** Orchestration uses a central coordinator to direct workflow. Choreography uses distributed events where each service reacts to events independently.
+**Q: Fault injection?**
+**A:** Inject delays/aborts for chaos testing. `delay: { percentage, fixedDelay }`, `abort: { percentage, httpStatus }`.
 
-## Front: What is the Backend for Frontend pattern?
-**Back:** A pattern where dedicated backend services are created for each client type (web, mobile, IoT), optimizing data shape and protocol for each specific client.
+**Q: Circuit breaker (outlier detection)?**
+**A:** Tracks 5xx per host. Consecutive 5xx → ejection. Config: `consecutive5xxErrors`, `interval`, `baseEjectionTime`.
 
-## Front: What is a sidecar proxy?
-**Back:** A helper process deployed alongside the main application that handles cross-cutting concerns like service discovery, traffic management, and observability without modifying application code.
+**Q: Mirroring / Shadow traffic?**
+**A:** Copy production traffic to new version (no response to client). For validation.
 
-## Front: What is the Circuit Breaker pattern?
-**Back:** A resilience pattern that detects failures and prevents cascading by stopping requests to failing services until they recover. States: CLOSED, OPEN, HALF_OPEN.
+---
 
-## Front: What is the Saga pattern?
-**Back:** A pattern for managing distributed transactions through sequences of local transactions with compensating actions for rollback. Supports eventual consistency.
+## Security (mTLS, AuthZ)
 
-## Front: What is a golden path in platform engineering?
-**Back:** A recommended, well-supported approach for common development tasks that reduces decision fatigue and ensures consistency across teams.
+**Q: mTLS in service mesh?**
+**A:** Automatic certificate issuance/rotation via SDS. Sidecar terminates mTLS. App sees plain HTTP.
 
-## Front: What is Backstage?
-**Back:** An open-source developer portal by Spotify that provides a software catalog, templates, documentation, and self-service capabilities for internal developer platforms.
+**Q: SPIFFE / SPIRE?**
+**A:** SPIFFE = standard for workload identity (`spiffe://trust-domain/ns/sa`). SPIRE = implementation (agent + server).
 
-## Front: What is service mesh?
-**Back:** A dedicated infrastructure layer for managing service-to-service communication. Provides traffic management, security, observability, and policy enforcement via sidecar proxies.
+**Q: PeerAuthentication?**
+**A:** Mesh-wide or namespace mTLS mode: STRICT (only mTLS), PERMISSIVE (accept both), DISABLE.
 
-## Front: What is the difference between control plane and data plane?
-**Back:** Control plane manages configuration and policies across the system. Data plane handles actual traffic and request processing. They are separated for security and scalability.
+**Q: RequestAuthentication?**
+**A:** JWT validation at ingress. Config: issuer, JWKS URI, audiences.
+
+**Q: AuthorizationPolicy?**
+**A:** L7 RBAC. Match: source (principal, namespace, IP), request (path, method, headers). Action: ALLOW/DENY.
+
+**Q: Egress control?**
+**A:** ServiceEntry for external domains. Egress gateway for centralized outbound. AuthorizationPolicy on egress.
+
+---
+
+## Observability
+
+**Q: Distributed tracing headers?**
+**A:** W3C: `traceparent`, `tracestate`. B3: `x-b3-traceid`, `x-b3-spanid`, `x-b3-sampled`.
+
+**Q: Trace context propagation?**
+**A:** Sidecar injects on ingress. **Application must propagate** on outbound. Auto-instrumentation (OTel) solves this.
+
+**Q: Metrics from mesh?**
+**A:** `istio_requests_total`, `istio_request_duration_seconds`, `istio_tcp_*`. Labels: source, destination, response_code.
+
+**Q: Access logs?**
+**A:** Envoy JSON logs. Custom format via `Telemetry` API. Ship to Loki/Elastic.
+
+---
+
+## Multi-Cluster / Advanced
+
+**Q: Multi-cluster models?**
+**A:** Primary-Remote (single control plane), Multi-Primary (federated control planes).
+
+**Q: Cross-cluster service discovery?**
+**A:** ServiceEntry with remote endpoints. Or Gateway API `ClusterEntry` / `ServiceImport`.
+
+**Q: Ambient Mesh (Istio)?**
+**A:** No sidecar per pod. ztunnel (L4, per node) + Waypoint (L7, per namespace). Lower overhead.
+
+**Q: Gateway API vs Ingress?**
+**A:** Gateway API: `GatewayClass`, `Gateway`, `HTTPRoute`, `TCPRoute`. Portable, expressive. Replaces Ingress.
+
+---
+
+## Operations
+
+**Q: Debugging sidecar config?**
+**A:** `istioctl proxy-config listener/route/cluster/endpoint <pod>`
+
+**Q: Certificate rotation?**
+**A:** Automatic via SDS. Default 24h TTL, rotated at 1h before expiry.
+
+**Q: Upgrading mesh?**
+**A:** Canary control plane upgrade. Data plane auto-upgrades via sidecar injector.
+
+**Q: When NOT to use service mesh?**
+**A:** < 10 services, extreme latency sensitivity, no ops team, simple north-south only.
