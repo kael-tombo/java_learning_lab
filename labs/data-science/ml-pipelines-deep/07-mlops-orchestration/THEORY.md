@@ -68,3 +68,9 @@ MLOps Orchestration connects deeply with differential equations, optimization, p
 
 ## 6. Summary
 The theoretical foundations of MLOps Orchestration provide the rigorous basis needed for correct computational implementation and real-world application.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- Meet Michelangelo: Uber's Machine Learning Platform (5 Sep 2017) — https://www.uber.com/us/en/blog/michelangelo-machine-learning-platform — Takeaway for pipeline-orchestration exercises: structure labs around Michelangelo's six-step workflow (manage data, train, evaluate, deploy, predict, monitor) with a managed orchestrator for batch pipelines, training jobs, and deployments.
+- Meet Michelangelo: Uber's Machine Learning Platform (5 Sep 2017) — https://www.uber.com/us/en/blog/michelangelo-machine-learning-platform — Takeaway for feature-store exercises: replicate the shared Feature Store plus Scala-DSL feature selection so the same expressions run at training and prediction time, avoiding train/serve skew in batch-precompute and near-real-time (Kafka+Samza+Cassandra) paths.
+- Meet Michelangelo: Uber's Machine Learning Platform (5 Sep 2017) — https://www.uber.com/us/en/blog/michelangelo-machine-learning-platform — Takeaway for evaluation exercises: persist every training run (config, data refs, metrics, ROC/PR curves, learned params) in a versioned model repository and compare candidates before promotion, as the lab's model-selection gate.
+- Meet Michelangelo: Uber's Machine Learning Platform (5 Sep 2017) — https://www.uber.com/us/en/blog/michelangelo-machine-learning-platform — Takeaway for deployment/monitoring exercises: practice offline (Spark batch), online (load-balanced RPC, P95 <5–10ms, UUID/tag routing for A/B shifts), and sampled-prediction-vs-outcome monitoring (R²/RMSE/RMSLE/MAE with alerts) as defined in the post's UberEATS ETD case study.

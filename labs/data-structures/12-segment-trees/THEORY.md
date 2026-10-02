@@ -80,3 +80,10 @@ For range updates (e.g., adding x to all elements in [l, r]), lazy propagation d
 | Point Update | O(log n) |
 | Range Update (lazy) | O(log n) |
 | Space | O(n) |
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- "Segment Tree", CP-algorithms (page last updated Sep 18, 2026) — https://cp-algorithms.com/data_structures/segment_tree.html — memory bound: at most 4n vertices for an array of size n (level sums 1+2+4+… < 4n), so the lab's 4n array allocation is the safe bound, not an overestimate — verify against the lab's construction exercise.
+- Same source, query-complexity proof idea — a range query visits at most 4 vertices per level (only the leftmost/rightmost partial overlaps recurse; fully covered middle segments return immediately), giving O(log n) — directly supports the lab's range-query exercise analysis.
+- Same source, build/update costs — construction is O(n) via bottom-up merge (merge called ~n−1 times), point update touches one segment per level = O(log n) — matches the lab's complexity table; confirm the lab's build routine is the linear recursive-merge version before citing.
+- Same source, lazy propagation — whole-segment range additions/assignments stay O(log n) by deferring child updates through a lazy array and pushing only on traversal — the exact technique behind the lab's lazy-propagation section; check the lab's push()/apply() naming against this reference.

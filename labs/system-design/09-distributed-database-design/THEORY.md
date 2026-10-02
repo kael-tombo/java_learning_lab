@@ -106,3 +106,10 @@ The CAP theorem states distributed systems choose between:
 ## 9. Conclusion
 Distributed Database Design requires deep understanding of distributed systems principles,
 practical implementation skills, and careful consideration of trade-offs.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- "Spanner: Google's Globally-Distributed Database" (Corbett et al., OSDI 2012, Oct 2012) — https://research.google/pubs/pub39966 — Spanner shards data across Paxos state-machine groups per datacenter with automatic resharding; use this as the reference model for the lab's sharding/replication-design exercise.
+- "Spanner: Google's Globally-Distributed Database" (Corbett et al., OSDI 2012, Oct 2012) — https://research.google/pubs/pub39966 — Externally-consistent distributed transactions via globally-meaningful commit timestamps (TrueTime uncertainty API); tie the lab's consistency-vs-availability trade-off discussion to this mechanism.
+- "Spanner: Google's Globally-Distributed Database" (Corbett et al., OSDI 2012, Oct 2012) — https://research.google/pubs/pub39966 — Lock-free read-only transactions and globally-consistent reads at a timestamp enable consistent backups/MapReduce; apply when the lab asks for snapshot-read or backup semantics.
+- "Spanner: Google's Globally-Distributed Database" (Corbett et al., OSDI 2012, Oct 2012) — https://research.google/pubs/pub39966 — Fine-grained, application-controlled replication configs with automatic failover and datacenter rebalancing; reference when justifying replica-placement choices in lab exercises.

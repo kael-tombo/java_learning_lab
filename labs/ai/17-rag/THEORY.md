@@ -1,1 +1,7 @@
-# 17-rag � Theory\n\nCore theoretical foundations of 17-rag.
+# 17-rag � Theory\n\nCore theoretical foundations of 17-rag.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+- Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (22 May 2020) — https://arxiv.org/abs/2005.11401 — Takeaway for retriever+generator exercises: combine a pretrained seq2seq parametric memory with a dense-vector Wikipedia index (non-parametric memory) accessed by a neural retriever, instead of relying on weights alone for facts.
+- Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (22 May 2020) — https://arxiv.org/abs/2005.11401 — Takeaway for RAG-Sequence vs. RAG-Token exercises: the paper compares conditioning on the same passages for the whole output versus different passages per token — implement both marginalization variants in the lab and contrast QA accuracy.
+- Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (22 May 2020) — https://arxiv.org/abs/2005.11401 — Takeaway for open-domain QA exercises: RAG set SOTA on three open-domain QA tasks, beating parametric-only seq2seq and retrieve-and-extract baselines — use those baselines as the lab's control runs.
+- Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (22 May 2020) — https://arxiv.org/abs/2005.11401 — Takeaway for generation-quality exercises: RAG output was more specific, diverse, and factual than the parametric-only baseline, and provenance comes from cited passages — score lab outputs on specificity/factuality and require source traces.

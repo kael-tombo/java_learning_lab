@@ -65,3 +65,10 @@ load factor = number of entries / capacity
 | Contains | O(1) | O(n) |
 
 \*Amortized — includes occasional rehashing
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- "Swiss Tables Design Notes", Abseil / Google — https://abseil.io/about/design/swisstables — production open-addressing design: splits each 64-bit hash into H1 (57 bits, bucket index) + H2 (7 bits stored in a dense metadata byte array); lookup builds a mask from H2 and uses SSE to winnow 16 candidates in a few instructions — concrete industrial counterpart to the lab's linear/quadratic/double-hash probing section.
+- Same source, overhead number — 1 byte of metadata per entry, and deleted slots keep probing (only empty slots terminate a probe) — ties directly to the lab's load-factor/rehash exercise: higher occupancy means longer probe chains, hence the 0.75-style resize threshold.
+- Same source, flat vs node tables — flat_hash_map stores values inline (no pointer stability across rehash); node_hash_map keeps pointer stability at the cost of an extra allocation — useful framing for the lab's separate-chaining vs open-addressing tradeoff discussion.
+- Same source, allocation optimization — emplace()/insert() avoid heap-allocating the value when the key is already present (std::unordered_map would allocate then free) — example of why average-O(1) put has very different constant factors across implementations; verify against the lab's benchmark exercise before quoting.

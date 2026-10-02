@@ -123,3 +123,10 @@ groups:
 3. **Traces**: Request flow across services (Jaeger, Zipkin)
 4. **Health**: Readiness and liveness probes
 5. **Alert**: Proactive monitoring with thresholds
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- "Monitoring Distributed Systems" (Rob Ewaschuk, Google SRE Book Ch. 6, O'Reilly 2016) — https://sre.google/sre-book/monitoring-distributed-systems — Alert on symptoms (latency/traffic/errors/saturation — the four golden signals), not causes; structure the lab's alert rules around user-visible symptoms first.
+- "Monitoring Distributed Systems" (Rob Ewaschuk, Google SRE Book Ch. 6, O'Reilly 2016) — https://sre.google/sre-book/monitoring-distributed-systems — Combine white-box (logs/internal metrics) with black-box (externally-visible probes) monitoring; use this split when wiring the lab's metrics-vs-health-check exercises.
+- "Monitoring Distributed Systems" (Rob Ewaschuk, Google SRE Book Ch. 6, O'Reilly 2016) — https://sre.google/sre-book/monitoring-distributed-systems — Keep paging rules simple, actionable, and novel — every page should need human intelligence; prune the lab's noisy email-style alerts into dashboards plus a small pager set.
+- "Monitoring Distributed Systems" (Rob Ewaschuk, Google SRE Book Ch. 6, O'Reilly 2016) — https://sre.google/sre-book/monitoring-distributed-systems — Measure latency distributions (histogram buckets), not means, and watch tail/99th percentile as the early saturation signal; apply when the lab instruments request-latency timers.

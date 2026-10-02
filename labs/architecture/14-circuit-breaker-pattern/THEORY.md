@@ -58,3 +58,10 @@ Distinct timeouts per downstream service with fast-fail behavior.
 
 ## 8. Monitoring and Alerting
 Circuit state transitions, call success/failure rates, bulkhead pool utilization, thread pool rejection rates, and latency percentiles.
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- "Timeouts, retries, and backoff with jitter" (Marc Brooker, Amazon Builders' Library; page undated, retrieved Oct 2026) — https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter — Always set connection + request timeouts on cross-process calls; use this rule when configuring the lab's per-service timeout exercise (do not rely on client defaults).
+- "Timeouts, retries, and backoff with jitter" (Marc Brooker, Amazon Builders' Library; page undated, retrieved Oct 2026) — https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter — Prefer capped exponential backoff with jitter and a bounded retry count; apply it in the lab's retry exercise to avoid synchronized retry storms.
+- "Timeouts, retries, and backoff with jitter" (Marc Brooker, Amazon Builders' Library; page undated, retrieved Oct 2026) — https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter — Circuit breakers add modal behavior that is hard to test and can slow recovery; Amazon mitigates with local token-bucket retry limits — weigh this trade-off explicitly in the lab's OPEN/HALF_OPEN threshold exercise.
+- "Timeouts, retries, and backoff with jitter" (Marc Brooker, Amazon Builders' Library; page undated, retrieved Oct 2026) — https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter — Retries amplify load on an already-struggling dependency and only paper over transient faults; pair the lab's retry policy with fallback/bulkhead isolation rather than retrying alone.

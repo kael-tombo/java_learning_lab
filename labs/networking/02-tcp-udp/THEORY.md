@@ -85,3 +85,10 @@ public class NioTcpServer {
     }
 }
 ```
+
+## Sourced field notes (fetched Oct 2026 — verify before citing)
+
+- RFC 793: Transmission Control Protocol — September 1981 (obsoleted by RFC 9293; see RFC 793 info page) — https://www.rfc-editor.org/info/rfc793/ — Takeaway tied to lab: ground the TcpEchoServer/NIO exercises in §1.5–§2.7 — connection-oriented reliable octet stream, three-way handshake (SYN/SYN-ACK/ACK) for OPEN, and window-based flow control behind ServerSocket/SocketChannel accept/read/write.
+- RFC 793 §3.1 Header Format — September 1981 — https://www.rfc-editor.org/info/rfc793/ — Takeaway tied to lab: map sequence/acknowledgment numbers, window, and SYN/FIN/RST flags to observed handshake/teardown (FIN→ACK→FIN→ACK) when tracing the Java TCP echo exchange with a packet capture.
+- RFC 768: User Datagram Protocol (STD 6) — 28 August 1980 — https://www.rfc-editor.org/info/rfc768/ — Takeaway tied to lab: ground the UdpEchoServer (DatagramSocket/DatagramPacket) exercise in the 8-byte header (source/destination port, length, checksum with IP pseudo-header) and the transaction-oriented, no-guarantee delivery model — use for DNS/VoIP-style cases, not ordered streams.
+- RFC 9293: Transmission Control Protocol (obsoletes RFC 793) — successor to RFC 793 per RFC 793 info page (accessed Oct 2026) — https://datatracker.ietf.org/doc/html/rfc9293 — Takeaway tied to lab: consult for modern TCP clarifications (congestion control, MSS option evolution) when extending the NIO non-blocking exercise beyond the 1981 baseline; verify section numbers before citing.
