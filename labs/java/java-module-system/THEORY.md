@@ -1,4 +1,50 @@
-# THEORY — Java Module System (JPMS) (Part 2)
+# THEORY — Java Module System (JPMS)
+
+## Overview
+
+The Java Platform Module System (JPMS, JSR 376) introduces **strong encapsulation** and **explicit dependencies** via `module-info.java`. It replaces the fragile classpath with a reliable module graph.
+
+---
+
+## 1. Module Declaration
+
+```java
+module com.example.app {
+    // Exports: public API accessible to other modules
+    exports com.example.api;
+    exports com.example.spi to com.example.impl; // qualified export
+    
+    // Requires: dependencies on other modules
+    requires java.sql;
+    requires transitive java.logging; // transitive: consumers get it too
+    requires static java.xml;         // optional at runtime
+    
+    // Services
+    uses com.example.spi.Service;
+    provides com.example.spi.Service with com.example.impl.ServiceImpl;
+    
+    // Opens for reflection (deep reflection)
+    opens com.example.internal to com.example.test;
+}
+```
+
+---
+
+## 2. Module Directives
+
+| Directive | Purpose |
+|-----------|---------|
+| `exports pkg` | Public API, accessible to all modules |
+| `exports pkg to M` | Qualified export (only module M) |
+| `requires M` | Depends on module M |
+| `requires transitive M` | Consumers also get M |
+| `requires static M` | Optional at runtime |
+| `uses S` | Declares service consumer |
+| `provides S with I` | Service provider registration |
+| `opens pkg` | Deep reflection access |
+| `opens pkg to M` | Qualified deep reflection |
+
+---
 
 ## 2. Module Resolution
 
