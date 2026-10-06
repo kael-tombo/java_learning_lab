@@ -12,10 +12,13 @@
 
 ## JEPs
 - JEP 325: Switch Expressions (Preview) — Java 12
-- JEP 354: Switch Expressions — Java 14
+- JEP 354: Switch Expressions (Second Preview) — Java 13
 - JEP 361: Switch Expressions — Java 14 (Standard)
-- JEP 420: Pattern Matching for Switch (Preview) — Java 18
-- JEP 441: Pattern Matching for Switch — Java 21
+- JEP 406: Pattern Matching for switch (Preview) — Java 17
+- JEP 427: Pattern Matching for switch (Third Preview) — Java 19
+- JEP 433: Pattern Matching for switch (Fourth Preview) — Java 20
+- JEP 441: Pattern Matching for switch — Java 21
+- JEP 440: Record Patterns — Java 21
 
 ## Deep Dive References
 - [JVMS §3 — Compiling Java Control Flow](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-3.html) — How if/switch/loops compile to bytecode

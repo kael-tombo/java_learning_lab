@@ -17,12 +17,14 @@
 
 ## JEPs
 - JEP 286: Local-Variable Type Inference (var) — Java 10
-- JEP 359: Records — Java 16
-- JEP 401: Primitive Classes (Project Valhalla, in development)
+- JEP 395: Records — Java 16 (preview lineage JEP 359 → JEP 384)
+- JEP 401: Value Objects (Project Valhalla, in development)
 
 ## Deep Dive References
 - [JLS Chapter 4 — Types, Values, and Variables](https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html) — Complete type system specification
 - [JVMS Chapter 2 — JVM Data Types](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-2.html) — JVM-level type model
-- [JEP 401: Primitive Classes (Valhalla)](https://openjdk.org/jeps/401) — Value types in the JVM
+- [JEP 401: Value Objects (Valhalla)](https://openjdk.org/jeps/401) — Value types in the JVM
 - [JVM Field Access Optimization](https://shipilev.net/jvm/anatomy-quarks/3-field-access-costs/) — Aleksey Shipilëv's detailed analysis
-- [Compact Object Headers](https://openjdk.org/jeps/450) — JEP 450: Object header compression (Java 21+ preview)
+- [Compact Object Headers](https://openjdk.org/jeps/519) — JEP 519: Compact
+  Object Headers (JDK 25). JEP 450 was the earlier *experimental* iteration in
+  JDK 21; 519 is the feature that actually shipped.

@@ -18,7 +18,7 @@ HotSpot offered two configurations:
 Tiered compilation was introduced experimentally, allowing the VM to start with C1 and transition to C2 as code warmed up. It was not enabled by default until later.
 
 ## Java 7 (2011): Tiered Compilation (Default)
-JEP 126 enabled tiered compilation by default on server-class machines. The JVM now uses C1 for fast startup and transitions to C2 for peak performance.
+Tiered compilation (improved by JEP 163, and on by default since 8) on server-class machines. The JVM now uses C1 for fast startup and transitions to C2 for peak performance.
 
 ## Java 8 (2014): Lambda Inlining
 Lambda expressions introduced new inlining challenges. The JIT had to inline through invokedynamic call sites and function interface wrappers.

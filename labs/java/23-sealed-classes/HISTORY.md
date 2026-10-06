@@ -48,7 +48,7 @@ Record patterns allow deconstructing sealed subtypes directly in pattern matchin
 | Java 15 | Sep 2020 | Sealed Classes (JEP 360) | Preview |
 | Java 16 | Mar 2021 | Sealed Classes (JEP 397) | Second Preview |
 | Java 17 | Sep 2021 | Sealed Classes (JEP 409) | Finalized |
-| Java 17 | Sep 2021 | Pattern Matching for instanceof (JEP 406) | Preview |
+| Java 17 | Sep 2021 | Switch pattern matching (JEP 406) | Preview |
 | Java 21 | Sep 2023 | Pattern Matching for switch (JEP 441) | Finalized |
 
 ## Influences

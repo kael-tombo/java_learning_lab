@@ -46,5 +46,5 @@ hs_err: `SIGSEGV in libjvm (upcall)` → freed stub. `UnsatisfiedLinkError` → 
 Fix: `-Djava.library.path`, `SymbolLookup.libraryLookup`.
 
 ## 10. HotSpot Refs
-- JEP 454 (FFM final), JEP 412 (incubator history).
+- JEP 454 (Foreign Function & Memory API, final), JEP 412 (incubator history).
 - `Linker.java` javadoc has canonical strlen/qsort samples.

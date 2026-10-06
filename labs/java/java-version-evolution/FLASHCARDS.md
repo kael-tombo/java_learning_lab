@@ -24,7 +24,7 @@
 | 21 patterns? | Stable matching |
 | 21 sequenced? | Ordered collections |
 | 22 gatherers? | Custom intermediates |
-| 22 FFM? | Final (JEP 454) |
+| 22 FFM? | Foreign Function & Memory API final (JEP 454) |
 | 25 LTS? | Next baseline |
 | release flag? | --release 17 |
 | preview flag? | --enable-preview |

@@ -40,4 +40,4 @@ jcmd <pid> VM.native_memory detail; jcmd <pid> JFR.start duration=60s filename=a
 Heap dump dominator → static field; Metaspace → loader/proxy leak; `unable to create thread` → Xss/ulimit.
 
 ## 9. Refs
-JVMS (bytecode), HotSpot wiki, `java -Xlog:help`, JEP 376 (ZGC), G1 paper.
+JVMS (bytecode), HotSpot wiki, `java -Xlog:help`, JEP 377 (ZGC production), JEP 376 (concurrent thread-stack processing), G1 paper.

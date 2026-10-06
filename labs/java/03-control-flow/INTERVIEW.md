@@ -28,7 +28,9 @@
 - Definite assignment analysis: how the compiler checks variables are initialized before use
 
 ### Oracle
-- Evolution of switch from statement to expression (JEP 325, 354, 361, 406)
+- Evolution of switch from statement to expression (JEP 325 preview → 354 → 361
+  standard in 14), then pattern matching in switch (JEP 406 preview in 17 →
+  441 standard in 21)
 - Pattern matching for switch: JEP 441 in Java 21, combining type checking and destructuring
 - How do switch on String, enum, and integer differ in compiled bytecode?
 - Lambda control flow: restrictions on `break` and `continue` in lambdas

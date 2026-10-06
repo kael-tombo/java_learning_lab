@@ -18,7 +18,7 @@
 ## JEPs
 - JEP 248: Make G1 the Default Garbage Collector
 - JEP 333: ZGC (Experimental)
-- JEP 376: ZGC (Production)
+- JEP 377: ZGC (Production)
 - JEP 439: Generational ZGC
 
 ## Books

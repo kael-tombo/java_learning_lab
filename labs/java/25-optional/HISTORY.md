@@ -14,7 +14,13 @@ The concept of a "maybe" type comes from functional programming:
 ## Introduction in Java 8
 
 ### JEP Proposal
-Optional was introduced as part of the broader Java 8 lambda and Stream API effort. While not its own JEP, Optional is documented alongside the core library changes in JEP 186 (Collection Library Enhancements).
+`Optional` was introduced in Java 8 as part of the broader lambda and Stream API
+effort, and it never had a JEP of its own — JEP 186 (Collection Literals) is
+unrelated and was withdrawn. Two adjacent JEPs are worth knowing: JEP 126
+(Lambda Expressions & Virtual Extension Methods) and JEP 109 (Enhance Core
+Libraries with Lambda). Optional itself is covered by the `java.util` API docs
+rather than a proposal, which is itself a teaching point about how the platform
+specifies things.
 
 ### Design Goals
 1. Provide a limited mechanism for library method return types where a value might be absent

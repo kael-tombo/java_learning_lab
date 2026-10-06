@@ -620,7 +620,7 @@ public class Planet implements Serializable {
 Oracle's deep dives are the most technical in the industry:
 
 1. **Walk through the complete lifecycle of a `synchronized` lock acquisition** — From biased locking (JDK 8) through lightweight (CAS spin) to heavyweight (OS mutex). Oracle wants the actual code in `synchronizer.cpp`.
-2. **Explain the memory ordering guarantees of `VarHandle.getVolatile()` vs `getOpaque()` vs `getAcquire()`** — These were added by Oracle in JDK 9 (JEP 193). They want you to know the actual memory ordering levels.
+2. **Explain the memory ordering guarantees of `VarHandle.getVolatile()` vs `getOpaque()` vs `getAcquire()`** — These came with `VarHandle` in JDK 9 (the API itself was specified under JEP 193). They want you to know the actual memory ordering levels.
 3. **How does the JIT compiler decide to inline a method?** — Walk through `-XX:MaxInlineLevel`, `-XX:InlineSmallCode`, inline cache, megamorphic call sites. Oracle asks about `-XX:+PrintInlining`.
 4. **Explain the G1GC concurrent marking algorithm** — SATB (Snapshot-At-The-Beginning), pre-write barriers, remark pause, cleanup. Oracle wrote G1 — they expect deep knowledge.
 5. **What is the Problem with `Thread.stop()` at the JVM level?** — Walk through `thread.cpp` unsafety: asynchronous exception delivery, lock release, corrupted object state.

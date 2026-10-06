@@ -6,7 +6,7 @@ Records were developed as part of **Project Amber**, an OpenJDK project focused 
 
 ### Early Discussions (2016-2018)
 The concept of "data classes" or "value types" had been discussed in Java for over a decade. Early proposals included:
-- **JEP 169: Value Objects** (2012) — An exploration of value types in the JVM
+- **JEP 169: Valhalla / Larval State for Value Objects** — an exploration of value types in the JVM (today tracked as JEP 401, Value Objects)
 - **Project Valhalla** — Value types for the JVM (still in development)
 - **Project Amber** — Focused on more approachable features with shorter timelines
 

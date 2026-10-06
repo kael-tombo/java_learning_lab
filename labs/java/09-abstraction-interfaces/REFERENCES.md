@@ -13,10 +13,11 @@
 - *Clean Architecture* — Robert C. Martin (Dependency Inversion Principle)
 
 ## JEPs
-- JEP 161: Default Methods — Java 8
-- JEP 213: Interface Evolution (Default & Static Methods) — Java 8
-- JEP 397: Sealed Classes — Java 17
-- JEP 409: Sealed Classes (Standard) — Java 17
+- JEP 255: Evolve the Language with Default Methods — Java 8
+- JEP 218: Generic Overlays — Java 8 (the static-method half of interface evolution)
+- JEP 360: Sealed Classes (Preview) — Java 15
+- JEP 397: Sealed Classes (Second Preview) — Java 16
+- JEP 409: Sealed Classes — Java 17
 
 ## Functional Interfaces
 - `java.util.function` package docs
@@ -25,8 +26,9 @@
 
 ## Deep Dive References
 - [JLS §15.12.2.5 — Most-Specific Method Resolution](https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html) — Default method ambiguity resolution
-- [JEP 213: Interface Default Methods](https://openjdk.org/jeps/213) — Specification for default and static interface methods
-- [JEP 359: Records](https://openjdk.org/jeps/359) — Records and interfaces
+- [JEP 255: Evolve the Language with Default Methods](https://openjdk.org/jeps/255) — the specification for default methods (Java 8)
+- [JEP 218: Generic Overlays](https://openjdk.org/jeps/218) — static interface methods (Java 8)
+- [JEP 395: Records](https://openjdk.org/jeps/395) — Records and interfaces
 - [Bridge Methods in the JVM](https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html) — Oracle tutorial on bridge methods
 - [Lambda Metafactory JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/LambdaMetafactory.html) — Official API documentation
 

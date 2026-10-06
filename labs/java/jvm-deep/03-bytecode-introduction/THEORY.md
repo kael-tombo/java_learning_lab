@@ -189,7 +189,7 @@ Enables **single-pass verification** — critical for startup performance.
 
 ## 4. Invokedynamic & Method Handles
 
-### invokedynamic (JEP 292)
+### invokedynamic (JVMS 5.4.3.5; lambdas landed with JEP 126)
 
 ```java
 // Java source

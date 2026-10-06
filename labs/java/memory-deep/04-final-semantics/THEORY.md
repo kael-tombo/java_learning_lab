@@ -3,7 +3,7 @@
 ## Core Concepts
 
 ### 1. Fundamental Principle
-Final field freeze, write to final + fence, deferred final (JEP 476), construction safety
+Final field freeze, write to final + fence, deferred final-store safety (JVMS 17.5; no JEP covers this), construction safety
 
 ### 2. Theoretical Foundation
 The Final Field Semantics is built on well-established computer science principles that govern how data structures

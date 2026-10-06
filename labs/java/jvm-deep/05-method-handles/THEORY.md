@@ -2,7 +2,7 @@
 
 ## Overview
 
-Method Handles (JEP 274) and `invokedynamic` (JEP 292) provide low-level, efficient mechanisms for dynamic method invocation — the backbone of lambdas, dynamic languages, and framework internals.
+Method Handles (JEP 274) and `invokedynamic` (JVMS 5.4.3.5, used by lambdas via JEP 126) provide low-level, efficient mechanisms for dynamic method invocation — the backbone of lambdas, dynamic languages, and framework internals.
 
 ---
 

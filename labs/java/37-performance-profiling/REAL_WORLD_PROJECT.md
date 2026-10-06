@@ -58,5 +58,5 @@ scaling replicates the bottleneck instead of removing it.
 
 ---
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- JFR runtime guide (JEP 328): https://openjdk.org/jeps/328
+- JFR runtime guide (JEP 328, Flight Recorder, JDK 11): https://openjdk.org/jeps/328
 - jcmd reference: https://docs.oracle.com/en/java/javase/21/docs/specs/man/jcmd.html

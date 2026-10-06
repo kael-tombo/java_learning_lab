@@ -104,7 +104,7 @@ matching THEORY.md section.
 | JEP 252 | CLDR as default locale provider (JDK 9) |
 | JEP 248 | G1 as default GC (JDK 9) |
 | JEP 289 | `VarHandle` (JDK 9) — the `Unsafe` replacement |
-| JEP 213 | Enhanced try-with-resources (JDK 9) |
+| JEP 213 | Milling Project Coin (JDK 9) — includes the try-with-resources enhancement allowing effectively-final variables outside the resource list |
 | JEP 307 | Parallel full GC for G1 (JDK 10) |
 | JEP 336 | Deprecate `Pack200` (JDK 13) |
 | JEP 363 | Remove CMS (JDK 14) |

@@ -65,7 +65,7 @@
 | Crash cause #2? | Wrong descriptor |
 | Debug crash? | -Xcheck:jni, hs_err log |
 | Panama docs? | openjdk.org/projects/panama |
-| JEP 454? | FFM finalized (JDK 22) |
+| JEP 454? | Foreign Function & Memory API finalized (JDK 22) |
 | reinterpret+cleanup? | Cleaner on scope exit |
 | Best arena server? | Confined per-request |
 | Best shared? | Cache across threads |

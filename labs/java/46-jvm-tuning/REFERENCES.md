@@ -4,7 +4,10 @@
 - **Compressed OOPs** (John Rose) - https://wiki.openjdk.org/display/HotSpot/CompressedOops
 - **JVM Ergonomics** - https://docs.oracle.com/en/java/javase/21/vm/ergonomics.html
 - **Large Pages in HotSpot** - https://docs.oracle.com/en/java/javase/21/vm/large-pages.html
-- **Container Support (JEP 388)** - https://openjdk.org/jeps/388
+- **Container awareness (JEP 312, Thread-Local Handshakes, JDK 10)**
+  - https://openjdk.org/jeps/312
+  (No JEP is titled "Container Support"; JDK 10 container awareness arrived via
+  JEP 312 plus the `UseContainerSupport` VM options.)
 - **TLAB Sizing** (Sanjeev Krishnan) - https://shipilev.net/jvm/anatomy-park/4-tlab-allocation/
 - **Biased Locking Removal (JEP 374)** - https://openjdk.org/jeps/374
 - **Java Performance Tuning Guide** (Scott Oaks) - O'Reilly, *Java Performance: The Definitive Guide*: JVM Tuning

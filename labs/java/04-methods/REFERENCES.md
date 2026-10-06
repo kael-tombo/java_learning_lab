@@ -25,4 +25,4 @@
 
 ## JEPs
 - JEP 286: Local-Variable Type Inference — Java 10
-- JEP 303: Intrinsic Methods for LTS — Performance
+- JEP 303: Intrinsics for the LDC and INVOKEDYNAMIC Instructions — Java 17

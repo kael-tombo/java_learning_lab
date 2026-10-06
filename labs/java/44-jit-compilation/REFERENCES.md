@@ -15,7 +15,7 @@
 - [Java Performance Tuning Guide](https://docs.oracle.com/en/java/javase/21/gc/tuning.html)
 
 ## JEPs
-- JEP 126: Tiered Compilation
+- JEP 163: Improve Tiered Compilation
 - JEP 295: Ahead-of-Time Compilation
 - JEP 317: Experimental Java-Based JIT Compiler (Graal)
 - JEP 165: Compiler Control

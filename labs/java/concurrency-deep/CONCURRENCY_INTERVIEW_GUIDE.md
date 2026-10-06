@@ -102,7 +102,9 @@ The JIT inserts memory barriers based on the memory model. Key barriers generate
 - **lightweight** (CAS on lock record in stack)
 - **inflated** (OS mutex/condition variable)
 
-**Bias locking**: Removed in Java 21 (JEP 423). Was a source of complexity.
+**Bias locking**: deprecated and disabled by default in Java 15 (JEP 374). The flag
+was removed entirely in JDK 21, so `-XX:+UseBiasedLocking` no longer exists.
+JEP 423 is G1 region pinning, which is unrelated.
 
 **Lock coarsening**: If two consecutive synchronized blocks lock the same object, the JIT merges them:
 ```java

@@ -24,7 +24,7 @@ Java's 6-month release cadence (since Java 10) brings predictable feature delive
 | Java 19 | Sep 2022 | — | Virtual threads (preview), Structured concurrency (preview) |
 | Java 20 | Mar 2023 | — | Pattern matching switch, Virtual threads (2nd preview) |
 | Java 21 | Sep 2023 | LTS | **Virtual threads, Structured concurrency, Pattern matching switch, String templates (preview), Sequenced collections, Generational ZGC** |
-| Java 22 | Mar 2024 | — | FFI (final), Stream gatherers (preview), JEP 447 |
+| Java 22 | Jan 2024 | — | FFM API final (JEP 454), unnamed variables (JEP 456), Stream gatherers preview (JEP 461) |
 | Java 23 | Sep 2024 | — | Stream gatherers (2nd preview), Module import decl. (preview) |
 | Java 24 | Mar 2025 | — | — |
 | Java 25 | Sep 2025 | LTS | — |

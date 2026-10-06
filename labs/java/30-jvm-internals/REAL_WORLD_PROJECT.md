@@ -58,4 +58,4 @@ triggers OOM-kill pressure at overlap.
 ---
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - jcmd man page: https://docs.oracle.com/en/java/javase/21/docs/specs/man/jcmd.html
-- JFR (JEP 328): https://openjdk.org/jeps/328
+- JFR (JEP 328, Flight Recorder, JDK 11): https://openjdk.org/jeps/328

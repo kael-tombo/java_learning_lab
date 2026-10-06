@@ -25,7 +25,8 @@
 - Prefer not to use Optional of a collection for represent missing data
 
 ### Oracle
-- JEP 201: The Optional<> type was created for the Stream API
+- No JEP covers `Optional` itself — it arrived in Java 8 as part of the Stream
+  API work, which is a useful interview point: not every API decision had a JEP
 - JLS and JVM: Optional is a simple generic class for null safety
 - The Java language design decisions around this type as a return-only
 

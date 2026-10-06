@@ -150,14 +150,19 @@ else slow_path()
 
 ---
 
-## 6. Graal Compiler (JEP 422+)
+## 6. Graal Compiler
+
+Graal first appeared in OpenJDK as the *experimental* AOT/JIT compiler under
+JEP 317 (JDK 10), and that experimental compiler was removed again by JEP 410
+(JDK 17). JEP 422 is the Linux/RISC-V port and is unrelated. Graal remains
+available via GraalVM, not as a stock OpenJDK component.
 
 ### GraalVM JIT
 
 - Written in Java (self-hosted)
 - Modular, pluggable
 - Advanced optimizations: partial escape analysis, vectorization
-- Used in GraalVM, optional in OpenJDK (JEP 422)
+- Used in GraalVM; in stock OpenJDK it was experimental (JEP 317) and then removed (JEP 410)
 
 ```bash
 -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler

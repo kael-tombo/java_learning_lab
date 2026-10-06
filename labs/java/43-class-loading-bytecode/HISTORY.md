@@ -7,7 +7,8 @@ Java included a simple ClassLoader with delegation. Applets could define custom 
 The three-level hierarchy was formalized: Bootstrap → Extension (later Platform) → Application. `URLClassLoader` was introduced for loading from JARs and URLs. The delegation model was documented as part of the Java security architecture.
 
 ## Java 5 (2004): java.lang.instrument
-JEP 140 introduced the `java.lang.instrument` package and `ClassFileTransformer`. This allowed Java agents to transform class bytecode at load time, enabling tools like profilers, AOP frameworks, and debuggers without modifying source code.
+The `java.lang.instrument` package (available since JDK 5, predating the JEP
+process) introduced the `java.lang.instrument` package and `ClassFileTransformer`. This allowed Java agents to transform class bytecode at load time, enabling tools like profilers, AOP frameworks, and debuggers without modifying source code.
 
 ## Java 6 (2006): Pluggable Annotation Processing
 JSR 269 introduced the annotation processing API, allowing compile-time code generation based on annotations.

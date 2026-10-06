@@ -27,7 +27,7 @@
 
 ### Oracle
 - JEP 333: ZGC (Experimental)
-- JEP 376: ZGC (Production)
+- JEP 377: ZGC (Production) — experimental was JEP 333 in JDK 11
 - JEP 439: Generational ZGC
 - Colored pointers + load barriers
 

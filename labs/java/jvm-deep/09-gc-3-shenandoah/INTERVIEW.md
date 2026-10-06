@@ -25,7 +25,9 @@
 - Generational Shenandoah: JDK 21+ 
 
 ### Oracle
-- JEP 189: Shenandoah (Experimental)
+- JEP 189: Shenandoah (Experimental), JDK 12 — production in 15 via JEP 379.
+  (JEP 189 is Shenandoah; Scalable Native Memory Tracking was a JDK 8 update,
+  not a separate JEP.)
 - JEP 379: Shenandoah (Production)
 - OpenJDK contribution from Red Hat
 - Brooks pointer: forwarding pointer in object header

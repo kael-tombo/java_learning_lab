@@ -1,7 +1,7 @@
 # Final Field Semantics
 
 ## Overview
-Final field freeze, write to final + fence, deferred final (JEP 476), construction safety
+Final field freeze, write to final + fence, deferred final-store safety (JVMS 17.5), construction safety
 
 ## Learning Objectives
 - Understand the internal mechanics of Final Field Semantics

@@ -18,8 +18,11 @@
 - [JEP 358 — Helpful NullPointerExceptions](https://openjdk.org/jeps/358)
 
 ## JEPs
-- JEP 213: Try-With-Resources Enhancement — Java 9
+- JEP 213: Milling Project Coin — Java 9 (shipped try-with-resources's
+  enhancement allowing effectively-final variables outside the resource list,
+  plus JEP 250-style deprecation of `finalize` warning groundwork)
 - JEP 358: Helpful NullPointerExceptions — Java 14
+- JEP 421: Deprecate Finalization for Removal — Java 18
 
 ## Deep Dive References
 - [JVMS §3.12 — Throwing and Handling Exceptions](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-3.html) — Exception table and bytecode
