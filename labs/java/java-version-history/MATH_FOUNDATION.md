@@ -36,47 +36,88 @@ targeted change to the two worst services probably returns more. Compute `N` fro
 
 ## 2. Compact object headers: memory-savings arithmetic
 
-JDK 25 (JEP 519) removes the per-object 12-byte mark+klass word and stores a
-class-level header once per class. The saving is **16 bytes per object** with
-compact headers on, minus the per-class cost.
+**The actual mechanism (verified against JEP 450 / JEP 519).** Today HotSpot's
+64-bit object header is a mark word plus a class word, occupying **between 96
+bits (12 B) and 128 bits (16 B)** depending on configuration. Compact object
+headers subsume the compressed class pointer into the mark word, reducing the
+header to a flat **64 bits (8 B)** on x64 and AArch64.
 
 ```math
-saving      = Σ over live classes ( 16 × n_i − 32 )        # 32 B per class, amortised
-saving     ≈ 16 × N_live − 32 × C_live                     # N_live = live objects
+saving = header_before − header_after      # 8 B typical (16 B → 8 B), or 4 B (12 B → 8 B)
+```
+
+**The 16-byte figure circulating in blog posts is wrong.** If you see a capacity
+model assuming 16 B saved per object, it has double-counted — that would mean a
+zero-byte header. Real savings are **4–8 bytes per object**, depending on whether
+compressed class pointers are enabled. Use 8 B as the optimistic case.
+
+The per-class cost is a separate, much smaller term: the class-level header is
+stored once per class, and the compressed class pointer shrinks from 32 to 22
+bits. Because the per-class cost is negligible at any realistic class count, the
+per-object term dominates completely:
+
+```math
+saving      ≈ 8 × N_live                     # N_live = live objects
 heap_saved% = saving / heap_total × 100
 ```
 
-Worked example — a service with 40 million live objects, 12,000 loaded classes,
-2 GB heap:
+Worked example — 40 million live objects in a 2 GB heap, compressed class
+pointers enabled (12 B header → 8 B, so 4 B/object):
 
 ```math
-saving       = 16 × 40,000,000 − 32 × 12,000
-             = 640,000,000 − 384,000 = 639,616,000 bytes ≈ 610 MiB
-heap_saved%  = 610 MiB / 2048 MiB = 29.8%
+saving      = 4 × 40,000,000 = 160,000,000 bytes ≈ 153 MiB
+heap_saved% = 153 / 2048 = 7.5%
 ```
 
-**~30% of a 2 GB heap**, or ~60 pods' worth of memory in a 100-node cluster.
-That is a real number you can take to a capacity review.
+With a 16 B header → 8 B the same workload saves ~305 MiB (~15%). **So the
+honest answer is single-digit to low-double-digit percent of heap, not ~30%.**
 
-Relative saving per object depends on size — which is why the *same* change is a
-big win for small objects and noise for large ones:
+This is consistent with what the JEPs actually report: Project Lilliput's
+real-world early adopters saw **live data reduced by 10–20%**, and JEP 519 cites
+**SPECjbb2015 using 22% less heap** and 8% less CPU. That is the range to quote
+in a capacity review — vendor-measured, not a byte-count extrapolation.
+
+Note also that JEP 450 observed **more than 20% of live data can be object
+headers alone**, which is *why* a header reduction is worth doing even at 8 B —
+the header is a large fraction of a small object.
+
+**Relative saving per object depends on object size**, which is why the same
+change is a big win for small objects and noise for large ones:
 
 ```math
-relative% = 16 / (object_size + 16) × 100
+relative% = 4 / (object_size + 4) × 100      # conservative 4 B case
 ```
 
-| Object | Size before | Size after | Relative saving |
-|---|---|---|---|
-| Empty singleton-ish holder | 16 B | 16 B (aligned, still saves) | 0% but halves at scale for arrays |
-| Two `int` fields | 24 B | 16 B | **33%** |
-| `Long` (padded, 16 B fields) | 24 B | 16 B | **33%** |
-| 200 B value object | 216 B | 200 B | 7% |
-| 2 KB buffer object | 2,048 B | 2,032 B | **0.8%** |
+| Object | Header before | Header after | Field+padding | Relative saving |
+|---|---|---|---|---|
+| Two `int` fields | 16 B | 8 B | 8 B → total 24→16 B | **33%** |
+| `Long` (16 B value) | 16 B | 8 B | 16 B → total 32→24 B | **25%** |
+| Empty holder | 16 B | 8 B | 0 B → total 16→8 B | **50%** |
+| 200 B value object | 16 B | 8 B | 200 B → total 216→208 B | 3.7% |
+| 2 KB buffer object | 16 B | 8 B | 2 KB → total 2,064→2,056 B | **0.4%** |
 
-**Adoption rule.** The return is `16 bytes × your object count`, so count objects,
-not megabytes. For an object-count-heavy service (caches, DTO graphs, entity
-managers) it is worth a dedicated migration workstream. For a
-buffer-dominated one it is a footnote.
+**Adoption rule.** The return scales with *object count*, not bytes, so count
+objects (via JOL or a heap histogram) rather than reasoning in megabytes. For an
+object-count-heavy service (caches, DTO graphs, entity managers) it justifies a
+dedicated workstream; for a buffer-dominated one it is a footnote.
+
+### Practical constraints you must check first (from JEP 450)
+
+Compact object headers are **not** free and have hard preconditions:
+
+- **Requires compressed class pointers** — disabled automatically otherwise.
+- **Requires the 8 TB heap ceiling** for collectors other than ZGC; above that
+  the feature disables itself unless you use ZGC.
+- **Disabled when JVMCI is enabled** (so Graal as a stock OpenJDK compiler is out).
+- **Not compatible with legacy stack locking** — falls back automatically.
+- **Still opt-in in 25.** JEP 519 promoted it to a *product* feature but
+  explicitly kept it **off by default** ("It is not a goal to make compact
+  object headers be the default object-header layout"). You still pass
+  `-XX:+UseCompactObjectHeaders`; only `-XX:+UnlockExperimentalVMOptions`
+  became unnecessary. JEP 534 tracks making it the default.
+
+That last point is the one most secondary sources get wrong: "shipped in 25" does
+not mean "on by default in 25".
 
 Caveats that belong in the capacity model, not the marketing: heap-dump tooling
 must be revalidated, and `-XX:ObjectAlignmentInBytes=16` or larger alignments

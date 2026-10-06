@@ -25,7 +25,7 @@ Before planning, price the destination — MATH_FOUNDATION.md §2 and §4 — be
 
 | Benefit | Mechanism | Version | Quantified for this estate |
 |---|---|---|---|
-| Memory density | Compact object headers, −16 B/object | 25 | 140M live objects across the fleet → **~2.1 TiB** saved; ~28% of fleet heap |
+| Memory density | Compact object headers, −4 to −8 B/object | 25 (opt-in flag) | 140M live objects → **0.56–1.12 TiB** saved, ~7–15% of fleet heap; vendor-measured Lilliput real-world range is 10–20% of live data |
 | Concurrency ceiling removed | Virtual threads | 21 | Removes the `pool_size` ceiling on 40 IO-bound services; ~180k saved thread-equivalents of reserved stack |
 | Density on huge heaps | Generational ZGC default | 25 | 6 services move from G1 pause tuning to sub-ms pauses at 32 GB+ |
 | Boilerplate removal | Records | 16 | ~4,500 DTO classes → ~1,800 lines; ~30 person-days recovered |

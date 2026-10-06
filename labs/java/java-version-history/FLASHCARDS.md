@@ -214,7 +214,9 @@ a time rather than all of them at once.
 
 | Q | A |
 |---|---|
-| Compact object headers (JEP 519) | 25 — saves up to 16 bytes per object |
+| Compact object headers (JEP 519) | 25 — header goes 12–16 B → 8 B, so **4–8 B** saved per object, NOT 16 |
+| Compact headers experimental (JEP 450) | 24 — the experimental gate; 519 only removed the gate |
+| Compact headers default? | **Still off in 25.** JEP 519 kept it opt-in; JEP 534 tracks making it default |
 | Module import declarations (JEP 511) — `import module java.base` | 25 — the ergonomic counterweight to JPMS |
 | Flexible constructor bodies standard (JEP 513); Scoped Values standard (JEP 506) | 25 |
 | Compact source files and instance main (JEP 512) | 25 — preview graduated in 24 (JEP 495) |

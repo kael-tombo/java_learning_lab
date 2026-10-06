@@ -187,5 +187,5 @@ matching THEORY.md section.
 | Want structured concurrency final | **Not yet** — it was incubator from 19 and reached only its fifth preview by 25 (JEP 505). Do not plan on it |
 | Long-horizon modernization, active team | JDK 25 — largest gain, largest jump |
 | Modernization value today (21 vs 17) | Virtual threads, pattern matching for switch, generational ZGC |
-| Modernization value today (25 vs 21) | Structured concurrency final, module import declarations, compact object headers |
+| Modernization value today (25 vs 21) | Module import declarations, compact object headers (opt-in), Scoped Values, flexible constructor bodies. Note: structured concurrency is **still preview** in 25, so do not plan on it |
 | Risk-scoring formula | `blast_radius × detectability × effort`, weighted (MATH_FOUNDATION.md §1) |

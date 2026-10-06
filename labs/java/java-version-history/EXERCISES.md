@@ -159,12 +159,16 @@ java -XX:+UnlockExperimentalVMOptions -XX:-UseCompactObjectHeaders   -cp "out:jo
 prints `ClassLayout.parseInstance(new Node(1,2)).toPrintable()` plus
 `Runtime.totalMemory() - usedBefore`.
 
-**Expected observation.** Header shrinks from 16 bytes (12-byte mark+klass,
-padded) to 8 — a class-level header is stored once per class, not per object. For
-an object with 8 bytes of fields the saving is large in *relative* terms
-(24 → 16 bytes, 33%); for a 200-byte object it is 8% (216 → 208). JOL's output
-prints the two layouts side by side and the `object size` line differs by exactly
-8 or 16 bytes.
+**Expected observation.** The header shrinks from 12–16 bytes to a flat **8** —
+a class-level header is stored once per class, not per object. For an object with
+8 bytes of `int` fields the saving is large in *relative* terms (24 → 16 bytes,
+33%); for a 200-byte object it is ~4% (216 → 208). JOL prints the two layouts
+side by side and the `object size` line differs by **exactly 4 or 8 bytes** — not
+16. If you measure 16, you have misread which header size you started from.
+
+Two preconditions to check before you are surprised by no change: compressed
+class pointers must be on, and the feature silently disables itself above an 8 TB
+heap with any collector other than ZGC.
 
 **Pass.** You can compute the whole-heap saving from your own live-object count
 using MATH_FOUNDATION.md §2 and reconcile it with the measured `totalMemory`

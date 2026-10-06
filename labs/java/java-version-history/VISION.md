@@ -80,7 +80,7 @@ note.
 | New service, JDK 21+ confirmed | Records + sealed + pattern matching | The boilerplate tax is gone; exhaustiveness is compiler-checked |
 | Library shipped to unknown consumers | `--release 11`, no modules, no preview | 11 is the compatibility floor most enterprises can reach |
 | High-concurrency IO service | Virtual threads **and** remove the pool | 21 inverted the sizing rule; a pool is now an anti-pattern |
-| Hot data objects in a large heap | Adopt 25 for compact headers | 16 bytes/object is arithmetic, not taste (MATH_FOUNDATION §2) |
+| Hot data objects in a large heap | Adopt 25 for compact headers | 4–8 B/object is arithmetic, not taste (MATH_FOUNDATION §2) — measure with JOL before committing |
 | New feature you read about | Check preview status first | A preview in 23 can be *gone* in 27 |
 | Text/locale-sensitive output | Explicit charset, explicit `Locale`, `DateTimeFormatter` | 9 (CLDR) and 18 (UTF-8) both changed output silently |
 | Anything with `synchronized` + IO | Expect a redesign on 21+ | `synchronized` pins a carrier thread and kills virtual-thread scale |

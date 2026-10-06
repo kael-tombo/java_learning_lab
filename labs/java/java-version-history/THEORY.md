@@ -424,11 +424,14 @@ default** (JEP 521), AOT method profiling (JEP 515), AOT command-line ergonomics
 
 **Pressure**: three separate pressures converged here.
 
-1. **Memory density** — compact object headers shrink every Java object by up to
-   16 bytes by sharing a class-level header. With object headers having been a
-   fixed cost since 1.0, this was the single largest memory-layout change in
-   the platform's history. It is also the most structurally invasive: it changes
-   `java.lang.Object` itself.
+1. **Memory density** — compact object headers cut the object header from 12–16
+   bytes to a flat 8, by folding the compressed class pointer into the mark word.
+   With object headers having been a fixed cost since 1.0, and JEP 450 observing
+   that *more than 20% of live data can be headers alone*, this was the largest
+   memory-layout change in the platform's history. It is also the most
+   structurally invasive: it changes `java.lang.Object` itself. Note it stays
+   **opt-in in 25** — JEP 519 promoted it to a product feature but explicitly
+   did not make it the default layout.
 2. **Migration friction** — `import module` directly attacks the ergonomics
    complaint that made JPMS adoption stall. Sixteen years after the module system
    shipped, the platform finally reduced its cost of use.

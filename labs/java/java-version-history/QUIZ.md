@@ -56,11 +56,17 @@ anti-pattern. Existing pool code kept compiling and silently stopped being the
 right shape — a subtler failure than a compile error.
 
 **8. Compact object headers: which release, how many bytes, and what breaks?**
-**Answer:** JDK 25 (JEP 519), removing up to **16 bytes** per object by storing a
-class-level header once per class instead of a per-object klass word + mark.
-What breaks: heap-dump tooling, memory accounting, and any code (or agent)
-assuming a fixed object layout must be revalidated. Related earlier change:
-compact strings (Latin-1 storage) in 9.
+**Answer:** JDK 25 (JEP 519), which promoted compact object headers from
+experimental (JEP 450, JDK 24) to a product feature. The header shrinks from
+**between 96 and 128 bits (12–16 B) down to 64 bits (8 B)**, so the saving is
+**4–8 bytes per object**, *not* 16 — a claim that would imply a zero-byte header.
+It is still **off by default in 25**: you pass `-XX:+UseCompactObjectHeaders`,
+and only `-XX:+UnlockExperimentalVMOptions` stopped being required.
+
+What breaks: heap-dump tooling, memory accounting, agents assuming a fixed
+layout, and preconditions you must check — it requires compressed class
+pointers, caps non-ZGC collectors at 8 TB, and disables itself under JVMCI.
+Related earlier change: compact strings (Latin-1 storage) in 9.
 
 **9. UTF-8 by default: which release, and what is the migration risk class?**
 **Answer:** JDK 18 (JEP 400), replacing the OS-locale-derived default with UTF-8

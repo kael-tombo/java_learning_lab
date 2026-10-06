@@ -65,7 +65,16 @@ Same code, different observable behaviour. This is the dangerous surface.
 | `Stream`/`Optional` strictness | 9+ | `NullPointerException` surfaces earlier |
 | Compact strings (Latin-1 storage) | 9 (JEP 254) | Memory accounting shifts |
 | `SecurityManager` disabled by default → permanently off | 18 → 24 (JEP 486) | Permission checks become no-ops |
-| Compact object headers | 25 (JEP 519) | Object size, heap dumps, layout assumptions |
+| Compact object headers (opt-in flag) | 25 (JEP 519; experimental in 24 via JEP 450) | Object size, heap dumps, layout assumptions. Saves 4–8 B/object, not 16 |
+
+**Case worth calling out for a migration plan: compact object headers.** The
+mechanism changed (mark word and class word merged into one 8-byte header), so
+any code, agent, or tool that hard-codes object layout assumptions must be
+revalidated. Two traps for a rollout plan: it is **still opt-in in 25**
+(`-XX:+UseCompactObjectHeaders`), and it silently disables itself when
+compressed class pointers are off, above an 8 TB heap on non-ZGC collectors, or
+under JVMCI. Validate with JOL on your actual objects rather than trusting the
+byte arithmetic.
 
 ## 2. The compile-first pipeline
 
