@@ -42,25 +42,22 @@ semi-definite but degenerate (constants are null vectors), so it is a seminorm.
 
 ---
 
-## Q2b — A cleaner version of Q2
-**Q.** Give a concrete, unambiguous non-inner product of the form
-$\langle f,g\rangle=\int fg\,dx$ on a natural space.
+## Q2b — Testing the four properties explicitly
+**Q.** Check bilinearity, symmetry, positive semi-definiteness and positive
+definiteness for $\langle f,g\rangle=\int_{-1}^1 f(x)g'(x)\,dx$ on $C^1[-1,1]$.
 
-**A.** On $L^2(-1,1)$ with the functional
-$\langle f,g\rangle=\int_{-1}^1 f(x)g(x)\,dx$, take $f=\text{sgn}(x)$.
-Then $\langle f,f\rangle=\int_{-1}^1\text{sgn}^2=2>0$. Not that.
-The clean counterexample uses a *signed* measure: on $C[-1,1]$ define
-$\langle f,g\rangle=f(0)g(0)$. Then $\langle f,f\rangle=f(0)^2\ge0$ with
-equality for every $f$ vanishing at 0, e.g. $f(x)=x$: $\langle x,x\rangle=0$
-with $x\ne0$. Not positive definite ⇒ **seminorm**, not inner product.
-Equally clean: $\langle f,g\rangle=\int_0^1 f'g'dx$ on $C^1[0,1]$ —
-$f\equiv1$ is a nonzero null vector. And in the genuinely indefinite direction,
-$\langle f,g\rangle=\int_{-1}^1 f g$ over $L^2$ *is* a valid inner product,
-whereas $\int fg$ with $f,g$ real on a set of measure zero is degenerate.
-The transferable lesson: before calling anything an inner product, check
-**positive definiteness** ($\langle f,f\rangle>0$ for $f\ne0$), not just
-positive semi-definiteness. Weighting $\int_{-1}^{1}fg$ by $1$ is fine; weighting
-it by $\mathrm{sgn}$ or using only point evaluations is not.
+**A.** Bilinear ✓ (linear in each slot). Symmetric ✗:
+$\langle f,g\rangle=\int f g'$ whereas $\langle g,f\rangle=\int g f'$, and
+$\int_{-1}^1fg'-\int_{-1}^1gf'=\left[f g\right]_{-1}^1$ (integration by parts),
+which is generally non-zero — e.g. $f=1$, $g=x$ gives $2$ versus $0$.
+Positive semi-definiteness ✗: $f=x$ gives $\langle x,x\rangle=\int_{-1}^1x\,dx=0$,
+and $f=x^3$ gives $6/5>0$, so both zero and positive values occur (indefinite).
+Positive definiteness ✗ (fails on both counts).
+Only after dividing by 2 and symmetrising — $\frac12\int_{-1}^1(fg'+f'g)\,dx$
+— do you recover a legitimate (if degenerate) bilinear form; adding
+$\int_{-1}^1fg\,dx$ makes it a genuine inner product on $C^1[-1,1]$.
+Transferable habit: run the four checks explicitly, in order, rather than
+eyeballing the integrand.
 
 ---
 

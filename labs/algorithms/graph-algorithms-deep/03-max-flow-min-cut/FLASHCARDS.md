@@ -1,0 +1,78 @@
+# Flashcards — Max-Flow / Min-Cut
+
+- Q: Flow constraints? → A: `0 ≤ f(u,v) ≤ c(u,v)` (capacity) and conservation at `v ∉ {s,t}`
+- Q: Flow value? → A: `Σ f(s,v) − Σ f(v,s)`
+- Q: Cut capacity? → A: `Σ_{u∈S, v∈T} c(u,v)` — forward arcs only
+- Q: Weak duality? → A: `|f| ≤ cap(S,T)` for every flow and every cut
+- Q: Max-flow min-cut theorem? → A: `max flow value = min cut capacity`
+- Q: Residual capacity? → A: `res(u,v) = c(u,v) − f(u,v) + f(v,u)`
+- Q: First term of residual? → A: Forward residual — how much more can be pushed
+- Q: Second term of residual? → A: Backward residual `f(v,u)` — how much existing flow can be cancelled
+- Q: Why backward residual arcs? → A: A max flow may require undoing an earlier augmentation
+- Q: Augmenting path? → A: `s→t` path in the residual graph with all `res > 0`
+- Q: Augmenting path bottleneck? → A: `δ = min res` over the path
+- Q: Min-cut extraction? → A: BFS from `s` over `res > 0`; `S` = reached set
+- Q: Property 1 of extracted cut? → A: Every `δ⁺(S)` arc is **saturated** (`f = c`)
+- Q: Property 2 of extracted cut? → A: Every `δ⁻(S)` arc carries **zero** flow
+- Q: Why property 1? → A: Otherwise `res > 0` and `v` would be reachable from `u ∈ S` — contradiction
+- Q: Why property 2? → A: Otherwise `res(v,u) > 0` and `u` would be reachable from `v ∈ T` — contradiction
+- Q: Ford–Fulkerson time? → A: `O(E·|f*|)` — **pseudo-polynomial** (exponential in capacity bit-length)
+- Q: Edmonds–Karp time? → A: `O(V·E²)`
+- Q: EK structural reason? → A: BFS ⇒ shortest residual path (in arcs) strictly increases each augmentation
+- Q: EK augmentations bound? → A: `≤ V` path lengths × `≤ E` per length = `O(VE)`
+- Q: Level graph? → A: Residual arcs with `res > 0` and `level[v] = level[u]+1`
+- Q: Blocking flow? → A: A flow with no `s→t` path in the level graph
+- Q: How is a blocking flow found? → A: Current-arc DFS: `while (dfs(s, INF) > 0)`
+- Q: Why at most `V−1` Dinic phases? → A: `level[t]` strictly increases per phase; `level[t] ∈ [1,V−1]`
+- Q: Dinic per-phase cost? → A: `O(V·E)`
+- Q: Dinic total? → A: `O(V²E)`
+- Q: Dinic on unit capacities / unit networks? → A: `O(E√V)`
+- Q: Which problem does `O(E√V)` make fast? → A: **Bipartite matching** (Hopcroft–Karp) — a unit network
+- Q: Dinic current-arc array? → A: `it[]`, advanced on saturation; resets each BFS phase
+- Q: Dinic practical performance? → A: `O(E)` per phase, 2–5 phases typical ⇒ near-linear
+- Q: Push–relabel state? → A: `height h[]`, `excess e[]`, residual caps
+- Q: Push–relabel validity condition? → A: `h(u) ≤ h(v) + 1` for every residual arc; `h(s) = V`
+- Q: Push–relabel relabel rule? → A: `h(v) = min over residual neighbours (h + 1)`
+- Q: Push–relabel admissible arc? → A: `res > 0` and `h(v) = h(u) + 1`
+- Q: Push–relabel generic bound? → A: `O(V²E)`
+- Q: Push–relabel FIFO bound? → A: `O(V³)`
+- Q: Highest-label + gap + global relabel bound? → A: `O(V²√E)`
+- Q: Push–relabel vs Dinic in practice? → A: Push–relabel wins on large/dense instances (`V > 10⁴`) by 1–2 orders of magnitude
+- Q: Gap heuristic? → A: If no vertex has height `k`, all heights `> k` can be reset to `V+1` and pruned
+- Q: Why gap heuristic is sound? → A: Validity forces a chain of heights, so a gap makes `> k` unreachable to `t`
+- Q: Global relabel? → A: Reverse BFS from `t` every `Ω(E)` operations; recomputes exact distances
+- Q: Which push–relabel heuristic gives the biggest win? → A: The **gap heuristic**
+- Q: Push–relabel termination argument? → A: `h(v) ≤ 2V−1`; each relabel raises `h` ⇒ `O(V)` relabels per vertex
+- Q: Push–relabel correctness end-state? → A: All excess zero ⇒ no augmenting residual path (validity + `h(s)=V, h(t)=0` ⇒ `V ≤ 0`)
+- Q: Bipartite matching reduction sizes? → A: `|U|+|V|+2` nodes, `|E|+|U|+|V|` arcs, all cap 1
+- Q: Matching flow value? → A: Equals maximum matching size (integrality of Dinic)
+- Q: Why does the matching flow decompose? → A: Integral capacities ⇒ integral max flow ⇒ flow paths are `s→u→v→t`
+- Q: König's theorem? → A: `min vertex cover = max matching` size, in bipartite graphs
+- Q: Min vertex cover from the cut? → A: `cover = (U ∩ T) ∪ (V ∩ S)`
+- Q: Edge-disjoint paths → max flow? → A: Capacity 1 per edge; flow = max number of edge-disjoint paths (Menger, edge)
+- Q: Node-disjoint paths → max flow? → A: Split each `v` into `v_in → v_out` with cap 1 (Menger, vertex)
+- Q: Gomory–Hu tree? → A: Weighted tree where edge weight = min cut value between its endpoints
+- Q: Gomory–Hu flows needed? → A: `V − 1`
+- Q: Gomory–Hu query time? → A: `O(V)` — min edge weight on the tree path
+- Q: Gomory–Hu caveat? → A: Requires **undirected** input; on directed graphs it solves the symmetric problem
+- Q: Directed all-pairs min cut? → A: Karger–Raghavan–Thompson (`O(V)` flows, expectation only)
+- Q: Global min cut? → A: Stoer–Wagner, `O(V³)`
+- Q: Min cut unique? → A: **No** — multiple minimum cuts can tie (Menger + integrality don't force uniqueness)
+- Q: Trap: cut capacity from residual instead of initial? → A: Silently wrong — use `initialCapacity`
+- Q: `INF` capacity convention? → A: `(long) n * maxFiniteCap + 1`; never `Integer.MAX_VALUE`
+- Q: Tight `∞` for matching? → A: `min(|U|, |V|)`
+- Q: Flow value overflow? → A: Use `long`
+- Q: Dinic blocking flow total = ? → A: The **sum** of all pushes in the phase, not one push
+- Q: Can you reuse `it[]` across phases? → A: No — reset to 0 at each BFS phase
+- Q: Edmonds–Karp vs Dijkstra analogy? → A: Both are "shortest augmenting path" ideas; EK by hops, Dijkstra by weight
+- Q: Dinic = ? → A: BFS + Dinic's blocking-flow DFS; a generalisation of Ford–Fulkerson
+- Q: Strongly polynomial? → A: EK, Dinic, push–relabel are; Ford–Fulkerson and FF-based methods are not
+- Q: `S` contains `t` ever? → A: No — `t` is unreachable in the residual when the flow is maximum
+- Q: `S` = `V` possible? → A: Yes, when `t` is unreachable from `s` in the original graph
+- Q: Why does Menger imply max flow? → A: `k` edge-disjoint paths ⇒ flow `k`; any cut of capacity `< k` would block them
+- Q: Min-cost flow reduction to max flow? → A: Set all costs to 0
+- Q: Self-loop in a flow network? → A: Never on an augmenting path; harmless but drop it
+- Q: Antiparallel arcs — the classic bug? → A: Using `res = c − f` instead of `c − f + f_rev`
+- Q: Reverse-edge indexing trick? → A: Store arcs in a flat array; reverse of edge `e` is `e ^ 1`
+- Q: Assertion that catches most flow bugs? → A: `res(u,v) + res(v,u) == c(u,v) + c(v,u)` after each push
+- Q: Assertion that verifies optimality? → A: extracted `cutCapacity == flowValue`
