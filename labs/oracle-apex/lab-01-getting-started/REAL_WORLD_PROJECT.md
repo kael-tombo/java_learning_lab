@@ -20,7 +20,7 @@ expenses, because the client's staff will not wait.
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ — Oracle APEX
   documentation home: regions, page items, processes, authorization schemes,
   dynamic actions, and the application export/import format.
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/ — PL/SQL
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/ — PL/SQL
   Language Reference: session-independent PL/SQL units, `APEX_UTIL` context
   calls, `DBMS_ASSERT` sanitisation, exception handling, and cursor semantics.
 

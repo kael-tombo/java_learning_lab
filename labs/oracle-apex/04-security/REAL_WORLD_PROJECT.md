@@ -13,7 +13,7 @@ and the internal scheme must remain available in case the IdP has an incident.
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (APEX security)
 - https://docs.oracle.com/en/database/oracle/identity/docs/ (IDCS)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
 
 ## Architecture
 ```

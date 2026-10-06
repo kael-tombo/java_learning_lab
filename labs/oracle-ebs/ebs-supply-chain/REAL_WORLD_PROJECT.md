@@ -11,7 +11,7 @@ own the supply chain performance programme.
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/cloud/saas/sc/24b/ocins/ (Supply Chain docs)
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS Order Management)
-- https://docs.oracle.com/database/121/OMPRD/ (Order Management concepts)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/erprug/ (Order Management concepts)
 
 ## Architecture
 ```

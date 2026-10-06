@@ -10,8 +10,8 @@ opportunities and 2,600 integration messages a day.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS Order Management)
-- https://docs.oracle.com/database/121/OEAPI/ (Order Management API)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html (Order Management API)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture
 ```

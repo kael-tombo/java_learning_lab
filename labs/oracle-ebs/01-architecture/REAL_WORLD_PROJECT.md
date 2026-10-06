@@ -8,8 +8,8 @@ hired to redesign the topology — not to rewrite SQL — so that close finishes
 5 days with no data loss on failover.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/racad/
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/dbforu/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/racad/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/dbforu/
 - https://docs.oracle.com/technologies/ebs/ (EBS High Availability guide)
 
 ## Architecture

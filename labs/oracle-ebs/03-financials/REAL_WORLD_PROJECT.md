@@ -12,7 +12,7 @@ releasing them is not an option. You own the fix.
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS Payables)
 - https://docs.oracle.com/en/cloud/saas/financials/25d/faipp/
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture
 ```

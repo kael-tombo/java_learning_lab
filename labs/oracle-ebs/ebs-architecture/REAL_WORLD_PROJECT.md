@@ -9,9 +9,9 @@ instance. Your first deliverable is an architecture that the next administrator
 can actually operate — and that reveals where the risk lives.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 - https://docs.oracle.com/technologies/ebs/ (EBS architecture and deployment)
-- https://docs.oracle.com/database/121/ELAST/ (EBS installation guide)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/elast/ (EBS installation guide)
 
 ## Architecture
 ```

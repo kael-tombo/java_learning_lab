@@ -11,8 +11,8 @@ restricted, so the current design fails on four counts.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (APEX security)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/ (security)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/ (security)
 
 ## Architecture
 ```

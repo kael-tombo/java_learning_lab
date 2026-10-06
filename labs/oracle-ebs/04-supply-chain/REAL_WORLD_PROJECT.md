@@ -11,7 +11,7 @@ Supply Chain wants cycle counting that prevents recurrence without hiring.
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/cloud/saas/sc/24b/ocins/ (Supply Chain)
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS Inventory)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture
 ```

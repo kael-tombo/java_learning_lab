@@ -9,8 +9,8 @@ business cannot stop. You own the control environment through the audit.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS security)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/
-- https://docs.oracle.com/database/121/EBSMG/ (EBS Security Guide)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/rnbrdu/ (EBS Security Guide)
 
 ## Architecture
 ```

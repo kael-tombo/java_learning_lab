@@ -8,9 +8,9 @@ an 11.2.0.4 to 19c RAC upgrade on the same database, patched in the same 8-hour
 outage as the application. You own all three cutovers.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/dbforu/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/dbforu/
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS upgrade)
-- https://docs.oracle.com/database/121/UPGRD/ (database upgrade guide)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/upgrd/ (database upgrade guide)
 
 ## Architecture
 ```

@@ -9,8 +9,8 @@ which customizations touch which standard objects. You own the technical debt
 and the upgrade-readiness evidence it produces.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/database/121/APUG/ (Application Development Guide)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html (Application Development Guide)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS technical docs)
 
 ## Architecture

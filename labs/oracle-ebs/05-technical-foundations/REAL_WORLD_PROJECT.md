@@ -9,9 +9,9 @@ build a production custom PL/SQL concurrent program handling 10,000+ lines per
 run in under one hour, with validation, rollback, and full audit.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/database/121/APUG/ (Application Development Guide)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html (Application Development Guide)
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS APIs)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture
 ```

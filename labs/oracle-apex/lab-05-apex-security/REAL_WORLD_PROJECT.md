@@ -12,7 +12,7 @@ The application must move to SSO without an outage.
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (APEX security)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (authentication schemes)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
 
 ## Architecture
 ```

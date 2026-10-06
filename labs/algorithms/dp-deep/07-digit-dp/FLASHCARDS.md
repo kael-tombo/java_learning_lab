@@ -1,0 +1,93 @@
+# Flashcards — Digit DP
+
+- Q: General time complexity of digit DP? → A: `Θ(d · K · 10)` where `d` = digits, `K` = extra-state size
+- Q: Bound-awareness flag? → A: `tight` — prefix equals `N`'s prefix
+- Q: `tight` update? → A: `tight' = tight && (x == n[pos])` — absorbing at 0
+- Q: Leading-zero flag? → A: `started`
+- Q: When drop `started`? → A: Predicate invariant under leading zeros (divisibility, "contains digit d")
+- Q: Digit-sum target DP complexity? → A: `Θ(d · S · 10)`, space `Θ(S)` rolled
+- Q: Divisibility DP complexity? → A: `Θ(d · m · 10)` per query
+- Q: Divisibility extra state? → A: remainder `r mod m`, `r' = (10r + x) mod m`
+- Q: `ways[len][r]` precompute cost? → A: `Θ(d · m · 10)` once
+- Q: `ways[len][r]` precompute benefit? → A: Each query drops to `Θ(d · 10)`
+- Q: Counting → summing trick? → A: Add `sums` array, `sums' += 10·sums + x·ways`
+- Q: Sum-of-squares needs how many arrays? → A: Three — `ways`, `sums`, `sumsq`
+- Q: Closed form: total digit sum over `0..10^k−1`? → A: `45 · k · 10^(k−1)`
+- Q: Closed form: average digit sum? → A: `4.5 · k`
+- Q: Closed form: count of `d`-digit palindromes? → A: `9 · 10^(⌈d/2⌉ − 1)`
+- Q: Count `d`-digit binary strings with no `11`? → A: `F_{d+2}` (Fibonacci)
+- Q: Count of `k`-digit numbers with digit sum `s`? → A: Coefficient of `x^s` in `(1+x+…+x^9)^k`
+- Q: Extra state for "no two adjacent equal digits"? → A: `lastDigit`, size `10`
+- Q: Extra state for "strictly increasing digits"? → A: 10-bit mask, but only `11` states actually reachable
+- Q: Extra state for "strictly increasing digits" (practical)? → A: Count of digits used (prefix of sorted set)
+- Q: Extra state for divisibility by `m`? → A: Remainder `mod m`, size `m`
+- Q: `started == 0` and digit `0` chosen — contribution? → A: Nothing; stays not-started
+- Q: Does `0` count as a number with digit sum 0? → A: Yes — but the string `000` also sums to 0; pick semantics
+- Q: `N = 0` — how many digits? → A: 1 (special case; the loop must not return 0)
+- Q: Why is `s > S` prunable? → A: `s` is nondecreasing along every path, so it can never come back
+- Q: What if `S > 9d`? → A: Answer is `0`
+- Q: Counting range `[a, b]`? → A: `count(b) − count(a−1)`, guard `a = 0`
+- Q: Increment in DP for counting vs summing? → A: `+=` (add to accumulator), not `= 1`
+- Q: When is digit DP *worse* than brute force? → A: `N < 10^6`
+- Q: Why is digit DP the wrong tool for "is N a valid date"? → A: Predicate is not digit-local; month/day interact
+- Q: Why is digit DP wrong for decimal expansion of `1/N`? → A: Depends on `N`, not on `N`'s digits — not digit-local
+- Q: Digit DP for `N` with 10^5 digits? → A: `Θ(d·K)` — must remove the `10` factor (matrix/poly methods)
+- Q: Dominant parameter for a 64-bit `N`? → A: `K`, not `d` (`d ≤ 19`)
+- Q: Symmetry trick for palindrome counting? → A: Enumerate only the first `⌈d/2⌉` digits, mirror the rest
+- Q: How to count numbers with digit sum `S` divisible by `m` in one DP? → A: State `(pos, sum, rem)`, `K = (S+1)·m`
+- Q: When is the `rem` dimension redundant? → A: When `m | 9` and the digit sum is fixed (`x ≡ sum (mod 9)`)
+- Q: Recurrence base case? → A: At `pos == d`, accept iff the aggregate equals the target
+- Q: Value of a prefix extended by digit `x`? → A: `10·p + x`
+- Q: Memo key for digit DP? → A: `(pos, extraState, tight, started)`
+- Q: Loop `pos` forward or backward in the iterative DP? → A: Forward — transitions go `pos → pos+1`
+- Q: Space for memoised (not rolled) digit DP? → A: `Θ(d · K · 2 · 2)`
+- Q: Classic warm-up digit-DP problem? → A: Count numbers `≤ N` with no digit equal to `x`
+- Q: Digit DP vs brute force crossover? → A: Brute force wins below ~10^6; DP wins far above
+- Q: Why does `tight` matter for `N = 10^k − 1`? → A: It's still needed — `tight` is 1 for the whole prefix
+- Q: When `N = 10^k − 1`, is the DP still needed? → A: Usually not — closed forms apply
+- Q: Meaning of `started` for "first digit nonzero" predicates? → A: Directly encodes the predicate
+- Q: Sentinel for `lastDigit` before start? → A: `10` (an impossible digit)
+- Q: Mod-9 trick? → A: `x ≡ digitSum(x) (mod 9)` always
+- Q: Mod-11 alternating-sum trick? → A: Gives `x mod 11` from alternating digit sum
+- Q: Counting digit-DP over `long` max? → A: `d = 19`; `long` overflows at `10^19`
+- Q: What `int` accumulator is safe for counts? → A: Counts fit `long`; sums of values need `long`, sums of squares need `BigInteger`
+- Q: Complexity of counting numbers `≤ N` with digit `x` absent? → A: `Θ(d · 10)`, space `Θ(1)` rolled
+- Q: Bitmask DP for "each digit used at most once"? → A: `Θ(d · 2^10 · 10)`
+- Q: Why prune states where partial aggregate already exceeds target? → A: Aggregate is monotone along the path
+- Q: Roll direction for iterative digit DP? → A: `pos` increases; roll `cur → next` per position
+- Q: Which flag is required by ALL digit-DP problems? → A: `tight`
+- Q: Which flag is required only for non-leading-zero-invariant problems? → A: `started`
+- Q: Cost of the `started` flag? → A: Factor of 2 on time and space
+- Q: Classic failure mode in digit DP? → A: Forgetting `started`, so `7` is also counted as `007` with sum 7 in three ways
+- Q: Overcounting scenario? → A: Leading-zero paths counted as distinct from the unpadded number
+- Q: Counting numbers `≤ N` whose digit sum is divisible by `k`? → A: State `(pos, sum mod k)`, `Θ(d·k·10)`
+- Q: Key optimisation when `N` has few "free" digits? → A: Split at the first `tight = 0`; suffix counts are position-independent
+- Q: Why can suffix counts be position-independent? → A: Once `tight = 0`, the bound no longer binds
+- Q: Precompute `ways[len][r]` base case? → A: `ways[0][0] = 1`, all else 0
+- Q: Recurrence for `ways`? → A: `ways[len+1][(10r+x) mod m] += ways[len][r]` for all `r`, `x ∈ 0..9`
+- Q: Cost of digit DP on a tree-shaped search? → A: Not applicable — digit DP is for numbers, not graphs
+- Q: Reconstruct actual valid numbers from a counting DP? → A: Walk `pos` forward, pick any digit whose successor state is reachable
+- Q: Complexity of reconstruction? → A: `O(d · 10)` per emitted number
+- Q: Greedy alternative to "minimum number with digit sum S"? → A: Fill digits right-to-left with 9s, remainder to the leftmost
+- Q: "Maximum number with digit sum S"? → A: Fill left-to-right with 9s
+- Q: Why is the greedy not a DP? → A: The structure is order-only, not prefix-decomposable
+- Q: Sum of digit sums `≤ N` in `Θ(d·10)`? → A: Possible with prefix-composition formulas, not the generic `Θ(d·s·10)` DP
+- Q: Generic digit-DP space when rolled? → A: `Θ(K)`
+- Q: Generic digit-DP space when memoised? → A: `Θ(d · K)`
+- Q: What is `K` for "palindrome"? → A: `10` — the mirrored digit at position `d−1−pos`
+- Q: What is `K` for "x mod m in a set S"? → A: `m`
+- Q: Digit DP vs brute force on `N = 10^18`? → A: DP: `Θ(d·K·10)` microseconds; brute force impossible
+- Q: Does digit DP need the number as a string? → A: Practically yes; convert with `Long.toString(N)` to get digits
+- Q: Complexity of converting `N` to a digit array? → A: `Θ(d)`, negligible
+- Q: Why `d ≤ 19` makes digit DP practical? → A: `Θ(d · K · 10)` with `d = 19` is a tiny constant multiplier
+- Q: A state that is too big? → A: Full number as state (up to `10^19`) — never enumerate numbers
+- Q: Multiple tight bounds (e.g. count `x` with `L ≤ x ≤ R` and `x mod m = 0`)? → A: Run twice and subtract
+- Q: Digit DP for "no digit `x` appears twice"? → A: Bitmask, `Θ(d · 2^10)`
+- Q: Digit DP for "digits are non-decreasing"? → A: `lastDigit`, `Θ(d · 10)`
+- Q: Total numbers handled by `d = 19` DP? → A: `10^19` — hopeless brute-force, trivial DP
+- Q: Why do `tight` and `started` need 4 combinations, not 2 states? → A: They are independent flags: `(0,0)`, `(0,1)`, `(1,0)`, `(1,1)` are all reachable
+- Q: Simplification when `N` has leading zeros? → A: Strip them; `digits("007")` = `{7}`, not `{0,0,7}`
+- Q: What does `Θ(d · K · 10)` hide? → A: Constant factors — memo lookup vs rolling array can differ 3–5×
+- Q: First thing to check before writing digit DP? → A: Whether a closed form exists
+- Q: Second thing to check? → A: Whether the predicate is digit-local at all
+- Q: Third thing to check? → A: Whether `N` is small enough to brute-force

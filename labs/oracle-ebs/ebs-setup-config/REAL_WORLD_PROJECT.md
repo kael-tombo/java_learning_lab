@@ -10,8 +10,8 @@ structure that has to be migrated later.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS setup and config)
-- https://docs.oracle.com/database/121/EBSSR/ (EBS System Administrator's Guide)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/admin/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/rnbrdu/ (EBS System Administrator's Guide)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
 
 ## Architecture
 ```

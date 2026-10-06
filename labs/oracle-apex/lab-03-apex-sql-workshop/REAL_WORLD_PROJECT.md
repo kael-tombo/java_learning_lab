@@ -13,7 +13,7 @@ They need a controlled path forward.
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (SQL Workshop)
 - https://docs.oracle.com/en/database/oracle/rest-data-services/ (ORDS)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/lnpls/
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture
 ```

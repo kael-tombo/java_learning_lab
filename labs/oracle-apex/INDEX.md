@@ -96,7 +96,7 @@ Labs 05 (Security), 07 (Advanced), and 08 (Performance) are must-haves.
 
 ### Official Documentation
 - [Oracle APEX Documentation](https://docs.oracle.com/en/database/oracle/apex/)
-- [Oracle APEX Built-in Packages](https://docs.oracle.com/en/database/oracle/apex/23.2/aeapi/)
+- [Oracle APEX Built-in Packages](https://docs.oracle.com/en/database/oracle/apex/24.2/aeapi/)
 - [Oracle REST Data Services (ORDS)](https://docs.oracle.com/en/database/oracle/oracle-rest-data-services/)
 
 ### Community

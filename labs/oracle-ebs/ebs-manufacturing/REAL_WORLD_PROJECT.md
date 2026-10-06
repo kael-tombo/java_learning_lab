@@ -10,7 +10,7 @@ spreadsheet that has never agreed with the system. You own the fix.
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/cloud/saas/sc/24b/ocins/ (Supply Chain)
 - https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS Manufacturing)
-- https://docs.oracle.com/database/121/MNBRA/ (Manufacturing concepts)
+- https://docs.oracle.com/en/database/oracle/oracle-database/21/racad/ (Manufacturing concepts)
 
 ## Architecture
 ```
