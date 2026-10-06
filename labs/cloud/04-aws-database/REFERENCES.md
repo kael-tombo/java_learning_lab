@@ -24,6 +24,6 @@
 
 ## Tools
 - [AWS Database Migration Service (DMS)](https://aws.amazon.com/dms/)
-- [AWS Schema Conversion Tool (SCT)](https://aws.amazon.com/schema-conversion-tool/)
+- [AWS Schema Conversion Tool (SCT)](https://docs.aws.amazon.com/dms/)
 - [RDS Performance Insights](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PerfInsights.html)
 - [DynamoDB NoSQL Workbench](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.html)

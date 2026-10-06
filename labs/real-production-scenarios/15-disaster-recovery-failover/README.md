@@ -45,7 +45,7 @@
 1. AWS Well-Architected Framework — Reliability Pillar: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/
 2. Netflix Tech Blog — Chaos Monkey: https://netflixtechblog.com/chaos-monkey-the-netflix-way
 3. Google SRE Book — Chapter 29: Disaster Recovery: https://sre.google/sre-book/disaster-recovery/
-4. AWS Disaster Recovery whitepaper: https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery-workloads-on-aws/
+4. AWS Disaster Recovery whitepaper: https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery.html
 5. Azure Well-Architected Framework — Disaster Recovery: https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery
 6. Google Cloud Disaster Recovery: https://cloud.google.com/architecture/disaster-recovery
 7. Netflix Simian Army: https://netflixtechblog.com/the-netflix-simian-army

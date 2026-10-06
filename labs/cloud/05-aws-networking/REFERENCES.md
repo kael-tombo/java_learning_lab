@@ -10,10 +10,10 @@
 - [AWS Global Accelerator Documentation](https://docs.aws.amazon.com/global-accelerator/latest/dg/what-is-global-accelerator.html)
 
 ## Whitepapers
-- [AWS VPC Connectivity Options](https://docs.aws.amazon.com/whitepapers/latest/building-scalable-secure-multi-vpc-network-infrastructure/welcome.html)
-- [Amazon CloudFront Best Practices](https://docs.aws.amazon.com/whitepapers/latest/amazon-cloudfront-best-practices/welcome.html)
-- [AWS Networking and Content Delivery Blog](https://aws.amazon.com/blogs/networking-and-content-delivery/)
-- [Routing Traffic with Route 53](https://docs.aws.amazon.com/whitepapers/latest/route-53-routing-traffic/welcome.html)
+- [AWS VPC Connectivity Options](https://docs.aws.amazon.com/vpc/latest/peering.html)
+- [Amazon CloudFront Best Practices](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/best-practices.html)
+- [AWS Networking and Content Delivery Blog](https://docs.aws.amazon.com/vpc/latest/what-is-amazon-vpc.html)
+- [Routing Traffic with Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy.html)
 
 ## Tools
 - [AWS Network Manager](https://docs.aws.amazon.com/vpc/latest/tgw/what-is-network-manager.html)

@@ -1,0 +1,69 @@
+# Flashcards — Shortest Paths: All-Pairs
+
+- Q: FW invariant? → A: After iteration `k`, `D[i][j]` = shortest `i→j` with intermediates in `{0..k}`
+- Q: FW time / space? → A: `Θ(V³)` / `Θ(V²)`
+- Q: FW loop order? → A: `k` outermost, then `i`, then `j` — non-negotiable
+- Q: Why is in-place FW correct? → A: `D[i][k]`/`D[k][j]` cannot improve during pass `k` (would need `D[k][k] < 0`)
+- Q: In-place FW assumption? → A: No negative cycles
+- Q: FW negative-cycle detection? → A: `D[i][i] < 0` for some `i`
+- Q: `INF` sentinel for FW? → A: `Long.MAX_VALUE / 4`, plus explicit `!= INF` guards
+- Q: Why `INF = MAX_VALUE` breaks? → A: `INF + w` overflows to a large negative number
+- Q: FW on a DAG? → A: `Θ(V·E)` via topological order — cycles absent, so `D_k` vs `D_{k+1}` collapse
+- Q: Transitive closure from FW? → A: Replace `min→∨`, `+→∧`, start from adjacency
+- Q: Bitset closure speedup? → A: `Θ(V³/64)` word ops — a 64× constant factor, not asymptotic
+- Q: Repeated Dijkstra time? → A: `Θ(V·E log V)` (binary heap); `Θ(V·(E + V log V))` with Fibonacci
+- Q: Repeated Dijkstra space? → A: `Θ(V²)` — unavoidable, it *is* the output
+- Q: Repeated Dijkstra needs non-negative weights? → A: **Yes**
+- Q: Johnson step 1? → A: Bellman–Ford from a virtual source with `0`-edges to all vertices
+- Q: What does Johnson's BF produce? → A: Potentials `h(v) = dist(s', v)`, all `≤ 0`
+- Q: Johnson reweighting formula? → A: `w'(u,v) = w(u,v) + h(u) − h(v)`
+- Q: Why is `w' ≥ 0`? → A: `h(v) ≤ h(u) + w(u,v)` since `h` is the shortest distance from `s'`
+- Q: Reweighting correction after Dijkstra? → A: `D[s][t] = D'[s][t] − h(s) + h(t)`
+- Q: Reweighting telescoping result? → A: `w'(P) = w(P) + h(s) − h(t)` — constant shift per pair
+- Q: Johnson total time? → A: `Θ(V·E log V)` (`Θ(V·E)` BF is dominated)
+- Q: Johnson beats FW when? → A: `E < V²/log V` — the sparse regime
+- Q: `h` when all weights `≥ 0`? → A: `h ≡ 0`, so `w' = w` — skip Johnson's BF entirely
+- Q: FW vs Johnson for dense? → A: FW, `Θ(V³)` vs `Θ(V³ log V)`
+- Q: A* priority key? → A: `f(n) = g(n) + h(n)`
+- Q: Admissible heuristic? → A: `h(n) ≤ h*(n)` — guarantees optimality
+- Q: Consistent heuristic? → A: `h(u) ≤ w(u,v) + h(v)` — gives admissibility + expand-once
+- Q: Consistency implies what about `f`? → A: `f(v) − f(u) = w + h(v) − h(u) ≥ 0` — non-decreasing along edges
+- Q: Admissible-but-inconsistent gives? → A: Optimal answers, but nodes may be expanded repeatedly (exponential worst case)
+- Q: Perfect heuristic `h = h*` means? → A: The search follows the optimal path directly, `O(path length)`
+- Q: Precomputed `h` = ? → A: One Dijkstra on the reversed graph from the target
+- Q: Bellman–Ford passes needed? → A: `V−1` (a shortest path is simple, so `≤ V−1` edges)
+- Q: Bellman–Ford `V`-th pass detects? → A: Negative cycles
+- Q: BF invariant per pass? → A: After `k` passes, shortest paths with `≤ k` edges are correct
+- Q: Dijkstra negative-edge counter-example? → A: `s→a=2, s→b=5, b→a=−10` — `a` settled at 2, true answer `−5`
+- Q: Dijkstra's "settled is final" needs? → A: Non-negative weights
+- Q: SPFA time worst case? → A: `O(V·E)` — no better than BF worst case
+- Q: Dijkstra array-scan version? → A: `Θ(V(V+E))` per source; best for dense
+- Q: APSP on `10^6` cities — feasible? → A: No — `10^12` output entries; use Contraction Hierarchies / Hub Labels
+- Q: Contraction Hierarchies preprocessing? → A: `O(E log V)` (heavy constants), query `O(log V)`
+- Q: Landmark ALT: how many landmarks needed? → A: `O(log V)` for good `h`; query cost `O(k)`
+- Q: Distance sensitivity oracle from FW? → A: Edge `e=(u,v)` is on some shortest `s→t` path iff `D[s][u] + w + D[v][t] == D[s][t]`
+- Q: When is FW strictly wasted? → A: Single-source queries — run Dijkstra/BF instead
+- Q: Undirected APSP fastest known? → A: Seidel's `O(V^{2.58})` — or simply `Θ(V²)` output-size bound
+- Q: Output size lower bound for APSP? → A: `Θ(V²)` — you must write every distance
+- Q: FW speedup on sparse from INF guards? → A: Up to `10×` — most relaxations are `∞ + ∞`
+- Q: FW cache tiling? → A: Blocks of `K=16..64`; `1.5–3×` from L1 residency of `D[k][*]`
+- Q: FW row-major or column-major? → A: Row-major (`D[i][k]`, `D[k][j]` — the `j` loop reads contiguously)
+- Q: A* worst case with consistent `h`? → A: `O(E + V log V)` — same as Dijkstra
+- Q: A* worst case with admissible-only `h`? → A: Up to the number of simple paths — exponential
+- Q: Zero-weight edges and Dijkstra? → A: Fine — "settled once" needs non-negative, not positive
+- Q: Negative self-loop in FW? → A: Immediately `D[i][i] < 0` — a negative cycle
+- Q: Positive self-loop? → A: `D[i][i] = min(0, w + 0) = 0` — ignored
+- Q: Parallel edges in FW? → A: Initialise `D[u][v] = min` over all parallel edges
+- Q: Undirected FW symmetry? → A: Yes — symmetric `w` keeps `D` symmetric; assert it in tests
+- Q: Johnson with negative cycle? → A: BF reports it; **do not** proceed to Dijkstra on bad `h`
+- Q: `h(v) ≤ 0` always in Johnson? → A: Yes — `s'` reaches `v` with a `0`-edge
+- Q: Cheapest assertion to catch Johnson bugs? → A: `w'(u,v) ≥ 0` for every edge after reweighting
+- Q: APSP on a tree? → A: Two DFS passes (`O(V)`) give all `V²` distances — no FW needed
+- Q: APSP with unit weights (undirected)? → A: `O(V(V+E))` BFS from each source; Seidel for `O(V^2.58)`
+- Q: DAG shortest path, single source? → A: Topological relax, `O(V+E)`
+- Q: DAG all-pairs? → A: `O(V·E)` (FW on DAG)
+- Q: Bellman–Ford queue variant? → A: SPFA — average `O(E)`, worst `O(V·E)`
+- Q: Why does `tight`/Dijkstra pop order not matter for APSP choice? → A: It does — that is exactly the `V ×` repetition cost
+- Q: Practical FW cutoff? → A: `V ≲ 500` (dense-ish) or `V ≲ 1000` with sparse `E`
+- Q: Johnson cutoff? → A: `V ≳ 500` and `E ≲ V²/4` with possible negative weights
+- Q: Longest path in a DAG? → A: Topological order with `max` instead of `min`; `O(V+E)`

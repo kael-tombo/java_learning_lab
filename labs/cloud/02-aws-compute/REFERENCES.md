@@ -9,10 +9,10 @@
 - [AWS Batch](https://docs.aws.amazon.com/batch/latest/userguide/what-is-batch.html)
 
 ## AWS Compute Blogs
-- [Lambda SnapStart for Java](https://aws.amazon.com/blogs/compute/reducing-java-cold-starts-on-aws-lambda-with-snapstart/)
-- [Best practices for AWS Lambda with Java](https://aws.amazon.com/blogs/compute/best-practices-for-aws-lambda-with-java/)
-- [ECS vs EKS decision guide](https://aws.amazon.com/blogs/containers/amazon-ecs-vs-amazon-eks-which-one-to-choose/)
-- [Fargate Spot best practices](https://aws.amazon.com/blogs/compute/deploying-your-serverless-containerized-applications-with-aws-fargate-spot/)
+- [Lambda SnapStart for Java](https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html)
+- [Best practices for AWS Lambda with Java](https://docs.aws.amazon.com/lambda/latest/dg/java-runtimes.html)
+- [ECS vs EKS decision guide](https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html)
+- [Fargate Spot best practices](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-plugins.html)
 
 ## Tools
 - [AWS Lambda Power Tuning](https://github.com/alexcasalboni/aws-lambda-power-tuning)

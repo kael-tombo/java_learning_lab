@@ -1,0 +1,73 @@
+# Flashcards — DP Optimizations
+
+- Q: Sliding-window min, monotone deque, time? → A: `O(n)` amortised (each index pushed once, popped ≤ once)
+- Q: Deque insertion pop side? → A: Back — pop all `u` with `A[u] ≥ A[t]`
+- Q: Deque query pop side? → A: Front — pop indices outside `[i−W+1, i]`
+- Q: Why is back-popping safe? → A: `t` is newer (expires later) and `A[t] ≤ A[u]`, so `u` can never win again
+- Q: Use `>` or `≥` when popping the back? → A: `≥` — keeps the newest equal element, which survives longer
+- Q: Deque invariant? → A: Indices increasing, values strictly increasing (front to back)
+- Q: Deque is invalid when…? → A: The comparison is not a fixed monotone ordering (e.g. `A[t] + f(t,j)` where `f` moves with `j`)
+- Q: Fallback when the deque is invalid? → A: Segment tree / sparse table, `O(n log n)`
+- Q: Sparse-table window query? → A: `O(1)` per query, `O(n log n)` build
+- Q: Segment-tree window query? → A: `O(log n)` per query, `O(n)` build
+- Q: Knuth's two conditions? → A: (1) `w(b,c) ≤ w(a,d)`; (2) `w(a,c)+w(b,d) ≤ w(a,d)+w(b,c)`
+- Q: Knuth's optima relation? → A: `opt[i][j−1] ≤ opt[i][j] ≤ opt[i+1][j]`
+- Q: Knuth speedup? → A: `O(n³)` → `O(n²)` for interval DP
+- Q: Knuth search range at cell `(i,j)`? → A: `k ∈ [opt[i][j−1], opt[i+1][j]]`
+- Q: Knuth fill order? → A: Increasing interval length `L = 1..n`
+- Q: D&C optimisation assumption? → A: `opt[i][j] ≤ opt[i][j+1]` (monotone in one endpoint)
+- Q: D&C optimisation speedup? → A: `O(n²)` → `O(n log n)`
+- Q: D&C optimisation search range? → A: `[opt[i][L−1], opt[i][R+1]]` for row segment `[L,R]` at mid `M`
+- Q: Monotone cost = Monge cost? → A: `cost(a,c)+cost(b,d) ≤ cost(a,d)+cost(b,c)` for `a≤b≤c≤d`
+- Q: Classic convex costs satisfying Knuth? → A: `(x−y)²`, `|x−y|`, `x·y` with `x ≤ y`, linear in length
+- Q: SMAWK input property? → A: Totally monotone matrix
+- Q: SMAWK output? → A: All row-minima, in `O(n)` evaluations for an `n × n` matrix
+- Q: Total monotonicity definition? → A: `i<i'`, `j≤j'`: `M[i][j'] ≤ M[i][j]` ⟹ `M[i'][j'] ≤ M[i'][j]`
+- Q: Why does SMAWK work on DP? → A: The transition matrix is implicit — `O(1)` per entry, only `O(n)` entries queried
+- Q: SMAWK's two phases? → A: Column reduction (`reduce`) + recursive solve + `interpolate`
+- Q: When is SMAWK worth the complexity? → A: Row search is > 30% of runtime AND cost is cleanly totally monotone
+- Q: Monotone-opt pointer walk time? → A: `Θ(n)` per row — the pointer only increases, `≤ n` increments total
+- Q: Rolling-array DP memory? → A: `O(K)` where `K` = layers kept
+- Q: When must you keep 2 rows not 1? → A: The recurrence reads row `i−2`
+- Q: In-place sweep for `min(D[i][j−1], D[i−1][j]+c)`? → A: Forward — each read lands on the row the recurrence wants
+- Q: In-place sweep for `max(D[i][j−1], D[i−1][j−1])`? → A: Backward — forward destroys `D[i−1][j−1]`
+- Q: `-∞` or `0` for DP init? → A: `-∞` for minimisation with possibly negative costs; `0` only when provably safe
+- Q: Bitset subset-sum speedup? → A: `Θ(n·S/64)` via `bits |= bits << v`, vs `Θ(n·S)` boolean
+- Q: Why can't FFT do boolean subset sum? → A: Saturation (OR) is not linear; FFT needs an additive/multiplicative semiring
+- Q: Aliens trick speedup? → A: `O(nk)` → `O(n log V)`
+- Q: Aliens trick hypothesis? → A: `cost(k)` convex in `k` ⟹ `F(λ) = min_k(cost(k)+λk)` convex & monotone
+- Q: Aliens trick failure mode? → A: Non-convex `cost(k)` — binary search silently returns the wrong `k`
+- Q: When does the D&C recursion cost blow up? → A: When optima are not monotone — the "restricted" ranges don't contain the true optimum
+- Q: Empirical test for monotonicity? → A: Brute-force the `opt` table on small `n` and check it is staircase-shaped
+- Q: Total candidates tried by D&C at depth `d`? → A: `O(n + 2^d)`; summing gives `O(n log n)`
+- Q: Master theorem applies to sliding-window DP? → A: No — it's iterative, not divide & conquer
+- Q: Amortisation proof tool for the deque? → A: Potential function `Φ = |deque|`, `Φ ≥ 0`, `O(1)` change per op
+- Q: Common Knuth-verification mistake? → A: Checking the conditions on the DP value instead of on `w`
+- Q: Why does Knuth need `w` to not depend on `k`? → A: Then `w(i,j)` is a constant per cell and doesn't bias which `k` is best
+- Q: Optimal BST Knuth cost `w`? → A: `Σ p_k` over keys in `[i,j]` (root-weighted subproblem mass)
+- Q: Merge-stones Knuth cost? → A: `S[j] − S[i]` (linear, so both conditions hold trivially)
+- Q: Nussinov (RNA folding) Knuth cost? → A: `−(number of complementary pairs between i and j)`
+- Q: Matrix chain is Knuth-applicable because…? → A: `w(i,j) = 0` — both conditions trivially satisfied
+- Q: Convexity of `C(j) − C(i)` for segmentation? → A: `C` convex ⟹ the DP optima are monotone ⟹ D&C applies
+- Q: `O(n²2ⁿ)` TSP — can windowing help? → A: No — the `2ⁿ` factor dominates; linear-space tricks only
+- Q: Held-Karp memory reduction? → A: Roll over the last-element dimension (`O(n2ⁿ)` → `O(2ⁿ)`) or meet-in-the-middle
+- Q: Why does in-place DP fail silently? → A: All indices stay in bounds — only the *value* is wrong
+- Q: Knuth base case `i == j`? → A: `D[i][i] = 0` (or base cost); `opt` is undefined — handle separately
+- Q: Deque with `W > n`? → A: Never front-pops; every answer is the global min
+- Q: Deque with `W = 1`? → A: Degenerates to identity — answer is `A[i]`
+- Q: All-equal `A` and pop condition `≥` vs `>`? → A: Same min value either way; `≥` keeps the newest index
+- Q: Longest subarray with ≤ K distinct — same technique? → A: Sliding window + two pointers, `O(n)`
+- Q: Max sum of two non-overlapping subarrays, complexity? → A: `Θ(n)` via prefix-best + sliding window
+- Q: Constraint-satisfied: when to *not* optimise? → A: Small `n`, non-monotone optima, or unproven conditions
+- Q: Verification harness for DP optimisations? → A: Random instances vs naive `O(n³)` reference, `n ≤ 12`
+- Q: What does D&C optimisation save on space? → A: Nothing — it saves time; use rolling rows for space
+- Q: Is Knuth a special case of D&C optimisation? → A: Yes — double monotonicity (both endpoints) instead of one
+- Q: Recursion depth for D&C row optimisation? → A: `O(log n)`
+- Q: `n` not a power of 2 in D&C? → A: `(L+R)/2` still correct; no assumption on power-of-two
+- Q: Why must `opt` be *non-decreasing* rather than just bounded? → A: Search ranges must nest, or the true optimum falls outside the restricted range
+- Q: What does "Knuth applies" need to be *verified* for? → A: The specific cost function `w`, not the problem's intuition
+- Q: Common sliding-window bug? → A: Off-by-one in `i−W+1` vs `i−W`
+- Q: SMAWK on a non-totally-monotone matrix? → A: Silently wrong row-minima — no crash
+- Q: Can you combine windowing and Knuth? → A: Yes — savings are independent and multiply in the bound
+- Q: Total monotone vs monotone matrix? → A: Total = preserved under all row/column deletions (much stronger; SMAWK needs it)
+- Q: Does D&C optimisation need convexity *proved* or *tested*? → A: Proved in production; tested empirically on small `n` during development

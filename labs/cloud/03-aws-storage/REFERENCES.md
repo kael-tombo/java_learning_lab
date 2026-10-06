@@ -9,10 +9,10 @@
 - [AWS Backup Documentation](https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html)
 
 ## Whitepapers
-- [AWS Storage Services Overview](https://docs.aws.amazon.com/whitepapers/latest/aws-storage-services-overview/welcome.html)
+- [AWS Storage Services Overview](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html)
 - [S3 Best Practices](https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html)
 - [EBS Performance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSPerformance.html)
-- [Data Protection in AWS](https://docs.aws.amazon.com/whitepapers/latest/data-protection/data-protection.html)
+- [Data Protection in AWS](https://docs.aws.amazon.com/wellarchitected/latest/data-protection-pillar.html)
 
 ## Tools
 - [AWS S3 CLI Reference](https://docs.aws.amazon.com/cli/latest/reference/s3/)

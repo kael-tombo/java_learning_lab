@@ -88,7 +88,7 @@ gradually shifting traffic:
   Martin Fowler's original article on the Strangler Fig Pattern,
   explaining the approach, benefits, and implementation strategies.
 
-- **AWS — Strangler Fig Pattern**: https://aws.amazon.com/blogs/compute/using-the-strangler-fig-pattern-to-migrate-a-legacy-application/
+- **AWS — Strangler Fig Pattern**: https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/strangler-fig.html
   AWS blog post on using the Strangler Fig Pattern for legacy migration,
   including practical implementation guidance and lessons learned.
 

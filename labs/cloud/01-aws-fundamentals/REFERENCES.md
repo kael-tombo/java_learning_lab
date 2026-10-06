@@ -10,9 +10,9 @@
 
 ## Whitepapers
 - [AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html)
-- [AWS Security Best Practices](https://docs.aws.amazon.com/whitepapers/latest/security-best-practices/welcome.html)
-- [AWS Disaster Recovery](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery/welcome.html)
-- [AWS Pricing Fundamentals](https://docs.aws.amazon.com/whitepapers/latest/how-aws-pricing-works/welcome.html)
+- [AWS Security Best Practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+- [AWS Disaster Recovery](https://docs.aws.amazon.com/whitepapers/latest/disaster-recovery.html)
+- [AWS Pricing Fundamentals](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/understanding-billing.html)
 
 ## Books
 - *AWS in Action* — Michael Wittig, Andreas Wittig

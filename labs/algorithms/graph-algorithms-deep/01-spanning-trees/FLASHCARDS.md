@@ -1,0 +1,71 @@
+# Flashcards — Spanning Trees
+
+- Q: Spanning tree edge count? → A: Exactly `V − 1`
+- Q: Graph is a tree iff…? → A: Connected and `E = V − 1`
+- Q: Cut property? → A: Min-weight edge crossing any cut is in at least one MST
+- Q: Cycle property? → A: Unique max-weight edge of any cycle is in no MST
+- Q: Cycle property with tied maxima? → A: Edge is "not required" — may be in some MST
+- Q: Kruskal time? → A: `O(E log E)` = `Θ(E log V)`; sort dominates
+- Q: Kruskal space? → A: `O(V)` (beyond the edge list)
+- Q: Kruskal on disconnected graph? → A: Minimum spanning forest; edges `< V−1`
+- Q: Kruskal cycle test? → A: `find(u) != find(v)`
+- Q: Why is that a complete cycle test? → A: Merging two distinct trees never creates a cycle
+- Q: Kruskal early exit? → A: Stop at `V − 1` accepted edges
+- Q: Kruskal with weights in `[0, W]`? → A: `O(E + W)` via counting sort
+- Q: Prim (lazy heap) time? → A: `O(E log E)`
+- Q: Prim (eager decrease-key) time? → A: `O(E log V)`
+- Q: Prim (Fibonacci heap) time? → A: `O(E + V log V)` amortised
+- Q: Prim (array scan) time? → A: `O(V²)`
+- Q: Which Prim for dense graphs? → A: Array scan, `O(V²) < O(E log V)`
+- Q: Prim lazy heap size? → A: `O(E)` — worst case
+- Q: Prim eager heap size? → A: `O(V)` — one entry per vertex
+- Q: Prim invariant? → A: Heap holds cheapest tree-crossing edge for each frontier vertex
+- Q: Prim on disconnected graph? → A: Stops when the min key is `∞`; that's one tree only
+- Q: Prim on a graph with `V=1`? → A: Single vertex, total 0
+- Q: Borůvka time? → A: `O(E log V)`
+- Q: Borůvka phases? → A: `≤ ⌈log₂ V⌉`
+- Q: Why does each Borůvka phase halve the components? → A: Every node in the component graph has degree ≥ 1, so no component is a singleton
+- Q: Borůvka's niche? → A: Read-mostly / streaming / memory-limited / distributed MST
+- Q: Borůvka extra memory? → A: `O(V)` — one cheapest-edge record per component
+- Q: Reverse-delete order? → A: **Descending** weight
+- Q: Reverse-delete time (naive)? → A: `O(E(V+E))` with BFS connectivity checks
+- Q: Reverse-delete property used? → A: Cycle property (needs descending order)
+- Q: Union-find `find` amortised? → A: `O(α(V))` ≈ constant
+- Q: Union-find needs both…? → A: Union by rank/size **and** path compression for `α`
+- Q: Union by rank alone? → A: `O(log V)` amortised, `O(log V)` worst-case depth
+- Q: Path compression alone? → A: `O(log V)` amortised, but `Θ(V)` possible worst case
+- Q: `α(V)` for `V = 10^18`? → A: `5` (`α(2^65536) = 5`)
+- Q: Self-loops in an MST? → A: Never — cycle of length 1
+- Q: Negative weights + Kruskal? → A: Works fine; MST needs no non-negativity
+- Q: Negative weights + Dijkstra? → A: **Breaks** — the settled-distance invariant fails
+- Q: Parallel edges? → A: Kruskal naturally keeps the cheapest
+- Q: Many MSTs possible? → A: Yes — all share the same minimum total weight
+- Q: "The MST" vs "an MST"? → A: Only the minimum *total weight* is unique
+- Q: Tie-break for deterministic MST? → A: Sort by `(weight, u, v)` or by unique edge id
+- Q: MST weight overflow? → A: Use `long` — total can exceed `int` range
+- Q: MST on a directed graph? → A: Not defined; use a minimum arborescence (Chu–Liu/Edmonds)
+- Q: MST vs minimum bottleneck tree? → A: An MST *is* a bottleneck tree — the same answer solves both
+- Q: Bottleneck tree alternative algorithm? → A: Union-find growing components without sorting until connected: `O(E·α(V))`
+- Q: Second-best MST algorithm? → A: Remove the largest MST edge, find the cheapest edge crossing the cut
+- Q: Counting spanning trees? → A: Kirchhoff — `(1/V)·Π λ_i` of the Laplacian (a different problem)
+- Q: MST on `G(n,p)` threshold? → A: Connected around `p ≈ (log n)/n`
+- Q: Greedy safety lemma? → A: If every selected edge extends to an optimal solution, the final result is optimal
+- Q: Why does MST admit greedy? → A: It is a matroid — the graphic matroid
+- Q: Matroid → what class of problems? → A: All minimum-weight matroid bases are found greedily
+- Q: Counter-example: greedy failing? → A: Minimum spanning tree with a degree bound — NP-hard, not a matroid
+- Q: Kruskal vs Prim tie? → A: Kruskal, when the graph is sparse or you want skip-whole-regions
+- Q: MST memory for Prim? → A: `O(V)` key/visited arrays plus the heap
+- Q: Prim on `E = 0, V > 1`? → A: One vertex only, then `∞` key stops it
+- Q: MST is a cut property, not cycle property — for which algorithm? → A: Kruskal and Prim both use the cut property
+- Q: Reverse-delete uses which? → A: Cycle property
+- Q: MST verification in `O(E)`? → A: Sort edges, union-find check — confirms optimality for a candidate tree
+- Q: Maximum spanning tree? → A: Same algorithms, sort descending / negate weights
+- Q: MST over a forest (pre-partitioned)? → A: Kruskal with the partition pre-unioned — cannot cross blocks
+- Q: Online/incremental MST? → A: Link-cut tree swap, `O(E log V)` total
+- Q: Why is `O(E log E)` the same as `O(E log V)`? → A: Simple graphs have `E ≤ V²`, so `log E = O(log V)`
+- Q: Kruskal complexity with multigraph? → A: `E` can be `Θ(V²)` with parallel edges; `log E` still `O(log E)`
+- Q: MST needed for? → A: Network design, clustering (single-linkage), image segmentation, matroid rank
+- Q: Single-linkage clustering vs MST? → A: Cut an MST at the top `k−1` edges → `k` clusters (agglomerative, `O(E log E)`)
+- Q: MST bottleneck edge = ? → A: The smallest `c` such that the graph of edges `≤ c` is connected
+- Q: Prim starting vertex matters? → A: No — every vertex yields an MST (of the same total weight)
+- Q: Can Kruskal use a heap instead of sorting? → A: Yes — `O(E log E)`, no benefit unless partially sorted
