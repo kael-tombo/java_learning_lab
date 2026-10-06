@@ -146,7 +146,7 @@ returns zero hits.
 
 ## 7. Audit `Locale`/CLDR formatting with golden files
 
-**Goal.** Detect the other silent break: JEP 252 (JDK 9) switched the default
+**Goal.** Detect the other silent break: JEP 252 (JDK 9, Use CLDR Locale Data by Default) switched the default
 locale provider to CLDR, changing date/number/casing output.
 
 ```java

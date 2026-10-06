@@ -191,7 +191,8 @@ are silent. THEORY.md's four cross-cutting patterns are the whole argument:
 
 1. **Every feature answers existing pressure** — so every feature carries its
    own upgrade risk, discoverable in advance from the JEP index.
-2. **Preview is the release valve** — so structured concurrency (preview 19→25)
+2. **Preview is the release valve** — so structured concurrency (incubator from
+   19, preview 20→25 and not final)
    and string templates (withdrawn) are *not* roadmap items, and treating them
    as such is the most expensive mistake available.
 3. **API-evolution mechanisms are features** — 17 closed the JDK over its own
@@ -222,6 +223,6 @@ number. The first is staff-plus work.
   <https://docs.oracle.com/javase/specs/jls/se21/html/jls-13.html>
 
 Two further pages worth checking before this plan is presented, both referenced in
-THEORY.md: JEP 400 (the §18 silent-corruption risk) at
-<https://openjdk.org/jeps/400> and JEP 519 (the §2 compact-header arithmetic) at
+THEORY.md: JEP 400, UTF-8 by Default (the §18 silent-corruption risk) at
+<https://openjdk.org/jeps/400> and JEP 519, Compact Object Headers (the §2 compact-header arithmetic) at
 <https://openjdk.org/jeps/519>.

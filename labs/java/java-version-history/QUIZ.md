@@ -46,7 +46,10 @@ open/closed trade-off.
 
 **7. Virtual threads: preview where, standard where, and what happened to thread
 pool sizing?**
-**Answer:** Preview in 19 and 20 (JEP 444), standard 21. Platform threads cost
+**Answer:** Preview in 19 and 20 (JEP 425 → JEP 436), standard in 21 (JEP 444).
+This is Virtual Threads' own lineage — do not confuse it with the preview years,
+which were 19 and 20, *not* 18 and 19.
+Platform threads cost
 roughly 1 MB of stack each; virtual threads are pooled and unmounted, so
 **one virtual thread per task** became correct and a fixed-size pool became an
 anti-pattern. Existing pool code kept compiling and silently stopped being the
@@ -68,10 +71,12 @@ write.
 
 **10. The module system and strong encapsulation: two releases, two different
 breakages. Which is which?**
-**Answer:** JDK 9 (JSR 376, JEP 261) *added* JPMS — slow adoption because
-split-package restrictions broke the older ecosystem. JDK 17 (JEP 403) made
-`--illegal-access` a no-op and **closed the JDK over its own internals**, which
-is what produced `InaccessibleObjectException` and the `--add-opens` era.
+**Answer:** JDK 9 (JSR 376, JEP 261 — the Module System) *added* JPMS — slow
+adoption because split-package restrictions broke the older ecosystem. JDK 17
+(JEP 403, Strongly Encapsulate JDK Internals) *enforced* it — making
+`--illegal-access` a no-op and
+**closing the JDK over its own internals**, which is what produced
+`InaccessibleObjectException` and the `--add-opens` era.
 
 **11. `Optional` and `Stream` — same release, and what was the controversy?**
 **Answer:** Both JDK 8, along with `java.time` and `CompletableFuture`. `Optional`
@@ -92,10 +97,13 @@ reified type argument and cannot create an array of an unknown component type.
 This is why `List<?>` exists and why `instanceof List<?>` is the idiom.
 
 **14. Which collectors shipped in which release, and which were *removed*?**
-**Answer:** G1 became the default in 9 (JEP 158); ZGC went experimental in 11
-(JEP 333) and production in 15 (JEP 379); generational ZGC in 23; generational
-Shenandoah in 24. CMS was deprecated in 8 and **removed** in 14 (JEP 367), along
-with Pack200. Removal for simplification is a first-class part of the timeline.
+**Answer:** G1 became the default in 9 (JEP 248); ZGC went experimental in 11
+(JEP 333) and production in 15 (JEP 377); Shenandoah production in 15 (JEP 379);
+generational ZGC in 21 (JEP 439) and default in 23 (JEP 474); generational
+Shenandoah experimental in 24 (JEP 404) and default in 25 (JEP 521). CMS was
+deprecated in 8 (JEP 291) and **removed** in 14 (JEP 363), along with Pack200
+(JEP 367) and Nashorn in 15 (JEP 372). Removal for simplification is a
+first-class part of the timeline.
 
 **15. What changed about locale data in JDK 9, and why did no test fail?**
 **Answer:** CLDR became the default locale provider (JEP 252), so `DateFormat`,
@@ -107,7 +115,7 @@ Defence: per-locale golden files and explicit `DateTimeFormatter`.
 **Answer:** Java 7, from Project Coin (JSR 334). Before it, every resource needed
 `finally { if (x != null) x.close(); }`, and the classic bug — a `close()`
 throwing in `finally` masking the original exception — was unavoidable.
-Enhanced in 9 (JEP 277: effectively-final variables outside the resource list).
+Enhanced in 9 (JEP 213: effectively-final variables outside the resource list).
 
 **17. Why did `Optional` take ten years to exist, and what did `Optional` get
 wrong?**

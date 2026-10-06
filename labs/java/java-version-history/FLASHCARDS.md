@@ -67,7 +67,7 @@ a time rather than all of them at once.
 | Q | A |
 |---|---|
 | Module system (Jigsaw, JSR 376, JEP 261) | 9 |
-| G1 default GC (JEP 158) / CLDR locales (JEP 252) | Both 9 — the latter a silent formatting change |
+| G1 default GC (JEP 248) / CLDR locales (JEP 252) | Both 9 — the latter a silent formatting change |
 | Compact strings (Latin-1 storage) | 9 — halved Latin-1 `String` memory, zero semantic change |
 | `List.of` / `Map.of`, `takeWhile`/`dropWhile`, `jlink`, restricted `var` | All 9 |
 | Why JPMS adoption was the slowest of any major feature | Split-package restrictions broke the ecosystem; poor migration story |
@@ -94,9 +94,9 @@ a time rather than all of them at once.
 
 | Q | A |
 |---|---|
-| `switch` expressions preview (JEP 325) | 12 |
-| Text blocks preview | 13 and 14 |
-| `switch` expressions standard, `yield` | 13/14 (JEP 361, final 14) |
+| Switch expressions preview (JEP 325) | 12 |
+| Text blocks preview (JEP 355) | 13, then second preview 14 (JEP 368) |
+| Switch expressions second preview (JEP 354) | 13 — final 14 (JEP 361), `yield` included |
 | `Files.mismatch`, `CharBuffer` | 13 |
 | Friction point | Exhaustive switch over `enum` with no `default` — a real problem for libraries |
 
@@ -105,17 +105,18 @@ a time rather than all of them at once.
 | Q | A |
 |---|---|
 | Text blocks standard | 15 (preview 13/14) |
-| CMS collector **removed** (JEP 367) | 14 — deprecated in 8 |
-| Pack200 **removed** | 14 — deprecated 13; replaced by `jlink` |
-| Nashorn deprecated (JEP 372) | 14 — removed in 15 |
+| CMS collector **removed** (JEP 363) | 14 — deprecated 8 (JEP 291) |
+| Pack200 **removed** (JEP 367) | 14 — deprecated 13 (JEP 336); replaced by `jlink` |
+| Nashorn deprecated (JEP 335) | 11 — **removed** in 15 (JEP 372) |
 | Principle | Removal for *simplification*, not capability |
 
 ## 15 — The preview year (2020, LTS)
 
 | Q | A |
 |---|---|
-| Records preview (2nd), sealed preview (JEP 360), switch-pattern preview (JEP 406) | 15 |
-| ZGC production-ready (JEP 379) | 15 — experimental in 11 |
+| Records preview 2nd (JEP 384); sealed preview (JEP 360) | 15 — records preview 1st was 14 (JEP 359) |
+| ZGC production-ready (JEP 377); Shenandoah production (JEP 379) | 15 — ZGC experimental in 11 (JEP 333) |
+| Finalization deprecated for removal (JEP 421) | 18 — *not* 23; this is where `finalize()` warnings began |
 | Why preview features exist | The 6-month cadence made "too much new surface per release" a real risk |
 | Preview benefit vs cost | Designs refined *substantially* while gated; code is not portable across releases |
 
@@ -123,7 +124,7 @@ a time rather than all of them at once.
 
 | Q | A |
 |---|---|
-| Records standard (JEP 395); `instanceof` pattern matching standard (JEP 305) | 16 |
+| Records standard (JEP 395); `instanceof` pattern matching standard (JEP 394) | 16 — `instanceof` pattern preview was 14 (JEP 305) |
 | `Stream.toList()` | 16 |
 | Records are | **Shallowly** immutable — a `List` component is still mutable |
 | Sealed still preview in 16 | Yes — preview 15 *and* 16, standard 17 |
@@ -132,8 +133,9 @@ a time rather than all of them at once.
 
 | Q | A |
 |---|---|
-| Sealed classes standard (JEP 409); switch patterns standard (JEP 406) | 17 |
-| Strong encapsulation of JDK internals (JEP 403) | 17 — `--illegal-access` becomes a no-op |
+| Sealed classes standard (JEP 409) | 17 — sealed previewed in 15 *and* 16 |
+| Strongly Encapsulate JDK Internals (JEP 403) | 17 — `--illegal-access` becomes a no-op |
+| Note on JEP 406 | That is *Pattern Matching for switch (Preview)*, delivered in **17** — it is not the switch-pattern final |
 | Symptom of JEP 403 | `java.lang.reflect.InaccessibleObjectException` from `setAccessible` |
 | `permits` commitment / cost | Adding a subtype is source-breaking everywhere; the largest migration pain since 9 |
 
@@ -145,34 +147,37 @@ a time rather than all of them at once.
 | `SimpleWebServer` | 18 |
 | Why it mattered | The default charset was OS-locale-dependent — platform-dependent behaviour |
 | The most under-appreciated migration risk | Yes — silent data corruption, no exception |
-| Virtual threads **preview** (JEP 425) | 18 — *first* preview, not 19 |
+| Core reflection reimplemented on method handles (JEP 416) | 18 — also a source of reflective-access changes |
+| Finalization deprecated for removal (JEP 421) | 18 |
 
 ## 19 — Records in switch, virtual threads preview (2022)
 
 | Q | A |
 |---|---|
-| Virtual threads preview (2nd, JEP 436) | 19 |
+| Virtual threads **preview** (JEP 425) | 19 — first preview; *not* 18 |
 | Record patterns preview (JEP 405); `java.lang.foreign` preview (JEP 424) | 19 |
-| Structured concurrency preview (JEP 428) | 19 |
-| Switch patterns standard (JEP 441) | 19 |
+| Structured concurrency **incubator** (JEP 428) | 19 — incubator, a weaker gate than preview |
+| Switch patterns preview 3rd (JEP 427) | 19 — the switch-pattern final is JEP 441 in **21** |
 | Pressure on platform threads | ~1 MB stack each, OS-thread-bound → high-concurrency IO was uneconomic |
 
 ## 20 — Pattern matching everywhere (2023)
 
 | Q | A |
 |---|---|
-| Record patterns standard (JEP 440); virtual threads standard (JEP 444) | 20 |
-| Structured concurrency preview (2nd), ScopedValue preview (JEP 446), sequenced collections preview | 20 |
-| Why 20 mattered | It delivered the third and final piece of pattern matching |
+| Virtual threads preview 2nd (JEP 436); structured concurrency 2nd preview (JEP 437); record patterns 2nd preview (JEP 432) | 20 |
+| Switch patterns preview 4th (JEP 433) | 20 |
+| Why 20 mattered | Pattern matching reached feature-complete *as a whole* — but the switch parts were still preview here |
+| Correction worth knowing | Record patterns (JEP 440) and virtual threads (JEP 444) shipped in **21**, not 20 |
 | The trade-off | Exhaustive switch is compiler-checked, so adding a subtype is a compile break everywhere |
 
 ## 21 — The LTS consolidation release (2023, LTS)
 
 | Q | A |
 |---|---|
-| Virtual threads mainstream; `Thread.ofVirtual()` builders (JEP 451) | 21 — the modern-concurrency baseline |
-| Generational ZGC (JEP 448); sequenced collections preview; string templates preview (JEP 430) | 21 |
-| `StructuredTaskScope` preview (2nd) — **still preview** | 21 |
+| Virtual threads standard (JEP 444); record patterns (JEP 440); switch patterns (JEP 441) | 21 — the modern-concurrency baseline |
+| Generational ZGC (JEP 439); sequenced collections (JEP 431); string templates preview (JEP 430) | 21 |
+| Scoped values preview (JEP 446); structured concurrency preview (JEP 453) | 21 |
+| Dynamic agent loading to be restricted (JEP 451) | 21 — *not* a virtual-thread builder API |
 | Sizing guidance inverted | One virtual thread per task; a fixed pool is now an anti-pattern |
 | Why existing pool code is dangerous | It kept compiling and silently stopped being the right shape |
 
@@ -181,35 +186,40 @@ a time rather than all of them at once.
 | Q | A |
 |---|---|
 | Unnamed variables and patterns `_` (JEP 456) | 22 |
-| Implicitly declared classes / instance main (preview) | 22 — the second program form with no `public class` |
-| `ClassFile` API (JEP 484) final 24; FFM API incubating (JEP 447) | 22 |
+| Implicitly declared classes / instance main preview 2nd (JEP 463) | 22 — the second program form with no `public class` |
+| Class-File API preview (JEP 457); FFM API final (JEP 454, Foreign Function & Memory) | 22 — Class-File API went final in 24 (JEP 484) |
 
 ## 23 — ZGC generational, string templates (2023)
 
 | Q | A |
 |---|---|
-| Generational ZGC (JEP 474) | 23 — brought G1-class pause behaviour to large heaps |
-| String templates (2nd preview, JEP 459) | 23 — **withdrawn** after API criticism |
-| Finalizers deprecated for removal (JEP 421) | 23 |
+| Generational ZGC default (JEP 474) | 23 — brought G1-class pause behaviour to large heaps by default |
+| String templates 2nd preview (JEP 459) | 23 — withdrawn (JEP 465) after API criticism |
+| Markdown documentation comments (JEP 467) | 23 |
+| Generational Shenandoah (experimental, JEP 404) | 24 — promoted to default in 25 (JEP 521) |
 
 ## 24 — Generational Shenandoah (2024, LTS)
 
 | Q | A |
 |---|---|
-| Generational Shenandoah (JEP 521) | 24 |
-| SecurityManager terminally deprecated (JEP 486) | 24 — finally at its documented end state |
-| `Stream` gatherers (JEP 485) | 24 — the sanctioned extension point, replacing `Collector` |
-| Flexible constructor bodies preview (JEP 492); `ClassFile` API final | 24 |
+| SecurityManager permanently disabled (JEP 486) | 24 — deprecated 17 (JEP 411), terminally deprecated then |
+| `Stream` gatherers (JEP 485) | 24 — the sanctioned extension point |
+| Class-File API final (JEP 484) | 24 — preview 22 (JEP 457) |
+| AOT class loading & linking (JEP 483) | 24 |
+| Flexible constructor bodies preview 3rd (JEP 492) | 24 |
+| Synchronize virtual threads without pinning (JEP 491) | 24 — resolves the JDK 21/22 pinning problem |
+| Note on JEP 521 | Generational Shenandoah went **default in 25**, not 24; 24 shipped it as experimental |
 
 ## 25 — The current frontier (2025, LTS)
 
 | Q | A |
 |---|---|
 | Compact object headers (JEP 519) | 25 — saves up to 16 bytes per object |
-| `import module java.base` (module import declarations) | 25 — the ergonomic counterweight to JPMS |
-| Flexible constructor bodies standard (JEP 513); ScopedValue standard (JEP 506) | 25 |
-| StructuredTaskScope preview (2nd); `java.lang.foreign` preview; Vector API incubation | 25 |
-| Generational Shenandoah + generational ZGC defaults | 25 |
+| Module import declarations (JEP 511) — `import module java.base` | 25 — the ergonomic counterweight to JPMS |
+| Flexible constructor bodies standard (JEP 513); Scoped Values standard (JEP 506) | 25 |
+| Compact source files and instance main (JEP 512) | 25 — preview graduated in 24 (JEP 495) |
+| Generational Shenandoah (JEP 521) default | 25 — experimental in 24 |
+| AOT method profiling (JEP 515); AOT command-line ergonomics (JEP 514) | 25 |
 | Pressure 1 | Memory density — object headers had been a fixed cost since 1.0 |
 | Pressure 2 | Migration friction — `import module` attacks what stalled JPMS |
 | Pressure 3 | Concurrency completion — ScopedValue + StructuredTaskScope close the 19→25 Loom roadmap |
@@ -230,13 +240,18 @@ a time rather than all of them at once.
 
 | Q | A |
 |---|---|
-| JEP 158 / 252 / 261 / 277 | G1 default GC / CLDR locales / Module System / enhanced try-with-resources — all 9 |
-| JEP 286 / 323 | `var` for locals (10); `var` in lambda params (11) |
-| JEP 354 / 367 / 372 / 379 | Pack200 deprecated (13) / remove CMS (14) / Nashorn removed (15) / ZGC prod (15) |
-| JEP 395 / 400 / 403 / 405 / 409 | Records (16) / UTF-8 (18) / strong encapsulation (17) / record patterns preview (19) / sealed final (17) |
-| JEP 425 / 436 / 444 | Virtual threads preview 18, preview 19, final 20 |
-| JEP 441 / 448 / 451 / 474 | Switch patterns (19) / gen ZGC (21) / virtual-thread executors (21) / gen ZGC (23) |
-| JEP 430 | String templates — preview 21–24, **withdrawn** |
-| JEP 456 / 485 / 486 / 521 | Unnamed patterns (22) / gatherers (24) / SecurityManager off (24) / gen Shenandoah (24) |
-| JEP 519 | Compact object headers (25) |
+| JEP 248 / 252 / 261 / 254 | G1 default GC (9) / CLDR locales (9) / Module System (9) / Compact Strings (9) |
+| JEP 286 / 323 / 321 | `var` locals (10) / `var` lambda params (11) / HTTP Client (11) |
+| JEP 325 / 361 / 378 | Switch expressions preview (12) / final (14) / Text Blocks (15) |
+| JEP 336 / 363 / 367 / 372 | Pack200 deprecated (13) / remove CMS (14) / remove Pack200 (14) / remove Nashorn (15) |
+| JEP 359 / 384 / 395 | Records preview (14) / 2nd preview (15) / final (16) |
+| JEP 360 / 397 / 409 | Sealed preview (15) / 2nd preview (16) / final (17) |
+| JEP 400 / 403 / 411 / 486 | UTF-8 by Default (18) / Strongly Encapsulate JDK Internals (17) / SecurityManager deprecated (17) / permanently disabled (24) |
+| JEP 425 / 436 / 444 | Virtual threads preview (19) / 2nd preview (20) / final (21) |
+| JEP 405 / 432 / 440 | Record patterns preview (19) / 2nd preview (20) / final (21) |
+| JEP 406 / 427 / 433 / 441 | Switch patterns preview (17) / 3rd (19) / 4th (20) / final (21) |
+| JEP 430 / 459 / 465 | String templates preview (21) / 2nd (23) / withdrawn (24) |
+| JEP 439 / 474 / 404 / 521 | Generational ZGC (21) / gen ZGC default (23) / gen Shenandoah experimental (24) / default (25) |
+| JEP 456 / 485 / 484 / 491 | Unnamed patterns (22) / gatherers (24) / Class-File API (24) / VT pinning fixed (24) |
+| JEP 506 / 511 / 512 / 513 / 519 | Scoped Values (25) / module import (25) / compact source (25) / flex constructors (25) / compact headers (25) |
 | Canonical index / compat rules | <https://openjdk.org/jeps/0> · JLS 13.5 |

@@ -39,9 +39,11 @@ compatibility; the notable breakages:
   JDK internals that used to be `setAccessible(true)`-permitted.
 - Removal of `java.lang.SecurityManager`-dependent behaviour (deprecated in 17,
   disabled by default in 18, terminally deprecated in 24).
-- `Unsafe.defineAnonymousClass` deprecated in JDK 17 (JEP 416) and **removed in
-  JDK 24** (JEP 498), breaking old bytecode-generation libraries (cglib, early
-  Mockito).
+- **Memory-access methods in `sun.misc.Unsafe`** deprecated for removal in JDK 23
+  (JEP 471) and **permanently disabled in JDK 24** (JEP 498), which breaks
+  old bytecode-generation libraries (cglib, early Mockito). This is the
+  `defineAnonymousClass` family — JDK 18 also reimplemented core reflection on
+  method handles (JEP 416), a related but distinct shift.
 
 The classic symptom: everything compiles, and then `NoSuchMethodError` or
 `IllegalAccessError` fires only on the code path nobody tested.
@@ -55,14 +57,15 @@ Same code, different observable behaviour. This is the dangerous surface.
 | Strong encapsulation of JDK internals | 9 (incubating), 17 (enforced) | `InaccessibleObjectException` |
 | Default charset from platform locale | 18 | Text corruption on legacy-encoded data |
 | `Locale` provider switch to CLDR | 9 | Date/number formatting output differs |
-| Removed CMS collector | 14 | GC pause profile changes |
-| ZGC experimental → production | 11 → 15 | Latency shifts, tuning flags renamed |
+| Removed CMS collector | 14 (JEP 363) | GC pause profile changes |
+| Removed `Pack200` | 14 (JEP 367) | Old deploy tooling breaks |
+| ZGC experimental → production | 11 (JEP 333) → 15 (JEP 377) | Latency shifts, tuning flags renamed |
 | Sealed/`record` tighten `equals`/`hashCode` | 16 | Map/set behaviour can differ |
-| Iterative `HashMap` splitting | 8 | Resize-order, not correctness |
+| Iterative `HashMap` splitting | 8 (JEP 180) | Resize-order, not correctness |
 | `Stream`/`Optional` strictness | 9+ | `NullPointerException` surfaces earlier |
-| Compact strings (Latin-1 storage) | 9 | Memory accounting shifts |
-| Removed `Pack200` | 14 | Old deploy tooling breaks |
-| `SecurityManager` disabled by default | 18 | Permission checks become no-ops |
+| Compact strings (Latin-1 storage) | 9 (JEP 254) | Memory accounting shifts |
+| `SecurityManager` disabled by default → permanently off | 18 → 24 (JEP 486) | Permission checks become no-ops |
+| Compact object headers | 25 (JEP 519) | Object size, heap dumps, layout assumptions |
 
 ## 2. The compile-first pipeline
 
@@ -232,13 +235,18 @@ decommissioned and the rollback path is closed.
 
 ## 8. Sourced field notes (fetched Oct 2026 — verify before citing)
 
-- **JEP 403: A Stronger Encapsulation of JDK Internals** (JDK 17, Sept 2021) —
+- **JEP 403: Strongly Encapsulate JDK Internals** (JDK 17, Sept 2021) —
   `--illegal-access` ignored by default; JDK internals strongly encapsulated.
   <https://openjdk.org/jeps/403>
-- **JEP 396: Deprecate the Security Manager for Removal** (JDK 17) and
+- **JEP 411: Deprecate the Security Manager for Removal** (JDK 17) and
   **JEP 486: Permanently Disable the Security Manager** (JDK 24) — the manager
-  goes from disabled-by-default to terminal warning.
+  goes from deprecated, to disabled-by-default (18), to permanently off (24).
   <https://openjdk.org/jeps/486>
+- **JEP 400: UTF-8 by Default** (JDK 18) — the silent-corruption risk from §1.3.
+  <https://openjdk.org/jeps/400>
+- **JEP 471 / JEP 498** — `sun.misc.Unsafe` memory-access methods deprecated (23)
+  then permanently disabled (24).
+  <https://openjdk.org/jeps/498>
 - **`jdeps` tool documentation** — the `--jdk-internals` flag is the canonical
   first migration step.
   <https://docs.oracle.com/en/java/javase/21/docs/specs/man/jdeps.html>

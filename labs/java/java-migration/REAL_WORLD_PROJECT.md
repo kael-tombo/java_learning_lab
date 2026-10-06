@@ -129,7 +129,8 @@ Ordered by how often each shows up in a fleet this size:
    import. Symptom: `ClassNotFoundException: javax.servlet.http.HttpServlet`.
    This is 70% of the engineering hours in weeks 2–3.
 4. **Mockito 1 → 5 and Hibernate proxy generation.** Old bytecode generation dies
-   on `Unsafe.defineAnonymousClass` (removed in 17). Symptom: `NoSuchMethodError`
+   on `sun.misc.Unsafe` memory-access methods (permanently disabled in 24, JEP
+   498). Symptom: `NoSuchMethodError`
    in test setup. Fix: upgrade, no flag exists.
 5. **`--add-opens` accumulation.** Every service ends up with 2–4 flags. Symptom:
    none, which is the problem. Fix: ticketed, counted, and zero at decommission.
@@ -172,7 +173,7 @@ The step that gets skipped, which is why the flags become permanent.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 
-- **JEP 403: A Strong Encapsulation of JDK Internals** (JDK 17, Sept 2021) — the
+- **JEP 403: Strongly Encapsulate JDK Internals** (JDK 17, Sept 2021) — the
   reference for every `--add-opens` line in this plan; `--illegal-access` ignored
   by default.
   <https://openjdk.org/jeps/403>

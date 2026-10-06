@@ -43,11 +43,12 @@ matching THEORY.md section.
 | `javax.xml.bind` (JAXB) removed | JDK 11 (deprecated 9) → `jakarta.xml.bind-api` + impl |
 | `java.activation` (JAFB) removed | JDK 11 → `jakarta.activation-api` |
 | `java.corba` removed | JDK 11 → no drop-in replacement |
-| Nashorn / `jjs` removed | JDK 15 (JEP 372) → GraalJS or Node |
-| `java.util.jar.Pack200` | Deprecated 13, removed 14 → `jlink` / module image |
+| Nashorn / `jjs` removed | JDK 15 (JEP 372); deprecated 11 (JEP 335) → GraalJS or Node |
+| `java.util.jar.Pack200` | Deprecated 13 (JEP 336), removed 14 (JEP 367) → `jlink` / module image |
 | `javah` removed | JDK 10 → `javac -h` |
-| CMS collector removed | JDK 14 (JEP 367) → G1 or ZGC |
-| ParallelFullGC for G1 removed | JDK 14 (JEP 410) — added in 10 (JEP 307); different thing |
+| CMS collector removed | JDK 14 (JEP 363); deprecated 8 (JEP 291) → G1 or ZGC |
+| ParallelFullGC for G1 removed | JDK 23 (JEP 475, late barrier expansion, removes it) — added in 10 (JEP 307); different thing |
+| Applet API removed | JDK 26 (JEP 504, Remove the Applet API); deprecated 9 (JEP 289 is VarHandle — a common mix-up) |
 | `-XX:+PrintGCDetails` / `PrintGCTimeStamps` | Gone; use `-Xlog:gc*` |
 | `Class.newInstance()` | Deprecated 9 → `getDeclaredConstructor().newInstance()` |
 | `System.runFinalizersOnExit` | Deprecated 10 → `Runtime.addShutdownHook` |
@@ -78,14 +79,16 @@ matching THEORY.md section.
 | Default charset → UTF-8 | JDK 18 (JEP 400) |
 | JEP 400 escape hatch | `-Dfile.encoding=COMPAT`, or set `LANG` |
 | JEP 400 real risk | Containers with no `LANG`: ASCII default before, UTF-8 now |
-| Locale data provider → CLDR default | JDK 9 (JEP 252) |
+| Locale data provider → CLDR default | JDK 9 (JEP 252, Use CLDR Locale Data by Default) |
 | CLDR-affected APIs | `DateFormat`, `NumberFormat`, `String` casing, `Collator` |
 | Classic CLDR surprise | Turkish dotless-i: `"i".toUpperCase(new Locale("tr"))` → `İ` |
-| ZGC promoted to production | JDK 15 (JEP 379); experimental in 11 (JEP 333) |
-| ZGC generational mode | JDK 21 (JEP 448) — re-baseline p99 SLOs |
-| G1 becomes the default collector | JDK 9 (JEP 158) |
-| Sealed classes | Preview 15/16 (JEP 360), final 17 (JEP 409) |
-| Records | Preview 14/15 (JEP 395), final 16 — `equals`/`hashCode` synthesized |
+| ZGC promoted to production | JDK 15 (JEP 377); experimental in 11 (JEP 333) |
+| Shenandoah promoted to production | JDK 15 (JEP 379) — a different JEP from ZGC's, a frequent mix-up |
+| ZGC generational mode | JDK 21 (JEP 439, Generational ZGC); default 23 (JEP 474) — re-baseline p99 SLOs |
+| G1 becomes the default collector | JDK 9 (JEP 248) |
+| Generational Shenandoah | Experimental 24 (JEP 404), default 25 (JEP 521) |
+| Sealed classes | Preview 15 (JEP 360) / 16 (JEP 397), final 17 (JEP 409) |
+| Records | Preview 14 (JEP 359) / 15 (JEP 384), final 16 (JEP 395) |
 | Risk from synthesized methods | Hand-written vs generated equality can differ → Map/set behaviour shifts |
 | Pattern matching for `switch` | Preview 17–20, final 21 (JEP 441) |
 | Virtual threads | Preview 19/20, final 21 (JEP 444) |
@@ -99,23 +102,26 @@ matching THEORY.md section.
 |---|---|
 | JEP 261 | Module System (JDK 9) |
 | JEP 252 | CLDR as default locale provider (JDK 9) |
-| JEP 158 | G1 as default GC (JDK 9) |
+| JEP 248 | G1 as default GC (JDK 9) |
 | JEP 289 | `VarHandle` (JDK 9) — the `Unsafe` replacement |
-| JEP 277 | Enhanced try-with-resources (JDK 9) |
+| JEP 213 | Enhanced try-with-resources (JDK 9) |
 | JEP 307 | Parallel full GC for G1 (JDK 10) |
-| JEP 354 | Deprecate `Pack200` for removal (JDK 13) |
-| JEP 367 | Remove CMS (JDK 14) |
+| JEP 336 | Deprecate `Pack200` (JDK 13) |
+| JEP 363 | Remove CMS (JDK 14) |
+| JEP 367 | Remove `Pack200` (JDK 14) |
 | JEP 372 | Remove Nashorn (JDK 15) |
-| JEP 379 | ZGC production-ready (JDK 15) |
-| JEP 403 | Strong encapsulation of JDK internals (JDK 17) |
+| JEP 377 | ZGC production-ready (JDK 15) |
+| JEP 403 | Strongly Encapsulate JDK Internals (JDK 17) |
 | JEP 409 | Sealed classes final (JDK 17) |
-| JEP 396 | Deprecate SecurityManager for removal (JDK 17) |
+| JEP 411 | Deprecate SecurityManager for removal (JDK 17) |
 | JEP 400 | UTF-8 by default (JDK 18) |
+| JEP 416 | Core reflection on method handles (JDK 18) |
 | JEP 421 | Deprecate finalization for removal (JDK 18) |
+| JEP 439 | Generational ZGC (JDK 21) |
 | JEP 441 | Pattern matching for switch (JDK 21) |
 | JEP 444 | Virtual threads (JDK 21) |
-| JEP 448 | Generational ZGC (JDK 21) |
 | JEP 453 | Structured concurrency preview (JDK 21) |
+| JEP 471 / JEP 498 | `sun.misc.Unsafe` memory-access methods deprecated (23) / disabled (24) |
 | JEP 486 | Permanently disable the SecurityManager (JDK 24) |
 | Canonical index | <https://openjdk.org/jeps/0> |
 
@@ -178,7 +184,7 @@ matching THEORY.md section.
 | Library dropped old-JDK support | Newest LTS you can qualify — let the dependency set the target |
 | Container base image / host OS EOL | Next LTS; infrastructure forces the hand |
 | Want virtual threads | JDK 21+ |
-| Want structured concurrency final | JDK 25 — still preview in 21 |
+| Want structured concurrency final | **Not yet** — it was incubator from 19 and reached only its fifth preview by 25 (JEP 505). Do not plan on it |
 | Long-horizon modernization, active team | JDK 25 — largest gain, largest jump |
 | Modernization value today (21 vs 17) | Virtual threads, pattern matching for switch, generational ZGC |
 | Modernization value today (25 vs 21) | Structured concurrency final, module import declarations, compact object headers |

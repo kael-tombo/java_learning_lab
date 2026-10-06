@@ -119,7 +119,7 @@ why using it is debt rather than a fix.
 
 ## 5. CLDR vs COMPAT locale formatting
 
-**Goal.** Reproduce THEORY.md §9's silent *formatting* change (JEP 252).
+**Goal.** Reproduce THEORY.md §9's silent *formatting* change (JEP 252, Use CLDR Locale Data by Default).
 
 ```bash
 for p in CLDR COMPAT; do
@@ -257,7 +257,7 @@ done
 
 **Expected observation.** `feature()` returns 8/11/17/21/25; `defaultCharset()`
 returns the platform charset pre-18 and `UTF-8` on 18+; the locale count jumps at
-9 when CLDR becomes the default provider (JEP 252); the object-header-size
+9 when CLDR becomes the default locale provider (JEP 252); the object-header-size
 property is absent before 24/25 and present after.
 
 **Pass.** You have a version/feature table with at least four columns (feature,

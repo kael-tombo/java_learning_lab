@@ -18,12 +18,12 @@ Aim 16/20. Miss any of 1–7 and reread THEORY.md §1–§2.
 **Answer:** (1) Stop using the internal API — `MethodHandles.privateLookupIn` or `VarHandle`. (2) Surgical `--add-opens java.base/java.lang=ALL-UNNAMED`, tracked as debt with an owner and a deletion date. (3) Upgrade the library that created the need (Mockito, cglib, old Hibernate, hand-rolled `Proxy`).
 
 **6. What changed in JDK 18 about charsets, and how do you defend?**
-**Answer:** JEP 400 made UTF-8 the default charset everywhere, independent of platform locale. A container with no `LANG` previously defaulted to ASCII. Defend by making every read/write charset-explicit (`Files.readString(p, ISO_8859_1)`, `new String(bytes, cs)`) and grepping for the bare constructors.
+**Answer:** JEP 400 (JDK 18) made UTF-8 the default charset everywhere, independent of platform locale. A container with no `LANG` previously defaulted to ASCII. Defend by making every read/write charset-explicit (`Files.readString(p, ISO_8859_1)`, `new String(bytes, cs)`) and grepping for the bare constructors.
 
 **7. What does Animal Sniffer catch that `javac --release` does not?**
 **Answer:** Pre-compiled dependencies. `--release` only checks code you compile; a jar built on JDK 17 can still call `Files.readString` and reach a JDK 11 runtime. You need both — or `revapi`/`japicmp` for binary checks.
 
-**8. What replaces each removal?** JAXB/JAFB (11) → `jakarta.*` artifacts. Nashorn/`jjs` (15) → GraalJS or Node. Pack200 (14) → `jlink`. CMS (14, JEP 367) → G1 or ZGC. `javah` (10) → `javac -h`. `SecurityManager` disabled by default (18), terminally deprecated 24 (JEP 486).
+**8. What replaces each removal?** JAXB/JAFB (11) → `jakarta.*` artifacts. Nashorn/`jjs` (15, JEP 372) → GraalJS or Node. Pack200 (14, JEP 367) → `jlink`. CMS (14, JEP 363) → G1 or ZGC. `javah` (10, JEP 313) → `javac -h`. `SecurityManager` disabled by default (18), permanently disabled 24 (JEP 486).
 
 **9. Your p99 regressed 8% on the canary. Why is 5% traffic not enough, and what gates promotion?**
 **Answer:** 5% of traffic yields far too few *tail* events for a p99 verdict. Gate on request count (`min_samples`), not elapsed time, plus a full business cycle including weekend — a different traffic shape. Promote only when SLOs are green at required sample size, not when "no alerts yet."
@@ -38,7 +38,7 @@ Aim 16/20. Miss any of 1–7 and reread THEORY.md §1–§2.
 **Answer:** JDK 17 — old cglib and early Mockito fail with `NoSuchMethodError` during proxy generation. No flag fixes it; upgrade the library. Clearest example of a binary break: your source compiles fine because the call is inside someone else's bytecode.
 
 **13. True/false: `-XX:+UseConcMarkSweepGC` still works with `-XX:+IgnoreUnrecognizedVMOptions`.**
-**Answer:** False. CMS was removed in JDK 14 (JEP 367); the flag no longer exists and that JVM option only silences *experimental/unknown* flags, not removed ones — startup fails. Migrate to G1/ZGC, including logging renames (`-XX:+PrintGCDetails` → `-Xlog:gc*`).
+**Answer:** False. CMS was removed in JDK 14 (JEP 363); the flag no longer exists and that JVM option only silences *experimental/unknown* flags, not removed ones — startup fails. Migrate to G1/ZGC, including logging renames (`-XX:+PrintGCDetails` → `-Xlog:gc*`).
 
 **14. Locale-sensitive invoice text changed after the upgrade but no test failed. Why?**
 **Answer:** CLDR became the default locale provider in JDK 9 (JEP 252), so `DateFormat`/`NumberFormat` output differs from old JRE data. A test asserting *parsed values* sees nothing; only the formatted string changed. Add per-locale golden files and pin formatting with explicit `DateTimeFormatter`.

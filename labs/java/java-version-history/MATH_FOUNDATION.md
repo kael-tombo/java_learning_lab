@@ -223,9 +223,9 @@ feedback lands in the next release:
 |---|---|---|---|
 | Records | 14, 15 | 0.30 | Adopt on 16 LTS |
 | Sealed classes | 15, 16 | 0.30 | Adopt on 17 LTS |
-| Pattern matching `switch` | 17–20 (4) | 0.10 | Adopt on 21 — churn risk mostly retired |
-| Virtual threads | 18, 19 | 0.30 | Adopt on 21 |
-| Structured concurrency | 19→ | **0.90** | **Do not adopt** — still preview in 25 |
+| Pattern matching `switch` | 17, 19, 20 (3) | 0.10 | Adopt on 21 — churn risk mostly retired |
+| Virtual threads | 19, 20 | 0.30 | Adopt on 21 |
+| Structured concurrency | 19→ (incubator, then preview 20–25) | **0.90** | **Do not adopt** — still preview in 25 |
 | String templates | 21–24 (4) | **1.00** | **Never** — withdrawn; churn realised |
 
 Note the last two rows: a feature that stays in preview for *many* releases has
