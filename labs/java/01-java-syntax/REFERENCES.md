@@ -17,9 +17,9 @@
 ## Java Enhancement Proposals (JEPs) for Syntax
 
 - [JEP 286: Local-Variable Type Inference (var)](https://openjdk.org/jeps/286) — Java 10
-- [JEP 354: Switch Expressions](https://openjdk.org/jeps/354) — Java 14 (standard in Java 17)
-- [JEP 355: Text Blocks](https://openjdk.org/jeps/355) — Java 15
-- [JEP 359: Records](https://openjdk.org/jeps/359) — Java 16
+- [JEP 361: Switch Expressions](https://openjdk.org/jeps/361) — Java 14 (final; previews JEP 325 in 12, JEP 354 in 13)
+- [JEP 378: Text Blocks](https://openjdk.org/jeps/378) — Java 15 (final; previews JEP 355 in 13, JEP 368 in 14)
+- [JEP 395: Records](https://openjdk.org/jeps/395) — Java 16 (final; previews JEP 359 in 14, JEP 384 in 15)
 - [JEP 394: Pattern Matching for instanceof](https://openjdk.org/jeps/394) — Java 16
 - [JEP 440: Record Patterns](https://openjdk.org/jeps/440) — Java 21
 

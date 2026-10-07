@@ -66,7 +66,7 @@ java -Xss1m     # 1MB stack
 
 ## 2. Loom Virtual Threads vs Platform Threads
 
-Project Loom (JEP 425, Java 21+) introduces **virtual threads** — lightweight threads managed by the JVM rather than the OS.
+Project Loom (virtual threads: previews JEP 425 in 19 and JEP 436 in 20, final as JEP 444 in Java 21) introduces **virtual threads** — lightweight threads managed by the JVM rather than the OS.
 
 ### Architecture
 

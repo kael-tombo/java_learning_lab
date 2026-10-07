@@ -635,7 +635,7 @@ try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
 - No thread leakage — all subtasks complete before scope closes
 - Clear error propagation
 
-### Scoped Values (JEP 429 — Preview in 21)
+### Scoped Values (JEP 446 — Preview in 21; incubator in 20 as JEP 429; final in 25 as JEP 506)
 
 Replacement for `ThreadLocal` that works with virtual threads:
 ```java

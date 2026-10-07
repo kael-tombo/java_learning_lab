@@ -15,7 +15,7 @@
 ## JEPs
 - JEP 254: Compact Strings — Java 9
 - JEP 280: Indify String Concatenation — Java 9
-- JEP 355: Text Blocks — Java 15
+- JEP 355: Text Blocks (Preview) — Java 13
 - JEP 378: Text Blocks (Standard) — Java 15
 
 ## Deep Dive References

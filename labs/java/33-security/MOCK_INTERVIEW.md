@@ -13,7 +13,7 @@
 
 **Interviewer**: How does the JVM's Security Manager work? What about its deprecation?
 
-**Candidate**: `SecurityManager` (Java 1.0) uses a sandbox model — code is granted permissions based on where it's loaded from. It's been deprecated for removal in Java 18+ (JEP 411). Reasons: (1) It gives a false sense of security — many escapes known. (2) Rarely used correctly. (3) Container-level security (Docker, cgroups) provides better isolation. (4) Project Loom virtual threads don't support it.
+**Candidate**: `SecurityManager` (Java 1.0) uses a sandbox model — code is granted permissions based on where it's loaded from. It was deprecated for removal in Java 17 (JEP 411), disabled by default in 18, and permanently disabled in Java 24 (JEP 486). Reasons: (1) It gives a false sense of security — many escapes known. (2) Rarely used correctly. (3) Container-level security (Docker, cgroups) provides better isolation. (4) Project Loom virtual threads don't support it.
 
 **Interviewer**: How would you securely hash a password in Java?
 

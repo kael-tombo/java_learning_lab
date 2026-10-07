@@ -17,7 +17,7 @@
 - [Baeldung — Composition vs Inheritance](https://www.baeldung.com/java-composition-vs-inheritance)
 
 ## JEPs
-- JEP 397: Sealed Classes — Java 17
+- JEP 397: Sealed Classes (Second Preview) — Java 16
 
 ## Deep Dive References
 - [JVMS §3.8 — Compiling Inheritance](https://docs.oracle.com/javase/specs/jvms/se21/html/jvms-3.html) — Bytecode for inheritance

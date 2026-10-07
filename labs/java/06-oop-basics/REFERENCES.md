@@ -13,7 +13,7 @@
 - *Effective Java* — Joshua Bloch (Items 1-9: Creating and destroying objects)
 
 ## JEPs
-- JEP 359: Records — Java 16
+- JEP 359: Records (Preview) — Java 14
 - JEP 395: Records (Standard) — Java 16
 
 ## Deep Dive References

@@ -9,7 +9,7 @@
 
 **Q1: What are the main features delivered in Java 21?**
 
-**Candidate**: Java 21 (LTS, September 2023) includes: Virtual Threads (JEP 444, final), Record Patterns (JEP 440, final), Pattern Matching for switch (JEP 441, final), Sequenced Collections (JEP 431), String Templates (JEP 430, preview), Structured Concurrency (JEP 453, preview), Scoped Values (JEP 429, preview), Unnamed Patterns and Variables (JEP 443, preview), Unnamed Classes and Instance Main Methods (JEP 445, preview).
+**Candidate**: Java 21 (LTS, September 2023) includes: Virtual Threads (JEP 444, final), Record Patterns (JEP 440, final), Pattern Matching for switch (JEP 441, final), Sequenced Collections (JEP 431), String Templates (JEP 430, preview), Structured Concurrency (JEP 453, preview), Scoped Values (JEP 446, preview), Unnamed Patterns and Variables (JEP 443, preview), Unnamed Classes and Instance Main Methods (JEP 445, preview).
 
 **Interviewer**: What are Sequenced Collections? Why were they needed?
 

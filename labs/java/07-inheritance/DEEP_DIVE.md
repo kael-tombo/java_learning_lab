@@ -267,7 +267,7 @@ Methods you CANNOT override (final methods of Object):
 
 ## 10. Sealed Classes and Inheritance
 
-Sealed classes (JEP 397, Java 17) restrict which classes can extend them:
+Sealed classes (JEP 409, Java 17; previews JEP 360 in 15 and JEP 397 in 16) restrict which classes can extend them:
 
 ```java
 sealed class Shape permits Circle, Square, Triangle { }
