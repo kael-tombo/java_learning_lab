@@ -34,7 +34,7 @@ Client -> API Gateway -> GraphQL Service -> Datastore
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://graphql.org/learn/
-- https://docs.spring.io/spring-graphql/docs/current/reference/index.html
+- (link removed)
 
 ## Deliverables
 - [ ] Working service with one happy and one error path

@@ -14,6 +14,6 @@
 - **JVM Anatomy Park** (Shipilev) - https://shipilev.net/jvm/anatomy-park/
 - **HotSpot Runtime Overview** (OpenJDK Wiki) - https://wiki.openjdk.org/display/HotSpot/RuntimeOverview
 - **JVM Internals** (James D. Bloom) - https://blog.jamesdbloom.com/JVMInternals.html
-- **Safepoint and GC** (Nitsan Wakart) - https://psy-lob-saw.blogspot.com/p/safepoints.html
+- **Safepoint and GC** (Nitsan Wakart) - (link removed)
 - **Java Object Header** (Chris Newland) - https://www.chrisnewland.com/articles/object-headers-in-the-jvm
 - **JMX Best Practices** (Oracle) - https://docs.oracle.com/javase/tutorial/jmx/

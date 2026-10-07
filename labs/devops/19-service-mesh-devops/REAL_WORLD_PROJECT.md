@@ -32,7 +32,7 @@ changes that now cause intermittent failures.
 - Istio docs — upgrade guidance:
   https://istio.io/latest/docs/setup/upgrade/
 - Istio docs — troubleshooting:
-  https://istio.io/latest/docs/ops/troubleshooting/
+  (link removed)
 
 ## Definition of done
 - Staging upgrade passed with no regressions.

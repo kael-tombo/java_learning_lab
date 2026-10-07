@@ -35,7 +35,7 @@
 ## Online Resources
 
 - **Oracle Java Tutorials: Sealed Classes** - https://docs.oracle.com/javase/tutorial/java/records/
-- **Baeldung: Java Sealed Classes Guide** - https://www.baeldung.com/java-sealed-classes
+- **Baeldung: Java Sealed Classes Guide** - (link removed)
 - **Dev.java: Sealed Classes** - Oracle's interactive tutorial
 - **OpenJDJ Amber Project** - https://openjdk.org/projects/amber/
 - **Java Specification Requests** - JSR 397 (Sealed Classes)

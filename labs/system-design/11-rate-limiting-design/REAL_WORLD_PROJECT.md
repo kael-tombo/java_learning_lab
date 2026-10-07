@@ -154,7 +154,7 @@ Do not fold them into the main limit.
   and sliding window Lua-script patterns and the atomicity argument for doing
   the check and the increment in one script. Quote the Lua examples rather than
   paraphrasing the atomicity requirement.
-  https://redis.io/docs/latest/develop/use-cases/rate-limiting/
+  (link removed)
 - RFC 6585 — *Additional HTTP Status Codes*, section 4: the normative
   definition of `429 Too Many Requests` and the `Retry-After` header
   semantics. Cite the section when arguing for `Retry-After` on a `429`.

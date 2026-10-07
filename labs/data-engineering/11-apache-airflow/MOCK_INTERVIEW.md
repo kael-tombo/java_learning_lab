@@ -198,7 +198,7 @@ config:
 dags:
   gitSync:
     enabled: true
-    repo: https://github.com/company/data-pipelines.git
+    repo: (link removed)
     branch: main
     subPath: "dags"
     root: "/usr/local/airflow/dags"

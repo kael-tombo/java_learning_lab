@@ -11,11 +11,11 @@
 
 ## Tools
 - Vault CLI: Built-in
-- Vault Agent: https://www.vaultproject.io/docs/agent
+- Vault Agent: https://web.archive.org/web/20190514095100/https://www.vaultproject.io/docs/agent
 - Kubernetes CSI: https://github.com/hashicorp/vault-csi-provider
 - External Secrets Operator: https://external-secrets.io/
 
 ## Community
 - HashiCorp Discuss: https://discuss.hashicorp.com/c/vault/
 - Vault GitHub: https://github.com/hashicorp/vault
-- CNCF Vault: https://www.cncf.io/projects/vault/
+- CNCF Vault: (link removed)

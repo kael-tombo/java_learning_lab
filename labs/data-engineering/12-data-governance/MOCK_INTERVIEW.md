@@ -87,7 +87,7 @@ data_product:
     transforms:
       - tool: dbt
         model: dim_customer
-        code: https://github.com/company/marketing-dbt/models/dim_customer.sql
+        code: (link removed)
     destinations:
       - type: snowflake
         table: marketing_analytics.dim_customer

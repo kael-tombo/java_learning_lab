@@ -306,7 +306,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/myorg/k8s-platform.git
+    repoURL: (link removed)
     targetRevision: main
     path: overlays/prod
   destination:

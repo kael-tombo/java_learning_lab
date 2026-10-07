@@ -47,5 +47,5 @@ alerts → severity-bucket entropy check → route to pager|slack|ticket
 - Graduate to streaming compression with online entropy estimation.
 
 ## 8. Sourced field notes (fetched Oct 2026 — verify before citing)
-- Shannon entropy: https://en.wikipedia.org/wiki/Entropy_(information_theory)
+- Shannon entropy: https://web.archive.org/web/20190214051145/https://en.wikipedia.org/wiki/Entropy_(information_theory)
 - zstd: https://github.com/facebook/zstd

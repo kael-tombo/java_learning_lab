@@ -134,7 +134,7 @@ groups:
 DOMAINS=("api.acmecorp.com" "www.acmecorp.com" "app.acmecorp.com")
 EXPECTED_PRIMARY="203.0.113.10"
 EXPECTED_DR="198.51.100.10"
-SLACK_WEBHOOK="https://hooks.slack.com/services/T00/B00/xxxx"
+SLACK_WEBHOOK="(link removed)"
 
 check_dns() {
   local domain=$1

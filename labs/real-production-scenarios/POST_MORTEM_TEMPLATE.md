@@ -265,7 +265,7 @@ A blameless post-mortem creates psychological safety, which enables:
 
 ## References
 
-- Google SRE Workbook — Post-Mortem Chapter: https://sre.google/workbook/postmortem/
+- Google SRE Workbook — Post-Mortem Chapter: (link removed)
 - Atlassian Post-Mortem Templates: https://www.atlassian.com/incident-management/postmortem
 - AWS Well-Architected — Operational Excellence Pillar
 - Etsy's "Blameless Post-Mortems" by John Allspaw

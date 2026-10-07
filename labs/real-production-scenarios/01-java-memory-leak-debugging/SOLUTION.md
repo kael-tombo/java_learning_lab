@@ -610,7 +610,7 @@ jstat -gcmetacapacity <pid> <interval> <count>
 - Oracle: "ThreadLocal Memory Leak in Application Servers" — https://docs.oracle.com/javase/8/docs/technotes/guides/lang/threadLocal.html
 - Netty: "ThreadLocal Best Practices" — Netty Developer Guide
 - Eclipse MAT: "Finding Memory Leaks with Eclipse MAT" — https://eclipse.dev/mat/
-- Baeldung: "ThreadLocal and Memory Leaks" — https://www.baeldung.com/java-threadlocal-memory-leak
+- Baeldung: "ThreadLocal and Memory Leaks" — (link removed)
 - Spring Framework: "RequestContextHolder cleanup" — Spring Framework Reference
 - Tomcat: "ClassLoader Leak Prevention" — Apache Tomcat Documentation
 

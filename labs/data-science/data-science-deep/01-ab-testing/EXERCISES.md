@@ -172,7 +172,7 @@
 
 ## Bonus: Real-World Data Exercise
 
-**Dataset:** Use the [UCI Online Shoppers Intention dataset](https://archive.ics.uci.edu/ml/datasets/Online+Shoppers+Purchasing+Intention) or similar.
+**Dataset:** Use the UCI Online Shoppers Intention dataset or similar.
 
 **Tasks:**
 1. Treat "Weekend" vs "Weekday" as A/B test (not truly randomized — discuss limitations).

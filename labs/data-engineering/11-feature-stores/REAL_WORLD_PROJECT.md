@@ -181,7 +181,7 @@ public record FreshnessSlo(String feature, Duration target, Duration actual) {
 - Point-in-time-correct joins (as-of joins) are required for unbiased training
   data because a naive join leaks future information into the feature set.
   - Reference: https://docs.feast.dev/getting-started/concepts/point-in-time-joins
-  - Reference: https://en.wikipedia.org/wiki/Lookahead_bias
+  - Reference: (link removed)
 
 ## Deliverables
 - [ ] Feature inventory with owners, consumers, TTLs, and duplicate resolution

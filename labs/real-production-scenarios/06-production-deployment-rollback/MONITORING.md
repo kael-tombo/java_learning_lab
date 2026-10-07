@@ -490,5 +490,5 @@ Every log entry should include:
 - Google SRE Book — Chapter 10: "Practical Alerting"
 - Microsoft Azure Documentation: "Monitor AKS with Azure Monitor" — https://learn.microsoft.com/en-us/azure/aks/monitor-aks
 - Netflix Tech Blog: "Metrics at Netflix" — https://netflixtechblog.com/metrics-at-netflix-4e6c7a8b4f5b
-- LaunchDarkly Documentation: "Monitoring Feature Flag Performance" — https://docs.launchdarkly.com/home/monitoring
+- LaunchDarkly Documentation: "Monitoring Feature Flag Performance" — (link removed)
 - AWS re:Invent 2019 — "Monitoring and Observability at Amazon" (OPS205)

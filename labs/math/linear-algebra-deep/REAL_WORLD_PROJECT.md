@@ -5,7 +5,7 @@ Build an image compression tool using Singular Value Decomposition (SVD). This d
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - MIT OpenCourseWare 18.06 Linear Algebra: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/
-- Stanford EE263 (Introduction to Linear Dynamical Systems): https://see.stanford.edu/course/ee263
+- Stanford EE263 (Introduction to Linear Dynamical Systems): https://web.archive.org/web/20150915010820/https://see.stanford.edu/course/ee263
 
 ## Project Goals
 1. Load and preprocess grayscale images

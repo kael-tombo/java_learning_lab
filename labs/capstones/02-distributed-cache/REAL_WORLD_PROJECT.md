@@ -222,7 +222,7 @@ win.
   slot-level sharding is why a single hot key can saturate a node, and why
   key distribution matters.
   - Reference: https://redis.io/docs/latest/operate/oss_and_stack/reference/cluster-spec/
-  - Reference: https://redis.io/docs/latest/operate/oss_and_stack/reference/eviction/
+  - Reference: (link removed)
 - Redis pipelining batches commands into one round trip, which is the
   mechanism for making a read-plus-version-check a single network operation.
   - Reference: https://redis.io/docs/latest/develop/use/pipelining/
@@ -230,8 +230,8 @@ win.
   loads of the same key, is the standard defence against a stampede; the
   transactional outbox / idempotent-consumer pattern is the related defence on
   the event side.
-  - Reference: https://redis.io/docs/latest/develop/use/pubsub/
-  - Reference: https://microservices.io/patterns/data/transactional-outbox.html
+  - Reference: (link removed)
+  - Reference: (link removed)transactional-outbox.html
 
 ## Deliverables
 - [ ] Hit-rate root-cause analysis with the 5 causes and their contributions

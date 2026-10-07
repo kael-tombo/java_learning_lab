@@ -241,7 +241,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/company/config-repo
+          uri: (link removed)
           search-paths: '{application}'
           default-label: main
 ```

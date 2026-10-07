@@ -23,13 +23,13 @@ argocd login localhost:8080
 ## 4. Create Git Repository
 ```powershell
 # Create a private repo with your K8s manifests
-# Example: https://github.com/myorg/myapp-config
+# Example: (link removed)
 ```
 
 ## 5. Deploy via ArgoCD
 ```powershell
 argocd app create myapp \
-  --repo https://github.com/myorg/myapp-config.git \
+  --repo (link removed).git \
   --path k8s/overlays/production \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace production \
@@ -53,7 +53,7 @@ flux check
 ## 8. Create Flux Source and Kustomization
 ```powershell
 flux create source git myapp \
-  --url=https://github.com/myorg/myapp-config \
+  --url=(link removed) \
   --branch=main
 flux create kustomization myapp \
   --source=myapp \

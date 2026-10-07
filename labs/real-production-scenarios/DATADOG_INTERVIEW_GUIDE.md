@@ -272,7 +272,7 @@ Datadog Agents across a customer's fleet fail to send metrics to `api.datadoghq.
 **Step 1 — Check Agent logs**: `grep "TLS\|certificate\|handshake" /var/log/datadog/agent.log`. Shows:
 ```
 2026-07-23 03:15:00 UTC | CORE | ERROR | (pkg/forwarder/forwarder.go:123)
-Failed to flush to endpoint 'https://api.datadoghq.com/api/v1/series':
+Failed to flush to endpoint '(link removed)':
 x509: certificate has expired or is not yet valid
 
 ```

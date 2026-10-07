@@ -154,7 +154,7 @@ const check = new BrowserCheck('ssl-cert-check', {
 # ct_monitor.sh — Monitor Certificate Transparency logs for upcoming expiries
 
 DOMAINS=("acmecorp.com" "api.acmecorp.com" "www.acmecorp.com" "app.acmecorp.com")
-ALERT_WEBHOOK="https://hooks.slack.com/services/T00/B00/xxxx"
+ALERT_WEBHOOK="(link removed)"
 
 for domain in "${DOMAINS[@]}"; do
   echo "Checking CT logs for $domain..."
@@ -316,5 +316,5 @@ echo "=== Health Check Complete ==="
 
 - Prometheus blackbox_exporter: https://github.com/prometheus/blackbox_exporter
 - Google SRE Monitoring: https://sre.google/sre-book/monitoring-distributed-systems/
-- Let's Encrypt Monitoring: https://letsencrypt.org/docs/monitoring/
-- Cloudflare SSL Monitoring: https://developers.cloudflare.com/ssl/edge-certificates/monitoring/
+- Let's Encrypt Monitoring: (link removed)
+- Cloudflare SSL Monitoring: (link removed)

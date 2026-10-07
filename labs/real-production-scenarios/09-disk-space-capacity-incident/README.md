@@ -56,9 +56,9 @@ This lab simulates a realistic disk space capacity incident. You will:
 ### References
 
 - Google SRE Book — Chapter 6: "Monitoring Distributed Systems" (Four Golden Signals)
-- Google SRE Book — Chapter 12: "Managing Disk Space" — https://sre.google/sre-book/managing-disk-space/
+- Google SRE Book — Chapter 12: "Managing Disk Space" — (link removed)
 - Netflix Tech Blog: "Linux Performance Tools" — https://netflixtechblog.com/linux-performance-tools-7c9d2e6b8f2c
-- Atlassian Engineering: "How We Fixed Disk Space Issues at Scale" — https://www.atlassian.com/engineering/disk-space
+- Atlassian Engineering: "How We Fixed Disk Space Issues at Scale" — (link removed)
 - PostgreSQL Documentation: "Table Partitioning" — https://www.postgresql.org/docs/15/ddl-partitioning.html
 - Google SRE Book — Chapter 17: "Testing for Reliability" (capacity testing)
 

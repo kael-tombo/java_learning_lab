@@ -71,7 +71,7 @@
 4. train.py reads parameters from argparse, uses `mlflow.start_run()` (autolog works).
 5. Run locally: `mlflow run . -P learning_rate=0.1 -P n_estimators=200`.
 6. Run with Docker: `mlflow run . --docker-image my-base-image`.
-7. **Challenge:** Run project from Git URI: `mlflow run https://github.com/user/repo -P ...`.
+7. **Challenge:** Run project from Git URI: `mlflow run (link removed) -P ...`.
 
 **Expected Answer:** Project runs reproducibly in isolated conda env or Docker. Parameters passed via CLI. Tracking logs to server automatically.
 

@@ -87,8 +87,8 @@ By completing this lab, you will be able to:
 - Google SRE: "Debugging Java Memory Leaks in Production" — Google SRE Workbook
 - Eclipse MAT Documentation — https://eclipse.dev/mat/
 - JDK Flight Recorder Guide — https://docs.oracle.com/javacomponents/jmc-5-4/jfr-runtime-guide/about.htm
-- "ThreadLocal and Memory Leaks" by Peter Lawrey — https://vanilla-java.github.io/2018/05/24/ThreadLocal-and-Memory-Leaks.html
-- Baeldung: "Metaspace in Java 8" — https://www.baeldung.com/java-8-permgen-metaspace
+- "ThreadLocal and Memory Leaks" by Peter Lawrey — (link removed)
+- Baeldung: "Metaspace in Java 8" — (link removed)
 - Netflix Tech Blog: "Fixing a Memory Leak in Netflix Zuul" — Netflix Engineering Internal Postmortem
 
 ## Prerequisites

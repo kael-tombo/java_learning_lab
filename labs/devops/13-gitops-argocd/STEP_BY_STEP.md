@@ -30,13 +30,13 @@ argocd cluster add my-cluster-context-name
 
 ## Step 6: Add a Git Repository
 ```bash
-argocd repo add https://github.com/myorg/myapp-config.git --ssh-private-key-path ~/.ssh/id_rsa
+argocd repo add (link removed).git --ssh-private-key-path ~/.ssh/id_rsa
 ```
 
 ## Step 7: Create an Application
 ```bash
 argocd app create myapp \
-  --repo https://github.com/myorg/myapp-config.git \
+  --repo (link removed).git \
   --path k8s/overlays/production \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace myapp-production

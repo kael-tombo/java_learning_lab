@@ -50,7 +50,7 @@ public class FraudDetectionSystem {
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - Fraud detection systems often combine ML models with rule-based systems for better precision.
 - Reference: https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
-- Reference: https://towardsdatascience.com/credit-card-fraud-detection-using-isolation-forest-8f8e5e5e5e5e
+- Reference: (link removed)
 
 ## Deliverables
 

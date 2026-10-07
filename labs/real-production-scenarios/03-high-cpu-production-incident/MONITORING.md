@@ -238,7 +238,7 @@ Deploy async-profiler as a sidecar process on each application instance:
 
 ```bash
 # Install async-profiler
-wget https://github.com/async-profiler/async-profiler/releases/latest/download/async-profiler-2.9-linux-x64.tar.gz
+wget (link removed)
 tar -xzf async-profiler-*.tar.gz -C /opt/
 
 # Run continuous CPU profiling with low overhead

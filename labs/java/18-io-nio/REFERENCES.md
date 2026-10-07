@@ -11,7 +11,7 @@
 - *Modern Java in Action* — Raoul-Gabriel Urma (NIO.2 chapter)
 
 ## Articles
-- [Java NIO.2 Guide (Baeldung)](https://www.baeldung.com/java-nio-2-file-attribute)
+- Java NIO.2 Guide (Baeldung)
 - [Zero-Copy in Java (IBM)](https://developer.ibm.com/articles/j-zerocopy/)
 
 ## Talks

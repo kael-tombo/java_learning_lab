@@ -170,11 +170,11 @@ class QuarterlyGameDay {
   https://csrc.nist.gov/pubs/sp/800/61/r2/final
 - NIST SP 800-86 covers integrating forensic techniques into an incident response process,
   including evidence acquisition, chain of custody, and analysis on verified copies.
-  https://csrc.nist.gov/pubs/sp/800/86/r1/final
+  (link removed)
 - The First responders' and CSIRT teams' (FIRST) CSIRT Services Framework provides the
   incident-handling service taxonomy used to describe capability gaps in the tabletop
   findings and the escalation path to external partners.
-  https://www.first.org/cmm/
+  (link removed)
 
 ## Deliverables
 

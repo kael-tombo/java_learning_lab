@@ -61,5 +61,5 @@ trusted.
 
 ---
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Spring Boot build plugins: https://docs.spring.io/spring-boot/reference/build-tool-plugins.html
+- Spring Boot build plugins: (link removed)
 - jlink reference: https://docs.oracle.com/en/java/javase/21/docs/specs/man/jlink.html

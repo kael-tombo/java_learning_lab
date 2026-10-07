@@ -68,7 +68,7 @@ public class AutonomousDrivingMTL {
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - Multi-task learning improves efficiency and can improve generalization through shared representations.
 - Reference: https://arxiv.org/abs/1705.07115
-- Reference: https://github.com/keras-team/keras/blob/master/examples/keras_io/vision/multi_task_learning.py
+- Reference: (link removed)
 
 ## Deliverables
 

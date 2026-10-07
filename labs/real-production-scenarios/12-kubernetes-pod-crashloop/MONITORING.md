@@ -243,4 +243,4 @@ receivers:
 - Google SRE Monitoring: https://sre.google/sre-book/monitoring-distributed-systems/
 - Prometheus Kubernetes Mixin: https://github.com/prometheus-community/helm-charts
 - cAdvisor Documentation: https://github.com/google/cadvisor
-- Datadog Kubernetes Monitoring: https://www.datadoghq.com/blog/kubernetes-monitoring/
+- Datadog Kubernetes Monitoring: (link removed)

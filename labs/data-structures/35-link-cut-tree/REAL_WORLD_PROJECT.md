@@ -33,8 +33,8 @@ W2: API + metrics + JMH + restart drill + deploy notes.
 - Alert on p99 drift and amortized budget overruns; manual DFS fallback.
 
 ## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Link%E2%80%93cut_tree
-- https://www.cs.cmu.edu/~guyb/papers/SleatorTarjan85b.pdf
+- (link removed)
+- (link removed)
 Confirm API/limit numbers against the live docs before quoting them in reviews.
 
 ## 7. Deliverables

@@ -25,7 +25,7 @@
 
 ## Online Resources
 
-- [Java Syntax Cheat Sheet](https://www.jrebel.com/blog/java-syntax-cheat-sheet)
+- Java Syntax Cheat Sheet
 - [Baeldung — Java Syntax](https://www.baeldung.com/java-syntax)
 - [GeeksforGeeks — Java Syntax](https://www.geeksforgeeks.org/java-basic-syntax/)
 - [Stack Overflow — Java Syntax Questions](https://stackoverflow.com/questions/tagged/java+syntax)

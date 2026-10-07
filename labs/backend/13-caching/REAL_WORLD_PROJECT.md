@@ -34,7 +34,7 @@ Client -> API Gateway -> Caching Service -> Datastore
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://redis.io/docs/latest/develop/get-started/
-- https://caffeine.github.io/caffeine/
+- (link removed)
 
 ## Deliverables
 - [ ] Working service with one happy and one error path

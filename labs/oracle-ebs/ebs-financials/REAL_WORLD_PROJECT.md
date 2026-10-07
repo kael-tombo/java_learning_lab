@@ -8,7 +8,7 @@ that reached the statutory accounts before it was caught. Finance has asked you
 to make the close repeatable and the numbers traceable — not to add features.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS Financials)
+- (link removed) (EBS Financials)
 - https://docs.oracle.com/en/cloud/saas/financials/25d/faipp/
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 

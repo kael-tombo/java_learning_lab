@@ -250,7 +250,7 @@ Rotate → Application reloads without restart
 
 ### References
 - Cloudflare API Security Report 2024
-- OWASP API Security Top 10 — https://owasp.org/www-project-api-security/
+- OWASP API Security Top 10 — https://web.archive.org/web/20200218212644/https://owasp.org/www-project-api-security/
 - NIST SP 800-53: "Security and Privacy Controls"
 - AWS Security Blog: "Secrets Management Best Practices"
 - Google Cloud Blog: "Secrets Management Best Practices"

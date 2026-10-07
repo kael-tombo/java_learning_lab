@@ -163,7 +163,7 @@ class RecoveryWorkflow {
   https://www.w3.org/TR/webauthn-3/
 - OWASP Authentication Cheat Sheet and Passkey/FIDO guidance recommend phishing-resistant
   factors over OTP and warn against fallback paths that weaken an enrolled account.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Authentication_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/https://web.archive.org/web/20200206085739/https://owasp.org/www-project-cheat-sheets/cheatsheets/Authentication_Cheat_Sheet.html
 
 ## Deliverables
 

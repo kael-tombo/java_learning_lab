@@ -24,13 +24,13 @@
 - [Medis](https://github.com/luin/medis) – macOS GUI
 
 ## Performance
-- [Redis Latency Monitoring](https://redis.io/docs/manual/latency-monitoring/)
-- [Redis Benchmark](https://redis.io/docs/manual/benchmarks/)
+- Redis Latency Monitoring
+- Redis Benchmark
 - [Memory Optimization](https://redis.io/docs/manual/optimization/memory-optimization/)
 
 ## Deployment
 - [Redis Sentinel](https://redis.io/docs/manual/sentinel/)
-- [Redis Cluster](https://redis.io/docs/manual/cluster/)
+- Redis Cluster
 - [Redis on Docker](https://hub.docker.com/_/redis)
 
 ## Community

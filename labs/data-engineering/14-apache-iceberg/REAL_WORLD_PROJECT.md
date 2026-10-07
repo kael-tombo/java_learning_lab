@@ -212,8 +212,8 @@ public final class WritePolicy {
 - Iceberg tracks row-level deletes as delete files with position and equality
   deletes, which is what allows targeted row removal without rewriting data
   files.
-  - Reference: https://iceberg.apache.org/docs/latest/spec/#position-deletes
-  - Reference: https://iceberg.apache.org/docs/latest/spec/#equality-deletes
+  - Reference: (link removed)
+  - Reference: (link removed)
 - Parquet remains the data file format, so column pruning and statistics-based
   skipping are what make pruning effective at two levels.
   - Reference: https://parquet.apache.org/docs/file-format/

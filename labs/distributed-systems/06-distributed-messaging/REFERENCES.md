@@ -16,4 +16,4 @@
 
 ## Online
 - https://www.confluent.io/blog/
-- https://martin.kleppmann.com/streaming/
+- (link removed)

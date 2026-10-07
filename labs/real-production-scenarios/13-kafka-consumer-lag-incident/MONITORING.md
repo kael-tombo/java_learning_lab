@@ -168,7 +168,7 @@ groups:
 GROUP="order-processor-group"
 TOPIC="order-events"
 BOOTSTRAP="prod-events.confluent.cloud:9092"
-SLACK_WEBHOOK="https://hooks.slack.com/services/T00/B00/xxxx"
+SLACK_WEBHOOK="(link removed)"
 
 echo "=== Kafka Consumer Health Check ==="
 
@@ -245,6 +245,6 @@ datadog:
 ## References
 
 - Confluent Monitoring: https://docs.confluent.io/platform/current/monitoring.html
-- LinkedIn Kafka Observability: https://engineering.linkedin.com/blog/2019/kafka-observability
+- LinkedIn Kafka Observability: (link removed)
 - Apache Kafka JMX Metrics: https://kafka.apache.org/documentation/#monitoring
 - Google SRE Monitoring Principles: https://sre.google/sre-book/monitoring-distributed-systems/

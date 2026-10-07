@@ -33,7 +33,7 @@ refactor project stalled because state surgery was too risky.
 - Terraform docs — moved blocks:
   https://developer.hashicorp.com/terraform/language/block/moved
 - Conftest docs — testing Terraform plans:
-  https://www.conftest.dev/parsers/hcl/
+  (link removed)
 
 ## Definition of done
 - CI blocks non-compliant plans.

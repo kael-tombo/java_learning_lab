@@ -9,8 +9,8 @@ invoice numbers by hand. You own the setup workstream and must not create a
 structure that has to be migrated later.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS setup and config)
-- https://docs.oracle.com/en/database/oracle/oracle-database/21/rnbrdu/ (EBS System Administrator's Guide)
+- (link removed) (EBS setup and config)
+- (link removed) (EBS System Administrator's Guide)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
 
 ## Architecture

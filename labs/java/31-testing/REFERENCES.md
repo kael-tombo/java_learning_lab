@@ -15,7 +15,7 @@
 ## Articles and Tutorials
 - [Baeldung JUnit 5 Guide](https://www.baeldung.com/junit-5)
 - [Baeldung Mockito Guide](https://www.baeldung.com/mockito-series)
-- [TDD with JUnit 5](https://www.baeldung.com/junit-5-test-driven-development)
+- TDD with JUnit 5
 - [Parameterized Tests in JUnit 5](https://www.baeldung.com/parameterized-tests-junit-5)
 
 ## Tools

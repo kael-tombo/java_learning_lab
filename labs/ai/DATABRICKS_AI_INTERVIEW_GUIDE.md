@@ -752,7 +752,7 @@ Key points:
 
 ### Databricks Documentation
 - MLflow Documentation: https://mlflow.org/docs
-- Delta Lake Documentation: https://delta.io/docs
+- Delta Lake Documentation: https://web.archive.org/web/20240811162307/https://delta.io/docs
 - Databricks ML Guide: https://docs.databricks.com/machine-learning
 
 ### Key Papers

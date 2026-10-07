@@ -46,5 +46,5 @@ factor matrix → greedy pairwise generator → coverage report → CI gate → 
 - Graduate to combinatorial design theory / IPO (in-parameter-order) algorithms.
 
 ## 8. Sourced field notes (fetched Oct 2026 — verify before citing)
-- Covering arrays: https://en.wikipedia.org/wiki/Covering_array
+- Covering arrays: (link removed)
 - Combinatorics overview: https://en.wikipedia.org/wiki/Combinatorics

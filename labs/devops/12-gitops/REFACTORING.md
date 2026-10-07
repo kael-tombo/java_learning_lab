@@ -33,7 +33,7 @@ jobs:
       - run: docker push myapp:${{ github.sha }}
       - run: |
           # Update image tag in Git config repo
-          git clone https://github.com/myorg/myapp-config
+          git clone (link removed)
           cd myapp-config
           sed -i "s|tag:.*|tag: ${{ github.sha }}|" k8s/overlays/production/values.yaml
           git commit -am "Update image to ${{ github.sha }}"

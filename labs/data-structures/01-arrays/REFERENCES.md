@@ -22,5 +22,5 @@
 ## Online Resources
 
 - [Visualgo.net — Array visualization](https://visualgo.net/en/list)
-- [JProfiler — Array memory usage](https://www.ej-technologies.com/resources/jprofiler/help_arrays.html)
+- JProfiler — Array memory usage
 - [OpenJDK ArrayList source](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/ArrayList.java)

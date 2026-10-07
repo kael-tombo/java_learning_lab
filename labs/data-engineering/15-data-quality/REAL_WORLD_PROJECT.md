@@ -214,7 +214,7 @@ public final class TrustEngine {
   metrics layer are the common implementation of contract-like assertions in
   the SQL transformation ecosystem.
   - Reference: https://docs.getdbt.com/docs/build/data-tests
-  - Reference: https://docs.getdbt.com/docs/build/metrics-intro
+  - Reference: (link removed)
 - OpenLineage and table formats with time travel support the point-in-time
   reproducibility needed to answer "what did this metric say at 09:14 on
   the 3rd, from the data we had then".

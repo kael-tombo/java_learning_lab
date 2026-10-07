@@ -27,7 +27,7 @@
 - [Spring Boot on Kubernetes](https://spring.io/guides/gs/spring-boot-kubernetes/)
 - [Kubernetes Java Client](https://github.com/kubernetes-client/java)
 - [Fabric8 Kubernetes Client](https://github.com/fabric8io/kubernetes-client)
-- [Micrometer for K8s metrics](https://micrometer.io/docs/ref/MeterFilter)
+- Micrometer for K8s metrics
 
 ## Books
 - *Kubernetes in Action* — Marko Luksa

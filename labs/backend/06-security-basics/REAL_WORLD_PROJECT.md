@@ -34,7 +34,7 @@ Client -> API Gateway -> Security Basics Service -> Datastore
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.spring.io/spring-security/reference/index.html
-- https://owasp.org/www-project-cheat-sheets/
+- https://web.archive.org/web/20200125082857/https://owasp.org/www-project-cheat-sheets/
 
 ## Deliverables
 - [ ] Working service with one happy and one error path

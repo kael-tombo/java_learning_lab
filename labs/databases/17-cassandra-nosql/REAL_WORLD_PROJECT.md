@@ -5,7 +5,7 @@ Design and implement a production-shaped system where cassandra nosql is a first
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://cassandra.apache.org/doc/latest/
-- https://datastax-academy.github.io/
+- (link removed)
 
 ## Architecture
 ```

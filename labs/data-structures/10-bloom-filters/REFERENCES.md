@@ -23,7 +23,7 @@
 
 - [Bloom Filters by Example](https://llimllib.github.io/bloomfilter-tutorial/) — interactive visualization
 - [Guava BloomFilter source](https://github.com/google/guava/blob/master/guava/src/com/google/common/hash/BloomFilter.java)
-- [Cassandra Bloom Filter Internals](https://cassandra.apache.org/doc/latest/cassandra/operating/bloom_filters.html)
+- [Cassandra Bloom Filter Internals](https://web.archive.org/web/20230604103339/https://cassandra.apache.org/doc/latest/cassandra/operating/bloom_filters.html)
 - [Stanford CS168 — Bloom Filters](https://web.stanford.edu/class/cs168/l/l2.pdf)
 
 ## Tools & Libraries

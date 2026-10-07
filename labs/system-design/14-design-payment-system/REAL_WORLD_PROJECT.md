@@ -211,7 +211,7 @@ owners.
   pillars: change management, failure management, and the workload-recovery
   guidance this project applies to processor failover and reconciliation
   design.
-  https://aws.amazon.com/architecture/framework/
+  (link removed)
 
 Both are reference-quality but the AWS pillar guidance is versioned and
 periodically revised. Pin the version you read, and treat all processor-specific

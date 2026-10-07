@@ -248,6 +248,6 @@ spec:
 
 - Google SRE Book — Chapter 6: Monitoring: https://sre.google/sre-book/monitoring-distributed-systems/
 - Netflix Tech Blog — Container Resource Tuning: https://netflixtechblog.com/container-resource-tuning
-- Datadog — Kubernetes CrashLoopBackOff: https://www.datadoghq.com/blog/kubernetes-crashloopbackoff/
+- Datadog — Kubernetes CrashLoopBackOff: (link removed)
 - Kubernetes SIG — Resource QoS: https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/
-- Java Memory Management in Containers: https://developers.redhat.com/articles/2022/04/19/java-memory-management-within-containers
+- Java Memory Management in Containers: (link removed)

@@ -140,7 +140,7 @@ contract AnomalyDetector {
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - SWC Registry (Smart Contract Weakness Classification) is the canonical enumeration of
   contract vulnerability classes used as the review checklist for both audits.
-  https://swcregistry.io/docs
+  (link removed)
 - OpenZeppelin Contracts documentation describes upgradeable patterns, access control, and
   pausable modules relied on in the controller implementation.
   https://docs.openzeppelin.com/contracts/5.x/

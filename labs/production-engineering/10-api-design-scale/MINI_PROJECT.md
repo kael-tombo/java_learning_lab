@@ -281,7 +281,7 @@ contract:
     - name: Detect breaking changes vs main
       run: |
         git fetch origin main
-        curl -s -o base.yaml "https://raw.githubusercontent.com/$REPO/main/openapi.yaml"
+        curl -s -o base.yaml "(link removed)"
         # oasdiff fails the build on breaking changes; --fail-on-ERR is the setting that matters
         oasdiff breaking base.yaml openapi.yaml --fail-on-ERR --format text
     - name: Allow an intentional break with an ADR

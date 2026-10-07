@@ -34,7 +34,7 @@ Client -> API Gateway -> CQRS with Axon Service -> Datastore
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.axoniq.io/
-- https://martinfowler.com/bliki/EventSourcing.html
+- (link removed)
 
 ## Deliverables
 - [ ] Working service with one happy and one error path

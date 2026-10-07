@@ -19,7 +19,7 @@
 - *Java Performance: The Definitive Guide* by Scott Oaks
 
 ## Articles
-- [ForkJoinPool Internals](https://www.infoq.com/articles/forkjoin-intro/)
+- ForkJoinPool Internals
 - [CompletableFuture Guide](https://www.baeldung.com/java-completablefuture)
 
 ## Deep Dive References

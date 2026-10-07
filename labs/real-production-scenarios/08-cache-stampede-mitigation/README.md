@@ -48,7 +48,7 @@ This lab simulates a realistic cache stampede incident. You will:
 
 ### References
 
-- Meta Engineering Blog: "An Analysis of Facebook Photo Caching" (NSDI 2013) — https://www.usenix.org/conference/nsdi13/technical-sessions/presentation/huang
+- Meta Engineering Blog: "An Analysis of Facebook Photo Caching" (NSDI 2013) — (link removed)
 - Meta Engineering Blog: "Scaling Memcache at Facebook" (NSDI 2013) — https://www.usenix.org/conference/nsdi13/technical-sessions/presentation/nishtala
 - Google SRE Book — Chapter 22: "Managing Cascading Failures" (thundering herd section)
 - Amazon ElastiCache Documentation: "Best Practices for Redis" — https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/BestPractices.html

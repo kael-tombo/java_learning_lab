@@ -7,7 +7,7 @@
 
 ## Project Loom
 - [Project Loom Wiki](https://wiki.openjdk.java.net/display/loom/Main)
-- [State of Loom (Ron Pressler, 2022)](https://cr.openjdk.java.net/~rpressler/loom/state-of-loom.html)
+- State of Loom (Ron Pressler, 2022)
 
 ## Books
 - *Java Concurrency in Practice* — Brian Goetz (updated chapters for Loom)
@@ -18,5 +18,5 @@
 - *Virtual Threads in Java 21* — Alan Bateman (YouTube)
 
 ## Articles
-- [Virtual Threads Guide (Baeldung)](https://www.baeldung.com/java-virtual-threads)
-- [Structured Concurrency (Inside Java)](https://inside.java/2023/11/21/structured-concurrency/)
+- Virtual Threads Guide (Baeldung)
+- Structured Concurrency (Inside Java)

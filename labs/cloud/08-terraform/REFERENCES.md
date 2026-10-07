@@ -8,7 +8,7 @@
 - [Terraform CLI Reference](https://developer.hashicorp.com/terraform/cli/commands)
 
 ## Best Practices
-- [Terraform Best Practices](https://developer.hashicorp.com/terraform/tutorials/configuration-language/best-practices)
+- Terraform Best Practices
 - [HashiCorp Learn — Terraform](https://learn.hashicorp.com/terraform)
 - [AWS Provider Best Practices](https://docs.aws.amazon.com/prescriptive-guidance/latest/terraform-aws-provider-best-practices/welcome.html)
 - [Terraform Security Best Practices](https://developer.hashicorp.com/terraform/tutorials/secrets)

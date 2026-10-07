@@ -117,10 +117,10 @@ class WebhookSecurity {
 - OWASP Cross Site Scripting Prevention Cheat Sheet distinguishes output-encoding contexts
   (HTML, attribute, JS, URL) and documents sanitisation versus encoding as separate
   remediation strategies, as applied to merchant rich text here.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/https://web.archive.org/web/20200116085004/https://owasp.org/www-project-cheat-sheets/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
 - OWASP CSRF Cheat Sheet details synchroniser-token, double-submit-cookie, and
   `SameSite` defenses, including why stateless/token APIs can safely disable CSRF.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/https://web.archive.org/web/20200117191957/https://owasp.org/www-project-cheat-sheets/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
 - MDN's Set-Cookie reference documents the `SameSite` attribute semantics used in the
   cookie migration step (Lax vs Strict vs None) and why `None` requires `Secure`.
   https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie

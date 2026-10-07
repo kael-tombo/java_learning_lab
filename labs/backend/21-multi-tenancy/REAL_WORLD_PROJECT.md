@@ -34,7 +34,7 @@ Client -> API Gateway -> Multi-Tenancy Service -> Datastore
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#core.entity-system.tenant
-- https://microservices.io/patterns/data/
+- (link removed)
 
 ## Deliverables
 - [ ] Working service with one happy and one error path

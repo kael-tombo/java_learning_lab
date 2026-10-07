@@ -224,8 +224,8 @@ groups:
 
 ### References
 - Meta USENIX NSDI 2013: "Scaling Memcache at Facebook" — https://www.usenix.org/conference/nsdi13/technical-sessions/presentation/nishtala
-- Meta USENIX NSDI 2013: "An Analysis of Facebook Photo Caching" — https://www.usenix.org/conference/nsdi13/technical-sessions/presentation/huang
+- Meta USENIX NSDI 2013: "An Analysis of Facebook Photo Caching" — (link removed)
 - Google SRE Book — Chapter 22: "Managing Cascading Failures"
 - Amazon ElastiCache Best Practices — https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/BestPractices.html
 - XFetch Algorithm — Vattani, Zaccarato
-- Redis Documentation: "Cache Stampede Prevention" — https://redis.io/glossary/cache-stampede/
+- Redis Documentation: "Cache Stampede Prevention" — (link removed)

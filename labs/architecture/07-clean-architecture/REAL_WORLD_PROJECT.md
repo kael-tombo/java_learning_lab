@@ -75,7 +75,7 @@ The system follows Clean Architecture with clear layer separation:
   Uncle Bob's original article on Clean Architecture, explaining the
   dependency rule, the layers, and the philosophy behind the approach.
 
-- **Clean Architecture Example**: https://github.com/mattia-battiston/clean-architecture-sandbox
+- **Clean Architecture Example**: (link removed)
   Practical implementation examples of Clean Architecture with multiple
   use cases, demonstrating layer separation and dependency management.
 

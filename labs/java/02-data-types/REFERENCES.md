@@ -12,7 +12,7 @@
 
 ## Articles
 - [Baeldung — Java Primitives vs Objects](https://www.baeldung.com/java-primitives-vs-objects)
-- [Baeldung — Guide to Autoboxing](https://www.baeldung.com/java-autoboxing)
+- Baeldung — Guide to Autoboxing
 - [Oracle — Autoboxing](https://docs.oracle.com/javase/tutorial/java/data/autoboxing.html)
 
 ## JEPs

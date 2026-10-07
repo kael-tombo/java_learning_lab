@@ -268,7 +268,7 @@ public List<ReconciliationReport> reconcileAll(LocalDate day) {
   database transaction, with a relay publishing afterwards; it removes the
   "state changed but the event was lost" failure without distributed
   transactions.
-  - Reference: https://microservices.io/patterns/data/transactional-outbox.html
+  - Reference: (link removed)transactional-outbox.html
   - Reference: https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/outbox.html
 - Idempotency keys are the standard mechanism for making retried payment or
   order operations safe when a client cannot know whether the first attempt

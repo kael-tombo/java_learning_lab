@@ -8,7 +8,7 @@
 - **JEP 431: Sequenced Collections** - https://openjdk.org/jeps/431
 - **JEP 430: String Templates (Preview)** - https://openjdk.org/jeps/430
 - **JEP 453: Structured Concurrency (Preview)** - https://openjdk.org/jeps/453
-- **Java 21 Release Notes** - https://jdk.java.net/21/release-notes
+- **Java 21 Release Notes** - https://web.archive.org/web/20221221171624/https://jdk.java.net/21/release-notes
 
 ## Books
 
@@ -27,10 +27,10 @@
 
 ## Online Resources
 
-- **Baeldung: Java 21 Features** - https://www.baeldung.com/java-21-new-features
+- **Baeldung: Java 21 Features** - (link removed)
 - **Oracle Java Tutorials** - https://docs.oracle.com/javase/tutorial/
 - **OpenJDK Wiki: Project Loom** - https://wiki.openjdk.org/display/loom/
-- **Java Magazine** - https://www.oracle.com/java/java-magazine/
+- **Java Magazine** - (link removed)
 - **InfoQ: Java 21 Coverage** - Multiple articles on each feature
 
 ## Open Source Projects

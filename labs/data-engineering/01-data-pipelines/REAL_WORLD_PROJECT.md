@@ -84,7 +84,7 @@ public class LakehouseSink {
   last completed checkpoint after failure, which is what makes long-running
   streaming state survivable.
   - Reference: https://flink.apache.org/what-is-flink/
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/concepts/stateful-stream-processing/
+  - Reference: (link removed)
 - Airflow is a workflow orchestrator: the scheduler runs tasks, not data
   movement, and correctness of the DAG comes from defining dependencies and
   handling retries/idempotency yourself.

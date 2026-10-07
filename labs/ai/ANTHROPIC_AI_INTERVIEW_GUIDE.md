@@ -591,7 +591,7 @@ Safety decisions are rarely binary. The goal is to be rigorous about evaluation,
 
 ### Anthropic Publications
 - Anthropic Research Blog: https://www.anthropic.com/research
-- Anthropic Safety Papers: https://www.anthropic.com/safety
+- Anthropic Safety Papers: (link removed)
 
 ### Key Papers to Study
 1. Constitutional AI: Harmlessness from AI Feedback

@@ -104,7 +104,7 @@ class KekRotationJob {
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - OWASP Cryptographic Storage Cheat Sheet covers the encrypt-at-rest layering (keyed
   encryption, per-column keys, key versioning) that this envelope design implements.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/https://web.archive.org/web/20200206092101/https://owasp.org/www-project-cheat-sheets/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html
 - Java Cryptography Architecture reference (JCA/JCE) documents `Cipher` usage, AEAD
   parameters via `GCMParameterSpec`, and `SecretKeyFactory` PBKDF2 construction.
   https://docs.oracle.com/en/java/javase/21/security/java-cryptography-architecture.html

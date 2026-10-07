@@ -40,9 +40,9 @@
 - `async-profiler` — CPU and allocation profiling
 
 ## Articles
-- [JVM Tuning for High Performance](https://www.baeldung.com/jvm-tuning)
+- JVM Tuning for High Performance
 - [Understanding Java Code Cache](https://www.baeldung.com/jvm-code-cache)
-- [Java Metaspace Guide](https://www.baeldung.com/java-metaspace)
+- Java Metaspace Guide
 
 ## Source Code
 - `src/hotspot/share/runtime/arguments.cpp` (flag parsing)

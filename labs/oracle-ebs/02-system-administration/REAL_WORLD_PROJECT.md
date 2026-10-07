@@ -8,9 +8,9 @@ this month with no clear owner, and an audit found 45 users holding conflicting
 responsibilities. You are the incoming EBS administrator.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS admin guidance)
+- (link removed) (EBS admin guidance)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
-- https://docs.oracle.com/technologies/ebs/ (EBS Security guide)
+- (link removed) (EBS Security guide)
 
 ## Architecture
 ```

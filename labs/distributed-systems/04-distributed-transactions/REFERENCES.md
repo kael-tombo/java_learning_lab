@@ -15,5 +15,5 @@
 - Narayana: JBoss transaction manager
 
 ## Online Resources
-- https://microservices.io/patterns/data/saga.html
+- (link removed)saga.html
 - https://en.wikipedia.org/wiki/Two-phase_commit_protocol

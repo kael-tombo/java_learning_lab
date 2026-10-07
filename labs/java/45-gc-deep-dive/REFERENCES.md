@@ -3,11 +3,11 @@
 - **G1 GC Details** (Oracle) - https://docs.oracle.com/en/java/javase/21/gctuning/garbage-first-g1-garbage-collector.html
 - **ZGC Source Code** (OpenJDK) - https://github.com/openjdk/jdk/tree/master/src/hotspot/share/gc/z
 - **Shenandoah GC** (OpenJDK) - https://wiki.openjdk.org/display/shenandoah
-- **GC Log Analysis** (Red Hat) - https://developers.redhat.com/articles/2021/08/20/garbage-collection-log-analysis-tools-java
-- **G1GC Internals** (Ivan Krylov) - https://www.oracle.com/technetwork/java/javase/tech/g1gc-20220421.html
+- **GC Log Analysis** (Red Hat) - (link removed)
+- **G1GC Internals** (Ivan Krylov) - (link removed)
 - **ZGC Colored Pointers** (Erik Österlund) - https://openjdk.org/jeps/376 (ZGC Colored Pointers)
-- **SATB Algorithm in G1** - https://www.oracle.com/technetwork/java/javase/tech/g1-general-purpose-gc-20220421.html
-- **gcviewer** - https://github.com/chewiebug/GCViewer: Garbage Collection
+- **SATB Algorithm in G1** - (link removed)
+- **gcviewer** - (link removed) Garbage Collection
 
 ## Official Documentation
 - [HotSpot GC Tuning Guide](https://docs.oracle.com/en/java/javase/21/gc/tuning.html)
@@ -27,9 +27,9 @@
 - *The Garbage Collection Handbook* by Richard Jones
 
 ## Articles
-- [G1 GC Internals](https://www.infoq.com/articles/G1-GC-internals/)
-- [ZGC: The Next Generation Low-Latency GC](https://www.infoq.com/articles/zgc/)
-- [Understanding G1 GC Logs](https://www.baeldung.com/jvm-g1-gc-logs)
+- G1 GC Internals
+- ZGC: The Next Generation Low-Latency GC
+- Understanding G1 GC Logs
 
 ## Tools
 - `jstat -gc` — real-time GC statistics

@@ -57,13 +57,13 @@ This lab simulates a realistic API key compromise incident. You will:
 
 ### References
 
-- Cloudflare Blog: "Cloudflare's API Security Report 2024" — https://blog.cloudflare.com/api-security-report-2024/
-- Cloudflare Blog: "How Cloudflare Handled an API Key Leak" — https://blog.cloudflare.com/how-cloudflare-handled-an-api-key-leak/
+- Cloudflare Blog: "Cloudflare's API Security Report 2024" — (link removed)
+- Cloudflare Blog: "How Cloudflare Handled an API Key Leak" — (link removed)
 - SolarWinds Security Advisory: "Sunburst Attack Analysis" — https://www.solarwinds.com/sa-overview
 - CrowdStrike 2024 Global Threat Report — https://www.crowdstrike.com/global-threat-report/
 - AWS Security Blog: "How to Rotate API Keys Securely" — https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
 - Google Cloud Blog: "Secrets Management Best Practices" — https://cloud.google.com/blog/products/identity-security/secrets-management-best-practices
-- Microsoft Security: "API Security Best Practices" — https://learn.microsoft.com/en-us/azure/security/fundamentals/api-security
+- Microsoft Security: "API Security Best Practices" — (link removed)
 
 ### Severity Assessment
 

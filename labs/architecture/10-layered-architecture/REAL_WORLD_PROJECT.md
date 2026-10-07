@@ -74,11 +74,11 @@ The system uses a four-layer architecture:
 
 ## Sourced Field Notes (fetched Oct 2026 — verify before citing)
 
-- **Microsoft — Layered Architecture**: https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/layered
+- **Microsoft — Layered Architecture**: (link removed)
   Microsoft's Azure architecture guide on layered architecture,
   including layer responsibilities, communication patterns, and best practices.
 
-- **Oracle — Core J2EE Patterns**: https://www.oracle.com/java/technologies/core-j2ee-patterns.html
+- **Oracle — Core J2EE Patterns**: (link removed)
   Oracle's documentation on J2EE patterns including layered architecture,
   separating presentation, business, and data access concerns.
 

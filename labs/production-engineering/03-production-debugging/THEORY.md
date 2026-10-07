@@ -124,7 +124,7 @@ async-profiler uses Linux `perf_events` + `AsyncGetCallTrace` — no safepoint b
 
 ```bash
 # Download
-curl -L https://github.com/jvm-profiling-tools/async-profiler/releases/latest/download/async-profiler-linux-x64.tar.gz | tar xz
+curl -L (link removed) | tar xz
 
 # CPU profiling (wall-clock — see where CPU time goes)
 ./profiler.sh -e cpu -d 60 -f /tmp/cpu-$(date +%Y%m%d-%H%M).html <pid>

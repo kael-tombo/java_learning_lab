@@ -131,8 +131,8 @@ Two consequences that shaped the design:
   consistent snapshots let a job restore from the last completed checkpoint, and
   end-to-end exactly-once relies on the sink committing with the checkpoint.
   - Reference: https://flink.apache.org/what-is-flink/
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/concepts/stateful-stream-processing/
-  - Reference: https://nightlies.apache.org/flink/flink-docs-stable/docs/concepts/stream/exactly-once/
+  - Reference: (link removed)
+  - Reference: (link removed)
 - Kafka consumer groups partition the work; each partition is consumed by exactly
   one member, and committed offsets define the restart position.
   - Reference: https://kafka.apache.org/documentation/#intro_concepts_and_terms

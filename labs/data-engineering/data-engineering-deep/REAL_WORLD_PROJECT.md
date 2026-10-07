@@ -218,8 +218,8 @@ still do not reconcile is a report nobody trusts the second time.
   - Reference: https://spark.apache.org/docs/latest/job-scheduling.html
 - Apache Flink's checkpointing and state backends determine recovery time and
   state cost, which is the core trade-off for long-running streaming jobs.
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/concepts/stateful-stream-processing/
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/ops/state/checkpoints_vs_savepoints/
+  - Reference: (link removed)
+  - Reference: (link removed)
 - OpenLineage provides a standard for lineage metadata, which the freshness SLOs
   and impact analysis depend on.
   - Reference: https://openlineage.io/docs/

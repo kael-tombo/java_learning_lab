@@ -15,7 +15,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/myorg/myapp-config.git
+    repoURL: (link removed).git
     targetRevision: HEAD
     path: k8s/overlays/production
     helm:
@@ -88,7 +88,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/myorg/myapp-config.git
+        repoURL: (link removed).git
         targetRevision: HEAD
         path: 'k8s/overlays/{{environment}}'
       destination:
@@ -220,7 +220,7 @@ argocd app list
 
 # Create application
 argocd app create myapp \
-  --repo https://github.com/myorg/myapp-config.git \
+  --repo (link removed).git \
   --path k8s/overlays/production \
   --dest-server https://kubernetes.default.svc \
   --dest-namespace myapp-production \

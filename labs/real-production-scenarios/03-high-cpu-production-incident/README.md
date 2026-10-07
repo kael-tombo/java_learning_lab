@@ -86,7 +86,7 @@ When evaluated against input "aaaaaaaaac", the regex engine tries:
 
 - Meta Engineering: "Fighting ReDoS in Production" — Meta Engineering Blog
 - Google: "ReDoS: Regular Expression Denial of Service" — Google Project Zero
-- OWASP: "Regular Expression Denial of Service (ReDoS)" — https://owasp.org/www-community/attacks/Regular_expression_Denial_of_Service
+- OWASP: "Regular Expression Denial of Service (ReDoS)" — (link removed)
 - Cloudflare: "How to Prevent ReDoS Attacks" — Cloudflare Blog
 - Oracle: "java.util.regex Performance" — Oracle Documentation
 - Baeldung: "Guide to java.util.regex Pattern" — https://www.baeldung.com/regular-expressions-java

@@ -912,7 +912,7 @@ public class ApiUsageAnomalyDetector {
 ## References
 - AWS Security Blog: "How to Rotate API Keys Securely"
 - Cloudflare Blog: "API Security Report 2024"
-- OWASP API Security Top 10 — https://owasp.org/www-project-api-security/
+- OWASP API Security Top 10 — https://web.archive.org/web/20200218212644/https://owasp.org/www-project-api-security/
 - GitGuardian Blog: "How to Prevent Secret Leaks in Git"
 - NIST SP 800-53: "Security and Privacy Controls"
 - CrowdStrike 2024 Global Threat Report

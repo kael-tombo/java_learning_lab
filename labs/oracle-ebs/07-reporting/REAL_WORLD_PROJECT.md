@@ -11,7 +11,7 @@ report must be delivered as an EBS concurrent program and burst to category
 managers monthly.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS Financials)
+- (link removed) (EBS Financials)
 - https://docs.oracle.com/en/cloud/saas/financials/25d/faipp/
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 

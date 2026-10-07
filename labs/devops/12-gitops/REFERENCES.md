@@ -18,7 +18,7 @@
 ## Community
 - ArgoCD Slack: https://argoproj.slack.com/
 - Flux Slack: https://cloud-native.slack.com/messages/flux/
-- CNCF GitOps: https://www.cncf.io/gitops/
+- CNCF GitOps: (link removed)
 - GitOps Working Group: https://github.com/gitops-working-group/gitops-working-group
 
 ## DevOps Academy Complete!

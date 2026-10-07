@@ -16,6 +16,6 @@
 
 ## Online
 
-- [VisuAlgo: Graph Traversal](https://visualgo.net/en/graph)
+- VisuAlgo: Graph Traversal
 - [Graph Theory GitHub Collection](https://github.com/topics/graph-theory)
 - [Neo4j Graph Algorithms](https://neo4j.com/docs/graph-algorithms/current/)

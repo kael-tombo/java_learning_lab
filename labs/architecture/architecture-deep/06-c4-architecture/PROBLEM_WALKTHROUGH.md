@@ -121,7 +121,7 @@ class PlantUmlC4Generator {
     String contextDiagram(C4Model model) {
         var sb = new StringBuilder();
         sb.append("@startuml System Context\n");
-        sb.append("!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml\n");
+        sb.append("!include (link removed)");
         for (var person : model.people()) {
             sb.append("Person(").append(person.id()).append(", \"").append(person.name())
                 .append("\", \"").append(person.description()).append("\")\n");
@@ -143,7 +143,7 @@ class PlantUmlC4Generator {
     String containerDiagram(C4Model model) {
         var sb = new StringBuilder();
         sb.append("@startuml Container Diagram\n");
-        sb.append("!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml\n");
+        sb.append("!include (link removed)");
         sb.append("System_Boundary(ecom_sys, \"E-Commerce System\") {\n");
         for (var container : model.containers()) {
             sb.append("Container(").append(container.id()).append(", \"").append(container.name())
@@ -162,7 +162,7 @@ class PlantUmlC4Generator {
     String componentDiagram(C4Model model, String containerId) {
         var sb = new StringBuilder();
         sb.append("@startuml Component Diagram ").append(containerId).append("\n");
-        sb.append("!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml\n");
+        sb.append("!include (link removed)");
         sb.append("Container_Boundary(").append(containerId).append(", \"").append(containerId).append("\") {\n");
         for (var component : model.components()) {
             sb.append("Component(").append(component.id()).append(", \"").append(component.name())
@@ -328,7 +328,7 @@ class PlantUmlC4Generator {
     String contextDiagram(C4Model model) {
         var sb = new StringBuilder();
         sb.append("@startuml System Context\n");
-        sb.append("!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml\n");
+        sb.append("!include (link removed)");
         for (var person : model.people()) {
             sb.append("Person(").append(person.id()).append(", \"").append(person.name())
                 .append("\", \"").append(person.description()).append("\")\n");
@@ -350,7 +350,7 @@ class PlantUmlC4Generator {
     String containerDiagram(C4Model model) {
         var sb = new StringBuilder();
         sb.append("@startuml Container Diagram\n");
-        sb.append("!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml\n");
+        sb.append("!include (link removed)");
         sb.append("System_Boundary(ecom_sys, \"E-Commerce System\") {\n");
         for (var container : model.containers()) {
             sb.append("Container(").append(container.id()).append(", \"").append(container.name())
@@ -369,7 +369,7 @@ class PlantUmlC4Generator {
     String componentDiagram(C4Model model, String containerId) {
         var sb = new StringBuilder();
         sb.append("@startuml Component Diagram ").append(containerId).append("\n");
-        sb.append("!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml\n");
+        sb.append("!include (link removed)");
         sb.append("Container_Boundary(").append(containerId).append(", \"").append(containerId).append("\") {\n");
         for (var component : model.components()) {
             sb.append("Component(").append(component.id()).append(", \"").append(component.name())

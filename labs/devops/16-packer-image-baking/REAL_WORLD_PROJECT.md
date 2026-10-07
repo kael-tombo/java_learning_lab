@@ -32,7 +32,7 @@ and a recent incident traced back to an old base image.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - Packer docs — building AMIs:
-  https://developer.hashicorp.com/packer/tutorials/aws-get-started/run-builder
+  (link removed)
 - Packer docs — provisioners and post-processors:
   https://developer.hashicorp.com/packer/docs
 

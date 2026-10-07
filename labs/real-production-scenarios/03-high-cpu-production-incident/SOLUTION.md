@@ -676,7 +676,7 @@ jcmd <pid> Thread.print | grep -A 5 "Pattern"
 
 ## References
 
-- OWASP: "ReDoS Prevention Cheat Sheet" — https://cheatsheetseries.owasp.org/cheatsheets/Regular_Expression_Denial_of_Service_Cheat_Sheet.html
+- OWASP: "ReDoS Prevention Cheat Sheet" — (link removed)
 - RexEgg: "Catastrophic Backtracking" — https://www.regular-expressions.info/catastrophic.html
 - Cloudflare: "ReDoS: Regular Expression Denial of Service" — Cloudflare Blog
 - Google: "ReDoS and Regex Security" — Google Project Zero

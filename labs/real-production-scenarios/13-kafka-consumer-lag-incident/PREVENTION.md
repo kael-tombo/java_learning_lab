@@ -253,8 +253,8 @@ echo "Scaled consumers back to 12"
 
 ## References
 
-- Confluent Blog — Kafka Consumer Lag: https://www.confluent.io/blog/kafka-consumer-lag/
-- LinkedIn Engineering — Kafka at Scale: https://engineering.linkedin.com/blog/2019/apache-kafka-at-linkedin
+- Confluent Blog — Kafka Consumer Lag: (link removed)
+- LinkedIn Engineering — Kafka at Scale: (link removed)
 - Netflix Tech Blog — Kafka Consumer Tuning: https://netflixtechblog.com/kafka-consumer-tuning
 - Apache Kafka Documentation: https://kafka.apache.org/documentation/#consumerconfigs
 - Google SRE Book — Eliminating Toil: https://sre.google/sre-book/eliminating-toil/

@@ -119,7 +119,7 @@ boolean publish(Reconciliation r) {
   - Reference: https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html
 - dbt models are materialized as views, tables, or incremental models, and
   incremental models run a merge on a unique key so re-runs do not duplicate.
-  - Reference: https://docs.getdbt.com/docs/concepts/materializations
+  - Reference: (link removed)
   - Reference: https://docs.getdbt.com/docs/build/incremental-models
 - Slowly changing dimensions are a standard warehousing pattern; Type 2 keeps
   full history with effective-dated rows rather than overwriting.

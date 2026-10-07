@@ -13,7 +13,7 @@
 ## Documentation
 - Apache Kafka Documentation: https://kafka.apache.org/documentation
 - Spring Cloud Stream: https://spring.io/projects/spring-cloud-stream
-- RabbitMQ Documentation: https://rabbitmq.com/documentation
+- RabbitMQ Documentation: (link removed)
 
 ## Tools
 - Confluent Platform: https://confluent.io

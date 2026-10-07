@@ -9,8 +9,8 @@ reconciliation between them. The CHRO wants one automated lifecycle with an
 audit trail — and a fixed go-live for the payroll integration.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/hcm/25d/faipp/ (HCM / HRMS docs)
-- https://docs.oracle.com/database/121/HCMR/ (Oracle HRMS concepts)
+- (link removed) (HCM / HRMS docs)
+- (link removed) (Oracle HRMS concepts)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture

@@ -213,7 +213,7 @@ X₁ → M
 
 ## Bonus: Real-World Causal Analysis
 
-**Dataset:** Use the [Lalonde job training dataset](https://users.nber.org/~rdehejia/data/nswdata2.html) or [CPS/PSID comparison data].
+**Dataset:** Use the [Lalonde job training dataset](https://web.archive.org/web/20141009181509/https://users.nber.org/~rdehejia/data/nswdata2.html) or [CPS/PSID comparison data].
 
 **Tasks:**
 1. Estimate effect of job training (NSW program) on 1978 earnings.

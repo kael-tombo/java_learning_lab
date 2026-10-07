@@ -153,7 +153,7 @@ No anomaly detection — traffic pattern not flagged for 3 hours
 - CrowdStrike 2024 Global Threat Report
 - AWS Security Blog: "How to Rotate API Keys Securely"
 - Google Cloud Blog: "Secrets Management Best Practices"
-- OWASP API Security Top 10 — https://owasp.org/www-project-api-security/
+- OWASP API Security Top 10 — https://web.archive.org/web/20200218212644/https://owasp.org/www-project-api-security/
 - NIST SP 800-53: "Security and Privacy Controls for Information Systems"
 
 ---

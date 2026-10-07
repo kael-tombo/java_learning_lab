@@ -11,7 +11,7 @@ given credentials within a day. The team needs to redesign the API surface and
 roll back the exposure without breaking the partners already integrating.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/database/oracle/rest-data-services/ (ORDS)
+- (link removed) (ORDS)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (APEX web services)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 

@@ -65,7 +65,7 @@ default decision := {"allow": false, "reason": "default deny"}
 decision := {"allow": true} if {
     input.attestation.predicate.buildDefinition.externalParameters.workflow.repository == "github.com/example/platform"
     input.attestation.predicate.buildDefinition.externalParameters.workflow.ref == "refs/heads/main"
-    input.attestation.predicate.materials[0].uri == "git+https://github.com/example/orders"
+    input.attestation.predicate.materials[0].uri == "git+(link removed)"
 }
 
 # Every admitted image must have an SBOM and a CVE decision.

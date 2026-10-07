@@ -6,8 +6,8 @@
 - **JSR 292: invokedynamic** - https://jcp.org/en/jsr/detail?id=292
 - **Nest-Based Access (JEP 181)** - https://openjdk.org/jeps/181
 - **LambdaMetafactory Internals** - https://cr.openjdk.org/~briangoetz/lambda/lambda-translation.html
-- **Bytecode Wrangling with ASM** (InfoQ) - https://www.infoq.com/articles/ASM-Introduction/
-- **Invokedynamic 101** (Brian Goetz) - https://www.oracle.com/technical-resources/articles/java/InvokeDynamic-1.html: Class Loading & Bytecode
+- **Bytecode Wrangling with ASM** (InfoQ) - (link removed)
+- **Invokedynamic 101** (Brian Goetz) - (link removed) Class Loading & Bytecode
 
 ## Official Documentation
 - [ClassLoader Javadoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/ClassLoader.html)

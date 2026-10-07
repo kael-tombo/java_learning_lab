@@ -31,7 +31,7 @@ mixed, and every node drain is a fire drill.
 - Kubernetes docs — autoscaling:
   https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
 - Kubernetes docs — safe evictions / PDBs:
-  https://kubernetes.io/docs/concepts/scheduling-eviction/pod-disruption/
+  (link removed)
 
 ## Definition of done
 - Traffic spike absorbed without pager-worthy events.

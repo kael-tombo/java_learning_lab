@@ -2,6 +2,6 @@
 
 - Monte Carlo: https://www.montecarlodata.com/
 - Soda: https://www.soda.io/
-- 5 Pillars of Data Observability: https://www.montecarlodata.com/blog-the-5-pillars-of-data-observability/
+- 5 Pillars of Data Observability: (link removed)
 - Great Expectations: https://greatexpectations.io/
 - Datafold: https://www.datafold.com/

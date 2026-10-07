@@ -11,7 +11,7 @@ enabling ORDS auto-REST exposed every table to every authenticated user, and
 `ords_log` is full of 500s nobody can explain.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/database/oracle/rest-data-services/ (ORDS)
+- (link removed) (ORDS)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (APEX web services)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 

@@ -280,7 +280,7 @@ public class RTORPOMonitor {
 
 - AWS Well-Architected — Reliability Pillar: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/
 - Netflix Chaos Monkey: https://netflixtechblog.com/chaos-monkey-the-netflix-way
-- Google SRE — Disaster Recovery: https://sre.google/sre-book/disaster-recovery/
+- Google SRE — Disaster Recovery: (link removed)
 - AWS Route53 ARC: https://docs.aws.amazon.com/r53recovery/latest/dg/
 - Azure DR: https://learn.microsoft.com/en-us/azure/well-architected/reliability/disaster-recovery
 - Google Cloud DR: https://cloud.google.com/architecture/disaster-recovery

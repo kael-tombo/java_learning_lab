@@ -9,8 +9,8 @@ the accounting pipeline so the close is repeatable, reconciled, and auditable.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/cloud/saas/financials/25d/faipp/ (Financials)
-- https://docs.oracle.com/en/database/oracle/oracle-database/21/erprug/
-- https://docs.oracle.com/technologies/ebs/ (EBS Financials documentation)
+- (link removed)
+- (link removed) (EBS Financials documentation)
 
 ## Architecture
 ```

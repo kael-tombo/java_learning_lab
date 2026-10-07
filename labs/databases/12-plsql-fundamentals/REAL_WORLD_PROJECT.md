@@ -5,7 +5,7 @@ Design and implement a production-shaped system where plsql fundamentals is a fi
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/oracle-database/
-- https://docs.oracle.com/en/database/oracle/oracle-database/sql-language-reference/
+- (link removed)
 
 ## Architecture
 ```

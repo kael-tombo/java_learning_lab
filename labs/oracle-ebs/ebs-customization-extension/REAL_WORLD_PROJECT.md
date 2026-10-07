@@ -9,7 +9,7 @@ appointed to govern customization so this stops compounding — while still
 delivering the feature.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS customization)
+- (link removed) (EBS customization)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html (Application Development Guide)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 

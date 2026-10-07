@@ -190,6 +190,6 @@ Supply-chain Levels for Software Artifacts (SLSA) Level 3 requires:
                attestors:
                  - entries:
                      - keyless:
-                         issuer: "https://token.actions.githubusercontent.com"
+                         issuer: "(link removed)"
      ```
    - Any container image lacking a valid cryptographic signature and SLSA provenance attestation is **instantly rejected at the Kubernetes API admission level**.

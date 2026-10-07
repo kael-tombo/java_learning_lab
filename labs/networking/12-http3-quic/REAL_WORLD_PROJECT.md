@@ -200,7 +200,7 @@ Http3Config tunedForEdge() {
   https://www.rfc-editor.org/info/rfc9000/
 - MDN HTTP/3 documentation describes `Alt-Svc` advertisement, h3 over QUIC, and the
   fallback behaviour toward HTTP/2 configured above.
-  https://developer.mozilla.org/en-US/docs/Web/HTTP/3
+  (link removed)
 
 ## Deliverables
 

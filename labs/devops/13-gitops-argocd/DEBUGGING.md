@@ -56,7 +56,7 @@ argocd app logs myapp
 
 # Check repository connection
 argocd repo list
-argocd repo get https://github.com/org/repo.git
+argocd repo get (link removed)
 
 # Check cluster connection
 argocd cluster list

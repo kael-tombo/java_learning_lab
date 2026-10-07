@@ -101,7 +101,7 @@ class LoginThrottleFilter extends OncePerRequestFilter {
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - OWASP Password Storage Cheat Sheet is the reference for preferring Argon2id over
   PBKDF2/bcrypt when the stack supports it, and for salting/peppering practice.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Password_Storage_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/https://web.archive.org/web/20200119054315/https://owasp.org/www-project-cheat-sheets/cheatsheets/Password_Storage_Cheat_Sheet.html
 - Spring Security reference documents the authentication architecture, `SecurityFilterChain`
   beans, and session/concurrency management used above.
   https://docs.spring.io/spring-security/reference/ (stable; see `servlet/authentication`)

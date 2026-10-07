@@ -79,7 +79,7 @@ matters most.
 
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - Apache Cassandra documentation, gossip and failure detection —
-  https://cassandra.apache.org/doc/latest/architecture/assumptions.html
+  (link removed)
   Use for: the production statement of phi-accrual failure detection and the gossip-based
   failure detector Cassandra ships. Note the version-specific endpoint; confirm the page
   exists for the release you cite rather than assuming "latest" matches your deployment.

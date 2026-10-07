@@ -94,7 +94,7 @@ When Thread 1 holds LeaseRegistry and waits for LockState, and Thread 2 holds Lo
 
 ## References
 
-- Google SRE Book: "Eliminating Deadlocks in Distributed Systems" — https://sre.google/sre-book/eliminating-deadlocks/
+- Google SRE Book: "Eliminating Deadlocks in Distributed Systems" — (link removed)
 - Oracle: "Java Thread Deadlock — Detection and Prevention" — https://docs.oracle.com/javase/tutorial/essential/concurrency/deadlock.html
 - Oracle: "Java Locking Best Practices" — https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/locking.html
 - Google SRE: "Debugging Production Deadlocks" — Google SRE Workbook, Chapter 12

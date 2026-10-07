@@ -157,7 +157,7 @@ void dunningRun() {
   https://csrc.nist.gov/pubs/sp/800/162/upd2/final
 - OWASP Authorization Cheat Sheet covers defence-in-depth, deny-by-default, and validating
   permissions on every request rather than only at the edge.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Authorization_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/(link removed)
 
 ## Deliverables
 

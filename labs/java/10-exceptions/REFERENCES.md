@@ -32,6 +32,6 @@
 - [Throwable.addSuppressed JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html) — Suppressed exception API
 
 ## Related Patterns
-- [Result Pattern in Java](https://www.baeldung.com/java-result-type)
+- Result Pattern in Java
 - [Circuit Breaker Pattern](https://martinfowler.com/bliki/CircuitBreaker.html)
 - [Retry Pattern](https://www.baeldung.com/resilience4j)

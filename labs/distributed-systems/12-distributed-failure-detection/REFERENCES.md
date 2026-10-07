@@ -16,6 +16,6 @@
 - Cattell, R. (2011). "Scalable SQL and NoSQL Data Stores."
 
 ## Online Resources
-- https://en.wikipedia.org/wiki/Phi_accrual_failure_detector
+- (link removed)
 - https://www.cs.cornell.edu/projects/Quicksilver/public_pdfs/SWIM.pdf
-- https://cassandra.apache.org/doc/latest/cassandra/operating/failure_detection.html
+- (link removed)

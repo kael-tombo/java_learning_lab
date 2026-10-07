@@ -209,7 +209,7 @@ at peak was worth far more than $34k/month in compute.
   and checkpoint-based recovery, which are the mechanisms that make streaming
   analytics reproducible after failure.
   - Reference: https://flink.apache.org/what-is-flink/
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/concepts/stateful-stream-processing/
+  - Reference: (link removed)
   - Reference: https://nightlies.apache.org/flink/flink-docs-stable/docs/concepts/time/
 - Kafka guarantees ordering within a partition and replay by offset, which is
   what allows a streaming metric to be recomputed from the log after a fix.

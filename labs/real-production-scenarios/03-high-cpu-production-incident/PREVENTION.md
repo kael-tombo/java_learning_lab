@@ -251,7 +251,7 @@ Security team should:
 
 ## References
 
-- OWASP: "ReDoS Prevention Cheat Sheet" — https://cheatsheetseries.owasp.org/cheatsheets/Regular_Expression_Denial_of_Service_Cheat_Sheet.html
+- OWASP: "ReDoS Prevention Cheat Sheet" — (link removed)
 - RexEgg: "Catastrophic Backtracking" — https://www.regular-expressions.info/catastrophic.html
 - Stack Overflow: "Regex: Make possessive quantifier default" — RexEgg.com
 - Java Documentation: "java.util.regex Pattern — Possessive Quantifiers" — Oracle

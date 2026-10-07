@@ -19,4 +19,4 @@
 ## Community
 - CNCF Observability: https://www.cncf.io/tag/observability/
 - PromCon: https://promcon.io/
-- GrafanaCON: https://grafana.com/about/events/grafanacon/
+- GrafanaCON: https://web.archive.org/web/20210706215039/https://grafana.com/about/events/grafanacon/

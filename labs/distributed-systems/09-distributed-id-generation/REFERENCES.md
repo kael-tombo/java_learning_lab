@@ -12,7 +12,7 @@
 ## Online Resources
 - https://en.wikipedia.org/wiki/Universally_unique_identifier
 - https://instagram-engineering.com/sharding-ids-at-instagram-1cf5a71e5a5c
-- https://www.cockroachlabs.com/blog/linkedin-tech-brief-snowflake-id-generation/
+- (link removed)
 
 ## Books
 - Kleppmann, M. (2017). "Designing Data-Intensive Applications." (Section on ID generation)

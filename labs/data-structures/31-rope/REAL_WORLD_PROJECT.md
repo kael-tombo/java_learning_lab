@@ -35,7 +35,7 @@ W2: API + metrics + JMH + deploy notes.
 
 ## Field notes — sourced (fetched Oct 2026 — verify before citing)
 - https://en.wikipedia.org/wiki/Rope_(data_structure)
-- https://gcc.gnu.org/onlinedocs/libstdcxx/manual/ext_std_rope.html
+- (link removed)
 Confirm API/limit numbers against the live docs before quoting them in reviews.
 
 ## 7. Deliverables

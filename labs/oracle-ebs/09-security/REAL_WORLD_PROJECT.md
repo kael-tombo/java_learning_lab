@@ -11,8 +11,8 @@ Alongside this, 12 dormant accounts hold elevated access and a profile with
 support logs. You have 30 days.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS security)
-- https://docs.oracle.com/en/database/oracle/oracle-database/21/rnbrdu/ (EBS Security Guide)
+- (link removed) (EBS security)
+- (link removed) (EBS Security Guide)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
 
 ## Architecture

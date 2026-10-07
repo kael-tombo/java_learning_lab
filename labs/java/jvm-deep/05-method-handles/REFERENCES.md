@@ -21,7 +21,7 @@
 
 ## Blog Posts and Articles
 - [Baeldung: Java Collections Guide](https://www.baeldung.com/java-collections)
-- [Inside Java: Collections Framework](https://inside.java/tag/collections)
+- Inside Java: Collections Framework
 - [Shipilev: Java Memory Model Pragmatics](https://shipilev.net/blog/2016/close-encounters-of-jmm-kind/)
 - [Mechanical Sympathy](https://mechanical-sympathy.blogspot.com/)
 

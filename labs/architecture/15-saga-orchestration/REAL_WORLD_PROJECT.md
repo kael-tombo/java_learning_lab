@@ -75,11 +75,11 @@ The booking saga is managed by a central orchestrator:
 
 ## Sourced Field Notes (fetched Oct 2026 — verify before citing)
 
-- **Microservices.io — Saga Pattern**: https://microservices.io/patterns/data/saga.html
+- **Microservices.io — Saga Pattern**: (link removed)saga.html
   Comprehensive guide to the saga pattern, including orchestration and
   choreography approaches, compensation strategies, and implementation examples.
 
-- **Chris Richardson — Microservices Patterns**: https://microservices.io/book/
+- **Chris Richardson — Microservices Patterns**: https://web.archive.org/web/20190125150822/https://microservices.io/book/
   Chris Richardson's book on microservices patterns, with detailed coverage
   of saga orchestration, distributed transactions, and failure management.
 

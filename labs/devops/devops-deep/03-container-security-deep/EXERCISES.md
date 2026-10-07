@@ -324,7 +324,7 @@ kubectl exec rootless-pod -- id
 
 ```bash
 # 1. Get default Docker seccomp profile
-curl -sSL https://raw.githubusercontent.com/moby/moby/master/profiles/seccomp/default.json > docker-default.json
+curl -sSL https://web.archive.org/web/20190915122828/https://raw.githubusercontent.com/moby/moby/master/profiles/seccomp/default.json > docker-default.json
 
 # 2. Create custom restrictive profile (allowlist)
 cat > my-seccomp.json <<'EOF'
@@ -395,7 +395,7 @@ helm install falco falcosecurity/falco \
   --set ebpf.enabled=true
 
 # Or install Falco Operator for CRD management
-kubectl apply -f https://raw.githubusercontent.com/falcosecurity/falco-operator/master/deploy/crds/falcosecurity.com_falcos.yaml
+kubectl apply -f (link removed)
 ```
 
 ### Test Detection Rules

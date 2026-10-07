@@ -142,7 +142,7 @@ class RotationWorkflow {
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - OWASP Secrets Management Cheat Sheet covers the full secret lifecycle, the risks of
   hardcoding secrets, and rotation practices, aligning with this target state.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Secrets_Management_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/(link removed)
 - Spring Boot reference on externalised configuration explains property source precedence
   and why a `Vault`-backed property source must not be shadowed by a packaged yml.
   https://docs.spring.io/spring-boot/reference/features/external-config.html

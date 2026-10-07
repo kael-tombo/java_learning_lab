@@ -181,7 +181,7 @@
 curl -X POST http://security-service:8080/admin/security/keys/{keyId}/revoke
 
 # Block IP at Cloudflare WAF
-curl -X POST "https://api.cloudflare.com/client/v4/zones/{zone}/firewall/access_rules/rules" \
+curl -X POST "(link removed)" \
   -H "Authorization: Bearer {token}" \
   -H "Content-Type: application/json" \
   -d '{"mode": "block", "configuration": {"target": "ip", "value": "185.34.72.100"}, "notes": "Security incident SEC-2026-0805-010"}'

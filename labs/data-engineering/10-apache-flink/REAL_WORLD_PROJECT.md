@@ -178,17 +178,17 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(10, Duration.ofSecond
 - Flink supports multiple levels of API (DataStream, Table API, SQL) over the
   same runtime, and its stateful operators, checkpointing, and exactly-once
   sinks are the documented foundation for production streaming.
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/dev/table/overview/
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/concepts/stateful-stream-processing/
+  - Reference: (link removed)
+  - Reference: (link removed)
   - Reference: https://flink.apache.org/what-is-flink/flink-applications/
 - Flink's CEP library expresses patterns of events with contiguity, skipping
   strategies, and timeouts, and provides side outputs for late or partial data.
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/libs/cep/
-  - Reference: https://nightlies.apache.org/flink/flink-docs-stable/docs/libs/cep/cel/
+  - Reference: (link removed)
+  - Reference: (link removed)
 - Checkpointing and savepoints are how Flink provides fault tolerance and how
   stateful jobs are rescaled without losing in-flight work.
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/ops/state/checkpoints_vs_savepoints/
-  - Reference: https://flink.apache.org/flink-docs-stable/docs/ops/state/savepoints/
+  - Reference: (link removed)
+  - Reference: (link removed)
 
 ## Deliverables
 - [ ] State-reduction refactor with the before/after metric table

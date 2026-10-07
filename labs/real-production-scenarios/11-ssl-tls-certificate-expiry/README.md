@@ -38,7 +38,7 @@
 ## References
 
 1. Google SRE Book — Chapter 13: Emergency Response — https://sre.google/sre-book/emergency-response/
-2. Let's Encrypt — Expiration Notifications — https://letsencrypt.org/docs/expiration-notifications/
+2. Let's Encrypt — Expiration Notifications — (link removed)
 3. Cloudflare — SSL/TLS Encryption — https://developers.cloudflare.com/ssl/
 4. Prometheus blackbox_exporter SSL/TLS checks — https://github.com/prometheus/blackbox_exporter
 5. certbot documentation — https://certbot.eff.org/docs/

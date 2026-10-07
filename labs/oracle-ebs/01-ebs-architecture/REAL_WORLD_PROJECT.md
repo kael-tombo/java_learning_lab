@@ -10,8 +10,8 @@ without an outage.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/racad/
-- https://docs.oracle.com/technologies/ebs/ (EBS High Availability guide)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/
+- (link removed) (EBS High Availability guide)
+- (link removed)
 
 ## Architecture
 ```

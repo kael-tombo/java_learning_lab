@@ -11,7 +11,7 @@
 - [Dockerfile Best Practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
 - [Docker Security Best Practices](https://docs.docker.com/engine/security/)
 - [Java Containerization Guide](https://docs.docker.com/language/java/)
-- [Spring Boot with Docker](https://spring.io/guides/topicals/spring-boot-docker/)
+- [Spring Boot with Docker](https://web.archive.org/web/20181127120957/https://spring.io/guides/topicals/spring-boot-docker/)
 
 ## Tools
 - [Hadolint](https://github.com/hadolint/hadolint) — Dockerfile linter

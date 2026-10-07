@@ -104,7 +104,7 @@ class KeyRotationService {
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - OWASP JSON Web Token Cheat Sheet for Java documents the recommended key-selection and
   validation order, and explicitly warns against accepting the token's `alg` value.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/(link removed)
 - Spring Security's resource-server JWT reference describes JWKS-based validation and
   `JwtAuthenticationConverter` scope-to-authority mapping.
   https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html

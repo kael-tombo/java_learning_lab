@@ -11,7 +11,7 @@
 ## Java Libraries
 - [JFreeChart](https://www.jfree.org/jfreechart/) — Full-featured charting library
 - [XChart](https://github.com/knowm/XChart) — Lightweight plotting library
-- [Charts4j](https://github.com/charts4j/charts4j) — Declarative charting via annotations
+- Charts4j — Declarative charting via annotations
 - [Tablesaw Plot](https://github.com/jtablesaw/tablesaw) — DataFrame-integrated plotting
 - [Apache Batik](https://xmlgraphics.apache.org/batik/) — SVG rendering for Java
 

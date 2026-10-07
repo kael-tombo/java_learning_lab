@@ -222,7 +222,7 @@ class DependencyGraph {
   https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/
 - Spring Cloud reference documents the `DiscoveryClient` abstraction and the composite
   client that backs the unified SDK, including its caching and order-of-preference behaviour.
-  https://docs.spring.io/spring-cloud/reference/
+  (link removed)
 
 ## Deliverables
 

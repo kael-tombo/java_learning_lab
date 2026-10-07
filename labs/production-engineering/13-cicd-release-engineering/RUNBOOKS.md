@@ -129,8 +129,8 @@ SELECT * FROM flyway_schema_history WHERE success = false;
 Run Cosign verify manually from terminal:
 ```bash
 cosign verify \
-  --certificate-identity-regexp "https://github.com/corp/.*" \
-  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+  --certificate-identity-regexp "https://web.archive.org/web/20220520115538/https://github.com/corp/.*" \
+  --certificate-oidc-issuer "(link removed)" \
   ghcr.io/corp/payment:v3.4.0
 ```
 - If verification fails with `no signatures found`: The CI signing step was skipped or failed.

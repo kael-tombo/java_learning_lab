@@ -9,8 +9,8 @@ hired to redesign the topology — not to rewrite SQL — so that close finishes
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/racad/
-- https://docs.oracle.com/en/database/oracle/oracle-database/21/dbforu/
-- https://docs.oracle.com/technologies/ebs/ (EBS High Availability guide)
+- (link removed)
+- (link removed) (EBS High Availability guide)
 
 ## Architecture
 ```

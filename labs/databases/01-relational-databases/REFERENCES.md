@@ -9,7 +9,7 @@
 ## Online Resources
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [Hibernate ORM Documentation](https://hibernate.org/orm/documentation/)
-- [Baeldung: JPA/Hibernate Tutorials](https://www.baeldung.com/jpa-hibernate)
+- Baeldung: JPA/Hibernate Tutorials
 - [Use The Index, Luke](https://use-the-index-luke.com/)
 
 ## Specifications

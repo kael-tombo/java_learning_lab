@@ -36,6 +36,6 @@ Run: `java -Xmx512m -jar shop-runner.jar` or `docker run -p 8080:8080 shop:1.0`.
 - Tx boundary choice? N+1 proof? JWT vs session? Idempotency design?
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Jakarta EE docs: https://jakarta.ee/learn/docs/jakartaee/10/
+- Jakarta EE docs: (link removed)
 - Quarkus guides: https://quarkus.io/guides/
 - Spring vs Jakarta comparison: https://spring.io/projects/spring-framework

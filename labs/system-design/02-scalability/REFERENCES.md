@@ -21,5 +21,5 @@
 ## Online Resources
 - [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
 - [High Scalability Blog](http://highscalability.com/)
-- [Martin Fowler on Scalability](https://martinfowler.com/articles/scalability.html)
-- [Spring Boot Performance](https://spring.io/guides/gs/performance/)
+- Martin Fowler on Scalability
+- Spring Boot Performance

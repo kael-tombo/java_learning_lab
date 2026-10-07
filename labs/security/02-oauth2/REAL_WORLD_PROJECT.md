@@ -110,7 +110,7 @@ class PartnerQuotaFilter extends OncePerRequestFilter {
   https://www.rfc-editor.org/info/rfc9700/
 - OWASP Authorization Code Cheat Sheet covers the PKCE + state flow and the
   `redirect_uri` validation rules implemented above.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Authorization_Code_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/(link removed)
 
 ## Deliverables
 

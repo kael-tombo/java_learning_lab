@@ -36,13 +36,13 @@
 
 ## References
 
-1. Confluent Blog — Kafka Consumer Lag: https://www.confluent.io/blog/kafka-consumer-lag/
-2. LinkedIn Engineering Blog — Kafka at Scale: https://engineering.linkedin.com/blog/2019/apache-kafka-at-linkedin
+1. Confluent Blog — Kafka Consumer Lag: (link removed)
+2. LinkedIn Engineering Blog — Kafka at Scale: (link removed)
 3. Netflix Tech Blog — Kafka Consumer Tuning: https://netflixtechblog.com/kafka-consumer-tuning
 4. Google SRE Book — Chapter 5: Eliminating Toil: https://sre.google/sre-book/eliminating-toil/
 5. Apache Kafka Documentation — Consumer Configs: https://kafka.apache.org/documentation/#consumerconfigs
 6. Confluent Documentation — Monitoring Consumer Lag: https://docs.confluent.io/platform/current/monitoring.html
-7. Uber Engineering Blog — Kafka at Uber: https://eng.uber.com/kafka-at-uber/
+7. Uber Engineering Blog — Kafka at Uber: (link removed)
 8. Twitter Engineering Blog — Kafka Consumer Best Practices: https://blog.twitter.com/engineering/en_us/topics/infrastructure
 
 ## Key Metrics
@@ -251,7 +251,7 @@ kafka-topics.sh --bootstrap-server <broker> --describe --topic <topic>
 GROUP="order-processor-group"
 BOOTSTRAP="prod-events.confluent.cloud:9092"
 THRESHOLD=3  # Rebalances per hour threshold
-SLACK_WEBHOOK="https://hooks.slack.com/services/T00/B00/xxxx"
+SLACK_WEBHOOK="(link removed)"
 
 echo "Monitoring rebalances for group: $GROUP"
 

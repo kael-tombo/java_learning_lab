@@ -7,7 +7,7 @@
 
 ## Documentation
 - Apache Spark: https://spark.apache.org/docs/latest/
-- Spring Batch: https://docs.spring.io/spring-batch/docs/current/reference/
+- Spring Batch: (link removed)
 - Apache Kafka: https://kafka.apache.org/documentation/
 
 ## Papers

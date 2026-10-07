@@ -23,6 +23,6 @@
 ## Online Resources
 
 - [Visualgo.net — BST/AVL visualization](https://visualgo.net/en/bst)
-- [USACO Guide — Fenwick Trees](https://usaco.guide/gold/fenwick)
+- USACO Guide — Fenwick Trees
 - [CP-Algorithms — Segment Trees](https://cp-algorithms.com/data_structures/segment_tree.html)
 - [OpenJDK TreeMap source](https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/TreeMap.java)

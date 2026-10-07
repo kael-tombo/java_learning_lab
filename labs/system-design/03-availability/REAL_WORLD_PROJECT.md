@@ -113,7 +113,7 @@ process rule rather than a personality clash.
 
 - AWS Well-Architected Framework — Reliability pillar guidance on redundancy,
   quotas, and failure-mode analysis.
-  https://aws.amazon.com/architecture/framework/
+  (link removed)
 - Kubernetes documentation — pod replicas, readiness/liveness probes, and
   disruption budgets (the canonical `N+2` / no-single-point primitives).
   https://kubernetes.io/docs/concepts/architecture/

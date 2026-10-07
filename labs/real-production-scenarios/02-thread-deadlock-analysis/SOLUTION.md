@@ -746,7 +746,7 @@ jcmd <pid> JFR.start name=lock_profile \
 
 - Oracle: "Deadlock Detection and Prevention" — https://docs.oracle.com/javase/8/docs/technotes/guides/concurrency/deadlock.html
 - Google SRE: "Debugging Production Deadlocks" — Google SRE Workbook Chapter 12
-- Baeldung: "Java Deadlock Detection with ThreadMXBean" — https://www.baeldung.com/java-deadlock-detection
+- Baeldung: "Java Deadlock Detection with ThreadMXBean" — (link removed)
 - Doug Lea: "Concurrent Programming in Java: Design Principles and Patterns" — Addison-Wesley
 - Oracle: "JFR Events for Lock Instances" — JDK Flight Recorder Event Reference
 - Jenkins: "Deadlock Detection in CI/CD" — Jenkins Testing Patterns

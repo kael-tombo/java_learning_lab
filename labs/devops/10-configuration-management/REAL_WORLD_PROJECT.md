@@ -31,7 +31,7 @@ and a compliance audit finds forty different sshd configs.
 - Ansible docs — playbooks and roles:
   https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html
 - Ansible docs — check/diff mode:
-  https://docs.ansible.com/ansible/latest/user_guide/playbooks_check_mode.html
+  (link removed)
 
 ## Definition of done
 - Drift report shows zero unmanaged configs.

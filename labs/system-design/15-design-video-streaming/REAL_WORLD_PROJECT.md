@@ -213,7 +213,7 @@ runbook for each.
   Optimization pillars, including media-delivery and caching guidance; the
   reference for the caching decisions and the origin-protection trade-offs in
   this project.
-  https://aws.amazon.com/architecture/framework/
+  (link removed)
 
 Both are reference-quality and versioned. Pin the version/section you read.
 Two things to verify with your CDN provider rather than infer from these

@@ -30,9 +30,9 @@ prod because a YAML typo slipped through.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - Argo CD docs — user management and RBAC:
-  https://argo-cd.readthedocs.io/en/stable/user-management/
+  (link removed)
 - Argo CD docs — application lifecycle and sync:
-  https://argo-cd.readthedocs.io/en/stable/user-guide/applications/
+  (link removed)
 
 ## Definition of done
 - CI blocks policy-violating manifests.

@@ -222,7 +222,7 @@ it was never trained on.
   concern because online and offline values are updated on different schedules.
   - Reference: https://feast.dev/
   - Reference: https://docs.feast.dev/
-  - Reference: https://docs.feast.dev/getting-started/concepts/online-store
+  - Reference: (link removed)
 - Redis Cluster shards data across hash slots and provides replication; the
   sharding model is why pipelined multi-key reads matter for a many-feature
   serving path.

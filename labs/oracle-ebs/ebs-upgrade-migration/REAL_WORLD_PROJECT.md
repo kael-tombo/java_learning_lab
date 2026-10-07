@@ -9,9 +9,9 @@ to OCI with under 2 hours of downtime. You own both programmes and must not
 discover a problem during the production window.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS upgrade and lifecycle)
+- (link removed) (EBS upgrade and lifecycle)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/upgrd/ (Database Upgrade Guide)
-- https://docs.oracle.com/en/database/oracle/oracle-database/21/dbforu/
+- (link removed)
 
 ## Architecture
 ```

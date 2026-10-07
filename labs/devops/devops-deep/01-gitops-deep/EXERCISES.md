@@ -343,7 +343,7 @@ kubectl apply -f argocd-sync-window.yaml
 ### Install SealedSecrets Controller
 ```bash
 # ArgoCD/Flux: Install via Helm
-helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+helm repo add sealed-secrets https://web.archive.org/web/20260218090855/https://bitnami-labs.github.io/sealed-secrets
 helm install sealed-secrets sealed-secrets/sealed-secrets -n kube-system --create-namespace
 
 # Get public key

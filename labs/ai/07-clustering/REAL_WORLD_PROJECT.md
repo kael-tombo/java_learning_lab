@@ -50,7 +50,7 @@ public class CustomerSegmentation {
 ### Sourced field notes (fetched Oct 2026 — verify before citing)
 - RFM (Recency, Frequency, Monetary) analysis is a foundational technique in customer segmentation.
 - Reference: https://www.datasciencecentral.com/profiles/blogs/rfm-analysis
-- Reference: https://towardsdatascience.com/customer-segmentation-using-k-means-clustering-in-python-3924f2e1d4e9
+- Reference: (link removed)
 
 ## Deliverables
 

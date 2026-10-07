@@ -254,11 +254,11 @@ the cliff, not the headline number.
   candidates, which is why a pure ANN recall number is not the user-visible
   quality figure.
   - Reference: https://www.pinecone.io/learn/series/faiss/
-  - Reference: https://docs.weaviate.io/weaviate/concepts/vector-search
+  - Reference: (link removed)
 - Filters applied after an approximate search can lose recall, because the
   candidate set may be almost entirely filtered out; systems address this with
   filter-aware search, larger candidate sets, or pre-filtered partitions.
-  - Reference: https://docs.pinecone.io/guides/data/filter-by-metadata
+  - Reference: (link removed)
   - Reference: https://docs.weaviate.io/weaviate/concepts/filtering
 
 ## Deliverables

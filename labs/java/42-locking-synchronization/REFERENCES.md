@@ -15,9 +15,9 @@
 - *Java Performance: The Definitive Guide* by Scott Oaks
 
 ## Articles
-- [AQS Internals](https://www.infoq.com/articles/java-threading-model-part-3-aqs/)
-- [LockSupport Guide](https://www.baeldung.com/java-thread-lock-support)
-- [StampedLock Guide](https://www.baeldung.com/java-stamped-lock)
+- AQS Internals
+- LockSupport Guide
+- StampedLock Guide
 
 ## Source Code
 - `java.base/java/util/concurrent/locks/AbstractQueuedSynchronizer.java`

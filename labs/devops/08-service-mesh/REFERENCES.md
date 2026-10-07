@@ -3,7 +3,7 @@
 ## Official Documentation
 - Istio: https://istio.io/latest/docs/
 - Envoy: https://www.envoyproxy.io/docs
-- Linkerd: https://linkerd.io/2-edge/documentation/
+- Linkerd: (link removed)
 
 ## Books
 - "Istio in Action" by Christian Posta

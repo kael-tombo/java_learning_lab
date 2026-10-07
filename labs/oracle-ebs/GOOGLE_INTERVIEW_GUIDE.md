@@ -264,7 +264,7 @@ CREATE OR REPLACE PACKAGE BODY invoice_pubsub AS
   ) AS
     l_req    UTL_HTTP.REQ;
     l_resp   UTL_HTTP.RESP;
-    l_url    VARCHAR2(500) := 'https://pubsub.googleapis.com/v1/' ||
+    l_url    VARCHAR2(500) := '(link removed)' ||
                               'projects/my-project/topics/invoice-events:publish';
     l_token  VARCHAR2(500) := 'Bearer <access-token>';  -- via OAuth2
     l_body   CLOB;

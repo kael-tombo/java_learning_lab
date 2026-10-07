@@ -8,8 +8,8 @@ at 91% against a 98% target. You must build a replenishment discipline that
 cuts inventory by $100M without losing a single point of fill rate.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/sc/24b/ocins/ (Supply Chain docs)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS Inventory)
+- (link removed) (Supply Chain docs)
+- (link removed) (EBS Inventory)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture

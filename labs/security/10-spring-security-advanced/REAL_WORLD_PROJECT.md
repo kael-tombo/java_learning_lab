@@ -143,7 +143,7 @@ ProblemDetail handleDenied(AccessDeniedException ex) {
   https://docs.spring.io/spring-security/reference/reactive/index.html
 - OWASP Cheat Sheet "Authorization" and "Logging" guidance underpin the deny-by-default
   decision point plus audit-every-decision design.
-  https://owasp.org/www-project-cheat-sheets/cheatsheets/Authorization_Cheat_Sheet.html
+  https://web.archive.org/web/20200125082857/(link removed)
 
 ## Deliverables
 

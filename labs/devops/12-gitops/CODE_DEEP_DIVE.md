@@ -10,7 +10,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/myorg/myapp-config.git
+    repoURL: (link removed).git
     targetRevision: HEAD
     path: k8s/overlays/production
     helm:
@@ -51,7 +51,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/myorg/myapp-config.git
+        repoURL: (link removed).git
         targetRevision: HEAD
         path: 'k8s/overlays/{{name}}'
       destination:
@@ -68,7 +68,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1m
-  url: https://github.com/myorg/myapp-config
+  url: (link removed)
   ref:
     branch: main
 ---

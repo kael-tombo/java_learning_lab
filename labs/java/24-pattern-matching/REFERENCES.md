@@ -36,7 +36,7 @@
 ## Online Resources
 
 - **Oracle Java Pattern Matching Tutorial** - https://docs.oracle.com/javase/tutorial/java/patternmatching/
-- **Baeldung: Pattern Matching Guide** - https://www.baeldung.com/java-pattern-matching
+- **Baeldung: Pattern Matching Guide** - (link removed)
 - **Dev.java: Pattern Matching** - Oracle interactive tutorials
 - **OpenJDK Project Amber** - https://openjdk.org/projects/amber/
 

@@ -16,7 +16,7 @@
 - [Caffeine](https://github.com/ben-manes/caffeine) — Java high-performance cache
 - [Redis](https://redis.io/) — Distributed cache & data store
 - [Lettuce](https://lettuce.io/) — Redis Java client
-- [OkHttp Cache](https://square.github.io/okhttp/) — HTTP cache for Java
+- [OkHttp Cache](https://web.archive.org/web/20130510071936/https://square.github.io/okhttp/) — HTTP cache for Java
 
 ## Online Resources
 - [Spring Cache Guide](https://spring.io/guides/gs/caching/)

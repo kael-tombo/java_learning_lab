@@ -10,7 +10,7 @@
 ## Libraries
 
 - [Apache Commons Math](https://commons.apache.org/proper/commons-math/) — descriptive stats, regression, distributions
-- [Smile](https://haifengl.github.io/smile/) — statistical machine learning in Java
+- [Smile](https://web.archive.org/web/20150720025858/https://haifengl.github.io/smile/) — statistical machine learning in Java
 - [Tribuo](https://tribuo.org/) — ML library for Java (Oracle)
 - [Tablesaw](https://jtablesaw.github.io/tablesaw/) — data frame library for Java
 

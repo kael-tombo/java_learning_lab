@@ -35,7 +35,7 @@ W2: API + metrics + JMH + deploy notes.
 
 ## Field notes — sourced (fetched Oct 2026 — verify before citing)
 - https://en.wikipedia.org/wiki/Dancing_links
-- http://www-cs-students.stanford.edu/~knuth/taocp/
+- (link removed)
 Confirm API/limit numbers against the live docs before quoting them in reviews.
 
 ## 7. Deliverables

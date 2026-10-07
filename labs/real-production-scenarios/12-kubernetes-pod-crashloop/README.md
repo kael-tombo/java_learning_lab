@@ -35,10 +35,10 @@
 
 ## References
 
-1. Google Kubernetes Engine Documentation — Pod Lifecycle — https://cloud.google.com/kubernetes-engine/docs/concepts/pod-lifecycle
+1. Google Kubernetes Engine Documentation — Pod Lifecycle — (link removed)
 2. Google SRE Book — Chapter 6: Monitoring Distributed Systems — https://sre.google/sre-book/monitoring-distributed-systems/
 3. Netflix Tech Blog — Container Resource Tuning — https://netflixtechblog.com/container-resource-tuning
-4. Datadog Blog — Kubernetes Pod CrashLoopBackOff — https://www.datadoghq.com/blog/kubernetes-crashloopbackoff/
+4. Datadog Blog — Kubernetes Pod CrashLoopBackOff — (link removed)
 5. Kubernetes SIG Recommendations — Resource QoS — https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/
 6. Java Memory Management in Containers — https://www.oreilly.com/library/view/java-performance-in/9781492056579/
 7. Prometheus Community — Kubernetes Mixin — https://github.com/prometheus-community/helm-charts

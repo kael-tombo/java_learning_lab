@@ -1,6 +1,6 @@
 # References: Greedy Algorithms
 
-- **Exchange Arguments** (CMU) - https://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15451-s11/www/lectures/lect02_Exchange.pdf
+- **Exchange Arguments** (CMU) - (link removed)
 - **Matroid Theory** (MIT 18.211) - https://math.mit.edu/~goemans/18453S17/matroid-notes.pdf
 - **Huffman Coding Proof** - CLRS Chapter 16
 - **Fractional Knapsack Greedy Proof** - CLRS Chapter 16

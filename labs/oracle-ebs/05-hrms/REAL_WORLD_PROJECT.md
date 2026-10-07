@@ -10,8 +10,8 @@ overlapping effective dates. The go-live date is immovable due to regulatory
 compliance deadlines. You own the migration.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/hcm/25d/faipp/ (HCM / HRMS)
-- https://docs.oracle.com/database/121/HCMR/ (Oracle HRMS concepts)
+- (link removed) (HCM / HRMS)
+- (link removed) (Oracle HRMS concepts)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture

@@ -12,7 +12,7 @@ developer has already done twice with no effect.
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (performance)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (APEX documentation)
-- https://docs.oracle.com/en/database/oracle/oracle-database/19/rnprf/
+- (link removed)
 
 ## Architecture
 ```

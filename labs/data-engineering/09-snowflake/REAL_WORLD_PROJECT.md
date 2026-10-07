@@ -164,8 +164,8 @@ GRANT SELECT ON analytics.v_orders_pci      TO ROLE PCI_BI;
 - Snowflake's architecture separates storage from compute: data lives once in
   cloud storage, and virtual warehouses provide independent, elastic compute
   that can be sized, started, and suspended per workload.
-  - Reference: https://docs.snowflake.com/en/user-guide/intro-architecture
-  - Reference: https://docs.snowflake.com/en/user-guide/intro-workspaces
+  - Reference: (link removed)
+  - Reference: (link removed)
 - Snowflake's cost model is credit-based: warehouses consume credits per second
   while running, which is why auto-suspend and workload separation are the
   primary cost levers rather than storage alone.

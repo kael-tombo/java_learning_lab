@@ -5,7 +5,7 @@
 - [Spring Boot Auto-Configuration](https://docs.spring.io/spring-boot/reference/using/auto-configuration.html)
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/reference/actuator/index.html)
 - [Custom Starters](https://docs.spring.io/spring-boot/reference/using/build-systems.html#using-boot-starter)
-- [Embedded Servers](https://docs.spring.io/spring-boot/reference/web/embedded-container.html)
+- Embedded Servers
 - [Spring MVC Config](https://docs.spring.io/spring-framework/reference/web/webmvc.html)
 
 ## Source Code
@@ -26,4 +26,4 @@
 ## Tools
 
 - [Spring Initializr](https://start.spring.io/) — Bootstrap starter projects
-- [Spring Boot Test Application](https://github.com/spring-projects/spring-boot/tree/main/spring-boot-tests)
+- [Spring Boot Test Application](https://web.archive.org/web/20211006110212/https://github.com/spring-projects/spring-boot/tree/main/spring-boot-tests)

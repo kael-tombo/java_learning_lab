@@ -110,7 +110,7 @@ which is why "just add cache" was the wrong first instinct.
 - Snowflake separates storage from compute: warehouses (compute clusters) are
   independent of stored data, which is why eliminating bytes scanned and
   sizing warehouses are two separate cost levers.
-  - Reference: https://docs.snowflake.com/en/user-guide/intro-architecture
+  - Reference: (link removed)
   - Reference: https://docs.snowflake.com/en/guides-overview-cost
 - Star schema and dimensional modeling are the canonical structure for
   analytics: facts at a declared grain joined to denormalized dimensions.

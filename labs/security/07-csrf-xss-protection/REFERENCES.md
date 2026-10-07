@@ -5,7 +5,7 @@
 ### Spring Security
 - Spring Security Reference: https://docs.spring.io/spring-security/reference/
 - Spring Security API: https://docs.spring.io/spring-security/site/docs/current/api/
-- Spring Security Architecture: https://spring.io/guides/topicals/spring-security-architecture/
+- Spring Security Architecture: https://web.archive.org/web/20160717105808/https://spring.io/guides/topicals/spring-security-architecture/
 
 ### Java Platform
 - Java Cryptography Architecture (JCA)

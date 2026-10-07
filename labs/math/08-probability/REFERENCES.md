@@ -10,7 +10,7 @@
 ## Libraries
 
 - [Apache Commons Math](https://commons.apache.org/proper/commons-math/) — distributions, statistics
-- [JDistlib](https://github.com/nicebyte/jdistlib) — Java statistical distribution library
+- JDistlib — Java statistical distribution library
 - [Figaro Probabilistic Programming](https://www.cra.com/figaro) — Bayesian inference in Java
 
 ## Online

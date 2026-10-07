@@ -34,7 +34,7 @@ Client -> API Gateway -> Backend Performance Service -> Datastore
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://openjdk.org/
-- https://www.oracle.com/java/technologies/javase/gc.html
+- (link removed)
 
 ## Deliverables
 - [ ] Working service with one happy and one error path

@@ -33,7 +33,7 @@ Client -> API Gateway -> Helidon Service -> Datastore
 - Load-test the p99 path with a small k6 script.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://helidon.io/docs/latest/index.html
+- https://web.archive.org/web/20190820211857/https://helidon.io/docs/latest/index.html
 - https://helidon.io/
 
 ## Deliverables

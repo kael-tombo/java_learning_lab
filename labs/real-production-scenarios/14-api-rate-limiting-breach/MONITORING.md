@@ -258,7 +258,7 @@ public class RateLimitAutoRemediation {
 
 ## References
 
-- Kong Monitoring: https://docs.konghq.com/enterprise/2.8.x/analytics/
+- Kong Monitoring: (link removed)
 - Prometheus Redis Exporter: https://github.com/oliver006/redis_exporter
-- Google Cloud Armor Metrics: https://cloud.google.com/monitoring/api/metrics_cloudarmor
+- Google Cloud Armor Metrics: (link removed)
 - GitHub API Rate Limit Monitoring: https://docs.github.com/en/rest/overview/resources-in-the-rest-api

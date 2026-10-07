@@ -10,8 +10,8 @@ can actually operate — and that reveals where the risk lives.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
-- https://docs.oracle.com/technologies/ebs/ (EBS architecture and deployment)
-- https://docs.oracle.com/en/database/oracle/oracle-database/21/elast/ (EBS installation guide)
+- (link removed) (EBS architecture and deployment)
+- (link removed) (EBS installation guide)
 
 ## Architecture
 ```

@@ -11,7 +11,7 @@ reason codes, full audit logging, and Oracle Approval Workflow integration, on
 EBS 12.2.10.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS customization)
+- (link removed) (EBS customization)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html (Oracle Application Framework)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html (Application Development Guide)
 

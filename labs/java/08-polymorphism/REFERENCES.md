@@ -14,8 +14,8 @@
 
 ## Articles
 - [Baeldung — Polymorphism in Java](https://www.baeldung.com/java-polymorphism)
-- [Baeldung — Method Overloading vs Overriding](https://www.baeldung.com/java-method-overloading-overriding)
-- [Baeldung — Covariant Return Types](https://www.baeldung.com/java-covariant-return-types)
+- Baeldung — Method Overloading vs Overriding
+- Baeldung — Covariant Return Types
 
 ## JEPs
 - JEP 394: Pattern Matching for instanceof — Java 16

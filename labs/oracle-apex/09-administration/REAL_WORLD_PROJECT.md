@@ -11,7 +11,7 @@ platform: provisioned, monitored, backed up, and patchable.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/apex/24.2/ (APEX administration)
-- https://docs.oracle.com/en/database/oracle/oracle-database/21/rnbrdu/ (backup)
+- (link removed) (backup)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
 
 ## Architecture

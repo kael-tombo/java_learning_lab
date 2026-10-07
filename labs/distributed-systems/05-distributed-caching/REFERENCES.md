@@ -5,7 +5,7 @@
 - Johansson, L. (2020). "Hazelcast in Practice."
 
 ## Official Documentation
-- https://redis.io/docs/cluster/
+- (link removed)
 - https://docs.hazelcast.com/
 - https://ignite.apache.org/docs/
 
@@ -14,4 +14,4 @@
 
 ## Online Resources
 - https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html
-- https://redis.io/docs/lru-cache/
+- (link removed)

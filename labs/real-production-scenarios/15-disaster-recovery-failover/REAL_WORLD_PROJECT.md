@@ -38,4 +38,4 @@
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - AWS disaster recovery options (backup/pilot/warm/active): https://aws.amazon.com/disaster-recovery/
 - PostgreSQL continuous archiving / point-in-time recovery: https://www.postgresql.org/docs/current/continuous-archiving.html
-- Kubernetes multi-cluster / federation patterns: https://kubernetes.io/docs/concepts/cluster-administration/federation/
+- Kubernetes multi-cluster / federation patterns: https://web.archive.org/web/20170714151023/https://kubernetes.io/docs/concepts/cluster-administration/federation/

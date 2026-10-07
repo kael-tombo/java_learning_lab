@@ -8,9 +8,9 @@ credentials in the diagnostics. The remediation window is 30 days and the
 business cannot stop. You own the control environment through the audit.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS security)
+- (link removed) (EBS security)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/admin/
-- https://docs.oracle.com/en/database/oracle/oracle-database/21/rnbrdu/ (EBS Security Guide)
+- (link removed) (EBS Security Guide)
 
 ## Architecture
 ```

@@ -176,7 +176,7 @@ source = "terraform-aws-modules/vpc/aws"
 version = "3.0.0"
 
 # Git
-source = "git::https://github.com/org/repo.git//modules/networking?ref=v1.0.0"
+source = "git::(link removed)//modules/networking?ref=v1.0.0"
 ```
 
 ## 5. Workspaces

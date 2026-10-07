@@ -2,12 +2,12 @@
 
 - **Tiered Compilation in HotSpot** (OpenJDK) - https://wiki.openjdk.org/display/HotSpot/TieredCompilation
 - **JIT Compiler Overview** - https://docs.oracle.com/en/java/javase/21/vm/compiler-overview.html
-- **C2 Sea-of-Nodes IR** (Cliff Click) - https://www.oracle.com/technetwork/java/javase/tech/c2-ir-20062024.html
+- **C2 Sea-of-Nodes IR** (Cliff Click) - (link removed)
 - **JITWatch** (AdoptOpenJDK) - https://github.com/AdoptOpenJDK/jitwatch
 - **Deoptimization in HotSpot** - https://wiki.openjdk.org/display/HotSpot/Deoptimization
 - **Intrinsic Methods in HotSpot** - https://github.com/openjdk/jdk/blob/master/src/hotspot/share/classfile/vmIntrinsics.hpp
 - **On-Stack Replacement (OSR)** - https://wiki.openjdk.org/display/HotSpot/OnStackReplacement
-- **PrintCompilation Output Explained** - https://blogs.oracle.com/johnomics/post/java-printcompilation-output-explained: JIT Compilation
+- **PrintCompilation Output Explained** - (link removed) JIT Compilation
 
 ## Official Documentation
 - [JIT Compilation in HotSpot](https://docs.oracle.com/en/java/javase/21/vm/java-virtual-machine-guide.pdf)
@@ -26,9 +26,9 @@
 - *Java Performance Companion* by Charlie Hunt
 
 ## Articles
-- [HotSpot Architecture](https://www.infoq.com/articles/OpenJDK-HotSpot-Architecture/)
+- HotSpot Architecture
 - [JIT Inlining Deep Dive](https://www.baeldung.com/jvm-method-inlining)
-- [Escape Analysis in Java](https://www.baeldung.com/java-escape-analysis)
+- Escape Analysis in Java
 
 ## Tools
 - `-XX:+PrintCompilation` — compilation event log

@@ -183,12 +183,12 @@ mode exists, the engine's own API is usually less code and easier to debug.
   with language SDKs and multiple runners, so one pipeline can execute on
   different backends.
   - Reference: https://beam.apache.org/documentation/
-  - Reference: https://beam.apache.org/documentation/programming-model/
+  - Reference: (link removed)
   - Reference: https://beam.apache.org/documentation/runners/capability-matrix/
 - Beam's execution model includes windows, triggers, and state/timers, and the
   runner capability matrix documents which features each backend supports.
   - Reference: https://beam.apache.org/documentation/runtime/model/
-  - Reference: https://beam.apache.org/documentation/sdks/java/io/transforms/window/Window.html
+  - Reference: (link removed)
 
 ## Deliverables
 - [ ] Convergence test suite (one fixture, three runners, exact equality)

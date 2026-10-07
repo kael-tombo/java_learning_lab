@@ -568,7 +568,7 @@ az monitor app-insights query `
 
 - Google SRE Book — Chapter 8: "Release Engineering" — deployment strategies and safety
 - Netflix Tech Blog: "Canary Analysis and Automated Rollback at Netflix" — https://netflixtechblog.com/canary-analysis-and-automated-rollback-at-netflix-8e4b6ef6e93e
-- Microsoft Learn: "Blue-Green Deployment Strategy in AKS" — https://learn.microsoft.com/en-us/azure/aks/blue-green-deployment
+- Microsoft Learn: "Blue-Green Deployment Strategy in AKS" — (link removed)
 - AWS re:Invent 2021 — DOP205: "Deploying Safely at Amazon"
-- LaunchDarkly Blog: "Feature Flag Best Practices" — https://launchdarkly.com/blog/feature-flag-best-practices/
-- Azure DevOps Documentation: "Safe Deployment Practices" — https://learn.microsoft.com/en-us/azure/devops/ops/safe-deployment-practices
+- LaunchDarkly Blog: "Feature Flag Best Practices" — (link removed)
+- Azure DevOps Documentation: "Safe Deployment Practices" — (link removed)

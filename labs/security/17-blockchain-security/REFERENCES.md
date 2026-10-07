@@ -16,7 +16,7 @@
 ### Framework Documentation
 - Spring Security Reference - https://docs.spring.io/spring-security/reference/
 - Spring Boot Security - https://docs.spring.io/spring-boot/reference/web/spring-security.html
-- Spring Vault - https://docs.spring.io/spring-vault/docs/current/reference/
+- Spring Vault - (link removed)
 
 ### Tools
 - OWASP ZAP - https://www.zaproxy.org/
@@ -42,7 +42,7 @@
 
 ### Online Resources
 - Java Security Documentation - https://docs.oracle.com/en/java/javase/security/
-- Spring Security Guides - https://spring.io/guides/topicals/spring-security-architecture/
+- Spring Security Guides - https://web.archive.org/web/20160717105808/https://spring.io/guides/topicals/spring-security-architecture/
 - OWASP Cheat Sheets - https://cheatsheetseries.owasp.org/
 - NIST Cybersecurity Framework - https://www.nist.gov/cyberframework
 

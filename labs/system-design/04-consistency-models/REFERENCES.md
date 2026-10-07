@@ -22,5 +22,5 @@
 ## Online Resources
 - [Martin Kleppmann's Consistency Models](https://www.youtube.com/watch?v=y4eCg4pJB1Y) (video)
 - [The Raft Consensus Algorithm](https://raft.github.io/)
-- [CAP Theorem and Its Applications](https://www.infoq.com/articles/cap-twelve-years-later/)
+- CAP Theorem and Its Applications
 - [CRDT: Conflict-Free Replicated Data Types](https://crdt.tech/)

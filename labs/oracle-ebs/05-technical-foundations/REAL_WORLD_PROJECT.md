@@ -10,7 +10,7 @@ run in under one hour, with validation, rollback, and full audit.
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html (Application Development Guide)
-- https://docs.oracle.com/en/cloud/saas/erp/25d/faipp/ (EBS APIs)
+- (link removed) (EBS APIs)
 - https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/
 
 ## Architecture

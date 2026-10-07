@@ -12,7 +12,7 @@
 
 ## Articles
 - [The Only Java Streams Cheatsheet You'll Ever Need](https://www.baeldung.com/java-streams)
-- [Java Streams Internals](https://www.infoq.com/articles/Java-Streams-Internals/)
+- Java Streams Internals
 
 ## Talks
 - *The Design of the Stream API* — Brian Goetz (YouTube, Devoxx)
