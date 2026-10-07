@@ -35,7 +35,7 @@ Aim 16/20. Miss any of 1–7 and reread THEORY.md §1–§2.
 **Answer:** Code linked against a newer API than JDK 8 has, or a transitive dependency did. Re-compile your own source with `--release 8`, then inspect the *jars* with `jdeps --jdk-internals` and Animal Sniffer. Binary surface: `--release` never sees inside a dependency.
 
 **12. A library calls `Unsafe.defineAnonymousClass`. What breaks, and is there a flag fix?**
-**Answer:** JDK 17 — old cglib and early Mockito fail with `NoSuchMethodError` during proxy generation. No flag fixes it; upgrade the library. Clearest example of a binary break: your source compiles fine because the call is inside someone else's bytecode.
+**Answer:** Removed in JDK 17 (deprecated in 15 by JEP 371; replacement `Lookup::defineHiddenClass`) — old cglib and early Mockito fail with `NoSuchMethodError` during proxy generation. No flag fixes it; upgrade the library. Clearest example of a binary break: your source compiles fine because the call is inside someone else's bytecode.
 
 **13. True/false: `-XX:+UseConcMarkSweepGC` still works with `-XX:+IgnoreUnrecognizedVMOptions`.**
 **Answer:** False. CMS was removed in JDK 14 (JEP 363); the flag no longer exists and that JVM option only silences *experimental/unknown* flags, not removed ones — startup fails. Migrate to G1/ZGC, including logging renames (`-XX:+PrintGCDetails` → `-Xlog:gc*`).

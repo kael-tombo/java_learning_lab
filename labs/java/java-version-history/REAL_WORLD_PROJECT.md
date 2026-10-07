@@ -31,7 +31,7 @@ Before planning, price the destination — MATH_FOUNDATION.md §2 and §4 — be
 | Boilerplate removal | Records | 16 | ~4,500 DTO classes → ~1,800 lines; ~30 person-days recovered |
 | Exhaustiveness | Sealed + switch patterns | 17/21 | Removes `default:` branches that silently absorbed unknown subtypes in 22 domain hierarchies |
 | Encoding correctness | UTF-8 default | 18 | Kills the platform-locale dependency that produced the 2019 garbled-claimant-name incident |
-| Ergonomics | `import module java.base` | 25 | Only worth it if the build is already modular — 6 of 240 services are |
+| Ergonomics | `import module java.base` | 25 | Cosmetic: less import noise. It works in classpath code too (JEP 511 does not require modularising), so it is safe but low value |
 
 Per MATH_FOUNDATION.md §1, with `N = 2.5` on IO-bound services, `gain(0.5) =
 1.286` — a **28.6%** fleet-wide improvement for a full migration, concentrated in
@@ -82,7 +82,7 @@ review actually disputes.
 | 21 | Fixed thread pools left in place — compiles, silently wrong shape | 2 | 3 | 2 | 24 | Pool-removal ticket per service; trace-based pinning check |
 | 23 | Generational ZGC changes tail latency profile | 4 | 2 | 2 | 32 | Re-baseline SLOs; do not carry pause thresholds across |
 | 25 | Compact object headers: heap-dump tooling and memory accounting revalidation | 4 | 2 | 2 | 32 | Capacity work week 28; verify every heap-dump pipeline against 25 |
-| 25 | `import module java.base` adopted without a modular build | 2 | 4 | 2 | 32 | Restricted to the 6 already-modular services |
+| 25 | `import module` collides with an existing on-demand import and changes name resolution | 2 | 3 | 2 | 12 | Lint rule; apply file by file, only where it removes real import noise |
 | any | Enterprise vendors certify against 8/11, not 25 | 4 | 5 | 5 | **100** | Cert letters obtained before the commit; two vendors refuse — see §4 |
 
 **The register's message.** The two `100`s are not code problems, and they are the
@@ -108,9 +108,9 @@ source fixes will be wrong by a factor of two.
 
 | Feature | Why not |
 |---|---|
-| String templates | **Withdrawn.** Spent four releases in preview and never shipped. Adopting the preview would have been a full rewrite for nothing (MATH_FOUNDATION §6) |
+| String templates | **Withdrawn.** Previewed in 21 and 22, then JEP 465 was withdrawn; it never shipped. Adopting the preview would have been a full rewrite for nothing (MATH_FOUNDATION §6) |
 | Structured concurrency | Still **preview** in 25 — 19→25 without finalisation. Experiments only, behind a flag, never in a claim-handling path |
-| `import module java.base` | Only 6 of 240 builds are modular; everywhere else it adds a constraint for no gain |
+| `import module java.base` | Not harmful, but a cosmetic change with a name-resolution subtlety (module imports are *shadowed* by on-demand and single-type imports). Do it opportunistically, never as a workstream |
 | Generics-on-primitives (value classes) | Repeatedly deferred; no timeline you can plan against |
 | Compact headers as a *performance* project | It is a capacity change, not a latency change. Teams who treat it as a speed project will not find the memory and will declare it a disappointment |
 | `--enable-preview` in any production artifact | Preview bytecode will not load on the next JDK; it is a bet with a bad payoff distribution |
@@ -191,8 +191,8 @@ are silent. THEORY.md's four cross-cutting patterns are the whole argument:
 
 1. **Every feature answers existing pressure** — so every feature carries its
    own upgrade risk, discoverable in advance from the JEP index.
-2. **Preview is the release valve** — so structured concurrency (incubator from
-   19, preview 20→25 and not final)
+2. **Preview is the release valve** — so structured concurrency (incubator
+   19–20, preview 21→25 and beyond, never final in 25)
    and string templates (withdrawn) are *not* roadmap items, and treating them
    as such is the most expensive mistake available.
 3. **API-evolution mechanisms are features** — 17 closed the JDK over its own

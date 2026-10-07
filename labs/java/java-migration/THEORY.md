@@ -20,13 +20,20 @@ compile against a newer method that does not exist on the runtime you ship.
 
 Breakers here are mostly *removals* and *access tightening*:
 
-- Removed JDK internals: `sun.misc.Unsafe` (partially), `sun.nio.ch`, JDK 8's
-  `java.xml.bind` (JAXB), `java.activation`, `javax.xml.bind`, `java.corba`,
-  Nashorn (`jjs`), `javah`.
+- **Removed modules and tools**: the Java EE and CORBA modules in 11 (JEP 320 —
+  `java.xml.bind` (JAXB), `java.xml.ws` (JAX-WS), `java.activation`, `java.corba`),
+  `javah` in 10 (JEP 313), Nashorn in 15 (JEP 372), and Pack200 in 14 (JEP 367).
+- **Encapsulated, not removed**: internals such as `sun.nio.ch` and most of
+  `sun.misc.Unsafe`'s surroundings became inaccessible in 17 (JEP 403) — the classes
+  still exist, but reflective access now throws.
 - Default-method conflicts on interfaces (Java 8+).
-- Removal of `-XX:+UseConcMarkSweepGC` and CMS in JDK 14.
-- Stricter `javac` in JDK 21: `--release` enforced for cross-compilation.
-- JDK 21+ forbids compiling to an older target without `--release`.
+- Removal of `-XX:+UseConcMarkSweepGC` and CMS in JDK 14 (JEP 363).
+- **`-source`/`-target` without `--release` is *not* an error on a modern javac** — it
+  compiles and prints a warning (measured on javac 23: `location of system modules
+  is not set in conjunction with -source 17`). That warning is the migration
+  signal: it means you are linking against the *current* JDK's API, not the
+  target's, which is exactly how code that uses a newer method ends up with a
+  `NoSuchMethodError` on the older runtime you ship.
 
 ### 1.2 Binary compatibility
 
@@ -37,13 +44,20 @@ compatibility; the notable breakages:
 - Changing a field's type or a method signature in a public API.
 - JPMS encapsulation: `IllegalAccessError` at runtime for reflective access to
   JDK internals that used to be `setAccessible(true)`-permitted.
-- Removal of `java.lang.SecurityManager`-dependent behaviour (deprecated in 17,
-  disabled by default in 18, terminally deprecated in 24).
-- **Memory-access methods in `sun.misc.Unsafe`** deprecated for removal in JDK 23
-  (JEP 471) and **permanently disabled in JDK 24** (JEP 498), which breaks
-  old bytecode-generation libraries (cglib, early Mockito). This is the
-  `defineAnonymousClass` family — JDK 18 also reimplemented core reflection on
-  method handles (JEP 416), a related but distinct shift.
+- Removal of `java.lang.SecurityManager`-dependent behaviour (deprecated for
+  removal in 17 via JEP 411, disabled by default in 18, **permanently disabled in
+  24** via JEP 486).
+- **`Unsafe.defineAnonymousClass` removed in JDK 17.** Deprecated in JDK 15 by
+  JEP 371 (Hidden Classes); Oracle's JDK 17 release notes state the API "has been
+  removed" with `Lookup::defineHiddenClass` as the replacement. This is what broke
+  old bytecode-generation libraries (cglib, early Mockito) with `NoSuchMethodError`.
+- **A separate, later `Unsafe` change: the memory-access methods** (`getInt`,
+  `putLong`, `allocateMemory`, ...). Terminally deprecated in JDK 23 (JEP 471) and
+  **warning on first use in JDK 24** (JEP 498 — a *warning*, not a removal; later
+  releases escalate). Replacements are `VarHandle` (JEP 193, JDK 9) and the Foreign
+  Function & Memory API (JEP 454, JDK 22). Do not conflate the two changes: one is
+  a hard removal that breaks proxy generation, the other a phased warning that hits
+  off-heap and direct-memory code.
 
 The classic symptom: everything compiles, and then `NoSuchMethodError` or
 `IllegalAccessError` fires only on the code path nobody tested.
@@ -253,8 +267,11 @@ decommissioned and the rollback path is closed.
   <https://openjdk.org/jeps/486>
 - **JEP 400: UTF-8 by Default** (JDK 18) — the silent-corruption risk from §1.3.
   <https://openjdk.org/jeps/400>
-- **JEP 471 / JEP 498** — `sun.misc.Unsafe` memory-access methods deprecated (23)
-  then permanently disabled (24).
+- **JEP 471 / JEP 498** — `sun.misc.Unsafe` memory-access methods terminally
+  deprecated (23), then a run-time warning on first use (24).
+- **JEP 371: Hidden Classes** (JDK 15) — deprecates `Unsafe.defineAnonymousClass`
+  (removed in 17, per Oracle's JDK 17 release notes).
+  <https://openjdk.org/jeps/371>
   <https://openjdk.org/jeps/498>
 - **`jdeps` tool documentation** — the `--jdk-internals` flag is the canonical
   first migration step.

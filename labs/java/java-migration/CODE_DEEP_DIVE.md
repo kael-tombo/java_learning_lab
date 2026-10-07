@@ -256,13 +256,12 @@ javac --release 21 -d out src/main/java/com/acme/io/FastBuffer.java
 ### Before
 
 ```java
+// ConfigLoader.java
 package com.acme.security;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Properties;
 
 public final class ConfigLoader {
@@ -275,10 +274,25 @@ public final class ConfigLoader {
         return p;
     }
 }
+```
+
+```java
+// ConfigService.java
+package com.acme.security;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Properties;
 
 public final class ConfigService {
     // Caller invokes this under the caller's ProtectionDomain, so the read
     // needs a privilege elevation to succeed.
+    // NB: AccessController is deprecated for removal (JEP 411, JDK 17), so this
+    // compiles with a warning on 17+; that warning is the migration signal.
+    @SuppressWarnings("removal")
     public Properties loadPrivileged(File f) throws IOException {
         return AccessController.doPrivileged(
                 (PrivilegedAction<Properties>) () -> {
@@ -292,10 +306,10 @@ public final class ConfigService {
 ### After
 
 ```java
+// ConfigLoader.java
 package com.acme.security;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -310,6 +324,15 @@ public final class ConfigLoader {
         return props;
     }
 }
+```
+
+```java
+// ConfigService.java
+package com.acme.security;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Properties;
 
 public final class ConfigService {
     public Properties loadPrivileged(Path p) throws IOException {

@@ -5,294 +5,324 @@ Each section: **what shipped**, **the pressure that produced it**, and
 
 ---
 
-## 1.2 — The Professional Release (1999)
+## 1.2 — "Java 2": the Collections Framework (December 1998)
 
-**Shipped**: `StringBuffer` (the `String` sibling — the first time the API
-admitted that string building matters), JDBC 2.0 core, `assert` keyword,
-collections framework (`List`, `Map`, `Set`), iterators replacing `Enumeration`.
+**Shipped**: the **Collections Framework** (`List`, `Set`, `Map`, and `Iterator`
+replacing `Enumeration`), **Swing**, `strictfp`, JDBC 2.0, and the "Java 2"
+branding that split the platform into J2SE, J2EE and J2ME.
 
-**Pressure**: Java 1.0's credibility. The "applets are slow" narrative needed
-a credible client-server story. The collections framework was the first mature
-reusable data-structures package shipped with the platform.
+**Pressure**: 1.0 and 1.1 shipped only arrays, `Vector` and `Hashtable`. A
+language used for server work needed reusable, consistently-designed data
+structures, and the Collections Framework was the first mature package of them.
 
-**Cost**: `StringBuffer` was `String`'s mutable twin — a naming and API-design
-wart the platform could not remove for a decade. It is deprecated in favour of
-`StringBuilder` since Java 9.
-
----
-
-## 1.4 — Assertions, Logging, XML (2002)
-
-**Shipped**: `assert` keyword, `java.util.logging`, the XML parser core,
-`ChainedRuntimeException`.
-
-**Pressure**: production debugging without `System.out.println`. Logging was
-Java's admission that it lacked observability tooling.
-
-**Cost**: `java.util.logging` is functionally weak and long-superseded by
-Log4j/SLF4J — but it is still the *only* logging API in the JDK, which still
-causes classpath conflicts.
+**Cost**: the collections arrived *before* generics, so every element came out as
+`Object` and needed a cast. That is the pressure that produces generics six years
+later (see 5). Legacy `Vector`/`Hashtable` were retrofitted onto the framework
+rather than removed, and they are still in the JDK.
 
 ---
 
-## 1.5 — Concurrency (2004)
+## 1.4 — Assertions, regex, NIO, logging (February 2002)
 
-**Shipped**: `java.util.concurrent` — thread pools, `ConcurrentHashMap`,
-`CountDownLatch`, `Semaphore`, `CyclicBarrier`, atomics (`j.u.c.atomic`), and
-`java.util.concurrent.locks`.
+**Shipped**: the `assert` keyword, `java.util.logging`, `java.util.regex`,
+`java.nio` (buffers, channels, selectors), chained exceptions
+(`Throwable.getCause`) and the JAXP XML APIs bundled into the platform.
 
-**Pressure**: This is the pivotal version. Java's single-threaded-per-request
-model could not scale to servers, and the "Java is slow" critique was really
-"Java's threading is unsafe and verbose."
+**Pressure**: production services needed non-blocking I/O to scale past one thread
+per connection, and developers needed a built-in way to log and assert without
+third-party libraries.
 
-**Cost**: The API was famously hard to learn — five different locking mechanisms
-at once. The **memory model** that makes it correct was not *defined* until
-Java 5's fix, and was not *documented coherently* until the JSR 133 rewrite in
-2004 (JDK 5). Sixteen years of subtle concurrency bugs came from this gap.
-
----
-
-## 5 — Generics (2004)
-
-**Shipped**: type parameters, erasure, `@Override` on interface implementations,
-`enum`, autoboxing, varargs, `StringBuilder`/`StringJoiner`, `Iterable`/
-`for-each`, `java.util.concurrent` improvements, static imports.
-
-**Pressure**: collections had no compile-time type safety, forcing casts
-everywhere. `enum` came because `static final int` constants could not be
-switched on without subclassing.
-
-**Cost of erasure**: no reified generics (`List<String>` is not reifiable), so
-you cannot overload on generic type, cannot `new T[]`, and cannot do
-`instanceof List<String>`. This remains the single most-argued design decision
-in the language, and the reason `List<?>` exists.
+**Cost**: `java.util.logging` never displaced Log4j and later SLF4J, so most
+applications carry more than one logging API. The JDK added a facade,
+`System.Logger` (JEP 264, JDK 9), over whichever backend is configured — it
+exists *because* the logging landscape stayed fragmented.
 
 ---
 
-## 6 — Concurrency, finished (2006)
+## 5 (version "1.5") — The generics release (September 2004)
 
-**Shipped**: `java.util.concurrent` blocking queues, `ConcurrentNavigableMap`,
-`ExecutorService` ergonomics, de/serialization APIs (`java.io.Serializable`
-cleanup), Swing `Worker` thread.
+Java 5 and "1.5" are the same release; the version was renumbered at launch.
 
-**Pressure**: the 1.5 concurrency API was incomplete — no good blocking queue,
-no concurrent set, no `ScheduledExecutorService` semantics you could trust.
+**Shipped**: **generics** (JSR 14), **enums**, **annotations** (JSR 175),
+**autoboxing**, **varargs**, the **enhanced `for` loop** and **static imports**
+(these language features are JSR 201), `StringBuilder`, the **`java.util.concurrent`
+package** (JSR 166: thread pools, `ConcurrentHashMap`, `CountDownLatch`,
+`Semaphore`, `CyclicBarrier`, `BlockingQueue`, `ScheduledExecutorService`,
+`java.util.concurrent.atomic`, `java.util.concurrent.locks`) and a **rewritten Java
+Memory Model** (JSR 133).
+
+**Pressure**: collections had no compile-time type safety, forcing casts at every
+read. `int` constants for enumerated values were not type-safe. And Java's thread
+primitives (`synchronized`, `wait`, `notify`) were too low-level to build servers
+on safely, while the original memory model had well-known holes.
+
+**Cost of erasure**: generics are implemented by erasure to preserve binary
+compatibility, so `List<String>` is not reifiable at run time. You cannot overload
+on a generic type, cannot write `new T[]`, and cannot write
+`instanceof List<String>`. That is the price of introducing generics without
+breaking every existing class file — and the reason wildcards (`List<?>`) exist.
+
+**Cost of the concurrency package**: it is a large API with several locking
+mechanisms, and it took years for most teams to use it correctly. The *memory
+model* (JSR 133) is what finally made those APIs' guarantees well-defined; the
+older double-checked-locking idioms remained broken for code that ignored it.
 
 ---
 
-## 7 — The "Project Coin" (2011)
+## 6 — The scripting and performance release (December 2006)
 
-**Shipped**: `try`-with-resources, diamond operator `<>`, strings in `switch`,
-multi-catch, binary literals and underscores (`1_000_000`), JDBC 4, `Objects`
-utility, `Files`/`Path` NIO 2 addition.
+**Shipped**: the **scripting API** (JSR 223), the **compiler API**, JDBC 4.0,
+`SwingWorker`, and concurrency-library additions that complete the Java 5 package:
+`Deque`/`ArrayDeque`, `NavigableMap`/`NavigableSet`, `ConcurrentSkipListMap` and
+`ConcurrentSkipListSet`. `@Override` became legal on methods that implement an
+*interface* (Java 5 only allowed it on superclass overrides).
 
-**Pressure**: exactly 25 small changes, voted on by the community — the JSR that
-proved the process could ship ergonomics without a big-bang risk.
-
-**Cost**: minor. Diamond inference was too weak (it cannot infer from the
-target type in a method argument until 8).
+**Pressure**: 6 was mostly a performance-and-polish release after the large
+language changes of 5, and it is where the JVM's tuning story (and later
+biased locking, which JEP 374 disabled in 15) starts to matter operationally.
 
 ---
 
-## 8 — Lambda era (2014)
+## 7 — Project Coin and `invokedynamic` (July 2011)
 
-**Shipped**: **lambdas**, method references, functional interfaces
-(`@FunctionalInterface`), default and static interface methods, `Stream` API,
-`Optional`, `java.time`, repeatable annotations, type annotations, `CompletableFuture`.
+**Shipped**: the **Project Coin** language changes (JSR 334) — `try`-with-resources,
+the diamond operator `<>`, strings in `switch`, multi-catch, binary literals and
+underscores in numeric literals — plus **NIO.2** (`java.nio.file`, JSR 203),
+the **Fork/Join framework**, `java.util.Objects`, and the **`invokedynamic`**
+bytecode (JSR 292), which is the mechanism lambdas are later compiled against.
 
-**Pressure**: two forces at once. First, functional programming had won the
-industry argument (map/reduce, immutability). Second, the collection framework
-was fundamentally sequential — every parallel computation was hand-rolled and
-wrong. Plus the *pragmatic* pressure: interfaces could not grow without
-breaking every implementor, which blocked API evolution throughout the JDK.
+**Pressure**: a set of small, self-contained language annoyances (resource-closing
+boilerplate, repeated generic type arguments, verbose multi-catch) that Project
+Coin addressed without a large language redesign.
+
+**Cost**: minor. Diamond inference was weak — it could not infer from the target
+type in a method-argument position until Java 8 improved target typing
+(JEP 101).
+
+---
+
+## 8 — The lambda release (March 2014, LTS)
+
+**Shipped**: **lambda expressions** and method references (JEP 126),
+`@FunctionalInterface`, **default and static interface methods**, the **`Stream`
+API** (JEPs 107 and 109), **`Optional`**, the **`java.time` date and time
+API** (JEP 150), **repeatable annotations** (JEP 120), **type annotations**
+(JEP 104), improved target typing (JEP 101), `CompletableFuture`, and **HashMap
+collision handling with balanced trees** (JEP 180).
+
+**Pressure**: two forces at once. Functional programming had won the industry
+argument (map/filter/reduce, immutability), and the collections API had no way to
+add methods such as `forEach`, `removeIf` or `Map.getOrDefault` without breaking
+every existing implementor. **Default methods** were the mechanism that let
+interfaces grow, and lambdas were the reason to want those methods.
 
 **Costs, both still felt today**:
-- `Optional` was **contested**. Oracle engineers stated it was intended for
-  *method return types only*, a position that has never fully been honoured and
-  which produced a decade of debate and a `Optional` field anti-pattern.
-- **Default methods created a diamond problem**: if two interfaces provide the
-  same default, the class *must* override it. `Collection.toArray(IntFunction)`
-  is an example of API evolution paying a lasting tax.
+
+- `Optional` was **contested**. Its designers intended it for *method return
+  types only*, a position the ecosystem never fully honoured; `Optional` fields
+  and parameters remain a common anti-pattern.
+- **Default methods created a diamond problem**: if a class inherits the same
+  default from two interfaces, it *must* override it to resolve the conflict.
+  That is the price of letting interfaces evolve after the fact.
 
 ---
 
-## 9 — Modularity + collection APIs (2017)
+## 9 — The module release (September 2017)
 
-**Shipped**: **module system** (Jigsaw, JSR 376), `var` (as a *restricted type
-inference*, not a general type), interface private methods, diamond with
-anonymous classes, collection factory methods (`List.of`), `try`-with-resources
-effectively final, StackFlow API, jlink.
+**Shipped**: the **module system** (JSR 376, JEP 261), `jlink` (JEP 282) for
+building minimal runtime images, `jshell` (JEP 222), **G1 as the default
+collector** (JEP 248), **compact strings** (JEP 254), **CLDR as the default locale
+data** (JEP 252), collection factory methods such as `List.of` (JEP 269), the
+Stack-Walking API (JEP 259), the `Flow` reactive-streams API (JEP 266), and
+**Milling Project Coin** (JEP 213: private interface methods, diamond with
+anonymous classes, effectively-final variables in try-with-resources).
 
-**Pressure**: the classpath made encapsulation impossible ("the compile-time
-dependency graph is the module graph, and everything is public"), and building
-a minimal custom runtime image was impossible.
+**Pressure**: the classpath made strong encapsulation impossible — every public
+class in a jar was reachable by everyone — and building a minimal custom runtime
+image was impractical.
 
-**Cost**: the module system's adoption has been the slowest of any major Java
-feature by a wide margin, because `split package` restrictions broke much of the
-older ecosystem and the migration story was poor. This is why `--illegal-access`
-then `--add-opens` remained necessary for years afterwards.
-
-`var` is the notable *narrowing*: it only infers local variables, never fields,
-parameters, or returns. This is deliberate — the restriction is what keeps `var`
-from harming readability.
+**Cost**: the module system was adopted slowly, because `split package`
+restrictions broke much of the older ecosystem and the migration story was poor;
+that is why `--illegal-access` and later `--add-opens` stayed necessary for years.
+The *quiet* costs were elsewhere: **G1-as-default and CLDR-as-default both changed
+behaviour with no code change**, which is why they appear in the migration lab as
+silent-break risks rather than as features.
 
 ---
 
-## 10 — Local type inference (2018)
+## 10 — Local-variable type inference (March 2018)
 
-**Shipped**: `var` for local variables (JEP 286) — *un*restricted in for-loop
-headers and try-with-resources, plus switch improvements (arrow syntax), and
+**Shipped**: `var` for local variables (JEP 286), **parallel full GC for G1**
+(JEP 307), removal of the `javah` tool (JEP 313) and **time-based release
+versioning** (JEP 322 — the six-month cadence is a 10-era decision). API
+additions without a JEP: `List.copyOf`/`Set.copyOf`/`Map.copyOf` and
 `Collectors.toUnmodifiableList`.
 
-**Pressure**: diamond did not work on anonymous classes, and the ceremony of
-naming generic types in lambdas was severe. The 9 → 10 split was explicitly a
-"rejection feedback" iteration.
+**Pressure**: the verbosity of writing a long generic type on both sides of an
+assignment, e.g. `Map<String, List<String>> m = new HashMap<String, List<String>>()`.
 
-**Cost**: mild but real. `var` on a lambda parameter is a syntax error, and
-`var` erases the documentation value of an explicit type. The Java team's own
-guidance is to use it when the type is already evident from the right-hand side.
-
----
-
-## 11 — HTTP client, var in lambda params (2018, LTS)
-
-**Shipped**: `java.net.http.HttpClient`, `var` in lambda parameters, string
-methods (`strip`, `repeat`, `lines`, `isBlank`), `Files.readString`/`writeString`,
-`Optional.isEmpty()`, `List.copyOf`/`Map.copyOf`, ZGC experimental, single-file
-source execution (`java Hello.java`).
-
-**Pressure**: the JDK's `HttpURLConnection` was long-obsolete, and the "run a
-Java file without compiling" story was a perennial developer-experience
-complaint.
+**Cost**: mild but real. `var` is deliberately narrow: it infers only local
+variables, never fields, parameters or return types, and in 10 it could not be
+used for lambda parameters (that arrives in 11 via JEP 323). It also erases the
+documentation value of an explicit type, so OpenJDK's own style guidance is to use
+it when the type is already evident from the right-hand side.
 
 ---
 
-## 12–13 — Switch expressions, text blocks (2019)
+## 11 — HTTP client, Flight Recorder, and the Java EE removal (September 2018, LTS)
 
-**Shipped** (12 LTS): Switch Expressions (preview, JEP 325 — the expression
-form was not final here), `G1` improvements (JEP 344, abortable mixed
-collections), `Switch` arrow syntax, default CDS archives (JEP 341).
-**Shipped** (13): text blocks **preview** (JEP 355), switch expressions second
-preview (JEP 354), `Files.mismatch`, `CharBuffer`.
+**Shipped**: the **HTTP Client API** (JEP 321), **`var` in lambda parameters**
+(JEP 323), **launching single-file source programs** (`java Hello.java`, JEP 330),
+**Flight Recorder** in the JDK (JEP 328), **TLS 1.3** (JEP 332), **ZGC as an
+experimental collector** (JEP 333), plus string methods (`strip`, `repeat`,
+`lines`, `isBlank`), `Files.readString`/`writeString` and `Optional.isEmpty()`.
 
-**Correction worth recording**: switch expressions went final in **14**
-(JEP 361), not 13 — and `instanceof` pattern matching went final in **16**
-(JEP 394), not 13. Text blocks went final in **15** (JEP 378). Conflating this
-12–15 cluster is one of the most common version-attribution errors, because
-text blocks are remembered as "a 13 feature" from their preview.
+**Removed and deprecated**: the **Java EE and CORBA modules were removed**
+(JEP 320 — the JAXB/JAX-WS break that every 8 → 11 migration hits), and **Nashorn**
+(JEP 335) and **Pack200** (JEP 336) were **deprecated**.
 
-**Pressure**: switch statements had been a known readability disaster since
-Java 1.0. Multi-line strings were impossible before 15 — every JSON payload or
-SQL query was string-concatenated.
+**Pressure**: `HttpURLConnection` was long-obsolete, the "run a Java file without
+compiling" story was a perennial developer-experience complaint, and the Java EE
+modules had no business living inside the JDK.
 
-**Cost**: switch expressions over `enum` require exhaustive coverage, which is
-why the compiler demanding either a `default` or all cases covered generated
-friction in library authors' code.
+**Cost**: JEP 320 is the first large *dependency* break of the modern era: code
+that used `javax.xml.bind` compiled on 8 and simply had no classes on 11. It is
+the origin of "libraries first, JDK second".
 
 ---
 
-## 14 — The garbage collector purges (2020)
+## 12–13 — Switch expressions and text blocks, first previews (2019)
 
-**Shipped**: **CMS collector removed** (JEP 363), **Pack200 tools and API removed**
-(JEP 367), `switch` expressions with `yield` (JEP 354 second preview), records
-**first preview** (JEP 359), pattern matching `instanceof` **second preview**
-(JEP 375), pattern matching for `switch` **first preview** (JEP 406), and the
-deprecation of the ParallelScavenge + SerialOld combination (JEP 366).
+**Shipped in 12 (March 2019)**: **switch expressions** as a preview (JEP 325),
+**Shenandoah** as an experimental collector (JEP 189), abortable mixed collections
+for G1 (JEP 344) and default CDS archives (JEP 341).
 
-**Correction worth recording**: text blocks and Nashorn's removal are **15**
-(JEP 378 and JEP 372), not 14 — and Nashorn's *deprecation* was 11 (JEP 335).
-Common conflations here put text blocks in 13 or 14 and Nashorn's removal in 14;
-both are off by one release.
+**Shipped in 13 (September 2019)**: **text blocks** as a preview (JEP 355), switch
+expressions' second preview (JEP 354) and ZGC's ability to uncommit unused memory
+(JEP 351, experimental).
 
-**Pressure**: GC history. CMS was deprecated in 8 (JEP 291) and removed in 14;
-the platform consolidated onto G1 (default since 9, JEP 248) and ZGC (production
-15, JEP 377). This is the clearest case in Java history of *removal for
-simplification* rather than capability.
+**Worth knowing**: neither feature was final in 12 or 13. Switch expressions went
+final in **14** (JEP 361) and text blocks in **15** (JEP 378), which is why the
+cluster is easy to misattribute: people remember "a 13 feature" from the preview.
+
+**Pressure**: switch statements had been a known readability problem since Java
+1.0, and multi-line strings were impossible until 15 — every JSON payload or SQL
+query was string-concatenated.
+
+**Cost**: switch expressions over an `enum` require exhaustive coverage, so the
+compiler demanding either a `default` or every constant generated friction for
+library authors.
+
+---
+
+## 14 — The garbage collector purge (March 2020)
+
+**Shipped**: **switch expressions final** (JEP 361), **records first preview**
+(JEP 359), **pattern matching for `instanceof` first preview** (JEP 305), **text
+blocks second preview** (JEP 368), **Helpful NullPointerExceptions** (JEP 358),
+**JFR event streaming** (JEP 349), and ZGC on macOS and Windows as experimental
+(JEP 364, 365). **Removed**: the **CMS collector** (JEP 363) and the **Pack200
+tools and API** (JEP 367). The ParallelScavenge + SerialOld combination was
+deprecated (JEP 366).
+
+**Pressure**: GC history. CMS was deprecated in 9 (JEP 291) and removed in 14; the
+platform consolidated onto G1 (default since 9, JEP 248) and ZGC (production in 15,
+JEP 377). This is the clearest case in Java history of *removal for simplification*
+rather than capability.
 
 **Cost**: teams still pinned to CMS in 2020 had to move to G1 or Shenandoah and
 re-tune pause-time thresholds — a real, unplanned capacity exercise. Pack200's
-removal broke deploy tooling outright, since it had been the packaging mechanism
-for a decade with no replacement carrying the same feature set.
+removal broke deploy tooling outright; it had been the packaging mechanism for a
+decade, deprecated since 11.
 
 ---
 
-## 15 — The preview/preview/preview year (2020, LTS)
+## 15 — Production GCs, text blocks final, more previews (September 2020)
 
-**Shipped**: **text blocks standard** (JEP 378), **ZGC production** (JEP 377),
-records **second preview** (JEP 384), **sealed classes first preview** (JEP 360),
-pattern matching `instanceof` **final** (JEP 394 — so it is 16, not 15), and
-`CharSequence.chars()`.
+**Shipped**: **text blocks final** (JEP 378), **ZGC production** (JEP 377),
+**Shenandoah production** (JEP 379), **records second preview** (JEP 384),
+**sealed classes first preview** (JEP 360), **pattern matching for `instanceof`
+second preview** (JEP 375), **hidden classes** (JEP 371), and **biased locking
+deprecated and disabled by default** (JEP 374). **Removed**: **Nashorn**
+(JEP 372, deprecated since 11).
 
-**Pressure**: Java's release cadence had changed to 6-monthly. That created a
-problem: too much new surface per release would be unmanageable, so Java
-introduced **preview features** — fully working but gated behind
-`--enable-preview`. Records, sealed classes, and switch patterns all spent
-multiple releases in preview before going final.
+**Pressure**: Java's release cadence had become six-monthly. Too much new surface
+per release would be unmanageable, so Java leaned on **preview features** — fully
+working but gated behind `--enable-preview`. Records, sealed classes and switch
+patterns all spent multiple releases in preview before going final.
 
 **Cost**: preview features made code non-portable across releases, and tooling
 support lagged. But the mechanism let the language ship much larger changes
-safely — the sealed-type and record designs were refined substantially while in
+safely: the sealed-type and record designs were refined substantially while in
 preview.
 
 ---
 
-## 16 — Records and sealed types (2021, LTS)
+## 16 — Records final (March 2021)
 
-**Shipped**: **records**, **sealed classes** (`permits`), pattern matching for
-`instanceof` standard, `Stream.toList()`, `Collectors.toUnmodifiableList`.
+**Shipped**: **records final** (JEP 395), **pattern matching for `instanceof`
+final** (JEP 394), **sealed classes second preview** (JEP 397), `Stream.toList()`,
+and **strong encapsulation of JDK internals by default** (JEP 396 — the
+`--illegal-access` default flipped to deny, one release before 17 removed the
+flag).
 
-**Pressure**: the "data class" pattern required hundreds of lines of boilerplate
-per type — equals/hashCode/toString/constructors/copy semantics. And exhaustive
-type dispatch was impossible, so `switch` over sealed hierarchies required a
-`default` that silently absorbed unknown cases, defeating the point.
+**Pressure**: the "data class" pattern needed hundreds of lines of boilerplate per
+type — `equals`/`hashCode`/`toString`/constructors. And exhaustive type dispatch was
+impossible, so a `switch` over a sealed hierarchy needed a `default` that silently
+absorbed unknown cases.
 
 **Cost**: records are *shallowly* immutable. Their fields can hold mutable
-objects, so a record containing a `List` is not deeply immutable — a source of
-real bugs.
+objects, so a record containing a `List` is not deeply immutable — a source of real
+bugs.
 
 Sealed types also create a **compatibility commitment**: `permits` is a closed
 set, so adding a subtype is a breaking change. This is intentional (it buys
-exhaustiveness) but it inverts the usual open/closed trade-off.
+exhaustiveness) but inverts the usual open/closed trade-off.
 
 ---
 
-## 17 — Sealed + encapsulation lands (2021, LTS)
+## 17 — Sealed classes and strong encapsulation (September 2021, LTS)
 
-**Shipped**: pattern matching for `switch` standard, **strong encapsulation of
-JDK internals** (JEP 403, Strongly Encapsulate JDK Internals — `--illegal-access`
-ignored), `RandomGenerator` API,
-contextual records, sealed classes standard.
+**Shipped**: **sealed classes final** (JEP 409), **strong encapsulation of JDK
+internals** with `--illegal-access` ignored (JEP 403), the **SecurityManager
+deprecated for removal** (JEP 411), the `RandomGenerator` API (JEP 356), **first
+preview of pattern matching for `switch`** (JEP 406), and removal of the
+experimental AOT and JIT compiler (JEP 410). Also removed: the `Unsafe`
+`defineAnonymousClass` method (deprecated in 15 by JEP 371; Oracle's JDK 17 release
+notes confirm the removal and name `Lookup::defineHiddenClass` as the replacement).
 
 **Pressure**: the module system was useless while `--illegal-access=permit`
-silently opened the JDK. Strong encapsulation was the payoff, three years after
-JPMS shipped — and it broke the reflection-heavy ecosystem.
+silently opened the JDK. Strong encapsulation was the payoff, four years after JPMS
+shipped — and it broke the reflection-heavy ecosystem.
 
 **Cost**: the largest single source of migration pain since Java 9. See
 `labs/java/java-migration`.
 
 ---
 
-## 18 — UTF-8 by default (2022, LTS)
+## 18 — UTF-8 by default (March 2022)
 
-**Shipped**: **UTF-8 as the default charset** (JEP 400), `SimpleWebServer`,
-`CompletableFuture` improvements, `InternetAddress` parsing.
+**Shipped**: **UTF-8 as the default charset** (JEP 400), the **Simple Web Server**
+(JEP 408), the **Internet-Address Resolution SPI** (JEP 418), **core reflection
+reimplemented on method handles** (JEP 416), **finalization deprecated for
+removal** (JEP 421) and **code snippets in Javadoc** (JEP 413).
 
 **Pressure**: the platform default charset depended on the OS locale, which made
-behaviour platform-dependent and had produced countless mojibake bugs and
-security issues (e.g. `ISO-8859-1` misuse).
+behaviour platform-dependent and produced countless mojibake bugs.
 
 **Cost**: silent data corruption on upgrade for any code that relied on the
-platform default. Files written on JDK 11 with a Latin-1 locale read as garbage
-on JDK 18. **This is the single most under-appreciated migration risk.**
+platform default. Files written on JDK 11 with a Latin-1 locale read as garbage on
+JDK 18. **This is the single most under-appreciated migration risk.**
 
 ---
 
-## 19 — Records in switch, virtual threads preview (2022)
+## 19 — Previews begin to pay off (September 2022)
 
-**Shipped**: record patterns preview, **virtual threads** preview, pattern
-matching for `switch` *third preview* (final arrives in 21), `java.lang.foreign`
-(Panama) preview, structured concurrency *incubator* (JEP 428 — an incubator is a
-weaker gate than preview, and this distinction matters when reading 19's notes).
+**Shipped (all as previews or incubators)**: **virtual threads** (first preview,
+JEP 425), **record patterns** (first preview, JEP 405), **pattern matching for
+`switch`** (third preview, JEP 427), the **Foreign Function & Memory API** (first
+preview, JEP 424) and **structured concurrency** (first *incubator*, JEP 428 — an
+incubator is a weaker gate than a preview, which matters when reading 19's notes).
 
 **Pressure**: platform threads cost ~1 MB of stack each and were OS-thread-bound,
 which made high-concurrency IO services uneconomic. Project Loom targeted the
@@ -300,39 +330,46 @@ concurrency model itself, not the API.
 
 ---
 
-## 20 — Pattern matching everywhere (2023)
+## 20 — The last preview round (March 2023)
 
-**Shipped**: virtual threads **second preview**, structured concurrency second
-preview, record patterns second preview, `switch` pattern matching fourth
-preview, `java.lang.foreign` second preview, vector API fifth incubator.
+**Shipped (still not final)**: **virtual threads** second preview (JEP 436),
+**record patterns** second preview (JEP 432), **pattern matching for `switch`**
+fourth preview (JEP 433), the **FFM API** second preview (JEP 434), **Scoped
+Values** as an incubator (JEP 429), **structured concurrency** second *incubator*
+(JEP 437) and the **Vector API** fifth incubator (JEP 438).
 
-**Correction worth recording**: it is easy to assume pattern matching
-"completed" here, because all three pieces existed in preview by this point. But
-none of them were final until **21** — record patterns (JEP 440), switch patterns
-(JEP 441), and virtual threads (JEP 444) all shipped together in 21. Version-20
-is the last preview iteration, not a feature release.
+**Worth knowing**: it is easy to assume pattern matching "completed" here, because
+every piece existed in preview. But none of the three headline features were final
+until **21** — record patterns (JEP 440), switch patterns (JEP 441) and virtual
+threads (JEP 444) all went final together. 20 is the last preview iteration, not a
+feature release.
 
-**Pressure**: pattern matching was the last major gap versus Kotlin/Scala, but the
-construct took **five releases to stabilise** — switch preview (17), record-patterns
-preview (19), then four preview iterations of the switch side (17→19→20→21). The
-slow convergence is the lesson: a large language feature costs multiple release
-cycles to get the exhaustiveness and null-handling rules right.
+**Pressure**: pattern matching was the last major gap versus Kotlin and Scala, but
+the construct took **five releases to stabilise**: `switch` patterns previewed in
+17, 18, 19 and 20 (JEPs 406, 420, 427, 433) before going final in 21 (JEP 441),
+with record patterns previewed in 19 (JEP 405) and 20 (JEP 432). The slow
+convergence is the lesson — a large language feature costs several release cycles
+to get exhaustiveness and null-handling right.
 
-**Cost**: once final in 21, `switch` over sealed types is compiler-checked for
+**Cost**: once final in 21, a `switch` over sealed types is compiler-checked for
 exhaustiveness, which is a benefit — but adding a permitted subtype becomes a
 compile-time break for every consumer, reinforcing the sealed commitment from 16.
 
 ---
 
-## 21 — The LTS consolidation release (2023, LTS)
+## 21 — The LTS consolidation release (September 2023, LTS)
 
-**Shipped**: **virtual threads** (now mainstream), pattern matching for `switch`,
-record patterns, **sequenced collections**, string templates preview,
-`StructuredTaskScope` preview, `ExecutorService` rewritten on virtual threads,
-`Thread.ofVirtual`.
+**Shipped**: **virtual threads** final (JEP 444), pattern matching for `switch`
+final (JEP 441), **record patterns** final (JEP 440), **sequenced collections**
+(JEP 431) and **generational ZGC** (JEP 439). First previews of **string
+templates** (JEP 430), **structured concurrency** (JEP 453), **Scoped Values**
+(JEP 446), unnamed patterns and variables (JEP 443) and unnamed classes with
+instance `main` (JEP 445). `Executors.newVirtualThreadPerTaskExecutor()` is the
+idiomatic way to use virtual threads.
 
-**Pressure**: 21 was a deliberate consolidation — many preview features from 19
-and 20 went final together, making it the "modern concurrency" baseline.
+**Pressure**: 21 was a deliberate consolidation — the pattern-matching and
+virtual-thread previews that had run through 17–20 went final together, making it
+the "modern concurrency" baseline.
 
 **Cost**: virtual threads changed the sizing story completely. Thread pools sized
 for platform threads are now *anti-patterns*; the guidance inverted to
@@ -342,106 +379,152 @@ than a compile error.
 
 ---
 
-## 22 — Unnamed patterns and variables (2023)
+## 22 — Unnamed variables, FFM final (March 2024)
 
-**Shipped**: unnamed variables and patterns (`_`, JEP 456), **Foreign Function &
-Memory API final** (JEP 454), **implicitly declared
-classes and instance main** (second preview — the second Java program without a
-`public class`), multi-file source-code programs, Class-File API *preview*
-(JEP 457 — final only in 24), and the FFM API reaching fourth preview.
+**Shipped**: **unnamed variables and patterns** final (`_`, JEP 456), the
+**Foreign Function & Memory API final** (JEP 454), and **multi-file source-code
+programs** (JEP 458). Preview rounds continued for the **Class-File API**
+(JEP 457), **Stream Gatherers** (JEP 461), **structured concurrency** (second
+preview, JEP 462), **Scoped Values** (second preview, JEP 464), **flexible
+constructor bodies** (first preview, as "Statements before `super(...)`",
+JEP 447), implicitly declared classes with instance `main` (second preview,
+JEP 463) and **string templates** (second preview, JEP 459).
 
 **Pressure**: unused variables in patterns (`case Point(var x, var y)` where `y`
-is unused) were noise. Also the "beginner wall" — the first Java program still
-required understanding of `public static void main` and a class.
+is unused) were noise. Native interop had been `JNI` since 1.1; FFM finally gave
+Java a supported, safe alternative, and it is the API JEP 498 names as the
+replacement for `Unsafe`'s memory-access methods.
 
-**Cost**: both headline features stayed in preview for **two more releases**
-(instance main went final as JEP 512 in 25), so the ergonomic win that developers
-most wanted landed three years after first previewing.
-
----
-
-## 23 — ZGC generational, string templates (2023)
-
-**Shipped**: **ZGC generational mode by default** (JEP 474 — experimental
-generational ZGC shipped in 21 as JEP 439), **string templates** second preview,
-flexible constructor bodies second preview, structured concurrency third preview,
-Scoped Values third preview, primitive-types-in-patterns preview, and Markdown
-documentation comments.
-
-**Pressure**: generational ZGC brought G1-class pause behaviour to large heaps
-*by default*, two years after Shenandoah got the same treatment. String templates
-aimed at SQL injection avoidance via type-safe interpolation.
-
-**Correction worth recording**: finalization was deprecated for removal in
-**18** (JEP 421), not in 23. If you see a claim that 23 deprecated `finalize()`,
-it conflated JEP 421 with a different 23 change — and the 18 attribution matters,
-because that is where `--illegal-access`-era migration work met deprecation
-warnings.
-
-**Cost**: string templates' withdrawal is a notable lesson — the feature solved
-a real problem with an API that the community rejected, and shipping it to
-preview let the design be killed before it was final. Good argument for
-previews.
+**Cost**: unnamed variables went final immediately, but the "beginner wall" fix —
+a first program with no `public class` and no `public static void main` — took
+**four preview rounds**: JEP 445 (21), 463 (22), 477 (23), 495 (24), then final in
+25 as JEP 512. Two years from first preview to final, for what looks like a small
+ergonomic change, is the clearest illustration of how conservatively language
+features move.
 
 ---
 
-## 24 — The removal release (2024, LTS)
+## 23 — Generational ZGC by default (September 2024)
 
-**Shipped**: **SecurityManager permanently disabled** (JEP 486 — deprecated in 17
-as JEP 411, then terminally deprecated and disabled), **`Stream` Gatherers**
-(JEP 485), **Class-File API final** (JEP 484), AOT class loading & linking
-(JEP 483), **flexible constructor bodies** third preview (JEP 492),
-**generational Shenandoah (experimental**, JEP 404), **virtual-thread pinning
-resolved** (JEP 491 — `synchronized` no longer pins), primitive patterns second
-preview, the 32-bit x86 port removed, JNDI restrictions prepared, ZGC's
-non-generational mode removed, and string templates' third preview (JEP 465,
-**withdrawn**).
+**Shipped**: **generational mode becomes ZGC's default** (JEP 474; generational ZGC
+had been added, behind a flag, in 21 as JEP 439), **Markdown documentation
+comments** (JEP 467), and the first step of the `sun.misc.Unsafe` phase-out:
+**memory-access methods terminally deprecated** (JEP 471). Preview rounds
+continued for structured concurrency (third preview, JEP 480), Scoped Values
+(third preview, JEP 481), flexible constructor bodies (second preview, JEP 482),
+Stream Gatherers (second preview, JEP 473), the Class-File API (second preview,
+JEP 466), module import declarations (first preview, JEP 476) and **primitive types
+in patterns** (first preview, JEP 455).
 
-**Pressure**: cleanup. Once JEP 403, Strongly Encapsulate JDK Internals, had
-been in force for seven years, the
-`SecurityManager` was pure liability; Gatherers fixed the long-standing absence
-of a sanctioned `Stream` extension point; and JEP 491, Synchronize Virtual Threads
-without Pinning, removed what was probably
-the single most-cited virtual-thread complaint — `synchronized` pinning.
+**Notably absent from 23: string templates.** They had previewed in 21
+(JEP 430) and 22 (JEP 459); the follow-up JEP 465 was **withdrawn**, so the
+feature never became final and did not appear in 23.
 
-**Cost**: disabling the `SecurityManager` removed a long-standing source of
-classpath and runtime surprises, but also removed the mechanism some enterprise
-deployments had used for sandboxing. The withdrawal of string templates (JEP 465)
-is the other cost — a feature that solved a real problem in 21 through 24 was
-killed rather than shipped, which is the strongest possible argument that
-preview exists.
+**Pressure**: making the generational mode the default meant ZGC users got the
+better-performing collector without opting in, and it set up the removal of the
+non-generational mode in 24.
+
+**Cost**: for string templates, the cost was all on the developers who adopted
+the preview in 21 or 22 — the API was withdrawn rather than finalised. That is
+the preview mechanism working as designed, and the strongest practical argument
+for never putting a preview feature on a production path.
+
+**Finalization, for the record**: `finalize()` was deprecated for removal in
+**18** (JEP 421), not in 23 as some secondary sources say.
 
 ---
 
-## 25 — The current frontier (2025, LTS)
+## 24 — The security-and-cleanup release (March 2025, non-LTS)
 
-**Shipped**: **compact object headers** (JEP 519), **module import declarations**
-(JEP 511 — `import module java.base`), **Scoped Values standard** (JEP 506),
-**flexible constructor bodies standard** (JEP 513), **compact source files and
-instance main** (JEP 512 — previewed from 22), **generational Shenandoah by
-default** (JEP 521), AOT method profiling (JEP 515), AOT command-line ergonomics
-(JEP 514), the PEM crypto API, and **HTTP/3 for the HTTP Client API** (JEP 517).
+**Shipped**: the **SecurityManager permanently disabled** (JEP 486 — deprecated
+for removal in 17 via JEP 411, disabled by default in 18), **Stream Gatherers**
+final (JEP 485), the **Class-File API** final (JEP 484), **ahead-of-time class
+loading & linking** (JEP 483), **virtual threads without `synchronized` pinning**
+(JEP 491), **generational Shenandoah** as an experimental option (JEP 404),
+**compact object headers** as an experimental option (JEP 450), the
+**non-generational ZGC mode removed** (JEP 490), and a **run-time warning on first
+use of `Unsafe`'s memory-access methods** (JEP 498). The **Windows 32-bit x86 port
+was removed** (JEP 479) and the **Linux 32-bit x86 port deprecated for removal**
+(JEP 501). Late barrier expansion for G1 landed (JEP 475). Preview rounds
+continued for structured concurrency (fourth, JEP 499), Scoped Values (fourth,
+JEP 487), flexible constructor bodies (third, JEP 492), instance `main` (fourth,
+JEP 495), module import declarations (second, JEP 494) and primitive patterns
+(second, JEP 488).
+
+**Pressure**: cleanup. Once JEP 403 (Strongly Encapsulate JDK Internals) had been
+in force since 17, the SecurityManager was pure liability. Gatherers filled the
+long-standing absence of a sanctioned `Stream` extension point, and JEP 491
+removed what was probably the most-cited virtual-thread complaint:
+`synchronized` pinning.
+
+**Cost**: disabling the SecurityManager removed a long-standing source of
+classpath and runtime surprises, but it also removed the mechanism some
+enterprise deployments had used for sandboxing. And the `Unsafe` warning is the
+first one most teams will see in logs: it is a *warning*, not a removal, which
+makes it easy to ignore until the phase-out escalates.
+
+**24 is not an LTS.** Oracle's roadmap lists 22–24 as non-LTS with six-month
+support, which is why the interesting question for a fleet is usually "21 or 25",
+not "24".
+
+---
+
+## 25 — The current LTS (September 2025, LTS)
+
+**Shipped**: **compact object headers** as a product feature (JEP 519),
+**module import declarations** final (JEP 511 — `import module java.base`),
+**Scoped Values** final (JEP 506), **flexible constructor bodies** final
+(JEP 513), **compact source files and instance `main`** final (JEP 512),
+**generational Shenandoah** as a product option (JEP 521), **ahead-of-time
+method profiling** (JEP 515) and **command-line ergonomics** (JEP 514), and the
+**Linux 32-bit x86 port removed** (JEP 503). Still in preview: structured
+concurrency (fifth, JEP 505), primitive types in patterns (third, JEP 507) and
+PEM encodings (first, JEP 470).
 
 **Pressure**: three separate pressures converged here.
 
 1. **Memory density** — compact object headers cut the object header from 12–16
    bytes to a flat 8, by folding the compressed class pointer into the mark word.
-   With object headers having been a fixed cost since 1.0, and JEP 450 observing
-   that *more than 20% of live data can be headers alone*, this was the largest
-   memory-layout change in the platform's history. It is also the most
-   structurally invasive: it changes `java.lang.Object` itself. Note it stays
-   **opt-in in 25** — JEP 519 promoted it to a product feature but explicitly
-   did not make it the default layout.
-2. **Migration friction** — `import module` directly attacks the ergonomics
-   complaint that made JPMS adoption stall. Sixteen years after the module system
-   shipped, the platform finally reduced its cost of use.
-3. **Concurrency completion** — Scoped Values go final six years after Loom
-   started in 19, closing the structured-data-flow story.
+   With object headers a fixed cost since 1.0, and JEP 450 observing that *more
+   than 20% of live data can be headers alone*, this is among the most
+   structurally invasive memory-layout changes the platform has made: it changes
+   `java.lang.Object` itself. Note it stays **opt-in in 25** — JEP 519 promoted it
+   to a product feature but explicitly did not make it the default layout.
+2. **Import noise and learnability** — `import module` imports every package a
+   module exports in one line, which JEP 511 frames as simplifying reuse of modular
+   libraries and helping beginners. Crucially it does **not require your own code to
+   be modular**: it works in plain classpath code, though you cannot import from the
+   unnamed module. It is a convenience layered on the module system, eight years
+   after that system shipped in 9, not a fix for its adoption problems.
+3. **Concurrency completion** — Scoped Values go final three years after virtual
+   threads first previewed in 19, closing the structured-data-flow story. The
+   other half, structured concurrency, is still preview.
 
 **Cost**: compact object headers change object size and therefore heap
 behaviour — heap-dump tooling, memory accounting, and any code assuming fixed
 object layout must be revalidated. Another case of a "harmless-sounding"
 upgrade with real consequences.
+
+---
+
+## After 25: 26 and 27 (non-LTS), and the next LTS
+
+Oracle's roadmap lists **26 (March 2026)** and **27 (September 2026)** as non-LTS,
+with the next LTS being **29 (September 2027)**. Three changes already delivered
+are worth knowing because they alter defaults you may be relying on:
+
+- **26**: **HTTP/3 for the HTTP Client API** (JEP 517) and the **Applet API
+  removed** (JEP 504). Structured concurrency reaches its sixth preview
+  (JEP 525).
+- **27**: **compact object headers become the default** (JEP 534) and **G1 becomes
+  the default collector in all environments** (JEP 523). Structured concurrency
+  reaches its seventh preview (JEP 533).
+
+The 25 → 27 delta is a *defaults* change, not a feature change: a fleet that
+pins no flags will get a different heap layout and collector choice on 27 than on
+25. That is the reason to treat "which defaults am I implicitly relying on?" as a
+migration question, and to re-baseline memory and pause behaviour rather than
+assume 25's numbers carry over.
 
 ---
 
@@ -453,13 +536,14 @@ Reading 1.2 → 25, four themes recur:
    try-with-resources (7) for close(), lambdas (8) for anonymous classes,
    records (16) for data classes.
 2. **Preview features became the release valve.** Since 12–14, complex features
-   ship in preview for 1–3 releases. This is how sealed classes, records,
-   pattern matching, virtual threads, and string templates all landed.
+   ship in preview for 1–4 releases. This is how sealed classes, records,
+   pattern matching and virtual threads landed — and how string templates
+   (previewed in 21 and 22, then withdrawn) were stopped before becoming permanent.
 3. **API evolution mechanisms came from necessity.** Default methods (8),
    modules (9), and compact headers (25) all exist to let the platform change
    without breaking the ecosystem.
 4. **The runtime keeps being rebuilt.** GC from CMS→G1→ZGC→Shenandoah
-   (9→24), memory layout in 25, concurrency from threads→pools→virtual threads
+   (9→25), memory layout in 25 and 27, concurrency from threads→pools→virtual threads
    (5→21).
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)

@@ -91,7 +91,7 @@ relative% = 4 / (object_size + 4) × 100      # conservative 4 B case
 | Object | Header before | Header after | Field+padding | Relative saving |
 |---|---|---|---|---|
 | Two `int` fields | 16 B | 8 B | 8 B → total 24→16 B | **33%** |
-| `Long` (16 B value) | 16 B | 8 B | 16 B → total 32→24 B | **25%** |
+| `Long` (one 8 B `long` field) | 16 B | 8 B | 8 B → total 24→16 B | **33%** |
 | Empty holder | 16 B | 8 B | 0 B → total 16→8 B | **50%** |
 | 200 B value object | 16 B | 8 B | 200 B → total 216→208 B | 3.7% |
 | 2 KB buffer object | 16 B | 8 B | 2 KB → total 2,064→2,056 B | **0.4%** |
@@ -262,16 +262,16 @@ feedback lands in the next release:
 
 | Feature | Preview releases | `p_churn` | Adoption decision |
 |---|---|---|---|
-| Records | 14, 15 | 0.30 | Adopt on 16 LTS |
+| Records | 14, 15 | 0.30 | Final in 16, but 16 is non-LTS: adopt on 17 (LTS) |
 | Sealed classes | 15, 16 | 0.30 | Adopt on 17 LTS |
-| Pattern matching `switch` | 17, 19, 20 (3) | 0.10 | Adopt on 21 — churn risk mostly retired |
+| Pattern matching `switch` | 17, 18, 19, 20 (4) | 0.10 | Adopt on 21 — churn risk mostly retired |
 | Virtual threads | 19, 20 | 0.30 | Adopt on 21 |
-| Structured concurrency | 19→ (incubator, then preview 20–25) | **0.90** | **Do not adopt** — still preview in 25 |
-| String templates | 21–24 (4) | **1.00** | **Never** — withdrawn; churn realised |
+| Structured concurrency | incubator 19–20 (JEP 428, 437), preview 21–25+ (JEP 453, 462, 480, 499, 505) | **0.90** | **Do not adopt** — still preview in 25 |
+| String templates | 21, 22 (2), then JEP 465 withdrawn | **1.00** | **Never** — withdrawn; churn realised |
 
 Note the last two rows: a feature that stays in preview for *many* releases has
 either a design problem or an ecosystem problem, and its `p_churn` should be
-modelled near 1.0. **The feature that spent four releases in preview and was then
+modelled near 1.0. **The feature that spent two releases in preview and was then
 withdrawn is the calibration point** — anyone who "adopted early" paid a full
 rewrite for nothing. Preview code is a bet with an unusually bad payoff
 distribution, which is why the rule is *never ship preview to production* while

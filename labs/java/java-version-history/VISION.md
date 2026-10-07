@@ -30,16 +30,16 @@ misuse it. That is the whole method.
 
 ## Mental model 2: preview features are the release valve
 
-Since 12–14 the platform ships on a 6-month cadence, which makes "too much new
-surface per release" a real risk. So complex features ship **fully working but
+Since 10 (JEP 322) the platform ships on a six-month cadence, which makes "too much
+new surface per release" a real risk; the preview mechanism is first used in 12. So complex features ship **fully working but
 gated** behind `--enable-preview` for 1–4 releases.
 
 ```
 records        preview 14, 15  ->  standard 16      (2 releases)
 sealed         preview 15, 16  ->  standard 17      (2)
-switch patterns preview 17-20  ->  standard 21      (4)
+switch patterns preview 17-20  ->  standard 21      (4: 17, 18, 19, 20)
 virtual threads preview 19, 20 ->  standard 21      (2)
-string templates preview 21-24 ->  WITHDRAWN       (4, never shipped)
+string templates preview 21, 22 -> WITHDRAWN       (2; JEP 465 withdrawn, never shipped)
 ```
 
 Two conclusions. First, preview is how Java ships *bigger* changes safely, not

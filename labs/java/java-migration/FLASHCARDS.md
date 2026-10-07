@@ -44,18 +44,18 @@ matching THEORY.md section.
 | `java.activation` (JAFB) removed | JDK 11 → `jakarta.activation-api` |
 | `java.corba` removed | JDK 11 → no drop-in replacement |
 | Nashorn / `jjs` removed | JDK 15 (JEP 372); deprecated 11 (JEP 335) → GraalJS or Node |
-| `java.util.jar.Pack200` | Deprecated 13 (JEP 336), removed 14 (JEP 367) → `jlink` / module image |
+| `java.util.jar.Pack200` | Deprecated 11 (JEP 336), removed 14 (JEP 367) → `jlink` / module image |
 | `javah` removed | JDK 10 → `javac -h` |
-| CMS collector removed | JDK 14 (JEP 363); deprecated 8 (JEP 291) → G1 or ZGC |
-| ParallelFullGC for G1 removed | JDK 23 (JEP 475, late barrier expansion, removes it) — added in 10 (JEP 307); different thing |
-| Applet API removed | JDK 26 (JEP 504, Remove the Applet API); deprecated 9 (JEP 289 is VarHandle — a common mix-up) |
+| CMS collector removed | JDK 14 (JEP 363); deprecated 9 (JEP 291) → G1 or ZGC |
+| Parallel full GC for G1 | Added JDK 10 (JEP 307) — **still present, never removed**. (JEP 475 is *Late Barrier Expansion for G1*, JDK 24, unrelated) |
+| Applet API removed | JDK 26 (JEP 504, Remove the Applet API); deprecated 9 (JEP 289, Deprecate the Applet API) |
 | `-XX:+PrintGCDetails` / `PrintGCTimeStamps` | Gone; use `-Xlog:gc*` |
 | `Class.newInstance()` | Deprecated 9 → `getDeclaredConstructor().newInstance()` |
 | `System.runFinalizersOnExit` | Deprecated 10 → `Runtime.addShutdownHook` |
 | Finalizers deprecated for removal | JDK 18 (JEP 421) |
 | `AccessController.doPrivileged` | Deprecated 17; SecurityManager permanently disabled 24 (JEP 486) |
-| `sun.misc.Unsafe` memory-access methods | Deprecated for removal 23, warnings in 24 → `VarHandle` |
-| `Unsafe.defineAnonymousClass` | Removed 17 → upgrade cglib/Mockito; no flag fix |
+| `sun.misc.Unsafe` memory-access methods | Terminally deprecated 23 (JEP 471), run-time warning on first use 24 (JEP 498) → `VarHandle` (JEP 193) / FFM API (JEP 454) |
+| `Unsafe.defineAnonymousClass` | Deprecated 15 (JEP 371), **removed 17** → upgrade cglib/Mockito; replacement `Lookup::defineHiddenClass`; no flag fix |
 | Removed-module symptom | `package javax.xml.bind does not exist`, or `NoClassDefFoundError` at runtime |
 
 ## Encapsulation and modules
@@ -93,7 +93,7 @@ matching THEORY.md section.
 | Pattern matching for `switch` | Preview 17–20, final 21 (JEP 441) |
 | Virtual threads | Preview 19/20, final 21 (JEP 444) |
 | Structured concurrency | Still **preview** in 21 (JEP 453) — not production-ready |
-| String templates | Preview 21 (JEP 430), **withdrawn** — don't plan on it |
+| String templates | Preview 21 (JEP 430), second preview 22 (JEP 459); JEP 465 (third preview) **withdrawn** — never shipped, don't plan on it |
 | Preview feature production rule | Same-JDK compile *and* run; preview bytecode won't load on the next JDK |
 
 ## JEP index
@@ -103,10 +103,10 @@ matching THEORY.md section.
 | JEP 261 | Module System (JDK 9) |
 | JEP 252 | CLDR as default locale provider (JDK 9) |
 | JEP 248 | G1 as default GC (JDK 9) |
-| JEP 289 | `VarHandle` (JDK 9) — the `Unsafe` replacement |
+| JEP 193 | Variable Handles / `VarHandle` (JDK 9) — the `Unsafe` replacement. (JEP 289 is *Deprecate the Applet API* — not VarHandle) |
 | JEP 213 | Milling Project Coin (JDK 9) — includes the try-with-resources enhancement allowing effectively-final variables outside the resource list |
 | JEP 307 | Parallel full GC for G1 (JDK 10) |
-| JEP 336 | Deprecate `Pack200` (JDK 13) |
+| JEP 336 | Deprecate `Pack200` (JDK 11) |
 | JEP 363 | Remove CMS (JDK 14) |
 | JEP 367 | Remove `Pack200` (JDK 14) |
 | JEP 372 | Remove Nashorn (JDK 15) |
@@ -121,7 +121,8 @@ matching THEORY.md section.
 | JEP 441 | Pattern matching for switch (JDK 21) |
 | JEP 444 | Virtual threads (JDK 21) |
 | JEP 453 | Structured concurrency preview (JDK 21) |
-| JEP 471 / JEP 498 | `sun.misc.Unsafe` memory-access methods deprecated (23) / disabled (24) |
+| JEP 471 / JEP 498 | `sun.misc.Unsafe` memory-access methods terminally deprecated (23) / warn on first use (24) |
+| JEP 371 | Hidden Classes (JDK 15) — deprecates `Unsafe.defineAnonymousClass` (removed 17) |
 | JEP 486 | Permanently disable the SecurityManager (JDK 24) |
 | Canonical index | <https://openjdk.org/jeps/0> |
 
@@ -146,7 +147,7 @@ matching THEORY.md section.
 
 | Q | A |
 |---|---|
-| `sun.misc.Unsafe` memory ops → | `VarHandle` (JDK 9, JEP 289) |
+| `sun.misc.Unsafe` memory ops → | `VarHandle` (JDK 9, JEP 193) |
 | `sun.nio.ch.DirectBuffer` → | `ByteBuffer`; usually drop direct memory entirely |
 | `sun.security.x509` parsing → | `java.security.cert.CertificateFactory` |
 | `com.sun.net.ssl.*` → | JSSE: `SSLContext`, `TrustManager` |

@@ -33,7 +33,7 @@ the JLS forwards.
 | `THEORY.md` | The full 1.2 → 25 feature timeline |
 | `EXERCISES.md` | 10 hands-on "compile it on each version" labs |
 | `QUIZ.md` | 20 questions with answers |
-| `FLASHCARDS.md` | 80 version-attribution cards |
+| `FLASHCARDS.md` | 235 version-attribution cards, incl. a "common misattributions" table |
 | `MATH_FOUNDATION.md` | Amdahl's law, JMM cost models, version economics |
 | `CODE_DEEP_DIVE.md` | Annotated evolution of single features across versions |
 | `MINI_PROJECT.md` | Build a version-compatibility analyzer |

@@ -129,8 +129,8 @@ Ordered by how often each shows up in a fleet this size:
    import. Symptom: `ClassNotFoundException: javax.servlet.http.HttpServlet`.
    This is 70% of the engineering hours in weeks 2–3.
 4. **Mockito 1 → 5 and Hibernate proxy generation.** Old bytecode generation dies
-   on `sun.misc.Unsafe` memory-access methods (permanently disabled in 24, JEP
-   498). Symptom: `NoSuchMethodError`
+   on `Unsafe.defineAnonymousClass` (removed in JDK 17; replacement is
+   `Lookup::defineHiddenClass`). Symptom: `NoSuchMethodError`
    in test setup. Fix: upgrade, no flag exists.
 5. **`--add-opens` accumulation.** Every service ends up with 2–4 flags. Symptom:
    none, which is the problem. Fix: ticketed, counted, and zero at decommission.

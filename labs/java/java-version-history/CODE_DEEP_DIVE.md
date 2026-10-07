@@ -128,7 +128,8 @@ declaring fields:
 
 ```java
 public record Order(String id, double total) {
-    Order {                       // compact constructor — no field list
+    public Order {                // compact constructor — no field list. Must be at
+                                  // least as accessible as the record itself (public here)
         if (id == null || id.isBlank()) throw new IllegalArgumentException("id");
         if (total < 0) throw new IllegalArgumentException("total");
     }
@@ -166,12 +167,12 @@ hand-written class with the same members — a genuine semantic addition, unlike
 
 ```java
 public String describe(Object o) {
-    if (o instanceof String s && s.length() > 3) {     // 7: binding already possible
-        return "long string: " + s;
+    if (o instanceof String && ((String) o).length() > 3) {   // test, then cast: the type
+        return "long string: " + o;                           // is written twice
     } else if (o instanceof String) {
         return "short string";
-    } else if (o instanceof Integer i) {
-        return "int " + (i + 1);
+    } else if (o instanceof Integer) {
+        return "int " + (((Integer) o) + 1);
     } else if (o instanceof int[]) {
         return "int array of " + ((int[]) o).length;
     }
@@ -194,9 +195,12 @@ public String describe(Object o) {
 }
 ```
 
-Three separate versions contributed: `instanceof` type binding (**14/15 preview,
-16 standard**), `switch` pattern matching with guards (**17 preview, 19
-standard**), and record deconstruction (**19 preview, 20 standard**).
+Three separate features contributed, over many releases: `instanceof` type
+binding (**previews in 14 and 15, final in 16**, JEPs 305, 375, 394), `switch`
+pattern matching (**previews in 17, 18, 19 and 20, final in 21**, JEPs 406, 420,
+427, 433, 441; guards were written `&&` early on and became `when` in the third
+preview) and record patterns (**previews in 19 and 20, final in 21**, JEPs 405, 432,
+440).
 
 ### The win that is only visible in the sealed case
 
@@ -205,12 +209,14 @@ sealed interface Result permits Ok, Err {}
 record Ok(int value)                 implements Result {}
 record Err(String message, int code) implements Result {}
 
-// 20: record patterns — destructuring in the case label
-String render(Result r) {
-    return switch (r) {
-        case Ok(int v)          -> "ok:" + v;
-        case Err(String m, int c) -> "err:" + c + ":" + m;
-    };                          // no default, no else, no total method on the interface
+final class Renderer {
+    // 21: record patterns (final) — destructuring in the case label
+    static String render(Result r) {
+        return switch (r) {
+            case Ok(int v)            -> "ok:" + v;
+            case Err(String m, int c) -> "err:" + c + ":" + m;
+        };                      // no default: the compiler proves the sealed set is covered
+    }
 }
 ```
 
@@ -224,12 +230,24 @@ subtypes and breaking the call site.
 javap -c -p -cp out21 PatternDemo | grep -E 'instanceof|tableswitch|lookupswitch|invokedynamic'
 ```
 
-The chain compiles to repeated `instanceof` + branches. The switch form compiles
-to a `tableswitch`/`lookupswitch` on a synthetic `type` tag for the object types
-plus a chain of type tests for patterns — and, in JDK 21+, record patterns use
-`invokedynamic` against `ObjectMethods` to call the **accessor methods the
-record declares**, not field reads. That last detail is why a record's component
-order is now part of its observable contract.
+Observed with `javac --release 21` and `javap -c -p`:
+
+- The `if` chain compiles to repeated `instanceof` plus branches.
+- The pattern `switch` compiles to a single `invokedynamic` whose bootstrap method is
+  `java.lang.runtime.SwitchBootstraps.typeSwitch`; it returns the index of the
+  matching case, and a `tableswitch` (or `lookupswitch`) then dispatches on that
+  index.
+- **Record patterns do not use `invokedynamic`.** javac emits ordinary
+  `invokevirtual` calls to the record's **accessor methods** (`Ok.value()`,
+  `Err.message()`, `Err.code()`), so a custom accessor is honoured, and wraps the
+  extraction so that an exception thrown by an accessor surfaces as a
+  `MatchException`. (`ObjectMethods` is the bootstrap behind a record's
+  `equals`/`hashCode`/`toString`, not its patterns.)
+
+The desugaring is an implementation detail and can change between JDK releases, but
+two consequences are part of the language: patterns call *accessors*, and they match
+components **positionally**, so a record's component order is part of its
+deconstruction contract.
 
 **What it charged.** Adding a permitted subtype is a **compile error** at every
 exhaustive switch. You have bought exhaustiveness by giving up open-ended
@@ -243,35 +261,43 @@ migration consequence of 17/21.
 ### Before (Java 7)
 
 ```java
-public int apply(Operation op, int lhs, int rhs) {
-    int result;
-    switch (op) {                        // switch since 1.0, ints/enums only
-        case ADD: result = lhs + rhs; break;
-        case SUB: result = lhs - rhs; break;
-        case MUL: result = lhs * rhs; break;
-        case DIV:
-            if (rhs == 0) throw new ArithmeticException("div by zero");
-            result = lhs / rhs;
-            break;
-        default: throw new IllegalArgumentException("op " + op);
+public final class Calc {
+    enum Operation { ADD, SUB, MUL, DIV }
+
+    public int apply(Operation op, int lhs, int rhs) {
+        int result;
+        switch (op) {                    // switch since 1.0 (ints/enums; strings from 7)
+            case ADD: result = lhs + rhs; break;
+            case SUB: result = lhs - rhs; break;
+            case MUL: result = lhs * rhs; break;
+            case DIV:
+                if (rhs == 0) throw new ArithmeticException("div by zero");
+                result = lhs / rhs;
+                break;
+            default: throw new IllegalArgumentException("op " + op);
+        }
+        return result;                    // variable + breaks + a sentinel
     }
-    return result;                        // variable + breaks + a sentinel
 }
 ```
 
 ### After (Java 14)
 
 ```java
-public int apply(Operation op, int lhs, int rhs) {
-    return switch (op) {
-        case ADD -> lhs + rhs;
-        case SUB -> lhs - rhs;
-        case MUL -> lhs * rhs;
-        case DIV -> {
-            if (rhs == 0) throw new ArithmeticException("div by zero");
-            yield lhs / rhs;             // yield, not return, not break
-        }
-    };                        // no result variable, no breaks, and no default
+public final class Calc {
+    enum Operation { ADD, SUB, MUL, DIV }
+
+    public int apply(Operation op, int lhs, int rhs) {
+        return switch (op) {
+            case ADD -> lhs + rhs;
+            case SUB -> lhs - rhs;
+            case MUL -> lhs * rhs;
+            case DIV -> {
+                if (rhs == 0) throw new ArithmeticException("div by zero");
+                yield lhs / rhs;         // yield, not return, not break
+            }
+        };                    // no result variable, no breaks, and no default
+    }
 }
 ```
 
@@ -306,17 +332,24 @@ stabilise.
 ### Before (Java 8 — the shape most services still have)
 
 ```java
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public final class OrderService {
     private final ExecutorService pool =                    // bounded on purpose
-            Executors.newFixedThreadPool(200);              // ~200 MiB reserved
-    private final HttpClient http = HttpClient.newHttpClient();
+            Executors.newFixedThreadPool(200);              // ~200 MiB of reserved thread stacks
 
-    public CompletableFuture<String> fetch(List<String> ids) {
-        return CompletableFuture.allOf(ids.stream()
-            .map(id -> pool.submit(() -> call(id)))         // queue above 200, ever
-            .toArray(CompletableFuture[]::new))
-            .thenApply(v -> ids.stream().map(this::call2).collect(...));
+    public CompletableFuture<List<String>> fetch(List<String> ids) {
+        List<CompletableFuture<String>> calls = ids.stream()
+            .map(id -> CompletableFuture.supplyAsync(() -> call(id), pool))  // queues above 200, ever
+            .toList();
+        return CompletableFuture.allOf(calls.toArray(CompletableFuture[]::new))
+            .thenApply(v -> calls.stream().map(CompletableFuture::join).toList());
     }
+
+    private String call(String id) { return id; }           // stands in for a blocking HTTP call
 }
 ```
 
@@ -328,25 +361,40 @@ delay — not work.
 ### After (Java 21)
 
 ```java
-public final class OrderService {
-    private final HttpClient http = HttpClient.newHttpClient();   // no pool at all
-    private static final Semaphore CPU_BOUND = new Semaphore(8);   // where a limit belongs
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.StructuredTaskScope;
+import java.util.concurrent.StructuredTaskScope.Joiner;
+import java.util.concurrent.StructuredTaskScope.Subtask;
 
+public final class OrderService {
+    private static final Semaphore CPU_BOUND = new Semaphore(8);   // where a limit belongs
+                                                                   // (guards CPU-heavy work, not I/O)
+
+    // JDK 25 preview API (JEP 505, fifth preview): compile and run with --enable-preview.
+    // JDK 21-24 spelled this `new StructuredTaskScope.ShutdownOnFailure()` and
+    // `scope.join().throwIfFailed()`; the API changed shape in 25, so check your JDK.
     public List<String> fetch(List<String> ids) throws InterruptedException {
-        try (var scope = StructuredTaskScope.open()) {            // still preview in 21 — see below
+        try (var scope = StructuredTaskScope.open(Joiner.<String>allSuccessfulOrThrow())) {
             for (String id : ids) scope.fork(() -> call(id));
-            scope.join();                                          // propagates the first failure
-            return scope.stream().map(StructuredTaskScope.Subtask::get).toList();
+            return scope.join()                    // throws if any subtask failed
+                        .map(Subtask::get)
+                        .toList();
         }
     }
 
-    // For a plain blocking service, no scope is even needed:
-    public List<String> fetchSimple(List<String> ids) throws Exception {
+    // For a plain blocking service, no scope is even needed (virtual threads, JDK 21+ final):
+    public List<String> fetchSimple(List<String> ids) throws InterruptedException {
+        List<String> results = Collections.synchronizedList(new ArrayList<>());
         List<Thread> workers = new ArrayList<>();
-        for (String id : ids) workers.add(Thread.ofVirtual().start(() -> call(id)));
+        for (String id : ids) workers.add(Thread.ofVirtual().start(() -> results.add(call(id))));
         for (Thread t : workers) t.join();
         return results;
     }
+
+    private String call(String id) { return id; }          // stands in for a blocking HTTP call
 }
 ```
 
