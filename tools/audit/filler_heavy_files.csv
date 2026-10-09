@@ -36,7 +36,6 @@ labs/java/collections-deep/02-concurrent-hashmap/STEP_BY_STEP.md,65,65,100,0
 labs/java/collections-deep/02-concurrent-hashmap/VISUAL_GUIDE.md,58,58,100,0
 labs/java/collections-deep/02-concurrent-hashmap/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/collections-deep/03-linked-list-deep/ARCHITECTURE.md,73,73,100,0
-labs/java/collections-deep/03-linked-list-deep/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/collections-deep/03-linked-list-deep/COMMON_MISTAKES.md,83,83,100,0
 labs/java/collections-deep/03-linked-list-deep/DEBUGGING.md,76,76,100,0
 labs/java/collections-deep/03-linked-list-deep/FLASHCARDS.md,77,77,100,0
@@ -588,14 +587,11 @@ labs/java/performance-deep/05-gc-log-analysis/SECURITY.md,78,78,100,0
 labs/java/performance-deep/05-gc-log-analysis/STEP_BY_STEP.md,65,65,100,0
 labs/java/performance-deep/05-gc-log-analysis/VISUAL_GUIDE.md,58,58,100,0
 labs/java/performance-deep/05-gc-log-analysis/WHY_IT_EXISTS.md,88,88,100,0
-labs/math/discrete-deep/05-generating-functions/HISTORY.md,6,6,100,0
-labs/math/discrete-deep/06-number-theory/HISTORY.md,6,6,100,0
 labs/math/linear-algebra-deep/01-vector-spaces/HISTORY.md,6,6,100,0
 labs/math/linear-algebra-deep/02-linear-transformations/HISTORY.md,6,6,100,0
 labs/math/linear-algebra-deep/03-matrix-decompositions/HISTORY.md,6,6,100,0
 labs/math/linear-algebra-deep/04-eigenvalues-advanced/HISTORY.md,6,6,100,0
 labs/math/linear-algebra-deep/08-matrix-calculus/HISTORY.md,6,6,100,0
-labs/math/probability-deep/08-bayesian-statistics/HISTORY.md,6,6,100,0
 labs/java/collections-deep/01-hashmap-internals/EXERCISES.md,74,73,99,0
 labs/java/collections-deep/01-hashmap-internals/HISTORY.md,94,93,99,0
 labs/java/collections-deep/01-hashmap-internals/HOW_IT_WORKS.md,99,98,99,0
@@ -857,7 +853,6 @@ labs/java/performance-deep/05-gc-log-analysis/WHY_IT_MATTERS.md,91,90,99,0
 labs/java/collections-deep/01-hashmap-internals/README.md,72,70,97,0
 labs/java/collections-deep/02-concurrent-hashmap/README.md,72,70,97,0
 labs/java/collections-deep/03-linked-list-deep/README.md,72,70,97,0
-labs/java/collections-deep/03-linked-list-deep/THEORY.md,98,95,97,0
 labs/java/collections-deep/04-arraylist-deep/README.md,72,70,97,0
 labs/java/collections-deep/04-arraylist-deep/THEORY.md,98,95,97,0
 labs/java/collections-deep/05-treemap-treeset/README.md,72,70,97,0
@@ -1040,9 +1035,7 @@ labs/math/discrete-deep/02-set-theory/MATH_FOUNDATION.md,35,33,94,0
 labs/math/discrete-deep/03-combinatorics/MATH_FOUNDATION.md,35,33,94,0
 labs/math/discrete-deep/04-graph-theory/MATH_FOUNDATION.md,35,33,94,0
 labs/math/discrete-deep/05-generating-functions/MATH_FOUNDATION.md,35,33,94,0
-labs/math/discrete-deep/05-generating-functions/PERFORMANCE.md,16,15,94,0
 labs/math/discrete-deep/06-number-theory/MATH_FOUNDATION.md,35,33,94,0
-labs/math/discrete-deep/06-number-theory/PERFORMANCE.md,16,15,94,0
 labs/math/linear-algebra-deep/01-vector-spaces/MATH_FOUNDATION.md,35,33,94,0
 labs/math/linear-algebra-deep/01-vector-spaces/PERFORMANCE.md,16,15,94,0
 labs/math/linear-algebra-deep/02-linear-transformations/MATH_FOUNDATION.md,35,33,94,0
@@ -1067,7 +1060,6 @@ labs/math/probability-deep/05-law-large-numbers/MATH_FOUNDATION.md,35,33,94,0
 labs/math/probability-deep/06-estimation-theory/MATH_FOUNDATION.md,35,33,94,0
 labs/math/probability-deep/07-hypothesis-testing/MATH_FOUNDATION.md,35,33,94,0
 labs/math/probability-deep/08-bayesian-statistics/MATH_FOUNDATION.md,35,33,94,0
-labs/math/probability-deep/08-bayesian-statistics/PERFORMANCE.md,16,15,94,0
 labs/data-science/01-data-wrangling/MINI_PROJECT.md,30,28,93,0
 labs/data-science/02-eda/MINI_PROJECT.md,30,28,93,0
 labs/data-science/02-visualization/MINI_PROJECT.md,30,28,93,0
@@ -1120,11 +1112,6 @@ labs/data-science/ml-pipelines-deep/07-mlops-orchestration/SECURITY.md,15,14,93,
 labs/data-science/ml-pipelines-deep/08-fraud-detection-system/SECURITY.md,15,14,93,0
 labs/data-science/ml-pipelines-deep/MINI_PROJECT.md,30,28,93,0
 labs/java/performance-deep/02-jmh-benchmarks/THEORY.md,102,95,93,0
-labs/math/discrete-deep/04-graph-theory/REFLECTION.md,14,13,93,0
-labs/math/discrete-deep/05-generating-functions/REFLECTION.md,14,13,93,0
-labs/math/discrete-deep/05-generating-functions/SECURITY.md,15,14,93,0
-labs/math/discrete-deep/06-number-theory/REFLECTION.md,14,13,93,0
-labs/math/discrete-deep/06-number-theory/SECURITY.md,15,14,93,0
 labs/math/linear-algebra-deep/01-vector-spaces/REFLECTION.md,14,13,93,0
 labs/math/linear-algebra-deep/01-vector-spaces/SECURITY.md,15,14,93,0
 labs/math/linear-algebra-deep/02-linear-transformations/REFLECTION.md,14,13,93,0
@@ -1138,9 +1125,6 @@ labs/math/linear-algebra-deep/06-dual-spaces-tensors/SECURITY.md,15,14,93,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/SECURITY.md,15,14,93,0
 labs/math/linear-algebra-deep/08-matrix-calculus/REFLECTION.md,14,13,93,0
 labs/math/linear-algebra-deep/08-matrix-calculus/SECURITY.md,15,14,93,0
-labs/math/probability-deep/07-hypothesis-testing/REFLECTION.md,14,13,93,0
-labs/math/probability-deep/08-bayesian-statistics/REFLECTION.md,14,13,93,0
-labs/math/probability-deep/08-bayesian-statistics/SECURITY.md,15,14,93,0
 labs/algorithms/11-branch-and-bound/MOCK_INTERVIEW.md,66,61,92,0
 labs/algorithms/20-randomized-algorithms/MOCK_INTERVIEW.md,66,61,92,0
 labs/algorithms/22-game-theory/MOCK_INTERVIEW.md,65,60,92,0
@@ -1263,8 +1247,6 @@ labs/java/performance-deep/02-jmh-benchmarks/REFLECTION.md,85,77,91,0
 labs/java/performance-deep/03-jfr-streaming/REFLECTION.md,85,77,91,0
 labs/java/performance-deep/04-memory-leaks/REFLECTION.md,85,77,91,0
 labs/java/performance-deep/05-gc-log-analysis/REFLECTION.md,85,77,91,0
-labs/math/discrete-deep/05-generating-functions/COMMON_MISTAKES.md,11,10,91,0
-labs/math/discrete-deep/06-number-theory/COMMON_MISTAKES.md,11,10,91,0
 labs/math/linear-algebra-deep/01-vector-spaces/COMMON_MISTAKES.md,11,10,91,0
 labs/math/linear-algebra-deep/02-linear-transformations/COMMON_MISTAKES.md,11,10,91,0
 labs/math/linear-algebra-deep/03-matrix-decompositions/COMMON_MISTAKES.md,11,10,91,0
@@ -1273,7 +1255,6 @@ labs/math/linear-algebra-deep/05-inner-products-norms/COMMON_MISTAKES.md,11,10,9
 labs/math/linear-algebra-deep/06-dual-spaces-tensors/COMMON_MISTAKES.md,11,10,91,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/COMMON_MISTAKES.md,11,10,91,0
 labs/math/linear-algebra-deep/08-matrix-calculus/COMMON_MISTAKES.md,11,10,91,0
-labs/math/probability-deep/08-bayesian-statistics/COMMON_MISTAKES.md,11,10,91,0
 labs/algorithms/02-advanced-sorting/MOCK_INTERVIEW.md,67,60,90,0
 labs/algorithms/08-string-algorithms/MOCK_INTERVIEW.md,67,60,90,0
 labs/algorithms/09-divide-and-conquer/MOCK_INTERVIEW.md,68,61,90,0
@@ -1335,8 +1316,6 @@ labs/java/performance-deep/02-jmh-benchmarks/QUIZ.md,73,66,90,0
 labs/java/performance-deep/03-jfr-streaming/QUIZ.md,73,66,90,0
 labs/java/performance-deep/04-memory-leaks/QUIZ.md,73,66,90,0
 labs/java/performance-deep/05-gc-log-analysis/QUIZ.md,73,66,90,0
-labs/math/discrete-deep/05-generating-functions/MENTAL_MODELS.md,10,9,90,0
-labs/math/discrete-deep/06-number-theory/MENTAL_MODELS.md,10,9,90,0
 labs/math/linear-algebra-deep/01-vector-spaces/MENTAL_MODELS.md,10,9,90,0
 labs/math/linear-algebra-deep/02-linear-transformations/MENTAL_MODELS.md,10,9,90,0
 labs/math/linear-algebra-deep/03-matrix-decompositions/MENTAL_MODELS.md,10,9,90,0
@@ -1345,7 +1324,6 @@ labs/math/linear-algebra-deep/05-inner-products-norms/MENTAL_MODELS.md,10,9,90,0
 labs/math/linear-algebra-deep/06-dual-spaces-tensors/MENTAL_MODELS.md,10,9,90,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/MENTAL_MODELS.md,10,9,90,0
 labs/math/linear-algebra-deep/08-matrix-calculus/MENTAL_MODELS.md,10,9,90,0
-labs/math/probability-deep/08-bayesian-statistics/MENTAL_MODELS.md,10,9,90,0
 labs/backend/01-spring-boot-basics/REAL_WORLD_PROJECT.md,19,17,89,0
 labs/backend/01-spring-boot-internals/REAL_WORLD_PROJECT.md,19,17,89,0
 labs/backend/02-rest-api-design/REAL_WORLD_PROJECT.md,19,17,89,0
@@ -1436,12 +1414,6 @@ labs/data-science/ml-pipelines-deep/07-mlops-orchestration/STEP_BY_STEP.md,9,8,8
 labs/data-science/ml-pipelines-deep/08-fraud-detection-system/DEBUGGING.md,9,8,89,0
 labs/data-science/ml-pipelines-deep/08-fraud-detection-system/INTERNALS.md,9,8,89,0
 labs/data-science/ml-pipelines-deep/08-fraud-detection-system/STEP_BY_STEP.md,9,8,89,0
-labs/math/discrete-deep/05-generating-functions/DEBUGGING.md,9,8,89,0
-labs/math/discrete-deep/05-generating-functions/INTERNALS.md,9,8,89,0
-labs/math/discrete-deep/05-generating-functions/STEP_BY_STEP.md,9,8,89,0
-labs/math/discrete-deep/06-number-theory/DEBUGGING.md,9,8,89,0
-labs/math/discrete-deep/06-number-theory/INTERNALS.md,9,8,89,0
-labs/math/discrete-deep/06-number-theory/STEP_BY_STEP.md,9,8,89,0
 labs/math/linear-algebra-deep/01-vector-spaces/DEBUGGING.md,9,8,89,0
 labs/math/linear-algebra-deep/01-vector-spaces/INTERNALS.md,9,8,89,0
 labs/math/linear-algebra-deep/01-vector-spaces/STEP_BY_STEP.md,9,8,89,0
@@ -1466,9 +1438,6 @@ labs/math/linear-algebra-deep/07-applied-linear-algebra/STEP_BY_STEP.md,9,8,89,0
 labs/math/linear-algebra-deep/08-matrix-calculus/DEBUGGING.md,9,8,89,0
 labs/math/linear-algebra-deep/08-matrix-calculus/INTERNALS.md,9,8,89,0
 labs/math/linear-algebra-deep/08-matrix-calculus/STEP_BY_STEP.md,9,8,89,0
-labs/math/probability-deep/08-bayesian-statistics/DEBUGGING.md,9,8,89,0
-labs/math/probability-deep/08-bayesian-statistics/INTERNALS.md,9,8,89,0
-labs/math/probability-deep/08-bayesian-statistics/STEP_BY_STEP.md,9,8,89,0
 labs/algorithms/03-searching/MOCK_INTERVIEW.md,68,60,88,0
 labs/algorithms/04-recursion/MOCK_INTERVIEW.md,68,60,88,0
 labs/algorithms/05-dynamic-programming/MOCK_INTERVIEW.md,68,60,88,0
@@ -1591,8 +1560,6 @@ labs/databases/22-pl-sql-foundations/MINI_PROJECT.md,70,61,87,0
 labs/databases/23-pl-sql-advanced/MINI_PROJECT.md,70,61,87,0
 labs/databases/SQL_SOLUTIONS/MINI_PROJECT.md,70,61,87,0
 labs/databases/databases-deep/MINI_PROJECT.md,70,61,87,0
-labs/math/discrete-deep/05-generating-functions/ARCHITECTURE.md,15,13,87,0
-labs/math/discrete-deep/06-number-theory/ARCHITECTURE.md,15,13,87,0
 labs/math/linear-algebra-deep/01-vector-spaces/ARCHITECTURE.md,15,13,87,0
 labs/math/linear-algebra-deep/02-linear-transformations/ARCHITECTURE.md,15,13,87,0
 labs/math/linear-algebra-deep/03-matrix-decompositions/ARCHITECTURE.md,15,13,87,0
@@ -1604,7 +1571,6 @@ labs/math/linear-algebra-deep/06-dual-spaces-tensors/REFLECTION.md,15,13,87,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/ARCHITECTURE.md,15,13,87,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/REFLECTION.md,15,13,87,0
 labs/math/linear-algebra-deep/08-matrix-calculus/ARCHITECTURE.md,15,13,87,0
-labs/math/probability-deep/08-bayesian-statistics/ARCHITECTURE.md,15,13,87,0
 labs/ai/27-meta-learning/CODE_DEEP_DIVE/CODE_DEEP_DIVE.md,21,18,86,0
 labs/ai/27-meta-learning/EXERCISES/EXERCISES.md,21,18,86,0
 labs/ai/27-meta-learning/MATH_FOUNDATION/MATH_FOUNDATION.md,21,18,86,0
@@ -1637,8 +1603,6 @@ labs/data-science/ml-pipelines-deep/06-model-monitoring/HOW_IT_WORKS.md,14,12,86
 labs/data-science/ml-pipelines-deep/07-mlops-orchestration/HOW_IT_WORKS.md,14,12,86,0
 labs/data-science/ml-pipelines-deep/08-fraud-detection-system/HISTORY.md,7,6,86,0
 labs/data-science/ml-pipelines-deep/08-fraud-detection-system/HOW_IT_WORKS.md,14,12,86,0
-labs/math/discrete-deep/05-generating-functions/HOW_IT_WORKS.md,14,12,86,0
-labs/math/discrete-deep/06-number-theory/HOW_IT_WORKS.md,14,12,86,0
 labs/math/linear-algebra-deep/01-vector-spaces/HOW_IT_WORKS.md,14,12,86,0
 labs/math/linear-algebra-deep/02-linear-transformations/HOW_IT_WORKS.md,14,12,86,0
 labs/math/linear-algebra-deep/03-matrix-decompositions/HOW_IT_WORKS.md,14,12,86,0
@@ -1650,8 +1614,6 @@ labs/math/linear-algebra-deep/06-dual-spaces-tensors/HOW_IT_WORKS.md,14,12,86,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/HISTORY.md,7,6,86,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/HOW_IT_WORKS.md,14,12,86,0
 labs/math/linear-algebra-deep/08-matrix-calculus/HOW_IT_WORKS.md,14,12,86,0
-labs/math/probability-deep/07-hypothesis-testing/HOW_IT_WORKS.md,14,12,86,0
-labs/math/probability-deep/08-bayesian-statistics/HOW_IT_WORKS.md,14,12,86,0
 labs/data-science/analysis-deep/01-data-wrangling/README.md,19,16,84,0
 labs/data-science/analysis-deep/02-visualization-fundamentals/README.md,19,16,84,0
 labs/data-science/analysis-deep/03-descriptive-statistics/README.md,19,16,84,0
@@ -1776,14 +1738,8 @@ labs/data-science/ml-pipelines-deep/08-fraud-detection-system/WHY_IT_MATTERS.md,
 labs/math/discrete-deep/02-set-theory/FLASHCARDS.md,18,15,83,0
 labs/math/discrete-deep/03-combinatorics/FLASHCARDS.md,18,15,83,0
 labs/math/discrete-deep/04-graph-theory/FLASHCARDS.md,18,15,83,0
-labs/math/discrete-deep/04-graph-theory/REFERENCES.md,12,10,83,0
-labs/math/discrete-deep/04-graph-theory/WHY_IT_MATTERS.md,6,5,83,0
 labs/math/discrete-deep/05-generating-functions/FLASHCARDS.md,18,15,83,0
-labs/math/discrete-deep/05-generating-functions/REFERENCES.md,12,10,83,0
-labs/math/discrete-deep/05-generating-functions/WHY_IT_MATTERS.md,6,5,83,0
 labs/math/discrete-deep/06-number-theory/FLASHCARDS.md,18,15,83,0
-labs/math/discrete-deep/06-number-theory/REFERENCES.md,12,10,83,0
-labs/math/discrete-deep/06-number-theory/WHY_IT_MATTERS.md,6,5,83,0
 labs/math/linear-algebra-deep/01-vector-spaces/FLASHCARDS.md,18,15,83,0
 labs/math/linear-algebra-deep/01-vector-spaces/REFERENCES.md,12,10,83,0
 labs/math/linear-algebra-deep/01-vector-spaces/WHY_IT_MATTERS.md,6,5,83,0
@@ -1808,11 +1764,7 @@ labs/math/probability-deep/03-distributions/FLASHCARDS.md,18,15,83,0
 labs/math/probability-deep/04-multivariate-statistics/FLASHCARDS.md,18,15,83,0
 labs/math/probability-deep/06-estimation-theory/FLASHCARDS.md,18,15,83,0
 labs/math/probability-deep/07-hypothesis-testing/FLASHCARDS.md,18,15,83,0
-labs/math/probability-deep/07-hypothesis-testing/REFERENCES.md,12,10,83,0
-labs/math/probability-deep/07-hypothesis-testing/WHY_IT_MATTERS.md,6,5,83,0
 labs/math/probability-deep/08-bayesian-statistics/FLASHCARDS.md,18,15,83,0
-labs/math/probability-deep/08-bayesian-statistics/REFERENCES.md,12,10,83,0
-labs/math/probability-deep/08-bayesian-statistics/WHY_IT_MATTERS.md,6,5,83,0
 labs/ai/21-reinforcement-learning/CODE_DEEP_DIVE/CODE_DEEP_DIVE.md,22,18,82,0
 labs/ai/21-reinforcement-learning/EXERCISES/EXERCISES.md,22,18,82,0
 labs/ai/21-reinforcement-learning/MATH_FOUNDATION/MATH_FOUNDATION.md,22,18,82,0
@@ -1962,9 +1914,6 @@ labs/databases/23-pl-sql-advanced/REAL_WORLD_PROJECT.md,80,63,79,0
 labs/databases/SQL_SOLUTIONS/REAL_WORLD_PROJECT.md,80,63,79,0
 labs/databases/databases-deep/REAL_WORLD_PROJECT.md,80,63,79,0
 labs/math/discrete-deep/01-logic-proofs/FLASHCARDS.md,19,15,79,0
-labs/math/discrete-deep/04-graph-theory/INTERVIEW.md,14,11,79,0
-labs/math/discrete-deep/05-generating-functions/INTERVIEW.md,14,11,79,0
-labs/math/discrete-deep/06-number-theory/INTERVIEW.md,14,11,79,0
 labs/math/linear-algebra-deep/01-vector-spaces/INTERVIEW.md,14,11,79,0
 labs/math/linear-algebra-deep/02-linear-transformations/INTERVIEW.md,14,11,79,0
 labs/math/linear-algebra-deep/03-matrix-decompositions/INTERVIEW.md,14,11,79,0
@@ -1974,8 +1923,6 @@ labs/math/linear-algebra-deep/06-dual-spaces-tensors/FLASHCARDS.md,19,15,79,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/FLASHCARDS.md,19,15,79,0
 labs/math/linear-algebra-deep/08-matrix-calculus/INTERVIEW.md,14,11,79,0
 labs/math/probability-deep/05-law-large-numbers/FLASHCARDS.md,19,15,79,0
-labs/math/probability-deep/07-hypothesis-testing/INTERVIEW.md,14,11,79,0
-labs/math/probability-deep/08-bayesian-statistics/INTERVIEW.md,14,11,79,0
 labs/data-science/analysis-deep/01-data-wrangling/VISUAL_GUIDE.md,9,7,78,0
 labs/data-science/analysis-deep/02-visualization-fundamentals/VISUAL_GUIDE.md,9,7,78,0
 labs/data-science/analysis-deep/03-descriptive-statistics/VISUAL_GUIDE.md,9,7,78,0
@@ -1994,8 +1941,6 @@ labs/data-science/ml-pipelines-deep/05-model-serving/VISUAL_GUIDE.md,9,7,78,0
 labs/data-science/ml-pipelines-deep/06-model-monitoring/VISUAL_GUIDE.md,9,7,78,0
 labs/data-science/ml-pipelines-deep/07-mlops-orchestration/VISUAL_GUIDE.md,9,7,78,0
 labs/data-science/ml-pipelines-deep/08-fraud-detection-system/VISUAL_GUIDE.md,9,7,78,0
-labs/math/discrete-deep/05-generating-functions/VISUAL_GUIDE.md,9,7,78,0
-labs/math/discrete-deep/06-number-theory/VISUAL_GUIDE.md,9,7,78,0
 labs/math/linear-algebra-deep/01-vector-spaces/VISUAL_GUIDE.md,9,7,78,0
 labs/math/linear-algebra-deep/02-linear-transformations/VISUAL_GUIDE.md,9,7,78,0
 labs/math/linear-algebra-deep/03-matrix-decompositions/VISUAL_GUIDE.md,9,7,78,0
@@ -2004,7 +1949,6 @@ labs/math/linear-algebra-deep/05-inner-products-norms/VISUAL_GUIDE.md,9,7,78,0
 labs/math/linear-algebra-deep/06-dual-spaces-tensors/VISUAL_GUIDE.md,9,7,78,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/VISUAL_GUIDE.md,9,7,78,0
 labs/math/linear-algebra-deep/08-matrix-calculus/VISUAL_GUIDE.md,9,7,78,0
-labs/math/probability-deep/08-bayesian-statistics/VISUAL_GUIDE.md,9,7,78,0
 labs/data-science/analysis-deep/04-exploratory-analysis/REFERENCES.md,13,10,77,0
 labs/data-science/analysis-deep/06-time-series-analysis/REFERENCES.md,13,10,77,0
 labs/data-science/analysis-deep/08-experimentation/REFERENCES.md,13,10,77,0
@@ -2286,9 +2230,6 @@ labs/databases/22-pl-sql-foundations/VISION.md,40,25,62,0
 labs/databases/23-pl-sql-advanced/VISION.md,40,25,62,0
 labs/databases/SQL_SOLUTIONS/VISION.md,40,25,62,0
 labs/databases/databases-deep/VISION.md,40,25,62,0
-labs/math/discrete-deep/04-graph-theory/WHY_IT_EXISTS.md,8,5,62,0
-labs/math/discrete-deep/05-generating-functions/WHY_IT_EXISTS.md,8,5,62,0
-labs/math/discrete-deep/06-number-theory/WHY_IT_EXISTS.md,8,5,62,0
 labs/math/linear-algebra-deep/01-vector-spaces/WHY_IT_EXISTS.md,8,5,62,0
 labs/math/linear-algebra-deep/02-linear-transformations/WHY_IT_EXISTS.md,8,5,62,0
 labs/math/linear-algebra-deep/03-matrix-decompositions/WHY_IT_EXISTS.md,8,5,62,0
@@ -2297,8 +2238,6 @@ labs/math/linear-algebra-deep/05-inner-products-norms/WHY_IT_EXISTS.md,8,5,62,0
 labs/math/linear-algebra-deep/06-dual-spaces-tensors/WHY_IT_EXISTS.md,8,5,62,0
 labs/math/linear-algebra-deep/07-applied-linear-algebra/WHY_IT_EXISTS.md,8,5,62,0
 labs/math/linear-algebra-deep/08-matrix-calculus/WHY_IT_EXISTS.md,8,5,62,0
-labs/math/probability-deep/07-hypothesis-testing/WHY_IT_EXISTS.md,8,5,62,0
-labs/math/probability-deep/08-bayesian-statistics/WHY_IT_EXISTS.md,8,5,62,0
 labs/algorithms/data-structures/THEORY.md,75,46,61,0
 labs/data-science/analysis-deep/10-data-pipelines/THEORY.md,32,19,59,0
 labs/data-science/ml-pipelines-deep/01-feature-stores/THEORY.md,32,19,59,0
