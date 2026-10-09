@@ -1,61 +1,49 @@
-﻿# Performance: Graph Theory Implementation
+﻿# Performance: Graph Algorithms
 
-## Performance Analysis
+## Representations Decide the Cost
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+| Representation | Memory | neighbors(v) | edge lookup (u,v) |
+|---|---|---|---|
+| adjacency list | Θ(V + E) | Θ(deg(v)) | Θ(deg(u)) |
+| adjacency matrix | Θ(V²) | Θ(V) | O(1) |
+| edge list | Θ(E) | Θ(E) scan | Θ(E) |
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+V = 10⁵, E = 4·10⁵: list ≈ (V+E)·8 bytes ≈ 4 MB (primitive arrays); matrix = 10¹⁰ cells — impossible (≈ 80 GB even as primitive `long`). Matrix only becomes viable for V ≤ ~10⁴, and there its O(1) edge tests and cache-dense loops make it competitive or better.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+## Traversal and Ordering (all linear)
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Graph Theory Implementation
+- **BFS/DFS/topological sort (Kahn):** O(V + E) — every vertex enqueued once, every edge examined once.
+- **Connected components:** O(V + E) via one DFS/BFS sweep.
+- **Cycle detection:** O(V + E) with three-color DFS (back edge to a gray node).
 
-## Code Smells and Improvements
+No graph algorithm beats Ω(V + E) for full traversal — the input itself has V + E entries.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Shortest Paths
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+- **Dijkstra + binary heap (lazy):** O((V + E) log V). With Fibonacci heap: O(E + V log V) — asymptotically better, but the constants make it impractical outside theory.
+- **Dijkstra + matrix, no heap:** O(V²) — for dense graphs (E ≈ V²) this beats the heap version: O(V²) vs O(V² log V).
+- **Bellman–Ford:** O(V·E) — needed for negative edges; also detects negative cycles.
+- **Floyd–Warshall (all pairs):** O(V³) time, O(V²) space (O(V) with on-the-fly reconstruction). Sensible up to V ≈ 1,000 (10⁹ word ops).
+- **BFS:** O(V + E) — only for unweighted/equal-weight graphs.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## Minimum Spanning Tree
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+- **Kruskal:** O(E log E) from the sort (union–find is O(E·α(V)) ≈ O(E)).
+- **Prim + binary heap:** O(E log V); with Fibonacci heap O(E + V log V).
+- Since E ≤ V² , E log E = O(E log V) — same order; choose Kruskal for sparse+edge-list input, Prim for dense+adjacency-matrix-adjacent workloads.
 
-## Refactoring Plan
+## Max Flow
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
+- **Edmonds–Karp (BFS augmenting):** O(V·E²) — simple and predictable.
+- **Dinic:** O(V²E) general, O(E√V) on unit-capacity bipartite graphs — the practical default.
+- **Push-relabel (highest-label):** O(V²E), often fastest in practice; relabel-to-front O(V³).
+- **Hopcroft–Karp bipartite matching:** O(E√V) — matching is a special case of flow with unit capacities.
 
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
+## Matching and Bipartite Testing
 
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+- **Hungarian algorithm (assignment):** O(V³) for weighted bipartite matching.
+- **Bipartite check:** O(V + E) (BFS 2-coloring).
+
+## Density Thresholds in One Line
+
+E < V/log V → lists clearly; E ≈ V² → matrices. The crossover for Dijkstra is around E/V ≈ V/log V: below it the heap wins, above it the O(V²) array scan wins. Always state which representation your quoted complexity assumes — "O(V+E)" silently presumes adjacency lists.

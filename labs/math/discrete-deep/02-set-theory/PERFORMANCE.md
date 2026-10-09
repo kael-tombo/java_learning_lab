@@ -1,61 +1,36 @@
-﻿# Performance: Set Theory Implementation
+﻿# Performance: Set Theory Operations
 
-## Performance Analysis
+## Costs of the Standard Implementations (Java)
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+| Structure | add / contains / remove | iteration order | memory per element |
+|---|---|---|---|
+| `HashSet` | O(1) amortized average, O(n) worst | unspecified | node + hash ≈ 32–48 bytes |
+| `TreeSet` | O(log n) | sorted by comparator | tree node ≈ 40 bytes |
+| `LinkedHashSet` | O(1) average | insertion order | node + two pointers |
+| `BitSet` (universe ≤ 2^k) | O(1) test, O(1) set | ascending element index | 1 bit per universe slot |
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+Numbers are from data-structure analysis (hashing, red-black trees), not measured benchmarks.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+## Choosing by Operation Mix
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Set Theory Implementation
+- Many membership probes against a growing collection → `HashSet`: n probes cost O(n) total instead of O(n log n) for a `TreeSet`.
+- Range queries ("all elements in [lo, hi]") → `TreeSet.subSet` is O(log n + k) for k reported elements; a `HashSet` cannot answer without scanning O(n).
+- Dense small universe (flags, primes below 10^6) → `BitSet`: a 10^6-element universe costs 1,000,000 bits ≈ 125 KB, versus ~30 MB for a `HashSet<Integer>` of the same density (boxing alone is 16 bytes/value).
 
-## Code Smells and Improvements
+## Union / Intersection / Difference Complexity
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+- `HashSet.addAll(b)`: Θ(|b|) hashing work plus node allocation; result build is Θ(|a| + |b|) in the worst case.
+- `BitSet.or(other)`: Θ(⌈n/64⌉) word operations with no allocation per element — roughly a 64× reduction in per-element work at the machine-word level, plus cache locality.
+- Checking disjointness short-circuits: iterate the smaller set, `contains` in the larger — O(min(|a|,|b|)) expected, vs O(|a|·|b|) with two lists.
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+## Power Set Generation
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+Enumerating P(A) by integer mask runs in O(n·2^n): there are 2^n subsets and building each from its mask costs Θ(n) (or Θ(1) amortized with Gray-code increments that flip one bit at a time). There is no O(2^n) algorithm with explicit element-by-element construction; this exponential is inherent to output size. Do not attempt P(A) for n > 25 in memory (2^25 = 33,554,432 subsets).
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+## Set Equality and Hashing Pitfalls (Cost Side)
 
-## Refactoring Plan
+`a.equals(b)` for two `HashSet`s is Θ(|a| + |b|) at best (contains checks) — and `hashCode` must therefore be Θ(n). Aggregating huge set hashes per frame (e.g., hashing a whole set inside a loop) turns an O(1) check into an O(n) hot spot; cache the hash or compare sizes first (`size()` mismatch → unequal in O(1)).
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
+## When a "Set" Should Be a Sort
 
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+Deduplicating n items via `TreeSet` costs O(n log n); via `HashSet` it costs O(n) average but pays hashing and memory. If the data is already being sorted anyway (comparison sort, merge joins), fold dedup into the sort and you get order + uniqueness for the same O(n log n) you were spending regardless.

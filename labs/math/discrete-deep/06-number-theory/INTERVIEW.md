@@ -1,36 +1,38 @@
 ﻿# Interview: Number Theory
 
-## Common Interview Questions
+## Conceptual Questions
 
-### Q1: Conceptual
-**Q**: Explain Number Theory and its importance in computing.
-**A**: Number Theory enables precise analysis of quantitative relationships, foundational for scientific computing and ML.
+**Q: What is 2⁻¹ mod 7, and when does a modular inverse exist?**
+A: 4, because 2·4 = 8 ≡ 1 (mod 7). An inverse of a mod m exists iff gcd(a, m) = 1 (a is a unit in Z/mZ); compute it with the extended Euclidean algorithm — the Bézout coefficient s in s·a + t·m = 1, normalized into [0, m). If gcd = d > 1, a's multiples only hit multiples of d, so 1 is unreachable: no inverse (e.g., 6⁻¹ mod 9 does not exist).
 
-### Q2: Implementation
-**Q**: How to implement Number Theory in Java 21+?
-**A**: Input validation, core algorithm with stable numerics, convergence checking, error bounds.
+**Q: Why does RSA decryption work?**
+A: Keygen picks primes p, q, n = pq, φ = (p−1)(q−1), e coprime to φ, d ≡ e⁻¹ (mod φ) — so ed = kφ + 1. For gcd(m, n) = 1, Euler's theorem gives m^φ ≡ 1, hence c^d = m^(ed) = m^(kφ+1) ≡ m (mod n). For m sharing a factor with n, Fermat's little theorem applied mod p and mod q separately gives the congruences, and CRT recombines them — so decryption holds for *all* m < n.
 
-### Q3: Numerical Analysis
-**Q**: What numerical issues arise?
-**A**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+**Q: Fermat test vs Miller–Rabin — why the upgrade?**
+A: The Fermat test (a^(n−1) ≡ 1) is fooled by Carmichael numbers — 561 passes for every base coprime to it. Miller–Rabin writes n−1 = 2^s·d and examines the squaring sequence from a^d; a prime must reach 1 only by passing through −1, while reaching 1 without −1 exhibits a nontrivial square root of 1, which proves compositeness. Each round has error ≤ 1/4 → k rounds error ≤ 4^(−k); for n < 2⁶⁴, twelve fixed bases are deterministic.
 
-### Q4: Performance
-**Q**: How to optimize for large inputs?
-**A**: Algorithmic improvements, parallel processing, memory optimization, JVM tuning.
+**Q: State Euler's theorem and Fermat's little theorem; how do they relate?**
+A: Fermat: p prime ⇒ a^p ≡ a (mod p), i.e., a^(p−1) ≡ 1 when p ∤ a. Euler: gcd(a, n) = 1 ⇒ a^φ(n) ≡ 1 (mod n). Euler is the general statement — the multiplicative group of Z/nZ has order φ(n), Lagrange's theorem forces every element's order to divide it, and for n = p the group has p−1 elements, recovering Fermat. Both fail loudly without coprimality: 2^φ(8) = 2⁴ = 16 ≡ 0 ≢ 1 (mod 8).
 
-### Q5: System Design
-**Q**: Design a computation service.
-**A**: API design, concurrency model, error handling, monitoring, deployment.
+**Q: How do you compute gcd, and why is it fast?**
+A: Euclid: (a, b) → (b, a mod b) until the remainder is 0; gcd is preserved because divisors of a − qb are shared. The second entry shrinks at least as fast as consecutive Fibonacci numbers, so steps are O(log min(a, b)) — for 64-bit inputs, at most ~90 divisions (Fibonacci 93 ≈ 1.2×10¹⁹ > 2⁶³).
 
-## Coding Challenge
-`java
-public double compute(double[] values) {
-    // O(n) time, O(1) space, handle edge cases
-    return 0.0;
-}
-`
+**Q: Explain the Chinese Remainder Theorem and one use.**
+A: For pairwise-coprime moduli, the map x ↦ (x mod m₁, …, x mod mₖ) is a bijection onto the product of residue rings — x is determined modulo M = Πmᵢ. Construction: x = Σ aᵢ·(M/mᵢ)·((M/mᵢ)⁻¹ mod mᵢ). Uses: solving remainder puzzles (x ≡ 2 mod 3, 3 mod 5, 2 mod 7 → 23), CRT-RSA (two smaller exponentiations mod p and mod q ≈ 4× faster decryption), and reasoning mod n = pq as two independent coordinates.
 
-## Behavioral Questions
-1. Describe debugging a numerical issue
-2. How do you ensure code correctness?
-3. Approach to learning new math concepts?
+## Computational Questions
+
+**Q: Compute 5¹²³ mod 7 two ways.**
+A: (1) Fermat: 5⁶ ≡ 1, 123 = 6·20 + 3 → 5¹²³ ≡ 5³ = 125 ≡ 6 (mod 7). (2) Square-and-multiply: 123 = 1111011₂; 5²≡4, 5⁴≡2, 5⁸≡4, 5¹⁶≡2, 5³²≡4, 5⁶⁴≡2; product of set-bit powers ≡ 2·4·2·4·4·5 ≡ 1·1·6 = 6. Both give 6; method 2 is what `modPow` runs: O(log e) multiplications.
+
+**Q: Complexity of the primitives?**
+A: gcd/extgcd O(log min(a, b)); modPow O(log e) modular multiplications (with big-int multiplication M(d): O(M(d)·log e)); sieve to N: O(N log log N) time, O(N) bits (O(√N) segmented); trial-division primality O(√n); Miller–Rabin O(k·log³ n); Pollard rho expected O(n^(1/4)) per factor; GNFS sub-exponential exp((64/9)^(1/3)(ln n)^(1/3)(ln ln n)^(2/3)).
+
+**Q: Your modPow gives wrong answers for large inputs. Diagnose.**
+A: (1) Overflow — are intermediates reduced *every* step, or does the product a·b exceed the word size before `%`? Use `multiplyMod`/`BigInteger`/double-and-add. (2) Negative residues — Java's `%` on a negative base returns negative; normalize to [0, m). (3) Exponent reduced incorrectly — reducing e mod φ(m) is invalid unless gcd(a, m) = 1. Cross-check everything against `BigInteger.modPow` on random triples.
+
+**Q: Choose sizes: RSA key, Miller–Rabin rounds, and justify.**
+A: 2048-bit modulus (≈112-bit security against GNFS: work grows sub-exponentially in bit length, so 1024 is deprecated, 3072 for long-term), e = 65537 = 2¹⁶+1 (17 squarings, and small enough that low-exponent attacks on badly padded messages stay impractical), k = 40–64 Miller–Rabin rounds (error ≤ 4^(−40) ≈ 2^(−80)), primes generated by random search with a CSPRNG (density 1/ln n ≈ 1/710 at 1024 bits → ~710 odd candidates per prime on average).
+
+**Q: How would you test a number-theory library?**
+A: Oracle = `BigInteger` (modPow, probablePrime) cross-checked on 10k random cases; fixtures = gcd(1071,462)=21, 3⁻¹ mod 352 = 235, 5¹²³ mod 7 = 6, CRT → 23, π(10³) = 168, π(10⁴) = 1229, toy RSA (391, 3, 235): Enc(50) = 271, Dec → 50; properties = a·a⁻¹ ≡ 1, a^p ≡ a mod p, φ(mn) = φ(m)φ(n) for coprime m,n, Miller–Rabin calls 561 composite while the Fermat test calls it prime; probes = modMul at Long.MAX_VALUE/2 (no overflow), all outputs asserted in [0, m).

@@ -1,45 +1,47 @@
-﻿# Architecture: Graph Theory Implementation
+﻿# Architecture: Graph Code Design
 
-## System Design
+## Choose the Representation From the Query Pattern
 
-The Graph Theory implementation follows a layered architecture:
+The representation is the load-bearing decision; everything else follows:
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+1. **Traversal-heavy, sparse (E ≈ few × V):** adjacency lists (primitive arrays or CSR). BFS/DFS/topo become O(V+E) with sequential memory access.
+2. **Edge-existence queries or dense graphs (E ≈ V²):** adjacency matrix — O(1) `hasEdge`, and O(V²) Dijkstra without a heap beats the heap version once E is near V².
+3. **Sort-then-process (Kruskal, connectivity by sorting):** edge list as the input format, converted once.
+4. **Static, huge, read-only:** CSR built in O(E) via counting sort, then all algorithms run against it.
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+Document the choice at the type level: `class AdjListGraph` vs `class MatrixGraph` behind a `Graph` interface, so an algorithm's complexity claim ("O(V+E)") is auditable against the storage it received.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## The Graph Interface
 
-## Design Patterns
+```java
+interface Graph {
+    int vertexCount();
+    Iterable<Integer> neighbors(int v);   // iteration, not random access
+    long weight(int u, int v);            // absent edge = INF sentinel
+    boolean directed();
+}
+```
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+Algorithms depend only on this — Dijkstra, BFS, topo sort, Kruskal (via an `edges()` view) are free functions over the interface. The alternative (passing `Map<String, List<String>>` around) bakes representation into every call site and makes the complexity contract unstatable.
 
-### Template Method
-Common algorithm skeleton with customizable steps.
+## Keep Direction, Weight, and Mutability Explicit
 
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
+Three orthogonal flags must be decided and written down:
 
-## Package Structure
-`
-com.mathlab.graphtheory/
-â”œâ”€â”€ GraphTheory.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
+- **Directed?** Undirected edges are stored as two directed arcs — never store one and hope algorithms mirror it.
+- **Weighted?** Use a sentinel (`Long.MAX_VALUE / 4`) for "no edge," and keep all accumulators in `long`.
+- **Mutable?** If weights/edges can change after Dijkstra starts, the heap invariant breaks (stale keys). Recommended: build an immutable snapshot (copy-on-build) for algorithm runs; mutate only between runs.
 
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
+## Path Reconstruction as Output
 
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+Algorithms return `dist[]` plus `parent[]`, not path lists — O(V) memory regardless of how many paths are later requested. A separate `rebuildPath(parent, t)` walks parents in O(path length). For multiple sources, a `source[]` array distinguishes which tree each node belongs to (BFS forest for disconnected graphs).
+
+## Component Handling
+
+A `components()` pass (O(V+E)) runs before any per-component algorithm: single-source algorithms from an arbitrary node silently ignore other components. Architecture rule: any "whole graph" claim (diameter, average path, connectivity) must either prove connectivity first or iterate components explicitly.
+
+## Testing Architecture
+
+- **Oracle:** for V ≤ 8, Floyd–Warshall all-pairs vs per-node Dijkstra vs BFS (unweighted case) — cross-validation of three independent implementations.
+- **Property tests:** random sparse graphs (Erdős–Rényi style: include each edge with p = c/V) with known invariants — MST weight = Kruskal = Prim; max flow ≤ min cut (always) and equal (by theorem); BFS dist ≤ Dijkstra dist on unit weights (equal).
+- **Fixture style:** the 6-node lab graph (STEP_BY_STEP) is the golden fixture: distances 0, 3, 2, 8, 10, 13 must be reproduced exactly by any shortest-path implementation.

@@ -1,61 +1,43 @@
-﻿# Performance: Generating Functions Implementation
+﻿# Performance: Generating Function Algorithms
 
-## Performance Analysis
+## Extraction Strategies and Their Exact Costs
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+For the n-th term of a sequence with GF A(x) = P/Q, deg Q = k:
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+| Strategy | Time | Memory | When |
+|---|---|---|---|
+| Linear recurrence loop from Q | Θ(k·n) | O(k) | any n, rational GF |
+| Fast doubling / matrix power | O(k³·M(log n)) with matrix mult, O(M(log n)) for constant k | O(k²) | huge n (10⁹+) |
+| Truncated series to degree n | Θ(n²) schoolbook multiply | O(n) | many small n, or non-rational GF |
+| Series via FFT | Θ(n log n) per multiply | O(n) | very large truncations |
+| Closed form Σcᵢλᵢⁿ | O(#distinct roots) per term | O(1) | roots known, needs exact arithmetic |
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+Key rule: **once you have Q, never multiply series again** — the recurrence read-off is Θ(k·n) and beats Θ(n²) convolutions by a factor of n/k.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Generating Functions Implementation
+## When a Closed Form Beats DP (Concrete)
 
-## Code Smells and Improvements
+- Fibonacci/Fib-like aₙ = aₙ₋₁ + 2aₙ₋₂: iterative DP Θ(n) time, O(1) memory. Binet/fractional-power form computes one term in O(log n) via exponentiation by squaring (exactly, using fast doubling: F₂ₙ = Fₙ(2Fₙ₊₁ − Fₙ), F₂ₙ₊₁ = Fₙ₊₁² + Fₙ²). For n = 10⁹ the loop does 10⁹ additions; fast doubling does ~60 doublings.
+- Catalan: DP Θ(n²) additions vs closed form C(2n,n)/(n+1) = Θ(n) multiplications — a factor-of-n win (see lab 03).
+- Coin change for arbitrary n with fixed coin set: DP Θ(K·n) (K coin types) has **no** comparable closed form; that is a case where the GF *is* the answer's representation, and the DP is the extraction.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Cost of Algebra Itself
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+- Truncated product of two degree-N series: Θ(N²) (schoolbook) — building Π 1/(1−x^cᵢ) for K coin types by K successive products is Θ(K·N²).
+- Inverting (dividing by) a series: Θ(N²) naive, O(M(N) log N) with Newton iteration — for GF(2) or modular coefficient rings with fast multiplication this becomes near-linear.
+- exp/log of a series: Θ(N²) naive, O(M(N) log N) Newton — needed for the exp(G) constructions (set-of components).
+- Partial fractions with degree-N denominator: root-finding is numerically unstable beyond modest degree; symbolic factorization cost dominates and is the reason libraries prefer the recurrence path.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## Coefficient Size Is a Hidden Cost
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+The truncation degree N is not the storage: counts grow. p(100) ≈ 7.9×10¹¹ (12 digits, exceeds `int`), p(1000) ≈ 2.4×10³¹ (32 digits), and by the Hardy–Ramanujan asymptotic p(n) ~ e^(π√(2n/3))/(4n√3) the digit count is Θ(√n) — so storing degree-N coefficient lists costs Θ(N·√N) digits ≈ Θ(N^1.5) word operations for the big-integer multiplications, not Θ(N²) word ops. Any performance claim for series libraries must state the coefficient ring (fixed-width mod p vs exact integers).
 
-## Refactoring Plan
+## Composition (F(G(x))) Is the Expensive One
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
+Formal composition costs Θ(N²) with Horner (evaluating N nested polynomials each of degree ≤ N). Compared with multiplication (also Θ(N²) but with a much smaller constant and vectorizable), composition dominates when a formula requires nested substitutions — prefer the structural route (functional equation → kernel method → linear solve) over raw composition.
 
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
+## Practical Summary
 
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+- Need one term, n up to 10⁷, rational GF: recurrence loop, Θ(k·n), O(k) memory.
+- Need one term, n = 10¹⁸: fast doubling O(log n).
+- Need 10,000 terms of a non-rational GF: series truncation once, Θ(N²) or Θ(N log N), then O(1) lookups — precomputation is the point.
+- Never build a degree-10⁶ series with schoolbook convolution (10¹² operations); switch to FFT or to recurrence extraction.

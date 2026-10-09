@@ -1,33 +1,38 @@
 ﻿# Common Mistakes: Set Theory
 
-## Top 10 Common Mistakes
+## 1. Confusing ∈ with ⊆
 
-### 1. Ignoring Edge Cases
-Failing to handle zero, negative, or extreme values.
+`x ∈ A` means x is one element of A. `A ⊆ B` means every element of A is an element of B. Writing `3 ∈ {1, 2, 3}` is correct; writing `{3} ∈ {1, 2, 3}` is not — `{3}` is not an element of that set, though `{3} ⊆ {1, 2, 3}` is true. A related trap: `∅ ∈ {∅}` is true and `∅ ⊆ {∅}` is also true, but `∅ ∈ ∅` and `∅ ⊆ ∅` differ — only the second is true (everything is a subset of itself; nothing is an element of the empty set).
 
-### 2. Assuming Exact Arithmetic
-Floating-point operations do not produce exact results.
+## 2. Assuming A − B = B − A
 
-### 3. Premature Optimization
-Optimize only after establishing correctness.
+Set difference is not commutative. With A = {1, 2, 3} and B = {3, 4}: A − B = {1, 2} while B − A = {4}. They are equal only when A = B. The commutative operation on two sets is the *symmetric difference* A Δ B = (A − B) ∪ (B − A). If your code asserts `aMinusB.equals(bMinusA)` outside of A.equals(B), the assertion is wrong.
 
-### 4. Algorithm Mismatch
-Using inappropriate algorithms for the input type.
+## 3. De Morgan Errors
 
-### 5. Ignoring Numerical Stability
-Unstable formulations amplify rounding errors.
+De Morgan's laws apply to the *complement*, not to difference: (A − B)ᶜ = Aᶜ ∪ B. Students frequently write (A − B)ᶜ = Aᶜ − Bᶜ, which is false. The correct duals:
 
-### 6. Incorrect Boundary Conditions
-Applying formulas outside valid domain.
+- (A ∪ B)ᶜ = Aᶜ ∩ Bᶜ
+- (A ∩ B)ᶜ = Aᶜ ∪ Bᶜ
 
-### 7. Missing Convergence Checks
-Iterative algorithms need proper termination criteria.
+A common coding bug negates only one disjunct: to express "not (underage or citizen)" a developer writes `age >= 18 && citizen`, which is wrong. Apply De Morgan first: ¬(age < 18 ∨ citizen) = (age ≥ 18) ∧ ¬citizen. Flip both disjuncts and swap ∨ for ∧; flipping the operator without flipping the operands is the classic half-done negation.
 
-### 8. Thread Safety Assumptions
-Verify thread safety for concurrent usage.
+## 4. Mixing Up ∅ and {∅}
 
-### 9. Insufficient Testing
-Test edge cases, not just happy paths.
+The empty set has 0 elements. {∅} has exactly 1 element, namely ∅. P(∅) = {∅} (one subset), while P({∅}) = {∅, {∅}} (two subsets). Confusing these flips base cases in recursive constructions.
 
-### 10. Documentation Decay
-Keep docs synchronized with implementation.
+## 5. Forgetting the Power-Set Size Formula
+
+|P(A)| = 2^|A|, not |A|² or |A|^|A|. For A = {1,2,3} the eight subsets are ∅, three singletons, three pairs, and A itself.
+
+## 6. Treating Union/Intersection as "Add and Multiply"
+
+|A ∪ B| = |A| + |B| − |A ∩ B| (inclusion–exclusion). |A ∩ B| is not |A|·|B| unless A and B are independent in a probabilistic sense, which is not a property of sets at all. Always subtract the overlap when counting a union.
+
+## 7. Assuming Intersection Is Never Empty
+
+The empty set is a perfectly good subset of every set. A ∩ B = ∅ says nothing is wrong; your code must branch on the empty case rather than assume at least one common element exists.
+
+## 8. Cartesian Product Non-Commutativity
+
+A × B ≠ B × A unless A = B or one is empty. The ordered pair (a, b) records position; {{a, b}, {a}} (Kuratowski) still distinguishes a from b because the outer structure differs.
