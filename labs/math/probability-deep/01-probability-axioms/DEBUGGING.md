@@ -1,35 +1,30 @@
 ﻿# Debugging: Probability Axioms Implementation
 
-## Common Bugs
+### Symptom: probabilities sum to 1.0000000002 after normalization
+Cells were rounded individually before dividing. Normalize *after* summation: sum once, divide every cell by that one sum, and assert `|Σp − 1| < 1e-12`.
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+### Symptom: NaN from a conditional probability
+P(A|B) computed as 0/0 when B was never assigned mass — conditioning on an event the model treats as impossible. Guard: if P(B) < epsilon, either return an unconditional value or report "conditioning event has zero probability" instead of silently returning NaN.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+### Symptom: enumerated space has 21 outcomes for two dice
+Ordered pairs number 36 (6 × 6); treating {(i,j)} as unordered gives 21 outcomes with *unequal* probabilities, so P(sum = 7) comes out 1/6 instead of the correct 6/36. If you enumerate unordered outcomes, weight each by its multiplicity.
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+### Symptom: simulation disagrees with the analytic answer
+For Monty Hall the switch strategy converges to 2/3, not 1/2. Usual causes: reusing the same seed across strategies, shuffling in place so the car position is no longer uniform, or stopping early (check the SE bound 1/(2√N)).
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+### Symptom: 0.1 + 0.2 != 0.3 in a probability assertion
+Binary floating point cannot represent 0.1. Assert with a tolerance (1e-12) or compute the cell exactly with `BigInteger` numerator/denominator and compare rationals.
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+### Symptom: independent events still show correlation in samples
+Independence is a statement about the joint *model*, not about small samples: n = 100 draws estimate a correlation with standard error ≈ 1/√n = 0.1. Increase n before suspecting the model — or check that the RNG is not an LCG sampled in a correlated pattern.
 
-## Debugging Techniques
+### Symptom: union probability exceeds 1
+Overlapping events were added. Walk the partition: {A ∩ B, A ∩ ¬B, ¬A ∩ B, ¬A ∩ ¬B} must be disjoint and sum to 1; a sum > 1 somewhere localizes the overlap.
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+## Triage order when a probability looks wrong
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
-
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+1. Recompute Σp over the whole space — must be 1 to 1e-12. If it is off, the bug is upstream of the query.
+2. Check the support: two dice give 36 ordered cells, not 21; support errors corrupt every downstream ratio.
+3. Recompute one conditional by hand from the joint table. Table right + conditional wrong ⇒ wrong denominator.
+4. Re-evaluate the same quantity with exact BigInteger rationals; divergence beyond 1e-12 means rounding (sum) or cancellation (ratio).
+5. Only then suspect the sampler: RNG seed, independence of draws, and N ≥ 1/SE² trials for the precision you claimed.

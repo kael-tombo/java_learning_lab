@@ -1,61 +1,40 @@
 ﻿# Performance: Probability Axioms Implementation
 
-## Performance Analysis
+## Exact vs. enumerated computation
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+- **Inclusion–exclusion over n events** expands to 2ⁿ − 1 intersection terms. Exact union probability for arbitrary dependent events is therefore exponential in n; exploit independence (complement product), a Markov structure, or fall back to sampling.
+- **Enumerating a joint space** of |A| × |B| states costs O(|A|·|B|) time and space. Conditioning must not allocate a second table: accumulate the numerator and denominator in one pass, then divide once.
+- **Factoring the joint** turns exponential into linear: naive Bayes over K classes with F features is O(K·F) per prediction instead of O(|X₁|…|X_F|).
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Numerical cost of multiplying probabilities
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+- A product of n doubles each ≈ 0.5 enters the subnormal range near n ≈ 1024 (2⁻¹⁰²² is the smallest normal) and reaches exactly zero near n ≈ 1074. Keep products in log space — sum logs — and normalize with log-sum-exp: `logsumexp(v) = m + log Σ e^(v_i − m)`.
+- Summing n probabilities naively accumulates error O(n·ε) with ε ≈ 2.2e-16; compensated (Kahan/Neumaier) summation keeps the error near one ulp of the result. Probabilities renormalized from tables should be checked with `|Σp − 1| < 1e-12`.
+- Comparing probabilities for equality is meaningless at double precision; compare odds ratios, or use exact `BigInteger` fractions when the denominators are small (dice, card combinatorics).
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Probability Axioms Implementation
+## Estimating probabilities by sampling
 
-## Code Smells and Improvements
+Monte Carlo estimate p̂ from N independent trials has standard error √(p(1−p)/N) ≤ 1/(2√N):
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+| N | worst-case SE |
+|-------|---------------|
+| 10² | 0.05 |
+| 10⁴ | 0.005 |
+| 10⁶ | 0.0005 |
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+The error shrinks like N^(−1/2): four times more precision costs 16 times more samples. Seed the generator explicitly, or two "independent" simulations silently return the same p̂.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## What not to do
+Do not cache conditional tables keyed by exact double values of the conditioning event, and do not invert a covariance-free joint by repeated marginalization — it is O(2^n) work where one normalization pass suffices.
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+## Cost summary
 
-## Refactoring Plan
+| Operation | Cost |
+|---|---|
+| Union / intersection of bitset events (≤ 64 outcomes) | O(1) |
+| Inclusion–exclusion over n arbitrary events | O(2ⁿ) — exponential by construction |
+| Conditioning a table over \|Ω\| cells | O(\|Ω\|), one division |
+| Product rule over a factored model (naive Bayes) | O(K·F) instead of O(\|X₁\|…\|X_F\|) |
+| Monte Carlo estimate to ±e at 95% | 0.96/e² trials (from SE ≤ 1/(2√N)) |
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+These are identities from the algorithms themselves — no timing claims. The practical rule: exact beats sampling whenever the state space factors, and sampling wins the moment it does not.
