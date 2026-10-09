@@ -1,172 +1,112 @@
 # ConcurrentHashMap — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-Segmented locking (pre-8), CAS-based design (8+), red-black tree bin, transfer queue, size calculation
+`java.util.concurrent.ConcurrentHashMap` (CHM) is a lock-striped hash table where
+**buckets, not the map, are the unit of locking**. Reads are almost entirely
+lock-free; writes lock only the first node of one bucket. Since Java 8 it shares
+HashMap's `Node[]` layout — the old Java 7 `Segment` array is gone, and
+`concurrencyLevel` survives only as a constructor parameter that is ignored.
 
-### 2. Theoretical Foundation
-The ConcurrentHashMap is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## The put Path (JDK 23 source order)
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+```
+put(key, value):
+  1. initTable()                    // lazy; sizes via sizeCtl
+  2. i = (n-1) & hash; f = tabAt(tab, i)
+  3. f == null  -> casTabAt(tab, i, null, Node)   // EMPTY BIN: pure CAS, no lock
+  4. f.hash == MOVED -> helpTransfer(tab, f)      // resize in progress: help out
+  5. onlyIfAbsent && key matches   -> return old value without locking (fast read)
+  6. else synchronized (f) { ... }  // lock ONLY the first node of this bucket
+```
 
-### 3. Algorithmic Details
+Step 3 is why uncontended inserts into fresh buckets never touch a monitor. Step 6
+locks on the *node* `f`, not the map — two puts to different buckets proceed in
+parallel, two puts to the same bucket serialize.
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+## Counting: LongAdder-Style, Not Atomic
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+A single `AtomicLong size` would be the contention hotspot of the whole map. CHM
+instead copies `LongAdder`:
 
-### 4. Trade-offs
+```java
+sumCount() = baseCount + Σ counterCells[i].value
+```
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+Each increment first CASes `baseCount`; on contention it hashes the thread's probe
+to a `CounterCell` and CASes *that*. Contention splits across cells, so the sum is
+cheap under load — at the cost that `size()` is a **snapshot approximation** that
+may be stale the moment it returns.
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+`size()` clamps the result into `[0, Integer.MAX_VALUE]`.
 
-### 5. Mathematical Basis
+## Resizing: Cooperative Transfer
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+Resize doubles capacity (power of two, like HashMap). The differences:
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+- **No thread owns the resize alone.** The thread that trips the threshold installs
+  a `ForwardingNode` (hash = `MOVED`) marking a bucket as moved; every other thread
+  that meets `MOVED` calls `helpTransfer` and joins the work. A stuck resize is
+  therefore unlikely even if the triggering thread pauses.
+- Resize triggers when `sumCount() >= sizeCtl` (not on load factor per bucket).
+- The **old table stays readable** during transfer: readers hitting a moved bucket
+  follow the forwarding node to the new table, so no read ever blocks on resize.
 
-## Summary
-The ConcurrentHashMap represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+`initialCapacity` and `loadFactor` are consumed **once**, in the constructor:
+`size = 1.0 + initialCapacity / loadFactor`, rounded up to a power of two. After
+that, load factor plays no role in growth decisions — `sizeCtl` becomes the
+next-threshold marker.
 
-## Key Theorems
+## Treeification
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+Identical thresholds to HashMap: bins treeify at **TREEIFY_THRESHOLD = 8**, only in
+tables ≥ **MIN_TREEIFY_CAPACITY = 64**, and untreeify on resize-split at
+**UNTREEIFY_THRESHOLD = 6**. The treeified bin locks its `TreeBin` root — and
+`TreeBin` may briefly lock/unlock to maintain balancing, so a reader can see a
+lock retry loop rather than blocking indefinitely.
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+## Why null Is Banned
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+CHM rejects null keys **and** null values (`throw new NullPointerException()`).
+`get(k) == null` must unambiguously mean "absent": if null were a storable value,
+every `putIfAbsent`, `compute`, and `merge` would need a second probe to
+disambiguate. HashMap permits null because it has no concurrency ambiguity to
+resolve; CHM chose total clarity instead.
 
-## Key Insights
+## Visibility: volatile + Unsafe, Not synchronized Reads
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+Bucket heads are read through `tabAt` (an `Unsafe` volatile load) and written
+through `casTabAt`. Node fields `val` and `next` are `volatile`. So:
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+- A reader sees any completed write to `val` without locking — `replace(k, old, new)`
+  and `get` work lock-free.
+- The happens-before edge comes from volatile/CAS, not from monitors, which is what
+  keeps read throughput close to a plain HashMap under read-heavy load.
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+## Iteration and Weak Consistency
 
+Iterators are **weakly consistent**: they never throw
+`ConcurrentModificationException`, never block, and may or may not reflect
+concurrent updates. `size()`, `isEmpty()`, `containsValue()` are all snapshots of a
+moving target — fine for monitoring, wrong for logic that needs a consistent view
+(for that, take a lock or copy under `synchronized`).
 
-## Further Exploration
+## Complexity Summary
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+| Operation | Cost |
+|-----------|------|
+| get | O(1) expected, lock-free |
+| put (empty bucket) | O(1) expected, one CAS |
+| put (contended bucket) | O(1) expected, one monitor on that bucket |
+| size() | O(#cells), snapshot, approximate |
+| iteration | O(N), weakly consistent |
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Key Invariants
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-
-- **ConcurrentHashMap.java, OpenJDK master (written by Doug Lea, JSR-166)** — https://github.com/openjdk/jdk/blob/master/src/java.base/share/classes/java/util/concurrent/ConcurrentHashMap.java (fetched via raw.githubusercontent mirror Oct 2026) — first-node insertion into an empty bin is a lock-free CAS (`casTabAt`), locking only on bin collision using the first node as the lock; verify in `src/main/java/com/javalab/02/ConcurrentHashMapSimulator.java` that disjoint-key puts scale while same-bin puts serialize.
-- **Same source, class-level "Overview" comment (Poisson distribution table)** — under uniform hashes, ~60% of bins are empty and contention for two threads on distinct elements is ≈ 1/(8 × #elements); use this in `MATH_FOUNDATION.md`/`EXERCISES.md` to predict when `StripedLockMap.java` should converge to CHM behavior and to justify `initialCapacity` sizing in `ConcurrentHashMapInternalsDemo.java`.
-- **Same source, `TREEIFY_THRESHOLD = 8` / `MIN_TREEIFY_CAPACITY = 64`** — bins convert list→red-black tree only past 8 nodes (and resize instead below capacity 64), bounding hostile-hash worst case to ~O(log N); craft a same-`hashCode()` key test in `ConcurrentHashMapSimulatorTest.java` showing throughput collapse without treeification and recovery with it.
-- **Same source, `computeIfAbsent` + `LongAdder` frequency-map recipe** (`freqs.computeIfAbsent(key, k -> new LongAdder()).increment()`) — replaces read-modify-write races; port this into `src/main/java/com/javalab/02/ComputeIfAbsentExample.java` and contrast against a `get`-then-`put` version under `TESTS/` concurrency stress.
+1. Capacity is a power of two; `(n-1) & hash` is the only index computation.
+2. A bucket is locked only via `synchronized (firstNode)` — never the table or map.
+3. Any bucket whose head has hash `MOVED` must be skipped by readers and completed
+   by writers via `helpTransfer`.
+4. `sumCount()` equals total structural increments if no cell CAS fails mid-flight;
+   transient undercount during contention is accepted and self-corrects.
+5. Null keys and values are impossible, so presence tests are single-probe.
