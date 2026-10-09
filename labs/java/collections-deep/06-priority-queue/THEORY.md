@@ -1,165 +1,124 @@
-# PriorityQueue — Theoretical Foundation
+# PriorityQueue Deep Dive — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-Binary heap, siftUp/siftDown, heapify O(n), comparator-based ordering, priority inversion
+`java.util.PriorityQueue<E>` is a **binary min-heap** stored in a plain
+`Object[] queue` — no node objects, no pointers. The parent of index k is
+`(k - 1) >>> 1`, children are `2k+1` and `2k+2`. The array *is* the tree:
+element 0 is always the minimum (under natural ordering or the supplied
+comparator).
 
-### 2. Theoretical Foundation
-The PriorityQueue is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+It implements `Queue`, not `Deque`: **no peek-last, no iteration in sorted
+order, no push/pop at both ends**. Those belong to `PriorityBlockingQueue`'s
+cousin operations or `TreeMap.firstKey`.
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+## The Two Sift Operations
 
-### 3. Algorithmic Details
+Insertion (`offer`/`add`) calls `siftUp`:
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+```java
+while (k > 0) {
+    int parent = (k - 1) >>> 1;
+    if (key.compareTo((T) es[parent]) >= 0) break;   // heap property restored
+    es[k] = es[parent];                              // pull parent down
+    k = parent;
+}
+es[k] = key;
+```
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+Removal (`poll`) replaces the root with the **last** element, sets
+`size--`, then `siftDown` from index 0: take the smaller child, pull it up,
+continue. Both are O(log n) with no allocation — the element moves *within* the
+array, never out of it.
 
-### 4. Trade-offs
+`heapify()` (used when building from a collection) starts at
+`(n >>> 1) - 1` and walks down to 0 — the last non-leaf node. Building n
+elements this way is **O(n)**, not O(n log n): the sum of subtree heights
+Σ n/2^(h+1) · h converges to 2n. This is the standard Floyd build-heap result.
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+## Growth: +2 Below 64, Then 50%
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+```java
+int newCapacity = ArraysSupport.newLength(oldCapacity,
+        minCapacity - oldCapacity,
+        oldCapacity < 64 ? oldCapacity + 2 : oldCapacity >> 1);
+```
 
-### 5. Mathematical Basis
+A fresh `PriorityQueue()` **eagerly allocates `Object[11]`** —
+`DEFAULT_INITIAL_CAPACITY = 11`, and the constructor rejects
+`initialCapacity < 1` with `IllegalArgumentException` (kept "for 1.5
+compatibility", per the source comment). Small arrays grow by `oldCapacity + 2`
+(about doubling: 11 → 24 → 50), then switch to the same 1.5× factor ArrayList
+uses once capacity reaches 64. The `< 64` special case avoids over-allocating
+for tiny heaps.
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+## Operation Costs
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+| Operation | Cost | Notes |
+|-----------|------|-------|
+| offer / add | O(log n) | siftUp |
+| poll | O(log n) | siftDown from root |
+| peek | O(1) | `queue[0]` |
+| contains(Object) | O(n) | linear scan of the array |
+| remove(Object) | O(n) find + O(log n) sift | indexOf + shrink-replace |
+| iterator | O(n) | **unordered** — internal heap order, not sorted |
+| toArray / addAll(collection) | O(n) | addAll does heapify, O(n) |
 
-## Summary
-The PriorityQueue represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+The trap row is **iteration**: users expect sorted output and get heap order
+(e.g. `[1, 3, 2, 7, 4, 5]` for a 7-element queue). Sorted output requires
+draining via repeated `poll()` — O(n log n) total — or copying and sorting.
 
-## Key Theorems
+## PriorityQueue Is Not Thread-Safe
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+`PriorityQueue` is unsynchronized; its documented sibling,
+`PriorityBlockingQueue`, adds a `ReentrantLock` around every operation —
+same heap, O(log n) still, but contention serializes writers while `peek`
+takes the lock briefly (it must: a concurrent `poll` could empty the array
+underneath).
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+Fail-fast iterators apply (modCount checks) — `ConcurrentModificationException`
+on structural change during iteration, best-effort like the rest of
+java.util.
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+## Null and Ordering Rules
 
-## Key Insights
+- **Null is banned**: `offer(null)` throws NPE immediately — comparing null
+  against the root is meaningless under both natural and custom ordering.
+  (Contrast: LinkedList/ArrayList accept null; HashMap accepts one null key.)
+- Natural ordering requires `Comparable` — failure appears at first insertion
+  (`ClassCastException` inside `compareTo`), not at construction.
+- A supplied `Comparator` decides everything; `null` elements remain banned
+  even if the comparator could handle them — the check is unconditional.
+- **No equality-based semantics**: `remove(Object)`/`contains` use `equals`,
+  but *duplicates by equals are all retained* — the queue keeps as many copies
+  as you offer, since heap ordering only cares about compareTo position.
+  `remove(one)` removes the first array-slot match, which may not be the
+  "first" logically.
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+## Why poll() Is O(log n) and Not O(n)
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+Removing the root would naively require shifting the whole array (as an
+ArrayList would). The heap trick: move the *last* element to the root (O(1)),
+then sift it down — at most log₂ n swaps, each comparing two array slots
+that are cache-adjacent (children of k are 2k+1, 2k+2 — same or next cache
+line for small k). This locality is why PriorityQueue beats a sorted-array
+approach for mixed insert/remove workloads.
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+## Selection Sort vs Heap: The HeapSelect Note
 
+Two `poll()` calls do **not** give the second-smallest element in O(1) — they
+destructively rebuild the heap each time. For "top k" queries, `stream.sorted()
+.limit(k)` (which uses a bounded priority queue internally) is the idiom;
+for repeated single-min queries, keep the queue alive.
 
-## Further Exploration
+## Key Invariants
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. For every index k > 0: `queue[(k-1)>>>1]` compares ≤ `queue[k]` (min-heap
+   property) after every completed public operation.
+2. `0 ≤ size ≤ queue.length`; slots `[size, length)` hold stale references —
+   `poll` and `remove` null them out to avoid leaking.
+3. `queue[0]` is the minimum iff `size > 0` — `element()` throws
+   `NoSuchElementException` on empty rather than returning null.
+4. `modCount` increments on every `offer` (verified: unconditional, right after
+   the null check), on `poll` of a non-empty queue, and on `clear`/`removeAt` —
+   so any structural change is visible to an outstanding iterator.
