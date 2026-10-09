@@ -1,165 +1,124 @@
-# TreeMap & TreeSet — Theoretical Foundation
+# TreeMap / TreeSet Deep Dive — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-Red-black tree properties, rotations, self-balancing, comparator, subMap/headMap/tailMap views
+`TreeMap<K,V>` is a **red-black tree** of `Entry` nodes implementing `SortedMap`/
+`NavigableMap`; `TreeSet<E>` is a `TreeMap<E, Boolean>` under the hood (the value
+is a shared `PRESENT` sentinel). Red-black coloring is literal in the source:
 
-### 2. Theoretical Foundation
-The TreeMap & TreeSet is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+```java
+private static final boolean RED   = false;
+private static final boolean BLACK = true;
+```
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+Self-balancing guarantees **O(log n)** for get/put/remove — the guarantee HashMap
+can't make under adversarial hashes, at the price of losing O(1) and iteration
+order.
 
-### 3. Algorithmic Details
+## Ordering: Where the Comparator Comes From
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+Three sources, resolved in order:
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+1. Constructor-supplied `Comparator` — used if present (the `getEntryUsingComparator`
+   fast path exists purely so the field check happens once, not per node).
+2. Else `Comparable<? super K>` — keys **must** implement `Comparable`; casting
+   happens once at the root and each `compareTo` is on the declared type.
+3. Neither → `ClassCastException` at first operation.
 
-### 4. Trade-offs
+**Null keys are rejected** when ordering by natural comparison — `compare(key,
+key)` is called on an *empty* map specifically to trigger the type/null check
+before anything is inserted (`addEntryToEmptyMap` does this as its first act).
+A custom comparator *may* permit nulls; the map itself never blocks them if the
+comparator handles them. TreeSet inherits the same rule.
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+This differs from HashMap (one null key allowed, hashed to bucket 0) and from
+ConcurrentHashMap (nulls banned outright).
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+## Lookup Is a Binary Search Tree Walk
 
-### 5. Mathematical Basis
+```java
+Entry<K,V> p = root;
+while (p != null) {
+    int cmp = k.compareTo(p.key);
+    if (cmp < 0)      p = p.left;
+    else if (cmp > 0) p = p.right;
+    else              return p;     // equality via compareTo == 0, NOT equals()
+}
+return null;
+```
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+**Key subtlety**: identity in a TreeMap is `compareTo(...) == 0` (or
+`comparator.compare(...) == 0`), *not* `equals()`. A TreeSet built with a
+case-insensitive comparator treats `"a"` and `"A"` as the same element — adding
+the second is a silent no-return, and `equals` can disagree with the set's own
+`contains`. This is a documented wart of the whole SortedSet family.
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+## Complexity and Why It Beats HashMap on Range Queries
 
-## Summary
-The TreeMap & TreeSet represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+| Operation | TreeMap | HashMap |
+|-----------|---------|---------|
+| get / put / remove | O(log n) | O(1) expected |
+| firstKey / lastKey | O(log n) | O(n) — full scan |
+| range query subMap(k1,k2) | O(log n + k) | O(n) to sort |
+| iteration in key order | O(n) after O(log n) leftmost find | O(n) **unordered** |
+| memory per entry | ~48 B (3 refs + key + val + boolean) | node ~32 B + array slot |
 
-## Key Theorems
+`firstKey` doesn't scan: it walks `left` pointers from the root — one descent,
+O(log n). The whole point of the ordering is that *sorted access is native*.
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+## Red-Black Invariants (the four rules)
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+1. Every node is red or black.
+2. The root is black.
+3. Every leaf (`null` child) is black.
+4. Red nodes never have red children (no two reds in a row).
+5. Every path from root to a leaf has the same black count.
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+Rules 4+5 together bound the tree height to **≤ 2·log₂(n+1)** — that's the
+entire reason O(log n) holds even in the worst case. The rebalancing after
+insert/remove (`fixAfterInsertion`/`fixAfterDeletion`) does rotations plus color
+flips; the classic result is **at most 2 rotations per insertion** and **at most
+3 per deletion**, so balancing is cheap relative to the search that found the
+position.
 
-## Key Insights
+## Range Views Are Live, Not Copies
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+`headMap`, `tailMap`, `subMap` return **views**: mutations through the view
+mutate the backing tree, and vice versa. They compose (`subMap(a,true,b,false)
+.tailMap(c)`), which is how you express arbitrary intervals. The bounds are
+checked against the *parent's* bounds at call time — a view cannot escape its
+creator's range.
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+## Iteration: Weakly Consistent via modCount
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+`keySet().iterator()` is fail-fast like the rest of Collections — captures
+`modCount`, throws `ConcurrentModificationException` on structural drift. The
+iterator walks the tree in ascending order using a `successor` link computed
+on the fly (it does not materialize a sorted array first — iteration is
+O(n) total with O(log n) worst-case per `next()` for the first successor find).
 
+## Navigable Extras That Justify the Class
 
-## Further Exploration
+- `floorKey/ceilingKey/higherKey/lowerKey` — nearest-neighbor lookups in O(log n),
+  impossible on HashMap without sorting everything.
+- `pollFirstEntry` — removes-and-returns the minimum in O(log n): this is why
+  TreeMap backs priority-queue-like workloads where you also need lookups by key.
+- `descendingMap()` — a reversed *view*, no copy.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## TreeSet-Specific Notes
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+- `add` returns false when an equivalent key exists (`compareTo == 0`), silently —
+  no exception, no overwrite (unlike `put` on TreeMap, which replaces the value).
+- Set algebra (`addAll`, `retainAll`, `removeAll`) on TreeSet is O(m·log n)
+  for m = size of argument — versus O(n) HashSet union. Small n favors HashSet;
+  large n with sorted iteration favors TreeSet.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Key Invariants
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Black-height (rule 5) is identical on every root-to-leaf path after every
+   mutation — the balancing methods restore it before returning.
+2. In-order traversal of the tree yields keys in ascending order; `firstKey`
+   is the leftmost node, `lastKey` the rightmost.
+3. Element identity is comparator-equivalence, which *may* disagree with
+   `equals()` — never mix a TreeSet with code relying on `equals` semantics.
+4. `size` is maintained incrementally (not recomputed), so `isEmpty()` is O(1).
