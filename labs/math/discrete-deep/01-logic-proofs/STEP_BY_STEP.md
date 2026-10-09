@@ -1,49 +1,66 @@
-﻿# Step-by-Step Guide: Logic and Proofs
+﻿# Step by Step: Logic and Proofs
 
-## Implementation Walkthrough
+## Worked Example: Prove that √2 is Irrational
 
-### Step 1: Set Up Project Structure
-`ash
-mkdir -p src/main/java/com/mathlab/logicproofs
-mkdir -p src/test/java/com/mathlab/logicproofs
-`
+We prove that √2 cannot be expressed as a ratio of two integers, using proof by contradiction.
 
-### Step 2: Define the Main Class
-`java
-package com.mathlab.logicproofs;
-public class LogicProofs { }
-`
+### Step 1: Assume the Opposite
 
-### Step 3: Implement Core Algorithm
-1. Define public API method
-2. Validate inputs
-3. Implement computation
-4. Return result
+Assume √2 is rational. Then there exist integers a and b (b ≠ 0) with no common factors such that:
 
-### Step 4: Add Helper Methods
-Extract sub-computations for readability and reuse.
+√2 = a / b
 
-### Step 5: Write Unit Tests
-`java
-@Test void testBasic() {
-    assertEquals(expected, LogicProofs.compute(input), 1e-10);
-}
-`
+### Step 2: Square Both Sides
 
-### Step 6: Run Tests
-`ash
-mvn test
-`
+2 = a² / b²
 
-### Step 7: Optimize
-Profile and apply targeted optimizations.
+Multiply both sides by b²:
 
-### Step 8: Document
-Add Javadoc and ensure documentation is current.
+2b² = a²
 
-## Verification Checklist
-- [ ] Basic functionality works
-- [ ] Edge cases handled
-- [ ] Numerical accuracy acceptable
-- [ ] Performance acceptable
-- [ ] Tests cover critical paths
+### Step 3: Analyze Parity
+
+Since a² = 2b², a² is even. A square is even only if its root is even (if a were odd, a² would be odd). So a is even.
+
+Write a = 2k for some integer k.
+
+### Step 4: Substitute Back
+
+2b² = (2k)² = 4k²
+
+Divide by 2:
+
+b² = 2k²
+
+### Step 5: Conclude b is Even
+
+Since b² = 2k², b² is even, so b is even (by the same argument as Step 3).
+
+### Step 6: Derive the Contradiction
+
+Both a and b are even, so they share a common factor of 2. This contradicts our assumption that a and b have no common factors.
+
+### Step 7: Conclude
+
+The assumption that √2 is rational leads to a contradiction. Therefore, √2 is irrational. ∎
+
+---
+
+## Worked Example: Prove "If n² is even, then n is even" by Contrapositive
+
+### Step 1: State the Contrapositive
+
+Original: If n² is even, then n is even.
+Contrapositive: If n is odd, then n² is odd.
+
+### Step 2: Assume n is Odd
+
+Let n = 2k + 1 for some integer k.
+
+### Step 3: Compute n²
+
+n² = (2k + 1)² = 4k² + 4k + 1 = 2(2k² + 2k) + 1
+
+### Step 4: Conclude
+
+n² = 2m + 1 where m = 2k² + 2k, so n² is odd. Since the contrapositive is true, the original implication is true. ∎

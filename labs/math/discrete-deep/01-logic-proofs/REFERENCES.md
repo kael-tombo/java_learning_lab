@@ -1,31 +1,33 @@
 ﻿# References: Logic and Proofs
 
 ## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
 
-## Academic Papers
-1. Author (Year). Landmark paper on Logic and Proofs. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+- **Velleman, D. J.** *How to Prove It: A Structured Approach* (2nd ed., Cambridge University Press, 2006). The standard introduction to proof techniques: direct proof, contrapositive, contradiction, induction, and set theory. Includes many worked examples.
+
+- **Enderton, H. B.** *A Mathematical Introduction to Logic* (2nd ed., Academic Press, 2001). A rigorous treatment of first-order logic, completeness, and incompleteness. Suitable for advanced undergraduates.
+
+- **Copi, I. M., Cohen, C., & McMahon, K.** *Introduction to Logic* (14th ed., Routledge, 2014). A comprehensive introduction to informal and formal logic, including syllogisms, propositional logic, and predicate logic.
+
+- **Huth, M. & Ryan, M.** *Logic in Computer Science: Modelling and Reasoning about Systems* (2nd ed., Cambridge University Press, 2004). Focuses on logic for computer science: model checking, temporal logic, and program verification.
+
+## Classic Papers
+
+- **Gödel, K.** "Über formal unentscheidbare Sätze der Principia Mathematica und verwandter Systeme I" (1931). The original incompleteness theorems paper. English translation in *Collected Works*, Vol. I.
+
+- **Turing, A. M.** "On Computable Numbers, with an Application to the Entscheidungsproblem" (1936). Introduces the Turing machine and proves the undecidability of the halting problem.
+
+- **Cook, S. A.** "The Complexity of Theorem-Proving Procedures" (1971). Proves that SAT is NP-complete (Cook-Levin theorem).
 
 ## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+- **Stanford Encyclopedia of Philosophy** (plato.stanford.edu): Extensive entries on classical logic, modal logic, and proof theory.
+- **Lean Community** (leanprover.github.io): Interactive theorem prover with a growing library of formalized mathematics.
+- **Isabelle/HOL** (isabelle.in.tum.de): A proof assistant used for formal verification of software and hardware.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Advanced Reading
 
-## Citation Format
-Author. "Logic and Proofs." Math Academy, Java Learning Lab, 2026.
+- **Troelstra, A. S. & Schwichtenberg, H.** *Basic Proof Theory* (2nd ed., Cambridge University Press, 2000). Covers natural deduction, sequent calculus, and cut elimination.
+
+- **Girard, J.-Y.** *Proofs and Types* (1989). Introduces linear logic and the Curry-Howard correspondence.
+
+- **Ben-Ari, M.** *Mathematical Logic for Computer Science* (3rd ed., Springer, 2012). Tailored for computer scientists, covering propositional and predicate logic, resolution, and temporal logic.

@@ -1,35 +1,44 @@
-﻿# Debugging: Logic and Proofs Implementation
+﻿# Debugging: Logic and Proofs
 
-## Common Bugs
+## Verifying Truth Tables
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+When a truth table produces an unexpected result, check:
+- **Row count**: For n variables, there must be exactly 2^n rows. Missing rows mean incomplete case analysis.
+- **Column order**: Evaluate subexpressions left-to-right, respecting parentheses. A common error is evaluating P → Q before computing ¬P.
+- **Implication truth values**: P → Q is false *only* when P is true and Q is false. Students often mark it false when P is false.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Checking Proofs Step by Step
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+For each line in a proof, verify:
+1. **Justification**: Does the stated rule actually apply? "Modus ponens" requires both P → Q and P to be established.
+2. **Variable capture**: In quantifier rules, ensure no free variable becomes accidentally bound. Renaming bound variables (alpha-conversion) prevents this.
+3. **Scope of assumptions**: In natural deduction, track which assumptions are active. Discharging an assumption too early or too late invalidates the proof.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Finding Counterexamples
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+To disprove a statement:
+1. **Identify the structure**: Is it a universal claim (∀), an implication (→), or an equivalence (↔)?
+2. **Construct minimal counterexamples**: For "all graphs with property P have property Q," try the smallest graph with P. Often a graph with 3–4 vertices suffices.
+3. **Check boundary cases**: Empty sets, single-element sets, and degenerate cases (n = 0, n = 1) are frequent sources of counterexamples.
 
-## Debugging Techniques
+## Testing Quantifier Scope
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+When a formula has nested quantifiers, test with small finite domains:
+- For ∀x ∃y R(x,y), check that for each x you can find a y (y may depend on x).
+- For ∃y ∀x R(x,y), check that a single y works for all x.
+- A 2-element domain {a, b} is often enough to distinguish these.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
+## Debugging Induction Proofs
 
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+Common induction failures:
+- **Weak base case**: Proving P(0) but the inductive step requires P(0) and P(1) to prove P(2).
+- **Circular inductive step**: Assuming P(k+1) to prove P(k+1). The inductive hypothesis must be P(k) only.
+- **Off-by-one in the step**: Proving P(k) → P(k+2) when you need P(k) → P(k+1). This leaves gaps in the proof.
+
+## Using Truth Trees (Semantic Tableaux)
+
+When a truth table is too large (many variables), use a truth tree:
+1. Start with the negation of the statement you want to prove.
+2. Apply decomposition rules to break down connectives.
+3. If all branches close (contain a contradiction), the original statement is valid.
+4. If a branch remains open, it provides a counterexample.
