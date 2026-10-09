@@ -1,165 +1,119 @@
 # HashMap Internals — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-Bucket array, hash function, put/get/resize logic, load factor, treeification, keySet/values/entrySet views
+`java.util.HashMap` is a hash table with separate chaining that stores entries in a
+`Node[] table` array. Each bucket is either a linked list of `Node` objects or, after
+treeification, a small red-black tree. There is no ordering guarantee: iteration order
+is unspecified and changes after resize.
 
-### 2. Theoretical Foundation
-The HashMap Internals is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## The put Path
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+```
+put(key, value):
+  1. if table == null -> resize()          // lazy allocation, starts at 16
+  2. i = (h = spread(key.hashCode())) & (n - 1)
+  3. if table[i] == null -> new Node linked directly
+  4. else walk the bucket:
+       - exact same key (hash equal && (== || equals)) -> replace, return old value
+       - else append to list or tree; if bucket is a TreeifyBin, call putTreeVal
+  5. if (++size > threshold) -> resize()
+```
 
-### 3. Algorithmic Details
+Two properties make step 2 valid: capacity is **always a power of two**, so
+`h & (n - 1)` is equivalent to `h mod n` without a division, and negative hash codes
+stay correct because the mask keeps only the low bits.
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+## The Spread Function
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+```java
+static final int hash(Object key) {
+    int h;
+    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+}
+```
 
-### 4. Trade-offs
+XOR-ing the high 16 bits into the low 16 matters because the bucket index only uses
+the lowest `log2(n)` bits. For the default capacity of 16, a key whose hash differs
+only in bits 16+ would otherwise always land in the same bucket; spread mixes those
+bits down so distribution survives small table sizes.
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+## Load Factor and Resizing
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+- Default load factor: **0.75**; default capacity: **16**.
+- Threshold = capacity × load factor; resize doubles capacity when exceeded.
+- Resize rehashes each node once: because new capacity = 2 × old, a node either stays
+  at index `i` or moves to `i + oldCapacity` — decided by one bit:
+  `(e.hash & oldCapacity) == 0`.
+- Doubling keeps amortized insertion cost O(1): each element is rehashed at most
+  log₂(N) times over its lifetime, giving amortized O(1) per put.
 
-### 5. Mathematical Basis
+Resizing to a non-power-of-two capacity (via the `HashMap(int, float)` constructor)
+sacrifices the single-mask trick; HashMap normalizes non-power-of-two capacities up
+to the next power of two anyway.
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+## Treeification (Java 8+)
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+When a bucket's list grows past **TREEIFY_THRESHOLD = 8** *and* the table has at
+least **64** nodes, the list converts to a red-black tree (`TreeBin`), changing worst
+case from O(n) to O(log n) per bucket.
 
-## Summary
-The HashMap Internals represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+- If the table is smaller than 64, HashMap **resizes first** instead of treeifying —
+  small tables usually indicate a bad hash or too few buckets, not adversarial input.
+- On **deletion**, the bin converts back to a list when the remaining tree gets
+  structurally shallow — the JDK tests `root.right == null || root.left == null ||
+  root.left.left == null` after unlinking. This is a depth heuristic, not a node
+  count: a bin that untreeifies at 4 remaining nodes could survive at 5 depending
+  on shape.
+- On **resize**, a tree bin is split into two halves; each half with
+  **UNTREEIFY_THRESHOLD = 6** or fewer nodes becomes a plain list again.
+- Tree nodes keep their pre-spread `hash` and order by it, falling back to
+  `Comparable` and finally `tieBreakOrder` (class name, then identity hash code)
+  when hashes tie — so no ordering ever depends on calling `hashCode()` repeatedly
+  during a lookup, and equal-hash keys still form a deterministic tree.
 
-## Key Theorems
+The tree path exists to defend against hash-flooding: an attacker who controls keys
+and can force collisions (e.g. strings crafted to the same low bits) cannot push a
+lookup past O(log n).
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+## Null Keys and Values
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+HashMap permits exactly one null key, hashed to bucket 0 (`hash(null) == 0`), and
+unlimited null values. `get(null)` and `containsKey(null)` route through the same
+bucket-0 path. This differs from `ConcurrentHashMap`, which rejects null keys and
+values outright — in a concurrent map, `null` cannot distinguish "absent" from
+"mapped to null", so the ambiguity was deliberately banned.
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+## Views: keySet, values, entrySet
 
-## Key Insights
+All three are *views*, not copies: they share the backing table, and `values.remove(o)`
+scans buckets calling `o.equals(value)`. `entrySet().iterator()` returns
+`EntryIterator` whose `next()` wraps each node in a `Map.Entry` that writes straight
+back into the table on `setValue` — so mutating through the view mutates the map.
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+## Failure Semantics
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+Iterators are **fail-fast**: each iterator remembers the modCount at creation and
+throws `ConcurrentModificationException` on `next()` if the count drifted (checked
+once per `next()`, not continuously). This is a best-effort heuristic, not a
+guarantee — concurrent modification may go undetected if it happens not to bump the
+counter the iterator observed. For real concurrency, use `ConcurrentHashMap`.
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+## Complexity Summary
 
+| Operation | Average | Worst (pre-treeify) | Worst (treeified) |
+|-----------|---------|---------------------|-------------------|
+| get / containsKey | O(1) | O(n) | O(log n) |
+| put | O(1) amortized | O(n) | O(log n) |
+| remove | O(1) | O(n) | O(log n) |
+| iteration over all N | O(N) | O(N) | O(N) |
 
-## Further Exploration
+## Key Invariants
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Capacity is always a power of two; size ≤ threshold after every completed put.
+2. Every node's bucket index equals `(node.hash & (table.length - 1))` — resize
+   re-establishes this for all nodes.
+3. `size` counts entries, not buckets; a table can have size > 0 with many empty
+   buckets if hashes cluster.
+4. `modCount` increments on structural changes (add/remove/rehash), not on value
+   replacement of an existing key.
