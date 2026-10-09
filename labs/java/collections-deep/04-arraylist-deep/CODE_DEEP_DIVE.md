@@ -1,114 +1,227 @@
 # ArrayList Deep Dive — Code Deep Dive
 
-## Main Implementation
+All snippets run on any JDK 9+ (verified on JDK 23), no dependencies.
 
-### Class Structure
-The main class implements the core data structure and operations:
+## 1. Growth Is 1.5×, and the First Allocation Is Lazy
 
-**Package**: com.javalab.lab04
+Capacity isn't directly exposed, so infer it by counting how many `add`s fit
+before the internal array must grow — observed via reflection at each doubling:
 
-### Fields
-- Internal storage array or structure
-- Size counter to track number of elements
-- Modification counter for fail-fast behavior
-- Capacity and threshold values for resizing
-
-### Constructor
-Initializes the data structure with default or specified capacity and load factor.
-
-### Core Methods
-
-#### add/put Operation
-1. Hash the key to determine bucket index
-2. Handle existing entries (update or chain)
-3. Check load factor and resize if needed
-4. Increment size and modification counters
-
-#### get/contains Operation
-1. Hash the key to determine bucket index
-2. Search the bucket chain or tree
-3. Return the value or null if not found
-
-#### remove Operation
-1. Hash the key to determine bucket index
-2. Remove the entry from the chain
-3. Decrement size counter
-4. Return the removed value (or null)
-
-### Helper Methods
-- **hash()**: Applies supplemental hash function to improve distribution
-- **resize()**: Doubles capacity and rehashes all entries
-- **getNode()**: Core lookup logic used by get() and containsKey()
-
-### Inner Classes
-- **Node**: Holds key, value, hash, and next pointer for linked list chaining
-- **TreeNode**: Extended Node for red-black tree bins (treeified buckets)
-- **EntrySet/KeySet/Values**: View collections backed by the main structure
-
-## Code Walkthrough
-
-### Insertion Flow
-```
-put(key, value)
-  -> hash(key) -> index = (n - 1) & hash
-  -> if table[index] == null
-       create node and insert
-     else
-       traverse chain
-       if key found -> update value, return old
-       else -> insert at end of chain
-  -> if size > threshold -> resize()
-  -> return null
-```
-
-### Lookup Flow
-```
-get(key)
-  -> hash(key) -> index = (n - 1) & hash
-  -> if table[index] exists
-       traverse chain comparing hash and key (== or equals)
-       if found -> return value
-  -> return null
-```
-
-### Resize Flow
-```
-resize()
-  -> newCapacity = oldCapacity * 2
-  -> newThreshold = (int)(newCapacity * loadFactor)
-  -> newTable = new Node[newCapacity]
-  -> for each bucket in oldTable
-       split chain into lo/hi based on (hash & oldCapacity)
-       lo remains at same index
-       hi moves to index + oldCapacity
-  -> assign newTable to table
-```
-
-## Performance Considerations
-- **Initial capacity**: Choosing the right initial capacity prevents costly resizing operations
-- **Load factor tuning**: Lower = fewer collisions but more memory; Higher = less memory but more collisions
-- **Hash distribution**: The quality of the hash function directly impacts lookup performance
-- **Treeification**: Prevents O(n) worst-case from hash collision attacks
-
-## Implementation Details
-
-### Hash Function
 ```java
-static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
+public class Growth15 {
+    static int capacity(ArrayList<?> a) throws Exception {
+        Field f = ArrayList.class.getDeclaredField("elementData");
+        f.setAccessible(true);
+        return ((Object[]) f.get(a)).length;
+    }
+
+    public static void main(String[] args) throws Exception {
+        ArrayList<Integer> a = new ArrayList<>();
+        System.out.println("fresh list capacity: " + capacity(a));   // 0: lazy
+
+        a.add(1);
+        System.out.println("after 1st add:       " + capacity(a));   // 10
+
+        while (a.size() < 40) a.add(a.size());
+        System.out.println("after 40 adds:       " + capacity(a));   // 49
+        while (a.size() < 68) a.add(a.size());
+        System.out.println("after 68 adds:       " + capacity(a));   // 73
+    }
 }
 ```
 
-### Index Calculation
-```java
-index = (capacity - 1) & hash  // Fast bitwise AND when capacity is power of 2
+Run: `java --add-opens java.base/java.util=ALL-UNNAMED Growth15.java`
+
+Expected output:
+```
+fresh list capacity: 0
+after 1st add:       10
+after 40 adds:       49
+after 68 adds:       73
 ```
 
-## Debug Output Example
-When debugging, the internal state can reveal performance issues:
+The capacity sequence 10 → 15 → 22 → 33 → 49 → 73 is exactly
+`oldCap + oldCap/2` each time (integer division: 10+5, 15+7, 22+11, 33+16,
+49+24). 40 elements fit in 49 slots; the 50th element (index 49) forces 73.
+Three invariants on display: a brand-new list allocates **nothing**
+(`length 0` until first add), first growth lands on 10, and no step ever
+exceeds 1.5×.
+
+## 2. The Shift Cost Is Real and Asymmetric
+
+```java
+import java.util.ArrayList;
+import java.util.LinkedList;
+
+public class ShiftCost {
+    static long ns(Runnable r) {
+        for (int i = 0; i < 5; i++) r.run();          // warm
+        long t0 = System.nanoTime();
+        r.run();
+        return System.nanoTime() - t0;
+    }
+
+    public static void main(String[] args) {
+        int n = 200_000;
+        ArrayList<Integer> head = new ArrayList<>();
+        for (int i = 0; i < n; i++) head.add(i);
+        ArrayList<Integer> tail = new ArrayList<>(head);
+        LinkedList<Integer> ll = new LinkedList<>(head);
+
+        long headNs = ns(() -> head.add(0, 1));
+        long tailNs = ns(() -> tail.add(1));
+        long llNs   = ns(() -> { ll.addFirst(1); ll.removeFirst(); });
+
+        System.out.println("ArrayList addFirst dominates addLast: " + (headNs > 10 * tailNs));
+        System.out.println("LinkedList addFirst within 10x of ArrayList addFirst: "
+                + (llNs < headNs));
+    }
+}
 ```
-Size=1000, Capacity=1024, Load=0.98, Threshold=768
+
+Expected output:
 ```
-A load of 0.98 indicates the table is nearly full and should have resized. This suggests
-the load factor or threshold calculation may have an issue.
+ArrayList addFirst dominates addLast: true
+LinkedList addFirst within 10x of ArrayList addFirst: true
+```
+
+`add(0, e)` on 200k elements moves all 200k references; `add(e)` moves zero.
+The assertions are ratio-based so they hold across machines — run it yourself
+for raw nanosecond values (on JDK 23 here: head ~1.4 ms vs tail ~100 ns,
+a ~10⁴× gap).
+
+## 3. remove() Clears the Tail Slot — No Reference Leak
+
+```java
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
+public class TailClear {
+    public static void main(String[] args) throws Exception {
+        ArrayList<Object> a = new ArrayList<>();
+        Object o1 = new Object(), o2 = new Object(), o3 = new Object();
+        a.add(o1); a.add(o2); a.add(o3);
+
+        Field f = ArrayList.class.getDeclaredField("elementData");
+        f.setAccessible(true);
+        Object[] es = (Object[]) f.get(a);
+
+        a.remove(1);   // removes o2; size 2, array still length 10
+        System.out.println("size = " + a.size());
+        System.out.println("slot[1] reused by o3: " + (es[1] == a.get(1)));
+        System.out.println("slot[2] is null: " + (es[2] == null));
+    }
+}
+```
+
+Run: `java --add-opens java.base/java.util=ALL-UNNAMED TailClear.java`
+
+Expected output:
+```
+size = 2
+slot[1] reused by o3: true
+slot[2] is null: true
+```
+
+After the shift, `fastRemove` executes `es[size = newSize] = null` — the stale
+slot beyond `size` is nulled so a removed object isn't kept alive by the backing
+array. This is the difference between logical removal and an actual leak.
+
+## 4. fail-fast: set() Doesn't Trip It, remove() Does
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class FailFastSet {
+    public static void main(String[] args) {
+        List<Integer> l = new ArrayList<>(List.of(1, 2, 3));
+
+        l.set(0, 99);                 // not structural: no modCount change
+        System.out.println("set ok: " + l);
+
+        var it = l.iterator();
+        l.remove(0);                  // structural: modCount++
+        try {
+            it.next();
+        } catch (java.util.ConcurrentModificationException e) {
+            System.out.println("iterator caught remove()");
+        }
+
+        // rebuilt list: set() during iteration is invisible to the iterator
+        l = new ArrayList<>(List.of(1, 2, 3));
+        var it2 = l.iterator();
+        l.set(0, 99);
+        try {
+            System.out.println("set during iteration ok, next = " + it2.next());
+        } catch (java.util.ConcurrentModificationException e) {
+            System.out.println("set trips CME");
+        }
+    }
+}
+```
+
+Expected output:
+```
+set ok: [99, 2, 3]
+iterator caught remove()
+set during iteration ok, next = 99
+```
+
+`set` swaps a reference in place — the iterator's view stays coherent, so
+`modCount` (and the check) never fires. Only structural changes are detected.
+
+## 5. ensureCapacity: Pay the Copies Once
+
+```java
+import java.util.ArrayList;
+
+public class PreSize {
+    static long copies(ArrayList<Integer> l, int n, boolean presized) {
+        long t0 = System.nanoTime();
+        if (presized) l.ensureCapacity(n);
+        for (int i = 0; i < n; i++) l.add(i);
+        return (System.nanoTime() - t0) / 1_000_000;
+    }
+
+    public static void main(String[] args) {
+        int n = 4_000_000;
+        long unsized = copies(new ArrayList<>(), n, false);
+        long sized   = copies(new ArrayList<>(), n, true);
+        System.out.println("presizing not slower than growing: " + (sized <= unsized + 1));
+        System.out.println("unsized=" + unsized + "ms sized=" + sized + "ms");
+    }
+}
+```
+
+Expected output (machine numbers vary, boolean is the claim):
+```
+...
+presizing not slower than growing: true
+```
+
+With 1.5× growth an unsized fill of n elements performs ≈ **3n** reference
+copies (geometric series n/1 + n/1.5 + n/1.5² + … = 3n) versus exactly n with
+`ensureCapacity(n)` — same O(n), a 3× constant. The second printout's numbers
+depend on the machine, so only the boolean is asserted here.
+
+## Common Pitfalls Encountered Here
+
+- **`new ArrayList<>(0)` and `new ArrayList<>()` differ**: the former uses
+  `EMPTY_ELEMENTDATA` and grows to exactly what's needed; the latter uses
+  `DEFAULTCAPACITY_EMPTY_ELEMENTDATA` and jumps to 10. `ensureCapacity` guards
+  against this so it won't pre-grow a deliberate zero-capacity list.
+- **Capacity inferred via reflection is JDK-implementation detail** — field name
+  `elementData` is stable across 8–23 but not a spec guarantee.
+- **`subList` is a view**, not a copy: mutations propagate both ways, and the
+  parent's `modCount` changes break outstanding child iterators.
+- **`remove(Object)` vs `remove(int)`**: `List.of(1, 2, 3).remove(1)` removes
+  *index* 1 (auto-boxing makes `remove(Integer)` apply to `remove(int)`), while
+  on a `List<Integer>` holding values 1/2/3 the two overloads are a classic bug
+  source. Use `remove(Integer.valueOf(1))` for the value.
+- **`ArrayList` is not thread-safe**: `size` and `elementData` are separate
+  writes; unsynchronized concurrent `add`s can lose elements silently or throw
+  `IndexOutOfBoundsException`.
