@@ -1,4 +1,4 @@
-# Mock Interview: Data Stream Algorithms — AMS, Frequent Items, Sliding Window
+# Mock Interview: Data Stream Algorithms â€” AMS, Frequent Items, Sliding Window
 
 ## Interview Details
 - **Topic**: Data Stream Algorithms

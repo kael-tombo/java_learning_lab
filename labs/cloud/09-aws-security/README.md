@@ -1,4 +1,4 @@
-# 09 — AWS Security
+# 09 â€” AWS Security
 
 ## Overview
 IAM policies, KMS encryption, Security Groups, WAF, Shield, GuardDuty. This lab provides hands-on experience with real Java implementations and cloud SDK patterns.
@@ -28,12 +28,12 @@ IAM policies, KMS encryption, Security Groups, WAF, Shield, GuardDuty. This lab 
 | FLASHCARDS.md | Spaced-repetition review cards |
 
 ## Key Topics
-- **IAM** — Identity and access management policies
-- **KMS** — Key Management Service encryption
-- **Security Groups** — Instance-level firewall rules
-- **WAF** — Web application firewall
-- **Shield** — DDoS protection
-- **GuardDuty** — Threat detection service
+- **IAM** â€” Identity and access management policies
+- **KMS** â€” Key Management Service encryption
+- **Security Groups** â€” Instance-level firewall rules
+- **WAF** â€” Web application firewall
+- **Shield** â€” DDoS protection
+- **GuardDuty** â€” Threat detection service
 
 ## Next Lab
 ? [AWS Serverless](../2-aws-serverless)

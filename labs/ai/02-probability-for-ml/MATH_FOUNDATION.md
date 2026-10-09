@@ -1,1 +1,1 @@
-# 02-probability-for-ml — Math Foundation\n\nMathematical prerequisites and formalisms for 02-probability-for-ml.
+# 02-probability-for-ml â€” Math Foundation\n\nMathematical prerequisites and formalisms for 02-probability-for-ml.

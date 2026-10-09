@@ -1,4 +1,4 @@
-# Mock Interview: Optimization Algorithms — Genetic, Simulated Annealing, PSO
+# Mock Interview: Optimization Algorithms â€” Genetic, Simulated Annealing, PSO
 
 ## Interview Details
 - **Topic**: Optimization Algorithms

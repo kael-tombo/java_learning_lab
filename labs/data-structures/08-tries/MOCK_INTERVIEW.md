@@ -1,4 +1,4 @@
-# Mock Interview: Tries — Prefix Trees and Autocomplete
+# Mock Interview: Tries â€” Prefix Trees and Autocomplete
 
 ## Interview Details
 - **Topic**: Tries

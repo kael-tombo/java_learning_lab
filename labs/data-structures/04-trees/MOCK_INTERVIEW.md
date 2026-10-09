@@ -1,4 +1,4 @@
-# Mock Interview: Trees — Binary Tree Traversals and Validation
+# Mock Interview: Trees â€” Binary Tree Traversals and Validation
 
 ## Interview Details
 - **Topic**: Trees

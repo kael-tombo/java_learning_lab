@@ -1,4 +1,4 @@
-﻿# Flashcards â€” Time Ordering
+﻿# Flashcards — Time Ordering
 
 1. Q: Happens-before relation? A: Partial order, a->b if same process or msg send/recv, transitive.
 

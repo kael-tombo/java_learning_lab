@@ -12,7 +12,7 @@
 
 **2001:** Google develops GFS and Bigtable. Internal distributed data at massive scale.
 
-**2003:** Flickr manually shards MySQL. A turning pointâ€”mainstream company using distribution in production.
+**2003:** Flickr manually shards MySQL. A turning point—mainstream company using distribution in production.
 
 **2004:** Friendster fails to scale due to database limitations.
 

@@ -1,4 +1,4 @@
-# 11 — AWS Observability — Internals
+# 11 â€” AWS Observability â€” Internals
 
 ## Internal Architecture
 

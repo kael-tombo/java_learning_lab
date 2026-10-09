@@ -1,4 +1,4 @@
-# Mock Interview: Matrix Algorithms — Strassen, Gaussian Elimination, SVD
+# Mock Interview: Matrix Algorithms â€” Strassen, Gaussian Elimination, SVD
 
 ## Interview Details
 - **Topic**: Matrix Algorithms

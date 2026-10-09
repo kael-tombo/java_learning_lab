@@ -1,1 +1,1 @@
-# 08-dimensionality-reduction — Math Foundation\n\nMathematical prerequisites and formalisms for 08-dimensionality-reduction.
+# 08-dimensionality-reduction â€” Math Foundation\n\nMathematical prerequisites and formalisms for 08-dimensionality-reduction.

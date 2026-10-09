@@ -1,4 +1,4 @@
-# 09 — AWS Security — Visual Guide
+# 09 â€” AWS Security â€” Visual Guide
 
 ## System Overview
 

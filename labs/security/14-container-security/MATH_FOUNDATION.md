@@ -11,15 +11,15 @@ Multi-stage builds reduce final image size:
 ### Vulnerability Scoring
 
 CVSS v3.1 Base Score:
-- Exploitability: AV × AC × PR × UI
-- Impact: Conf × Integ × Avail
+- Exploitability: AV Ã— AC Ã— PR Ã— UI
+- Impact: Conf Ã— Integ Ã— Avail
 - Base Score function of Impact Sub-Score and Exploitability Sub-Score
 
 ### Resource Limits (cgroups)
 
 CPU Quota Equations:
 - cpu.cfs_period_us = 100000 (100ms default)
-- cpu.cfs_quota_us = period × n_cores
+- cpu.cfs_quota_us = period Ã— n_cores
 - For 0.5 core: quota = 50000
 
 Memory Limits:
@@ -39,13 +39,13 @@ Kubernetes Network Policy isolation:
 - True Positive Rate: TP / (TP + FN)
 - False Positive Rate: FP / (FP + TN)
 - Precision: TP / (TP + FP)
-- F1 Score: 2 × Precision × Recall / (Precision + Recall)
+- F1 Score: 2 Ã— Precision Ã— Recall / (Precision + Recall)
 
 ### Layer Caching Efficiency
 
 Cache hit probability:
-- P(hit) = S(layer_size × cache_hit_rate) / total_size
-- Effective build time = S(layer_build_time × (1 - P(hit)))
+- P(hit) = S(layer_size Ã— cache_hit_rate) / total_size
+- Effective build time = S(layer_build_time Ã— (1 - P(hit)))
 
 ### Cryptographic Hash Functions
 

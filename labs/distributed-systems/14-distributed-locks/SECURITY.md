@@ -1,4 +1,4 @@
-﻿# Security â€” Distributed Locks
+﻿# Security — Distributed Locks
 
 ## Threats
 - Lock hijacking (spoofing lock holder identity)

@@ -1,1 +1,1 @@
-# 06-classification — Debugging\n\nStrategies and tools for debugging 06-classification implementations.
+# 06-classification â€” Debugging\n\nStrategies and tools for debugging 06-classification implementations.

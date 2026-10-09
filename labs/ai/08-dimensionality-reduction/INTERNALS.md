@@ -1,1 +1,1 @@
-# 08-dimensionality-reduction — Internals\n\nDetailed internal mechanics and implementation details.
+# 08-dimensionality-reduction â€” Internals\n\nDetailed internal mechanics and implementation details.

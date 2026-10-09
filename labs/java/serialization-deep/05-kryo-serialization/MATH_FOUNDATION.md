@@ -1,4 +1,4 @@
-﻿# Kryo Serialization â€” Mathematical Foundation
+﻿# Kryo Serialization — Mathematical Foundation
 
 ## 1. Variable-Length Integer Encoding
 

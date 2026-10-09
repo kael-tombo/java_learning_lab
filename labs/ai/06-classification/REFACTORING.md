@@ -1,1 +1,1 @@
-# 06-classification — Refactoring\n\nBest practices for refactoring 06-classification code.
+# 06-classification â€” Refactoring\n\nBest practices for refactoring 06-classification code.

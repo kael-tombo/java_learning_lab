@@ -10,7 +10,7 @@ Union-Find is one of the most elegant and widely-used data structures in compute
 Internet service providers use DSU to track connected components in networks. When a router goes down, DSU can quickly determine which parts of the network remain connected and which become isolated. This enables rapid rerouting of traffic around failures.
 
 ### Kruskal's Algorithm
-Minimum Spanning Trees are fundamental for designing cost-effective networks â€” telecommunications, power grids, transportation. Kruskal's algorithm uses DSU to efficiently build MSTs, saving billions of dollars in infrastructure costs through optimal network design.
+Minimum Spanning Trees are fundamental for designing cost-effective networks — telecommunications, power grids, transportation. Kruskal's algorithm uses DSU to efficiently build MSTs, saving billions of dollars in infrastructure costs through optimal network design.
 
 ### Social Network Analysis
 Platforms like Facebook and LinkedIn use DSU to determine friend groups, suggest connections, and analyze community structure. Finding connected components in social graphs helps identify communities of interest and potential viral spread patterns.
@@ -28,4 +28,4 @@ Connected component labeling in image analysis uses DSU to group adjacent pixels
 
 ## Bottom Line
 
-Union-Find matters because it solves a fundamental problem â€” dynamic connectivity â€” with theoretically optimal performance and remarkably simple code. It's a testament to the power of clever algorithmic design.
+Union-Find matters because it solves a fundamental problem — dynamic connectivity — with theoretically optimal performance and remarkably simple code. It's a testament to the power of clever algorithmic design.

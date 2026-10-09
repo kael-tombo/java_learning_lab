@@ -1,4 +1,4 @@
-# 13 — GCP Fundamentals — Common Mistakes
+# 13 â€” GCP Fundamentals â€” Common Mistakes
 
 ## 1. Over-Engineering
 Building complex abstractions before they are needed. Start simple, refactor when patterns emerge.

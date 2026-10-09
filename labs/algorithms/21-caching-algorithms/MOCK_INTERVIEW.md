@@ -1,4 +1,4 @@
-# Mock Interview: Caching Algorithms — LRU, LFU, ARC, 2Q, Clock
+# Mock Interview: Caching Algorithms â€” LRU, LFU, ARC, 2Q, Clock
 
 ## Interview Details
 - **Topic**: Caching Algorithms

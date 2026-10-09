@@ -1,4 +1,4 @@
-# Mock Interview: Merkle Tree — Hash Trees and Blockchain Verification
+# Mock Interview: Merkle Tree â€” Hash Trees and Blockchain Verification
 
 ## Interview Details
 - **Topic**: Merkle Tree

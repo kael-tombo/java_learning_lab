@@ -1,4 +1,4 @@
-# 15 — Cloud Cost Optimization
+# 15 â€” Cloud Cost Optimization
 
 ## Overview
 Reserved instances, savings plans, rightsizing, spot instances, FinOps. This lab provides hands-on experience with real Java implementations and cloud SDK patterns.
@@ -28,11 +28,11 @@ Reserved instances, savings plans, rightsizing, spot instances, FinOps. This lab
 | FLASHCARDS.md | Spaced-repetition review cards |
 
 ## Key Topics
-- **Reserved Instances** — Commitment-based discounts
-- **Savings Plans** — Flexible pricing models
-- **Rightsizing** — Workload optimization
-- **Spot Instances** — Discounted spare capacity
-- **FinOps** — Financial operations and governance
+- **Reserved Instances** â€” Commitment-based discounts
+- **Savings Plans** â€” Flexible pricing models
+- **Rightsizing** â€” Workload optimization
+- **Spot Instances** â€” Discounted spare capacity
+- **FinOps** â€” Financial operations and governance
 
 ## Next Lab
 ? You have completed the Cloud Academy!

@@ -1,1 +1,1 @@
-# 06-classification — Mental Models\n\nKey conceptual frameworks for understanding 06-classification.
+# 06-classification â€” Mental Models\n\nKey conceptual frameworks for understanding 06-classification.

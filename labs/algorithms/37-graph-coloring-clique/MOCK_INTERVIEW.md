@@ -1,4 +1,4 @@
-# Mock Interview: Graph Coloring and Clique — Welsh-Powell, Bron-Kerbosch
+# Mock Interview: Graph Coloring and Clique â€” Welsh-Powell, Bron-Kerbosch
 
 ## Interview Details
 - **Topic**: Graph Coloring and Clique

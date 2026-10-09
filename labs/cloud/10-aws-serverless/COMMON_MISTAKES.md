@@ -1,4 +1,4 @@
-# 10 — AWS Serverless — Common Mistakes
+# 10 â€” AWS Serverless â€” Common Mistakes
 
 ## 1. Over-Engineering
 Building complex abstractions before they are needed. Start simple, refactor when patterns emerge.

@@ -1,4 +1,4 @@
-﻿# References â€” Time Ordering
+﻿# References — Time Ordering
 
 ## Papers
 1. Lamport (1978). Time, Clocks, and the Ordering of Events. CACM 21(7).

@@ -1,1 +1,1 @@
-# 17-rag — Visual Guide\n\nDiagrams and visual explanations for 17-rag.
+# 17-rag â€” Visual Guide\n\nDiagrams and visual explanations for 17-rag.

@@ -1,1 +1,1 @@
-# 04-optimization — Visual Guide\n\nDiagrams and visual explanations for 04-optimization.
+# 04-optimization â€” Visual Guide\n\nDiagrams and visual explanations for 04-optimization.

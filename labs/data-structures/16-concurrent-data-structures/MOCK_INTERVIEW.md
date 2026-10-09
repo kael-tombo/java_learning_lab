@@ -1,4 +1,4 @@
-# Mock Interview: Concurrent Data Structures — Lock-Free and Thread-Safe Design
+# Mock Interview: Concurrent Data Structures â€” Lock-Free and Thread-Safe Design
 
 ## Interview Details
 - **Topic**: Concurrent Data Structures

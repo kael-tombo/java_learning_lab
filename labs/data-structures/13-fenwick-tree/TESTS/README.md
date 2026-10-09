@@ -1,7 +1,7 @@
 ﻿# Tests: Fenwick Tree
 
 ## Test Files
-- FenwickTreeTest.java â€” JUnit 5 test suite
+- FenwickTreeTest.java — JUnit 5 test suite
 
 ## Coverage
 - Point update + prefix sum

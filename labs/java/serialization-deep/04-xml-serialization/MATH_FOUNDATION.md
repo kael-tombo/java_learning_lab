@@ -1,16 +1,16 @@
-﻿# XML Serialization â€” Mathematical Foundation
+﻿# XML Serialization — Mathematical Foundation
 
 ## 1. XML Document Structure Mathematics
 
 ### Document Size Breakdown
-XML document size = Header + RootElement + Î£(ChildElements) + ClosingRoot
+XML document size = Header + RootElement + Σ(ChildElements) + ClosingRoot
 - XML declaration: <?xml version=""1.0"" encoding=""UTF-8""?> (~40 bytes)
 - Each element: <tagName>content</tagName> (2*tagName + 3 + content bytes)
 - Each attribute: attributeName=""value"" (attrName + value + 3 bytes)
 
 ### Nested Element Overhead
 For an element with N levels of nesting:
-- Total tag overhead per leaf: 2 * Î£(tagName_i for i=1 to N) + 3*N
+- Total tag overhead per leaf: 2 * Σ(tagName_i for i=1 to N) + 3*N
 - Example: 3 levels deep with 5-byte tag names = 2*15 + 9 = 39 bytes overhead
 
 ## 2. XML Schema Math

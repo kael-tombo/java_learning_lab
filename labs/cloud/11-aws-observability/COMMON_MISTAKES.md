@@ -1,4 +1,4 @@
-# 11 — AWS Observability — Common Mistakes
+# 11 â€” AWS Observability â€” Common Mistakes
 
 ## 1. Over-Engineering
 Building complex abstractions before they are needed. Start simple, refactor when patterns emerge.

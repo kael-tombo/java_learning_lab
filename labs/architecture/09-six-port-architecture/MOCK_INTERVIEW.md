@@ -68,11 +68,11 @@ At the staff+ level, the interviewer expects you to:
 
 ## Common Follow-Up Questions
 
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
+1. ""How would this design change at 100x scale?"" â€” Discuss partitioning, caching, read replicas
+2. ""How do you handle schema evolution?"" â€” Backward compatibility, versioning, migration strategies
+3. ""Whats the biggest risk in this architecture?"" â€” Identify the weakest link and mitigation
+4. ""How would you migrate from the current system?"" â€” Strangler Fig, feature toggles, parallel run
+5. ""How do you test this system?"" â€” Unit, integration, contract, and end-to-end testing strategies
 
 ## Key Takeaways
 

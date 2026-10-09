@@ -1,4 +1,4 @@
-# 14 — Multi-Cloud — Visual Guide
+# 14 â€” Multi-Cloud â€” Visual Guide
 
 ## System Overview
 

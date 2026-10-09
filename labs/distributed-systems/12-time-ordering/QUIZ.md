@@ -1,4 +1,4 @@
-﻿# Quiz â€” Time Ordering
+﻿# Quiz — Time Ordering
 
 ## Section 1: Multiple Choice
 
@@ -14,7 +14,7 @@ d) None
 a) O(1)
 b) O(log n)
 c) O(n)
-d) O(nÂ²)
+d) O(n²)
 
 **Answer: c**
 

@@ -1,4 +1,4 @@
-# Mock Interview: Sparse Table and RMQ — Range Minimum Queries
+# Mock Interview: Sparse Table and RMQ â€” Range Minimum Queries
 
 ## Interview Details
 - **Topic**: Sparse Table and RMQ

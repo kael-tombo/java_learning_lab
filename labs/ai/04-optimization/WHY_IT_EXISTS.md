@@ -1,1 +1,1 @@
-# 04-optimization — Why It Exists\n\nThe motivation and historical context for 04-optimization.
+# 04-optimization â€” Why It Exists\n\nThe motivation and historical context for 04-optimization.

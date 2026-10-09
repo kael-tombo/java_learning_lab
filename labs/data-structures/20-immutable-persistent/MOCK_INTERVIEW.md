@@ -1,4 +1,4 @@
-# Mock Interview: Immutable and Persistent Data Structures — Functional Programming Patterns
+# Mock Interview: Immutable and Persistent Data Structures â€” Functional Programming Patterns
 
 ## Interview Details
 - **Topic**: Immutable and Persistent Data Structures

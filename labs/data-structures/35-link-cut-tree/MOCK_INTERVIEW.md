@@ -1,4 +1,4 @@
-# Mock Interview: Link-Cut Tree — Dynamic Tree Operations
+# Mock Interview: Link-Cut Tree â€” Dynamic Tree Operations
 
 ## Interview Details
 - **Topic**: Link-Cut Tree

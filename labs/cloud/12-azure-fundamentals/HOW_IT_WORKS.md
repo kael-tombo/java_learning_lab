@@ -1,4 +1,4 @@
-# 12 — Azure Fundamentals — How It Works
+# 12 â€” Azure Fundamentals â€” How It Works
 
 ## Core Mechanism
 

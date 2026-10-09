@@ -10,7 +10,7 @@ Before DSU, managing relationships between elements in dynamic sets was cumberso
 
 ## The Gap DSU Fills
 
-DSU was designed specifically to solve the dynamic connectivity problem efficiently. The key insight is that we don't need to know the full graph structure â€” we only need to know which components exist and which component each element belongs to.
+DSU was designed specifically to solve the dynamic connectivity problem efficiently. The key insight is that we don't need to know the full graph structure — we only need to know which components exist and which component each element belongs to.
 
 ## Historical Context
 

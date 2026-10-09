@@ -1,4 +1,4 @@
-# Mock Interview: Fenwick Tree — Binary Indexed Tree Operations
+# Mock Interview: Fenwick Tree â€” Binary Indexed Tree Operations
 
 ## Interview Details
 - **Topic**: Fenwick Tree

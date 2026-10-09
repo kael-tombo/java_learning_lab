@@ -17,7 +17,7 @@ A(m, n) = A(m-1, A(m, n-1))  for m > 0 and n > 0
 This function grows extremely fast:
 - A(1, n) = 2n
 - A(2, n) = 2^n
-- A(3, n) = 2^2^...^2 (n times) â€” tower of exponents
+- A(3, n) = 2^2^...^2 (n times) — tower of exponents
 - A(4, n) grows faster than any practical number
 
 ### Inverse Ackermann Function

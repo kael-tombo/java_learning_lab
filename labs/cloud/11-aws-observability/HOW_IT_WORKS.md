@@ -1,4 +1,4 @@
-# 11 — AWS Observability — How It Works
+# 11 â€” AWS Observability â€” How It Works
 
 ## Core Mechanism
 

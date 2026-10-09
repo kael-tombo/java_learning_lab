@@ -11,9 +11,9 @@
 
 ### Storage Requirements
 
-- Daily storage: EPS × avg_event_size × 86400 × compression_ratio
+- Daily storage: EPS Ã— avg_event_size Ã— 86400 Ã— compression_ratio
 - Compression ratio: typically 0.3-0.5 (Elasticsearch)
-- Retention: daily_storage × retention_days × replication_factor
+- Retention: daily_storage Ã— retention_days Ã— replication_factor
 
 ### Correlation Thresholds
 
@@ -24,12 +24,12 @@
 ### Anomaly Detection Statistics
 
 Z-score:
-- z = (x - µ) / s
+- z = (x - Âµ) / s
 - |z| > 3: potential anomaly (99.7% confidence)
 - |z| > 4: high-confidence anomaly
 
 EWMA (Exponentially Weighted Moving Average):
-- S_t = a × x_t + (1-a) × S_(t-1)
+- S_t = a Ã— x_t + (1-a) Ã— S_(t-1)
 - a = smoothing factor (typically 0.1-0.3)
 
 ### Alert Fatigue

@@ -1,4 +1,4 @@
-﻿# Mental Models â€” Time Ordering
+﻿# Mental Models — Time Ordering
 
 1. **Detective Board**: Events as photos, strings as causation
 2. **Taxi Meter**: Lamport clock ticks up but comparing meters tells nothing

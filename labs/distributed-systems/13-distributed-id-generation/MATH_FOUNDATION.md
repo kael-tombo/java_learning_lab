@@ -1,14 +1,14 @@
-﻿# Mathematical Foundations â€” ID Generation
+﻿# Mathematical Foundations — ID Generation
 
 ## 1. Collision Probability (Birthday Problem)
 
 The probability of at least one collision when generating k random IDs from a space of N possibilities:
 
-P(collision) â‰ˆ 1 - e^(-k(k-1)/(2N))
+P(collision) ≈ 1 - e^(-k(k-1)/(2N))
 
 For UUID v4 (N = 2^122):
-- k = 10^12: P â‰ˆ 5.4e-15
-- k = 10^15: P â‰ˆ 0.0054
+- k = 10^12: P ≈ 5.4e-15
+- k = 10^15: P ≈ 0.0054
 
 ## 2. Snowflake ID Structure
 
@@ -17,7 +17,7 @@ For UUID v4 (N = 2^122):
 1 | 41-bit timestamp        | 10-bit ID  | 12-bit seq
 `
 
-Maximum IDs per second: 1024 Ã— 4096 = 4,194,304
+Maximum IDs per second: 1024 × 4096 = 4,194,304
 
 ## 3. Timestamp Representation
 
@@ -38,7 +38,7 @@ For post-epoch start (e.g., 2020-01-01):
 ## 5. Monotonicity Guarantees
 
 For time-based IDs, monotonicity requires:
-- Clock skew â‰¤ sequence number capacity per millisecond
+- Clock skew ≤ sequence number capacity per millisecond
 - If clock goes back: wait, use special sequence, or error
 
 ## 6. K-Ordered IDs

@@ -1,1 +1,1 @@
-# 09-anomaly-detection — Architecture\n\nSystem design and architectural patterns for 09-anomaly-detection.
+# 09-anomaly-detection â€” Architecture\n\nSystem design and architectural patterns for 09-anomaly-detection.

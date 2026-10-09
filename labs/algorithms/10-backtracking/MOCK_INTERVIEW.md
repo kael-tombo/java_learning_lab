@@ -1,4 +1,4 @@
-# Mock Interview: Backtracking — Constraint Satisfaction Search
+# Mock Interview: Backtracking â€” Constraint Satisfaction Search
 
 ## Interview Details
 - **Topic**: Backtracking

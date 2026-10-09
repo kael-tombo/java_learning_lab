@@ -1,4 +1,4 @@
-# Mock Interview: Recursion — Recursive Thinking and Backtracking
+# Mock Interview: Recursion â€” Recursive Thinking and Backtracking
 
 ## Interview Details
 - **Topic**: Recursion

@@ -1,4 +1,4 @@
-# 11 — AWS Observability
+# 11 â€” AWS Observability
 
 ## Overview
 CloudWatch, X-Ray, Prometheus on AWS, AMP, AMG. This lab provides hands-on experience with real Java implementations and cloud SDK patterns.
@@ -28,11 +28,11 @@ CloudWatch, X-Ray, Prometheus on AWS, AMP, AMG. This lab provides hands-on exper
 | FLASHCARDS.md | Spaced-repetition review cards |
 
 ## Key Topics
-- **CloudWatch** — Metrics, logs, and alarms
-- **X-Ray** — Distributed tracing
-- **Prometheus** — Open-source monitoring
-- **AMP** — Amazon Managed Service for Prometheus
-- **AMG** — Amazon Managed Grafana
+- **CloudWatch** â€” Metrics, logs, and alarms
+- **X-Ray** â€” Distributed tracing
+- **Prometheus** â€” Open-source monitoring
+- **AMP** â€” Amazon Managed Service for Prometheus
+- **AMG** â€” Amazon Managed Grafana
 
 ## Next Lab
 ? [Azure Fundamentals](../4-azure-fundamentals)

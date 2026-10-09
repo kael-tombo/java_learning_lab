@@ -7,18 +7,18 @@
 WebAuthn primarily uses ECDSA with P-256 (secp256r1) curves:
 
 **Elliptic Curve Equation** (Weierstrass form):
-y² = x³ + ax + b (mod p)
+yÂ² = xÂ³ + ax + b (mod p)
 
-For P-256: p = 2²56 - 2²²4 + 2¹?² + 2?6 - 1
+For P-256: p = 2Â²56 - 2Â²Â²4 + 2Â¹?Â² + 2?6 - 1
 
 **Key Generation**:
 - Private key: random 256-bit integer d
-- Public key: Q = d × G (scalar multiplication on curve)
+- Public key: Q = d Ã— G (scalar multiplication on curve)
 
 **ECDSA Signature**:
-- Random k, compute R = k × G
+- Random k, compute R = k Ã— G
 - Compute r = R.x mod n
-- Compute s = k?¹ × (z + r × d) mod n
+- Compute s = k?Â¹ Ã— (z + r Ã— d) mod n
 - Signature: (r, s)
 
 ### Challenge Entropy

@@ -1,4 +1,4 @@
-# Mock Interview: String Algorithms Advanced — Suffix Automaton, Manacher, BWT
+# Mock Interview: String Algorithms Advanced â€” Suffix Automaton, Manacher, BWT
 
 ## Interview Details
 - **Topic**: String Algorithms Advanced

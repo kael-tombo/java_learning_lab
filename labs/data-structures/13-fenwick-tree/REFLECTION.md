@@ -13,7 +13,7 @@ The Fenwick tree demonstrates how understanding binary representation can lead t
 
 ## Practical Lessons
 
-- Not all problems need a segment tree â€” BIT often suffices
+- Not all problems need a segment tree — BIT often suffices
 - The 1-indexed conversion is critical to get right
 - Coordinate compression enables BIT for large value ranges
 

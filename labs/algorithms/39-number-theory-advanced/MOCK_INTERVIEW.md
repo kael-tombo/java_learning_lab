@@ -1,4 +1,4 @@
-# Mock Interview: Number Theory Advanced — Pollard Rho, Elliptic Curves, Continued Fractions
+# Mock Interview: Number Theory Advanced â€” Pollard Rho, Elliptic Curves, Continued Fractions
 
 ## Interview Details
 - **Topic**: Number Theory Advanced

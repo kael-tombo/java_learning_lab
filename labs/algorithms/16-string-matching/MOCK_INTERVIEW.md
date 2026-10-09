@@ -1,4 +1,4 @@
-# Mock Interview: String Matching — KMP, Boyer-Moore, Aho-Corasick
+# Mock Interview: String Matching â€” KMP, Boyer-Moore, Aho-Corasick
 
 ## Interview Details
 - **Topic**: String Matching

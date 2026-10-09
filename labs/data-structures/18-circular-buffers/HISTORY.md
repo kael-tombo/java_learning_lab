@@ -5,6 +5,6 @@
 - **1980s**: Audio hardware using circular buffers
 - **1990s**: NIC ring buffers become standard
 - **2000s**: Lock-free ring buffers for multi-core
-- **2010s**: Disruptor pattern (LMAX) â€” high-performance inter-thread messaging
+- **2010s**: Disruptor pattern (LMAX) — high-performance inter-thread messaging
 
 The circular buffer is one of the oldest and most fundamental data structures in computing.

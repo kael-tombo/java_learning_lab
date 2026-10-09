@@ -1,4 +1,4 @@
-# Mock Interview: Cryptographic Algorithms — Hashing, Encryption, Signatures
+# Mock Interview: Cryptographic Algorithms â€” Hashing, Encryption, Signatures
 
 ## Interview Details
 - **Topic**: Cryptographic Algorithms

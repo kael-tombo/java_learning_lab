@@ -8,4 +8,4 @@ Back: When full, new data overwrites the oldest data, advancing the head.
 Back: When full, producers block until consumers free space.
 
 ## Front: What is an SPSC buffer?
-Back: Single Producer, Single Consumer â€” can be lock-free with volatile.
+Back: Single Producer, Single Consumer — can be lock-free with volatile.

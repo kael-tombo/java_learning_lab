@@ -1,4 +1,4 @@
-# Mock Interview: Heaps — Priority Queue Patterns
+# Mock Interview: Heaps â€” Priority Queue Patterns
 
 ## Interview Details
 - **Topic**: Heaps

@@ -1,4 +1,4 @@
-﻿# Performance â€” Time Ordering
+﻿# Performance — Time Ordering
 
 ## 1. Performance Characteristics
 

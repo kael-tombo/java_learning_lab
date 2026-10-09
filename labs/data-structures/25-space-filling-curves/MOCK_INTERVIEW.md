@@ -1,4 +1,4 @@
-# Mock Interview: Space-Filling Curves — Z-order and Hilbert Curves
+# Mock Interview: Space-Filling Curves â€” Z-order and Hilbert Curves
 
 ## Interview Details
 - **Topic**: Space-Filling Curves

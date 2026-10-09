@@ -77,7 +77,7 @@ public static FenwickTree fromArray(int[] arr) {
 
 ## Complexity
 
-- **add**: O(log n) â€” traversal through at most log n indices
-- **sum**: O(log n) â€” accumulates at most log n values
-- **rangeSum**: O(log n) â€” two prefix sum calls
-- **Space**: O(n) â€” exactly one array
+- **add**: O(log n) — traversal through at most log n indices
+- **sum**: O(log n) — accumulates at most log n values
+- **rangeSum**: O(log n) — two prefix sum calls
+- **Space**: O(n) — exactly one array

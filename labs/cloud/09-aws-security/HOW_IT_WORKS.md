@@ -1,4 +1,4 @@
-# 09 — AWS Security — How It Works
+# 09 â€” AWS Security â€” How It Works
 
 ## Core Mechanism
 

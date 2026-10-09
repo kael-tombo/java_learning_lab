@@ -1,4 +1,4 @@
-# Mock Interview: LRU Cache — Eviction Policies and Design
+# Mock Interview: LRU Cache â€” Eviction Policies and Design
 
 ## Interview Details
 - **Topic**: LRU Cache

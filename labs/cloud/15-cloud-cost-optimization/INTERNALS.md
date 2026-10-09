@@ -1,4 +1,4 @@
-# 15 — Cloud Cost Optimization — Internals
+# 15 â€” Cloud Cost Optimization â€” Internals
 
 ## Internal Architecture
 

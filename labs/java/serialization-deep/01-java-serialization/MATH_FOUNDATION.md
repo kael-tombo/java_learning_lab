@@ -1,4 +1,4 @@
-﻿# Java Serialization â€” Mathematical Foundation
+﻿# Java Serialization — Mathematical Foundation
 
 ## 1. Asymptotic Complexity Analysis
 
@@ -54,7 +54,7 @@ With 64-bit hash space:
 ## 4. Size Estimation
 
 ### Object Graph Size Formula
-TotalStreamSize = Header(4) + Î£(ClassDescriptors) + Î£(ObjectData) + HandleTable + Footer
+TotalStreamSize = Header(4) + Σ(ClassDescriptors) + Σ(ObjectData) + HandleTable + Footer
 
 ### Example Calculation
 For a simple Point class (int x, int y):

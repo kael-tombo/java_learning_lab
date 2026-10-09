@@ -1,1 +1,1 @@
-# 16-embeddings — Math Foundation\n\nMathematical prerequisites and formalisms for 16-embeddings.
+# 16-embeddings â€” Math Foundation\n\nMathematical prerequisites and formalisms for 16-embeddings.

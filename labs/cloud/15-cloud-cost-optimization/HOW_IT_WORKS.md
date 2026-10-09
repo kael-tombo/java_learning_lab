@@ -1,4 +1,4 @@
-# 15 — Cloud Cost Optimization — How It Works
+# 15 â€” Cloud Cost Optimization â€” How It Works
 
 ## Core Mechanism
 

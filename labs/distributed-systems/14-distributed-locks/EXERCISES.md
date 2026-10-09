@@ -1,4 +1,4 @@
-﻿# Exercises â€” Distributed Locks
+﻿# Exercises — Distributed Locks
 
 1. **Redis Lock (Easy)**: Implement basic Redis SET NX lock
 2. **ZK Lock (Medium)**: Implement ZooKeeper ephemeral sequential lock

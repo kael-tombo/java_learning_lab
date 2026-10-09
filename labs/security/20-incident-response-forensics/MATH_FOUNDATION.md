@@ -5,9 +5,9 @@
 ### Risk Calculation
 
 **Annualized Loss Expectancy (ALE)**:
-- SLE (Single Loss Expectancy) = AV (Asset Value) × EF (Exposure Factor)
+- SLE (Single Loss Expectancy) = AV (Asset Value) Ã— EF (Exposure Factor)
 - ARO (Annualized Rate of Occurrence)
-- ALE = SLE × ARO
+- ALE = SLE Ã— ARO
 
 ### Recovery Time Objectives
 
@@ -18,12 +18,12 @@
 ### Forensic Hashing
 
 - SHA-256: 2^256 possible output values
-- Collision probability: k²/2^257 (birthday attack)
-- For 10¹5 hashes: P(collision) ˜ 10?²¹ (negligible)
+- Collision probability: kÂ²/2^257 (birthday attack)
+- For 10Â¹5 hashes: P(collision) Ëœ 10?Â²Â¹ (negligible)
 
 ### Incident Severity Matrix
 
-Risk = P(occurrence) × I(impact)
+Risk = P(occurrence) Ã— I(impact)
 - P: 1-5 (rare to almost certain)
 - I: 1-5 (negligible to catastrophic)
 - Risk Score: 1-25
@@ -43,11 +43,11 @@ Risk = P(occurrence) × I(impact)
 
 - Volatile data decay: RAM (seconds), network connections (minutes)
 - Disk imaging time: size / write_speed
-- Example: 1TB SSD at 500MB/s ˜ 34 minutes
+- Example: 1TB SSD at 500MB/s Ëœ 34 minutes
 
 ### Chain of Custody Probability
 
-- P(evidence_admissible) = P(custody_complete) × P(integrity_verified)
+- P(evidence_admissible) = P(custody_complete) Ã— P(integrity_verified)
 - Integrity verification: SHA-256 hash match
 - Documentation accuracy: timestamp, signature, witness verification
 

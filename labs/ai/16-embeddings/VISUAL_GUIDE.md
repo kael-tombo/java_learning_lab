@@ -1,1 +1,1 @@
-# 16-embeddings — Visual Guide\n\nDiagrams and visual explanations for 16-embeddings.
+# 16-embeddings â€” Visual Guide\n\nDiagrams and visual explanations for 16-embeddings.

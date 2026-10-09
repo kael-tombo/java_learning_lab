@@ -1,1 +1,1 @@
-# 16-embeddings — Performance\n\nPerformance considerations, benchmarks, and optimization tips.
+# 16-embeddings â€” Performance\n\nPerformance considerations, benchmarks, and optimization tips.

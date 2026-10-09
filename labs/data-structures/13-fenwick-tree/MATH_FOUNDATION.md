@@ -31,16 +31,16 @@ The worst case for prefix sum is when i = 2^k - 1 (all bits set):
 - i = 1023 (1111111111): 10 iterations
 
 The worst case for point update is when i is a power of 2:
-- i = 8 (1000): 8 â†’ 16 â†’ 32 â†’ ... â†’ (next power > n)
+- i = 8 (1000): 8 → 16 → 32 → ... → (next power > n)
 - If n = 16, i = 8 updates 8, 16 (2 iterations)
 - Each iteration doubles the index, so max iterations = log2(n) - log2(i) + 1
 
 ## 2D BIT Complexity
 
 In a 2D BIT:
-- Update: O(log n Ã— log m)
-- Query: O(log n Ã— log m)
-- Space: O(n Ã— m)
+- Update: O(log n × log m)
+- Query: O(log n × log m)
+- Space: O(n × m)
 
 ## Range Update + Range Query Math
 

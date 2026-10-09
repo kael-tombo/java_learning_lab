@@ -1,4 +1,4 @@
-# Mock Interview: Suffix Array and LCP — SA Construction and Kasai Algorithm
+# Mock Interview: Suffix Array and LCP â€” SA Construction and Kasai Algorithm
 
 ## Interview Details
 - **Topic**: Suffix Array and LCP

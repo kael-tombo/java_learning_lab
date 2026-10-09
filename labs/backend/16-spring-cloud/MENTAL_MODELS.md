@@ -28,4 +28,4 @@ Load balancing is like GPS navigation with traffic awareness. When you ask for d
 The API Gateway is the host seating guests. Eureka is the reservation list. Config Server is the recipe book. Each station (appetizer, main course, dessert) is a microservice. The circuit breaker is the fire suppression system. The load balancer is the expediter who distributes orders to available chefs.
 
 ## 10. The Jenga Model (System Resilience)
-Microservices with circuit breakers is like playing Jenga with safety nets. Each block is a service. If you remove one (service failure), the tower (system) should still stand. Circuit breakers prevent the whole tower from toppling by isolating weak blocks. Self-preservation mode in Eureka is like the tower settling â€” don't remove blocks too aggressively.
+Microservices with circuit breakers is like playing Jenga with safety nets. Each block is a service. If you remove one (service failure), the tower (system) should still stand. Circuit breakers prevent the whole tower from toppling by isolating weak blocks. Self-preservation mode in Eureka is like the tower settling — don't remove blocks too aggressively.

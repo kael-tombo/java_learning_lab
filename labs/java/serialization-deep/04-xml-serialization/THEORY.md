@@ -1,4 +1,4 @@
-﻿# XML Serialization â€” Theoretical Foundation
+﻿# XML Serialization — Theoretical Foundation
 
 ## Core Concepts
 
@@ -6,7 +6,7 @@
 XML serialization in Java converts objects to and from XML documents. JAXB (Java Architecture for XML Binding) is the standard API that maps XML schemas to Java objects using annotations.
 
 ### 2. Theoretical Foundation
-XML serialization is based on the concept of data binding â€” mapping XML elements and attributes to Java classes and fields. The binding is defined through annotations, XML schema, or both.
+XML serialization is based on the concept of data binding — mapping XML elements and attributes to Java classes and fields. The binding is defined through annotations, XML schema, or both.
 
 #### Key Theoretical Properties
 - **Schema-Driven**: XML Schema (XSD) defines the structure, types, and constraints

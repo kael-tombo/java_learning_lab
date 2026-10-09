@@ -1,1 +1,1 @@
-# 06-classification — Math Foundation\n\nMathematical prerequisites and formalisms for 06-classification.
+# 06-classification â€” Math Foundation\n\nMathematical prerequisites and formalisms for 06-classification.

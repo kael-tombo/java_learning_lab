@@ -1,4 +1,4 @@
-# 09 — AWS Security — Common Mistakes
+# 09 â€” AWS Security â€” Common Mistakes
 
 ## 1. Over-Engineering
 Building complex abstractions before they are needed. Start simple, refactor when patterns emerge.

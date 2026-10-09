@@ -1,4 +1,4 @@
-﻿# Oracle Interview Guide â€” Oracle APEX Academy
+﻿# Oracle Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 
@@ -16,7 +16,7 @@ The Oracle interview process for APEX and database roles typically spans 3-5 wee
 
 ### APEX-Specific Expectations
 
-Oracle invented APEX and uses it extensively internally and for customer solutions. They expect candidates to have deep knowledge of the APEX engine architecture â€” how pages render, how session state is managed, how computations and processes execute in the page lifecycle, and how APEX integrates with the Oracle Database.
+Oracle invented APEX and uses it extensively internally and for customer solutions. They expect candidates to have deep knowledge of the APEX engine architecture — how pages render, how session state is managed, how computations and processes execute in the page lifecycle, and how APEX integrates with the Oracle Database.
 
 Candidates should understand the APEX rendering lifecycle (the 5-step process: page rendering, page processing, session state management, authentication, and authorization). Oracle interviewers will probe your understanding of these internals to assess whether you truly understand the platform or just know how to drag and drop components.
 
@@ -44,7 +44,7 @@ Candidates should understand the APEX rendering lifecycle (the 5-step process: p
 
 - **SQL Problem Statement**: Write a query to display each department name along with the number of employees and the average salary. Only include departments that have at least 3 employees earning above 5000. Order the results by average salary in descending order. Format the average salary to two decimal places.
 
-- **Interview Walkthrough**: This problem tests your ability to combine joins, conditional aggregation, and filtering. Start by joining DEPT and EMP tables on DEPTNO. Use COUNT with a CASE expression to count only employees earning above 5000. The HAVING clause filters groups meeting the threshold. Use AVG on salary and ORDER BY the computed average. Oracle interviewers specifically watch for your handling of NULLs â€” employees with NULL salaries should not break the calculation.
+- **Interview Walkthrough**: This problem tests your ability to combine joins, conditional aggregation, and filtering. Start by joining DEPT and EMP tables on DEPTNO. Use COUNT with a CASE expression to count only employees earning above 5000. The HAVING clause filters groups meeting the threshold. Use AVG on salary and ORDER BY the computed average. Oracle interviewers specifically watch for your handling of NULLs — employees with NULL salaries should not break the calculation.
 
 - **SQL Solution**:
 
@@ -98,7 +98,7 @@ WHERE salary_rank = 2;
 
 - **What Oracle Evaluates**: Your understanding of set-based thinking versus procedural approaches. Oracle values developers who can express problems in set-based SQL rather than using loops or cursors. The analytic function approach shows you understand Oracle's advanced SQL features.
 
-- **Follow-ups**: 1) Modify to find the Nth highest salary using a parameter. 2) Handle ties â€” if 3 people share the highest salary, what is the second highest? 3) Rewrite using FETCH FIRST WITH TIES (Oracle 12c+ syntax).
+- **Follow-ups**: 1) Modify to find the Nth highest salary using a parameter. 2) Handle ties — if 3 people share the highest salary, what is the second highest? 3) Rewrite using FETCH FIRST WITH TIES (Oracle 12c+ syntax).
 
 #### Problem: Department Salary Variance Analysis (Oracle-specific)
 
@@ -126,7 +126,7 @@ GROUP BY d.dname
 ORDER BY STDDEV(e.sal) DESC NULLS LAST;
 ```
 
-- **Oracle-Specific Syntax**: SUM(SUM(e.sal)) OVER () is a window function over an aggregate â€” Oracle's syntax for computing a grand total within a grouped query. STDDEV calculates standard deviation. NULLS LAST in ORDER BY controls NULL positioning.
+- **Oracle-Specific Syntax**: SUM(SUM(e.sal)) OVER () is a window function over an aggregate — Oracle's syntax for computing a grand total within a grouped query. STDDEV calculates standard deviation. NULLS LAST in ORDER BY controls NULL positioning.
 
 - **What Oracle Evaluates**: Advanced aggregation with window functions. The ability to mix GROUP BY aggregates with analytic window functions shows mastery of Oracle's SQL capabilities.
 
@@ -521,7 +521,7 @@ FETCH FIRST 20 ROWS ONLY;
 
    - **T**ask: Resolve the disagreement while delivering a compliant solution.
 
-   - **A**ction: Built a POC showing APEX validations were tamper-proof. Proposed a hybrid approach â€” APEX for critical rules, JavaScript for UX.
+   - **A**ction: Built a POC showing APEX validations were tamper-proof. Proposed a hybrid approach — APEX for critical rules, JavaScript for UX.
 
    - **R**esult: Team adopted the hybrid approach. Client passed security audit.
 
@@ -564,7 +564,7 @@ FETCH FIRST 20 ROWS ONLY;
 
 - **Know Your Oracle History**: Be ready to discuss the evolution from Oracle Forms to APEX, why Oracle invested in low-code, and APEX's strategic importance in Oracle Cloud.
 
-- **Focus on the Database**: The database is always the star. Frame every APEX answer in terms of how it leverages database features â€” PL/SQL, virtual columns, materialized views, partitioning, JSON.
+- **Focus on the Database**: The database is always the star. Frame every APEX answer in terms of how it leverages database features — PL/SQL, virtual columns, materialized views, partitioning, JSON.
 
 - **Cloud Readiness**: Emphasize experience with APEX on Autonomous Database, ORDS deployment, and RESTful services. Show you're ready for Oracle's cloud strategy.
 
@@ -576,7 +576,7 @@ FETCH FIRST 20 ROWS ONLY;
 
 - **Security Mindset**: Every answer should consider security implications. Oracle's security brand is central.
 
-- **Use Official Terminology**: Use Oracle documentation language â€” "Shared Components," "Page Processing," "Dynamic Actions."
+- **Use Official Terminology**: Use Oracle documentation language — "Shared Components," "Page Processing," "Dynamic Actions."
 
 - **Practice Whiteboard SQL**: Practice writing complex queries (analytic functions, CONNECT BY, MODEL clause) by hand.
 

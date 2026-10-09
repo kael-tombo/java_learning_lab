@@ -1,4 +1,4 @@
-# Mock Interview: DSU with Rollbacks — Persistent Union-Find
+# Mock Interview: DSU with Rollbacks â€” Persistent Union-Find
 
 ## Interview Details
 - **Topic**: DSU with Rollbacks

@@ -1,1 +1,1 @@
-# 16-embeddings — Reflection\n\nPrompts for deeper thinking about 16-embeddings.
+# 16-embeddings â€” Reflection\n\nPrompts for deeper thinking about 16-embeddings.

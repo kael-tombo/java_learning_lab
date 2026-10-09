@@ -13,14 +13,14 @@ The probability that a specific shard receives exactly k items follows a binomia
 
 #### 1.2 Hash Collision Probability (Birthday Problem)
 Given N keys and H hash values, probability of at least one collision:
-P â‰ˆ 1 - e^(-N(N-1)/(2H))
+P ≈ 1 - e^(-N(N-1)/(2H))
 
-For N=10^6, H=2^64: P â‰ˆ 2.7 Ã— 10^-8
+For N=10^6, H=2^64: P ≈ 2.7 × 10^-8
 
 #### 1.3 Load Balancing Metrics
 Skew Factor: skew = max_load / avg_load - 1
-Entropy: H = -Î£ p_i logâ‚‚(p_i)
-For perfect distribution: H = logâ‚‚(n)
+Entropy: H = -Σ p_i log₂(p_i)
+For perfect distribution: H = log₂(n)
 
 ### 2. Consistent Hashing
 
@@ -35,7 +35,7 @@ Adding one node to N existing nodes:
 #### 2.3 Virtual Node Distribution
 With V virtual nodes per physical node, N physical nodes, K total keys:
 - E[keys_per_physical] = K/N
-- Ïƒ â‰ˆ âˆš(K(1-1/(NV))/(NV))
+- σ ≈ √(K(1-1/(NV))/(NV))
 
 ### 3. Performance Modeling
 
@@ -52,12 +52,12 @@ T_sg = max_i(T_network_i + T_queue_i + T_service_i) + T_merge
 
 #### 4.1 M/M/1 Queue
 For a single server with Poisson arrivals and exponential service:
-L = Î» / (Î¼ - Î»)  (average number in system)
-W = 1 / (Î¼ - Î»)  (average time in system)
+L = λ / (μ - λ)  (average number in system)
+W = 1 / (μ - λ)  (average time in system)
 
 #### 4.2 Little's Law
-L = Î» Ã— W
-Number of items in system = arrival rate Ã— average time in system.
+L = λ × W
+Number of items in system = arrival rate × average time in system.
 
 ### 5. Computational Complexity
 
@@ -71,10 +71,10 @@ Number of items in system = arrival rate Ã— average time in system.
 ### 6. Capacity Planning Formulas
 
 #### 6.1 Storage per Shard
-storage_per_shard = (total_data + growth Ã— days) / num_shards + overhead
+storage_per_shard = (total_data + growth × days) / num_shards + overhead
 
 #### 6.2 Query Throughput
-max_queries = num_shards Ã— queries_per_shard_per_second
+max_queries = num_shards × queries_per_shard_per_second
 
 #### 6.3 Rebalancing Time
 rebalance_time = data_to_move / network_bandwidth + overhead
@@ -82,8 +82,8 @@ rebalance_time = data_to_move / network_bandwidth + overhead
 ### 7. Statistical Tests
 
 #### Chi-squared Test for Distribution Uniformity
-Ï‡Â² = Î£ (O_i - E_i)Â² / E_i
-Null hypothesis: data is uniformly distributed. Reject if Ï‡Â² > Ï‡Â²_critical.
+χ² = Σ (O_i - E_i)² / E_i
+Null hypothesis: data is uniformly distributed. Reject if χ² > χ²_critical.
 
 #### Kolmogorov-Smirnov Test
 For comparing distributions before and after rebalancing.

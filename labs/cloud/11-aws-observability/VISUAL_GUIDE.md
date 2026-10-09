@@ -1,4 +1,4 @@
-# 11 — AWS Observability — Visual Guide
+# 11 â€” AWS Observability â€” Visual Guide
 
 ## System Overview
 

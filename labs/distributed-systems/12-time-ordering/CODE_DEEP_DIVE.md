@@ -1,4 +1,4 @@
-﻿# Code Deep Dive â€” Time Ordering
+﻿# Code Deep Dive — Time Ordering
 
 ## 1. EventClock Interface
 

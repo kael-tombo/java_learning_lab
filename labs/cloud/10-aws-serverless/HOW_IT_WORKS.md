@@ -1,4 +1,4 @@
-# 10 — AWS Serverless — How It Works
+# 10 â€” AWS Serverless â€” How It Works
 
 ## Core Mechanism
 

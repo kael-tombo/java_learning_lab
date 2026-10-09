@@ -1,4 +1,4 @@
-# 13 — GCP Fundamentals — Internals
+# 13 â€” GCP Fundamentals â€” Internals
 
 ## Internal Architecture
 

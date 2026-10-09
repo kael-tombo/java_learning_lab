@@ -1,4 +1,4 @@
-# Mock Interview: Cuckoo and Robin Hood Hashing — Advanced Hash Table Designs
+# Mock Interview: Cuckoo and Robin Hood Hashing â€” Advanced Hash Table Designs
 
 ## Interview Details
 - **Topic**: Cuckoo and Robin Hood Hashing

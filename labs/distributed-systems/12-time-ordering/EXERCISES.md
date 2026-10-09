@@ -1,4 +1,4 @@
-﻿# Exercises â€” Time Ordering
+﻿# Exercises — Time Ordering
 
 ## Exercise 1: Implement Lamport Clock (Easy)
 Implement a Lamport clock with tick(), send(), and receive(). Test with three processes.

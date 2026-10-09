@@ -8,10 +8,10 @@
 - [Resilience4J Documentation](https://resilience4j.readme.io/docs)
 
 ## Books
-- *Spring Microservices in Action* â€” John Carnell
-- *Cloud Native Java* â€” Josh Long, Kenny Bastani
-- *Microservices Patterns* â€” Chris Richardson
-- *Building Microservices* â€” Sam Newman
+- *Spring Microservices in Action* — John Carnell
+- *Cloud Native Java* — Josh Long, Kenny Bastani
+- *Microservices Patterns* — Chris Richardson
+- *Building Microservices* — Sam Newman
 
 ## Articles & Tutorials
 - Baeldung Spring Cloud Tutorials
@@ -19,9 +19,9 @@
 - Netflix Tech Blog on Microservices
 
 ## Tools
-- [Zipkin](https://zipkin.io/) â€” Distributed tracing
-- [Eureka Dashboard](http://localhost:8761) â€” Service registry UI
-- [Spring Initializr](https://start.spring.io/) â€” Project scaffolding
+- [Zipkin](https://zipkin.io/) — Distributed tracing
+- [Eureka Dashboard](http://localhost:8761) — Service registry UI
+- [Spring Initializr](https://start.spring.io/) — Project scaffolding
 
 ## Related Labs
 - Lab 01: Spring Boot Basics

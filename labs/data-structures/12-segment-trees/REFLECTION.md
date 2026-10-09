@@ -2,7 +2,7 @@
 
 ## Key Insights
 
-Segment trees are a perfect example of the divide-and-conquer paradigm applied to data structures. The fundamental insight â€” that any interval can be decomposed into O(log n) disjoint segments â€” enables efficient range operations.
+Segment trees are a perfect example of the divide-and-conquer paradigm applied to data structures. The fundamental insight — that any interval can be decomposed into O(log n) disjoint segments — enables efficient range operations.
 
 ## What Makes Them Powerful
 

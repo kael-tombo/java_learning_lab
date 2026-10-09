@@ -28,19 +28,19 @@
    - Original Saga pattern paper
 
 ## Books
-1. **Designing Data-Intensive Applications** â€” Martin Kleppmann
+1. **Designing Data-Intensive Applications** — Martin Kleppmann
    - Chapters 5 (Replication) and 6 (Partitioning)
 
-2. **Database Internals** â€” Alex Petrov
+2. **Database Internals** — Alex Petrov
    - Part II: Distributed Systems
 
-3. **Distributed Systems** â€” Maarten van Steen, Andrew S. Tanenbaum
+3. **Distributed Systems** — Maarten van Steen, Andrew S. Tanenbaum
    - Chapters on naming, consistency, replication
 
-4. **High Performance MySQL, 4th Edition** â€” Silvia Botros, Jeremy Tinley
+4. **High Performance MySQL, 4th Edition** — Silvia Botros, Jeremy Tinley
    - Chapter 11: Scaling MySQL
 
-5. **Cassandra: The Definitive Guide, 3rd Edition** â€” Jeff Carpenter, Eben Hewitt
+5. **Cassandra: The Definitive Guide, 3rd Edition** — Jeff Carpenter, Eben Hewitt
    - Chapters on replication strategies, schema design
 
 ## Online Resources
@@ -53,9 +53,9 @@
 - MongoDB Sharding: mongodb.com/docs/manual/sharding
 
 ### Articles
-- \"Sharding & IDs at Instagram\" â€” Instagram Engineering
-- \"How Discord Scaled to 5M Users\" â€” Discord Engineering
-- \"Uber's Scalability Best Practices\" â€” Uber Engineering
+- \"Sharding & IDs at Instagram\" — Instagram Engineering
+- \"How Discord Scaled to 5M Users\" — Discord Engineering
+- \"Uber's Scalability Best Practices\" — Uber Engineering
 
 ## Tools and Libraries
 

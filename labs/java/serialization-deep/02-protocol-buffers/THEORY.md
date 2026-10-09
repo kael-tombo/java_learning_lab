@@ -1,4 +1,4 @@
-﻿# Protocol Buffers â€” Theoretical Foundation
+﻿# Protocol Buffers — Theoretical Foundation
 
 ## Core Concepts
 

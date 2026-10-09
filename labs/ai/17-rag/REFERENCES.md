@@ -1,1 +1,1 @@
-# 17-rag — References\n\nPapers, articles, and resources for 17-rag.
+# 17-rag â€” References\n\nPapers, articles, and resources for 17-rag.

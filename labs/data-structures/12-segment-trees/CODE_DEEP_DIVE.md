@@ -73,10 +73,10 @@ private void update(int node, int l, int r, int pos, int val) {
 
 ## Complexity Analysis
 
-- **Construction**: O(n) â€” each element contributes to O(1) nodes
-- **Range Query**: O(log n) â€” visits at most 4 nodes per level
-- **Point Update**: O(log n) â€” updates leaf and all ancestors
-- **Space**: O(n) â€” 4n array elements
+- **Construction**: O(n) — each element contributes to O(1) nodes
+- **Range Query**: O(log n) — visits at most 4 nodes per level
+- **Point Update**: O(log n) — updates leaf and all ancestors
+- **Space**: O(n) — 4n array elements
 
 ## Key Design Decisions
 

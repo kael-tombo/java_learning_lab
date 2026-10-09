@@ -1,4 +1,4 @@
-﻿# Accenture Interview Guide â€” Oracle APEX Academy
+﻿# Accenture Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 
@@ -65,7 +65,7 @@ ORDER BY salary_difference ASC, d.dname, e.ename;
 
 - **Oracle-Specific Syntax**: AVG as window function with OVER (PARTITION BY). Oracle supports multiple window functions in one query. ROUND with precision.
 
-- **What Accenture Evaluates**: Practical window function usage for comparative analytics â€” common client requirement.
+- **What Accenture Evaluates**: Practical window function usage for comparative analytics — common client requirement.
 
 - **Follow-ups**: 1) Add count of employees above/below average. 2) Show percentage difference. 3) Create APEX report with conditional formatting.
 
@@ -303,7 +303,7 @@ ORDER BY status;
 
 - **Oracle-Specific Syntax**: FULL OUTER JOIN for complete comparison. NVL handles NULL comparisons.
 
-- **What Accenture Evaluates**: Data migration validation â€” core consulting skill.
+- **What Accenture Evaluates**: Data migration validation — core consulting skill.
 
 - **Follow-ups**: 1) Column-level mismatch detail. 2) APEX reconciliation dashboard. 3) Timing metrics.
 
@@ -488,7 +488,7 @@ FETCH FIRST 20 ROWS ONLY;
 
 ## Tips
 
-- **Delivery Focus**: Emphasize project delivery â€” on-time, on-budget, high quality. Use metrics.
+- **Delivery Focus**: Emphasize project delivery — on-time, on-budget, high quality. Use metrics.
 
 - **Methodology Matters**: Show Agile/Scrum experience. Know sprint, retrospective, velocity terminology.
 

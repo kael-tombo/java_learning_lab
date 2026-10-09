@@ -1,4 +1,4 @@
-# Mock Interview: Complexity Analysis — Big O, Amortized, Master Theorem
+# Mock Interview: Complexity Analysis â€” Big O, Amortized, Master Theorem
 
 ## Interview Details
 - **Topic**: Complexity Analysis

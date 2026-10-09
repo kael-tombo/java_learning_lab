@@ -1,1 +1,1 @@
-# 19-llm-agents — Internals\n\nDetailed internal mechanics and implementation details.
+# 19-llm-agents â€” Internals\n\nDetailed internal mechanics and implementation details.

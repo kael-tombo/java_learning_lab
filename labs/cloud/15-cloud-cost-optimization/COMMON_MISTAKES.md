@@ -1,4 +1,4 @@
-# 15 — Cloud Cost Optimization — Common Mistakes
+# 15 â€” Cloud Cost Optimization â€” Common Mistakes
 
 ## 1. Over-Engineering
 Building complex abstractions before they are needed. Start simple, refactor when patterns emerge.

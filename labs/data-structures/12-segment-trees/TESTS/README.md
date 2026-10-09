@@ -1,7 +1,7 @@
 ﻿# Tests: Segment Trees
 
 ## Test Files
-- SegmentTreeTest.java â€” JUnit 5 test suite
+- SegmentTreeTest.java — JUnit 5 test suite
 
 ## Coverage
 - Construction and basic queries

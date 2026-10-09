@@ -1,4 +1,4 @@
-# Mock Interview: Count-Min Sketch — Frequency Estimation
+# Mock Interview: Count-Min Sketch â€” Frequency Estimation
 
 ## Interview Details
 - **Topic**: Count-Min Sketch

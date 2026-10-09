@@ -1,4 +1,4 @@
-# 12 — Azure Fundamentals — Common Mistakes
+# 12 â€” Azure Fundamentals â€” Common Mistakes
 
 ## 1. Over-Engineering
 Building complex abstractions before they are needed. Start simple, refactor when patterns emerge.

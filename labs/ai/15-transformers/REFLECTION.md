@@ -1,1 +1,1 @@
-# 15-transformers — Reflection\n\nPrompts for deeper thinking about 15-transformers.
+# 15-transformers â€” Reflection\n\nPrompts for deeper thinking about 15-transformers.

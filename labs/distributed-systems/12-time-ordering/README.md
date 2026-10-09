@@ -54,9 +54,9 @@ Time ordering is a fundamental challenge in distributed systems where nodes lack
 | FLASHCARDS.md | Study flashcards for reinforcement |
 
 ## Package Structure
-- com.distributed.timeordering â€” Core implementations
-  - LamportClock.java â€” Lamport logical clock
-  - VectorClock.java â€” Vector clock implementation
-  - HybridLogicalClock.java â€” Hybrid logical clock
-  - CausalBroadcast.java â€” Causal broadcast protocol
-  - EventClock.java â€” Base abstraction for clocks
+- com.distributed.timeordering — Core implementations
+  - LamportClock.java — Lamport logical clock
+  - VectorClock.java — Vector clock implementation
+  - HybridLogicalClock.java — Hybrid logical clock
+  - CausalBroadcast.java — Causal broadcast protocol
+  - EventClock.java — Base abstraction for clocks

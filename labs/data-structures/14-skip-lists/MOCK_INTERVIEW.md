@@ -1,4 +1,4 @@
-# Mock Interview: Skip Lists — Probabilistic Balanced Structures
+# Mock Interview: Skip Lists â€” Probabilistic Balanced Structures
 
 ## Interview Details
 - **Topic**: Skip Lists

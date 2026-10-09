@@ -1,1 +1,1 @@
-# 17-rag — Reflection\n\nPrompts for deeper thinking about 17-rag.
+# 17-rag â€” Reflection\n\nPrompts for deeper thinking about 17-rag.

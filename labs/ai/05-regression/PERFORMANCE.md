@@ -1,1 +1,1 @@
-# 05-regression — Performance\n\nPerformance considerations, benchmarks, and optimization tips.
+# 05-regression â€” Performance\n\nPerformance considerations, benchmarks, and optimization tips.

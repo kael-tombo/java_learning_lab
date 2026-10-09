@@ -2,7 +2,7 @@
 
 ## The Caching Problem
 
-Applications need to store frequently accessed data in memory for fast retrieval. Without caching, every request would hit the database. Caching reduces latency by 10-100x, but memory is limitedâ€”so we need an eviction policy.
+Applications need to store frequently accessed data in memory for fast retrieval. Without caching, every request would hit the database. Caching reduces latency by 10-100x, but memory is limited—so we need an eviction policy.
 
 ## Why LRU?
 

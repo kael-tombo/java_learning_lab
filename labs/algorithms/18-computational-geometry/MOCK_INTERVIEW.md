@@ -1,4 +1,4 @@
-# Mock Interview: Computational Geometry — Convex Hull, Line Intersection
+# Mock Interview: Computational Geometry â€” Convex Hull, Line Intersection
 
 ## Interview Details
 - **Topic**: Computational Geometry

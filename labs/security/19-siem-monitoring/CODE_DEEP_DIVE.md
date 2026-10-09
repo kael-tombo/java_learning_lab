@@ -49,9 +49,9 @@ The ThreatDetectionEngine implements:
 
 ### Alert Severity Scoring
 
-- Impact: System criticality × data sensitivity
+- Impact: System criticality Ã— data sensitivity
 - Urgency: Active exploitation vs reconnaissance
-- Confidence: Rule match strength × signal quality
+- Confidence: Rule match strength Ã— signal quality
 - Overall: weighted average of impact, urgency, confidence
 
 ### Log Normalization

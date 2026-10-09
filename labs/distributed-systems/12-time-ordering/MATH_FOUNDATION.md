@@ -3,14 +3,14 @@
 ## 1. Partial Orders and Total Orders
 
 ### Partial Order
-A partial order is a binary relation â‰¤ that is:
-- **Reflexive**: a â‰¤ a for all a
-- **Antisymmetric**: if a â‰¤ b and b â‰¤ a then a = b
-- **Transitive**: if a â‰¤ b and b â‰¤ c then a â‰¤ c
+A partial order is a binary relation ≤ that is:
+- **Reflexive**: a ≤ a for all a
+- **Antisymmetric**: if a ≤ b and b ≤ a then a = b
+- **Transitive**: if a ≤ b and b ≤ c then a ≤ c
 
 ### Total Order
 A total order extends partial order with comparability:
-- For all a, b: either a â‰¤ b or b â‰¤ a
+- For all a, b: either a ≤ b or b ≤ a
 
 The happens-before relation (->) is a partial order on distributed events.
 
@@ -20,13 +20,13 @@ In any finite partial order, the minimum number of chains needed to cover all el
 ## 2. Lattice Theory
 
 A lattice is a partially ordered set where every pair of elements has:
-- A least upper bound (join) â€” written as a âˆ¨ b
-- A greatest lower bound (meet) â€” written as a âˆ§ b
+- A least upper bound (join) — written as a ∨ b
+- A greatest lower bound (meet) — written as a ∧ b
 
 ### Vector Clocks Form a Lattice
 The set of all vector clock values with component-wise comparison forms a lattice:
-- (V_a âˆ¨ V_b)[i] = max(V_a[i], V_b[i])
-- (V_a âˆ§ V_b)[i] = min(V_a[i], V_b[i])
+- (V_a ∨ V_b)[i] = max(V_a[i], V_b[i])
+- (V_a ∧ V_b)[i] = min(V_a[i], V_b[i])
 
 This lattice structure allows us to:
 - Find the latest common ancestor of two versions
@@ -44,8 +44,8 @@ For any system with n processes, any clock algorithm that satisfies the strong c
 
 HLC provides guarantees about the relationship between logical time and physical time:
 
-If |physical_clock_drift| â‰¤ Îµ and messages are delivered within Î´ time, then:
-|HLC_value - physical_time| â‰¤ Îµ + Î´
+If |physical_clock_drift| ≤ ε and messages are delivered within δ time, then:
+|HLC_value - physical_time| ≤ ε + δ
 
 This bounded error enables applications that need both causality tracking and wall-clock correlation.
 
@@ -60,10 +60,10 @@ Time ordering mechanisms (especially vector clocks) enable the eventual consiste
 
 ## 6. Matrix Clocks (n-Dimensional)
 
-Matrix clocks extend vector clocks with an nÃ—n matrix:
+Matrix clocks extend vector clocks with an n×n matrix:
 - Each process tracks what it knows about what other processes know
 - Enables garbage collection of old causal information
-- Storage cost: O(nÂ²)
+- Storage cost: O(n²)
 
 ## 7. Interval Tree Clocks
 
@@ -75,16 +75,16 @@ Interval Tree Clocks (ITC) provide an alternative to vector clocks with:
 ## 8. Clock Drift Models
 
 ### Linear Drift
-A clock's drift can be modeled as: C(t) = a + b Ã— t where:
+A clock's drift can be modeled as: C(t) = a + b × t where:
 - a is the initial offset
 - b is the drift rate (typically 10^-6 to 10^-4 for quartz oscillators)
 
 ### The Skew Problem
 For two clocks with drift rates b1 and b2, the skew after time T is:
-skew = |b1 - b2| Ã— T
+skew = |b1 - b2| × T
 
 After 1 hour with typical quartz drift (10^-5):
-skew = 2 Ã— 10^-5 Ã— 3600 = 0.072 seconds = 72ms
+skew = 2 × 10^-5 × 3600 = 0.072 seconds = 72ms
 
 ## 9. Synchronization in NTP
 

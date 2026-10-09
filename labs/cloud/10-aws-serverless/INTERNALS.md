@@ -1,4 +1,4 @@
-# 10 — AWS Serverless — Internals
+# 10 â€” AWS Serverless â€” Internals
 
 ## Internal Architecture
 

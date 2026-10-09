@@ -1,4 +1,4 @@
-# Mock Interview: Bloom Filters — Probabilistic Data Structures
+# Mock Interview: Bloom Filters â€” Probabilistic Data Structures
 
 ## Interview Details
 - **Topic**: Bloom Filters

@@ -1,4 +1,4 @@
-﻿# Code Deep Dive â€” Distributed Locks
+﻿# Code Deep Dive — Distributed Locks
 
 ## 1. DistributedLock Interface
 

@@ -1,4 +1,4 @@
-# 13 — GCP Fundamentals — Visual Guide
+# 13 â€” GCP Fundamentals â€” Visual Guide
 
 ## System Overview
 

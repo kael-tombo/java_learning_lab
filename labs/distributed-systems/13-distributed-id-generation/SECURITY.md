@@ -1,4 +1,4 @@
-﻿# Security â€” ID Generation
+﻿# Security — ID Generation
 
 ## ID Leakage
 - Time-based IDs reveal creation time

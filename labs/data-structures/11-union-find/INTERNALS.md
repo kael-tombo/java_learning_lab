@@ -13,7 +13,7 @@ Total memory: 8n bytes for n elements (using 32-bit integers).
 
 ### Array-Based Representation
 
-The parent array stores an integer for each element. This is incredibly cache-friendly â€” adjacent elements in the array correspond to adjacent elements in the data structure. Since both Find and Union involve sequential access patterns following parent pointers, the CPU cache performs well.
+The parent array stores an integer for each element. This is incredibly cache-friendly — adjacent elements in the array correspond to adjacent elements in the data structure. Since both Find and Union involve sequential access patterns following parent pointers, the CPU cache performs well.
 
 ### Alternative: Size Array
 

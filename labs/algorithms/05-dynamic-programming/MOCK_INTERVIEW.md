@@ -1,4 +1,4 @@
-# Mock Interview: Dynamic Programming — Memoization and Tabulation
+# Mock Interview: Dynamic Programming â€” Memoization and Tabulation
 
 ## Interview Details
 - **Topic**: Dynamic Programming

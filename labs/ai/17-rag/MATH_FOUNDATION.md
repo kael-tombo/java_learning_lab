@@ -1,1 +1,1 @@
-# 17-rag — Math Foundation\n\nMathematical prerequisites and formalisms for 17-rag.
+# 17-rag â€” Math Foundation\n\nMathematical prerequisites and formalisms for 17-rag.

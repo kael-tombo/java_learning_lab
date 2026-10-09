@@ -1,4 +1,4 @@
-# Mock Interview: Network Flow — Max Flow, Min Cut, Dinic
+# Mock Interview: Network Flow â€” Max Flow, Min Cut, Dinic
 
 ## Interview Details
 - **Topic**: Network Flow

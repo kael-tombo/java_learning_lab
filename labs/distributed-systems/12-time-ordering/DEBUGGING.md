@@ -1,4 +1,4 @@
-﻿# Debugging â€” Time Ordering
+﻿# Debugging — Time Ordering
 
 ## Common Issues
 1. **Non-monotonic clock**: Race condition, missing synchronization

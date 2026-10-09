@@ -1,1 +1,1 @@
-# 06-classification — Why It Exists\n\nThe motivation and historical context for 06-classification.
+# 06-classification â€” Why It Exists\n\nThe motivation and historical context for 06-classification.

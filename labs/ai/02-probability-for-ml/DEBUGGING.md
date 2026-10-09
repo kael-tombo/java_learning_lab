@@ -1,1 +1,1 @@
-# 02-probability-for-ml — Debugging\n\nStrategies and tools for debugging 02-probability-for-ml implementations.
+# 02-probability-for-ml â€” Debugging\n\nStrategies and tools for debugging 02-probability-for-ml implementations.

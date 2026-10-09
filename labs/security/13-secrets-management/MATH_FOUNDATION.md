@@ -6,7 +6,7 @@
 
 **Secret Entropy Calculation**:
 - H = log2(N) bits, where N = number of possible values
-- Alphanumeric (62 chars), length L: H = L × log2(62)
+- Alphanumeric (62 chars), length L: H = L Ã— log2(62)
 - 16-char alphanumeric: H = 95.3 bits
 - 32-char alphanumeric: H = 190.5 bits
 
@@ -16,9 +16,9 @@
 
 Splits a secret S into n shares where k shares are required for reconstruction:
 
-- Polynomial: f(x) = S + a1x + a2x² + ... + a??1x^(k-1)
+- Polynomial: f(x) = S + a1x + a2xÂ² + ... + a??1x^(k-1)
 - Shares: (i, f(i)) for i = 1, 2, ..., n
-- Lagrange interpolation: S = f(0) = S(f(x?) × L?(0))
+- Lagrange interpolation: S = f(0) = S(f(x?) Ã— L?(0))
 
 ### AES-256 Encryption
 
@@ -29,8 +29,8 @@ Splits a secret S into n shares where k shares are required for reconstruction:
 
 ### Secret Rotation Frequency
 
-- Annualized Loss Expectancy: ALE = SLE × ARO
-- Single Loss Expectancy: SLE = AV × EF
+- Annualized Loss Expectancy: ALE = SLE Ã— ARO
+- Single Loss Expectancy: SLE = AV Ã— EF
 - Optimal rotation interval trades off security vs operational cost
 
 ### Hashing for Integrity

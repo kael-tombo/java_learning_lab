@@ -1,4 +1,4 @@
-# Mock Interview: Bloom Filter Variants — Counting, Scalable, Cuckoo Filter
+# Mock Interview: Bloom Filter Variants â€” Counting, Scalable, Cuckoo Filter
 
 ## Interview Details
 - **Topic**: Bloom Filter Variants

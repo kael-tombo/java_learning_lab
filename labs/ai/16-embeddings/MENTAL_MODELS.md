@@ -1,1 +1,1 @@
-# 16-embeddings — Mental Models\n\nKey conceptual frameworks for understanding 16-embeddings.
+# 16-embeddings â€” Mental Models\n\nKey conceptual frameworks for understanding 16-embeddings.

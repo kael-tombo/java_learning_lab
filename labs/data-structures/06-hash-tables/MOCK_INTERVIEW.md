@@ -1,4 +1,4 @@
-# Mock Interview: Hash Tables — Collision Resolution and HashMap Design
+# Mock Interview: Hash Tables â€” Collision Resolution and HashMap Design
 
 ## Interview Details
 - **Topic**: Hash Tables

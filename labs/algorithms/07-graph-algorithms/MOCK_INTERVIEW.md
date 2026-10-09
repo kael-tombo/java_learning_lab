@@ -1,4 +1,4 @@
-# Mock Interview: Graph Algorithms — BFS, DFS, Shortest Path
+# Mock Interview: Graph Algorithms â€” BFS, DFS, Shortest Path
 
 ## Interview Details
 - **Topic**: Graph Algorithms

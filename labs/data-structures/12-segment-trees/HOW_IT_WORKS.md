@@ -29,10 +29,10 @@ Each node stores:
 
 To query the sum of range [2, 5]:
 
-1. Start at root [0, 5] â€” not fully inside [2, 5], go to children
-2. Left child [0, 2] â€” partially overlaps [2, 5], go deeper
-3. Right child [3, 5] â€” fully inside [2, 5], return its sum (27)
-4. From [0, 2]: left [0, 1] â€” no overlap, return 0; right [2] â€” fully inside, return 5
+1. Start at root [0, 5] — not fully inside [2, 5], go to children
+2. Left child [0, 2] — partially overlaps [2, 5], go deeper
+3. Right child [3, 5] — fully inside [2, 5], return its sum (27)
+4. From [0, 2]: left [0, 1] — no overlap, return 0; right [2] — fully inside, return 5
 5. Total = 27 + 5 = 32
 
 ## Point Update Process

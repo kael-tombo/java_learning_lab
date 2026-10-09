@@ -1,4 +1,4 @@
-# Mock Interview: HyperLogLog — Cardinality Estimation
+# Mock Interview: HyperLogLog â€” Cardinality Estimation
 
 ## Interview Details
 - **Topic**: HyperLogLog

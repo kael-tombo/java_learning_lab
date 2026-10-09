@@ -62,7 +62,7 @@
 
 ## Card 16
 **Front**: What is the token bucket algorithm used for?
-**Back**: Rate limiting â€” tokens refill at a fixed rate, each request consumes one token.
+**Back**: Rate limiting — tokens refill at a fixed rate, each request consumes one token.
 
 ## Card 17
 **Front**: What happens when a circuit breaker is OPEN?

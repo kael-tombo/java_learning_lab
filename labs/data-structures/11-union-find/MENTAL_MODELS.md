@@ -35,4 +35,4 @@ Path compression ensures that after a merge, all elements quickly update their u
 
 ## Key Insight
 
-All these models capture the same essence: DSU maintains a partition of elements into groups, supporting two operations â€” find which group an element belongs to, and merge two groups.
+All these models capture the same essence: DSU maintains a partition of elements into groups, supporting two operations — find which group an element belongs to, and merge two groups.

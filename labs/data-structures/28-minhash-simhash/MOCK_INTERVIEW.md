@@ -1,4 +1,4 @@
-# Mock Interview: MinHash and SimHash — Similarity Estimation Algorithms
+# Mock Interview: MinHash and SimHash â€” Similarity Estimation Algorithms
 
 ## Interview Details
 - **Topic**: MinHash and SimHash

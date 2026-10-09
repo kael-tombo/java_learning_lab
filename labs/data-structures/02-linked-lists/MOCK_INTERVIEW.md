@@ -1,4 +1,4 @@
-# Mock Interview: Linked Lists — Reversal and Cycle Detection
+# Mock Interview: Linked Lists â€” Reversal and Cycle Detection
 
 ## Interview Details
 - **Topic**: Linked Lists

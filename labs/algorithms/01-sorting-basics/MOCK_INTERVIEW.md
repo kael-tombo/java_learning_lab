@@ -1,4 +1,4 @@
-# Mock Interview: Sorting Basics — Bubble, Selection, Insertion Sort
+# Mock Interview: Sorting Basics â€” Bubble, Selection, Insertion Sort
 
 ## Interview Details
 - **Topic**: Sorting Basics

@@ -1,4 +1,4 @@
-# Mock Interview: Searching Algorithms — Linear, Binary, Interpolation Search
+# Mock Interview: Searching Algorithms â€” Linear, Binary, Interpolation Search
 
 ## Interview Details
 - **Topic**: Searching Algorithms

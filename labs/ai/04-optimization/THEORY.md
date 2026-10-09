@@ -1,1 +1,1 @@
-# 04-optimization — Theory\n\nCore theoretical foundations of 04-optimization.
+# 04-optimization â€” Theory\n\nCore theoretical foundations of 04-optimization.

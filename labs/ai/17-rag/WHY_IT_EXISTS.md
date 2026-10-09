@@ -1,1 +1,1 @@
-# 17-rag — Why It Exists\n\nThe motivation and historical context for 17-rag.
+# 17-rag â€” Why It Exists\n\nThe motivation and historical context for 17-rag.

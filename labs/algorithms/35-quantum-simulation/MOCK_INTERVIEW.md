@@ -1,4 +1,4 @@
-# Mock Interview: Quantum Algorithm Simulation — Grover Search, QFT
+# Mock Interview: Quantum Algorithm Simulation â€” Grover Search, QFT
 
 ## Interview Details
 - **Topic**: Quantum Algorithm Simulation

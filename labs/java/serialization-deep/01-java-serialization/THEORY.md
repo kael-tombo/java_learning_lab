@@ -1,4 +1,4 @@
-﻿# Java Serialization â€” Theoretical Foundation
+﻿# Java Serialization — Theoretical Foundation
 
 ## Core Concepts
 
@@ -34,7 +34,7 @@ Serialization in Java is built on the concept of object graph traversal and refl
 ### 4. Trade-offs
 
 #### Java Serialization vs Alternatives
-- **Convenience**: Java serialization is automatic â€” no schema definition needed
+- **Convenience**: Java serialization is automatic — no schema definition needed
 - **Performance**: Java serialization is 10-100x slower than specialized formats
 - **Size**: Binary format includes metadata overhead, 2-5x larger than compact formats
 - **Security**: Deserialization of untrusted data is a major attack vector
@@ -49,7 +49,7 @@ The serialization protocol uses a handle table to track objects:
 - Memory: O(n) where n is object count
 
 #### Stream Size Analysis
-StreamSize = Î£(classDescriptors) + Î£(fieldData) + handles + header
+StreamSize = Σ(classDescriptors) + Σ(fieldData) + handles + header
 The overhead per class is approximately 50-100 bytes of type metadata.
 
 ## Summary

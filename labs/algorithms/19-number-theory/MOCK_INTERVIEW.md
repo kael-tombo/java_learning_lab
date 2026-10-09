@@ -1,4 +1,4 @@
-# Mock Interview: Number Theory — GCD, Primes, Modular Arithmetic
+# Mock Interview: Number Theory â€” GCD, Primes, Modular Arithmetic
 
 ## Interview Details
 - **Topic**: Number Theory

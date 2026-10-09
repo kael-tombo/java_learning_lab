@@ -1,4 +1,4 @@
-﻿# Deloitte Interview Guide â€” Oracle APEX Academy
+﻿# Deloitte Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 
@@ -18,7 +18,7 @@ The Deloitte interview process for APEX and database consulting roles typically 
 
 Deloitte hires APEX developers for client consulting engagements. They value practical experience delivering real-world APEX projects. Communication skills, client management, and the ability to translate business requirements into APEX solutions are critical.
 
-Deloitte expects candidates to have end-to-end project experience â€” from requirements gathering through deployment and support. Industry domain knowledge (financial services, healthcare, government) is a significant differentiator.
+Deloitte expects candidates to have end-to-end project experience — from requirements gathering through deployment and support. Industry domain knowledge (financial services, healthcare, government) is a significant differentiator.
 
 ### Key Areas Assessed
 
@@ -367,7 +367,7 @@ ORDER BY num_rows DESC, recommendation;
 
 - **Oracle-Specific Syntax**: DBA_INDEXES, DBA_IND_COLUMNS, DBA_TABLES. V$OBJECT_USAGE tracks index usage.
 
-- **What Deloitte Evaluates**: Database health assessment â€” directly billable consulting skill.
+- **What Deloitte Evaluates**: Database health assessment — directly billable consulting skill.
 
 - **Follow-ups**: 1) Generate CREATE INDEX statements. 2) Create APEX dashboard. 3) Write PL/SQL for automated reports.
 

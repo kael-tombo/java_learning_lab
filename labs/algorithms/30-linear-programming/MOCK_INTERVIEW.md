@@ -1,4 +1,4 @@
-# Mock Interview: Linear Programming — Simplex, Duality, Sensitivity
+# Mock Interview: Linear Programming â€” Simplex, Duality, Sensitivity
 
 ## Interview Details
 - **Topic**: Linear Programming

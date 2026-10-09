@@ -1,1 +1,1 @@
-# 16-embeddings — Theory\n\nCore theoretical foundations of 16-embeddings.
+# 16-embeddings â€” Theory\n\nCore theoretical foundations of 16-embeddings.

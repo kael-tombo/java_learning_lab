@@ -19,8 +19,8 @@ BIT sums can overflow 32-bit integers. For large datasets:
 private long[] bit;  // use long instead of int
 `
 
-Maximum safe sum with int: 2^31 - 1 â‰ˆ 2.1B
-Maximum sum with long: 2^63 - 1 â‰ˆ 9.2 Ã— 10^18
+Maximum safe sum with int: 2^31 - 1 ≈ 2.1B
+Maximum sum with long: 2^63 - 1 ≈ 9.2 × 10^18
 
 ## Resource Exhaustion
 

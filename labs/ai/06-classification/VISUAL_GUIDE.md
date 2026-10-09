@@ -1,1 +1,1 @@
-# 06-classification — Visual Guide\n\nDiagrams and visual explanations for 06-classification.
+# 06-classification â€” Visual Guide\n\nDiagrams and visual explanations for 06-classification.

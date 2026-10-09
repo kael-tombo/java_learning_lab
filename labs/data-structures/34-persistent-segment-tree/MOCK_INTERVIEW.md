@@ -1,4 +1,4 @@
-# Mock Interview: Persistent Segment Tree — Versioned Range Queries
+# Mock Interview: Persistent Segment Tree â€” Versioned Range Queries
 
 ## Interview Details
 - **Topic**: Persistent Segment Tree

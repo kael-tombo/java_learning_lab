@@ -20,10 +20,10 @@ assert list1.tail() == list2.tail().tail()  // shared!
 
 ## Efficiency
 
-List add: O(1) â€” create one new node, point to old list
-List head: O(1) â€” return head pointer
-List tail: O(1) â€” return tail pointer
-List get by index: O(n) â€” must traverse
+List add: O(1) — create one new node, point to old list
+List head: O(1) — return head pointer
+List tail: O(1) — return tail pointer
+List get by index: O(n) — must traverse
 
-Persistent BST insert: O(log n) â€” create O(log n) new nodes
-Persistent BST search: O(log n) â€” same as ephemeral
+Persistent BST insert: O(log n) — create O(log n) new nodes
+Persistent BST search: O(log n) — same as ephemeral

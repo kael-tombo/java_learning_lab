@@ -1,7 +1,7 @@
 ﻿# Tests: Skip Lists
 
 ## Test Files
-- SkipListTest.java â€” JUnit 5 test suite
+- SkipListTest.java — JUnit 5 test suite
 
 ## Coverage
 - Search, insert, delete correctness

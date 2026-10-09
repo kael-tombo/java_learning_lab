@@ -1,1 +1,1 @@
-# 04-optimization — Security\n\nSecurity implications and best practices for 04-optimization.
+# 04-optimization â€” Security\n\nSecurity implications and best practices for 04-optimization.

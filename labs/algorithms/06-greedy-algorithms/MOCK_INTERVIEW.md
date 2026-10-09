@@ -1,4 +1,4 @@
-# Mock Interview: Greedy Algorithms — Greedy Choice Property
+# Mock Interview: Greedy Algorithms â€” Greedy Choice Property
 
 ## Interview Details
 - **Topic**: Greedy Algorithms

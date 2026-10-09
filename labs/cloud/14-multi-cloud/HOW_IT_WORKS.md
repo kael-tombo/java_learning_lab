@@ -1,4 +1,4 @@
-# 14 — Multi-Cloud — How It Works
+# 14 â€” Multi-Cloud â€” How It Works
 
 ## Core Mechanism
 

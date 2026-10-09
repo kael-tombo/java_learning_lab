@@ -1,4 +1,4 @@
-# 14 — Multi-Cloud
+# 14 â€” Multi-Cloud
 
 ## Overview
 Multi-cloud strategies, Cloudflare, provider abstraction, portability. This lab provides hands-on experience with real Java implementations and cloud SDK patterns.
@@ -28,11 +28,11 @@ Multi-cloud strategies, Cloudflare, provider abstraction, portability. This lab 
 | FLASHCARDS.md | Spaced-repetition review cards |
 
 ## Key Topics
-- **Multi-Cloud Architecture** — Cross-provider design
-- **Cloudflare** — DNS, CDN, and security
-- **Provider Abstraction** — Vendor-neutral layers
-- **Portability** — Workload migration strategies
-- **Cross-Cloud Networking** — Interconnect and VPN
+- **Multi-Cloud Architecture** â€” Cross-provider design
+- **Cloudflare** â€” DNS, CDN, and security
+- **Provider Abstraction** â€” Vendor-neutral layers
+- **Portability** â€” Workload migration strategies
+- **Cross-Cloud Networking** â€” Interconnect and VPN
 
 ## Next Lab
 ? [Cloud Cost Optimization](../7-cloud-cost-optimization)

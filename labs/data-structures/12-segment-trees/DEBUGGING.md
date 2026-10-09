@@ -31,7 +31,7 @@ public boolean validate(int[] arr) {
 | Symptom | Likely Cause |
 |---------|-------------|
 | All queries return 0 | Identity value wrong, or tree never populated |
-| Wrong sum for full range | Root value incorrect â€” check build logic |
+| Wrong sum for full range | Root value incorrect — check build logic |
 | Wrong sum for partial ranges | Recursion bounds incorrect |
 | Infinite recursion | Base case not reached (range not narrowing) |
 | ArrayIndexOutOfBounds | Tree array too small (use 4*n) |

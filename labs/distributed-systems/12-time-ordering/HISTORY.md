@@ -1,4 +1,4 @@
-﻿# History â€” Time Ordering
+﻿# History — Time Ordering
 
 - **1978**: Lamport publishes "Time, Clocks, and the Ordering of Events"
 - **1984**: Fidge and Mattern independently develop vector clocks

@@ -1,4 +1,4 @@
-# Mock Interview: Randomized Algorithms — Las Vegas, Monte Carlo
+# Mock Interview: Randomized Algorithms â€” Las Vegas, Monte Carlo
 
 ## Interview Details
 - **Topic**: Randomized Algorithms

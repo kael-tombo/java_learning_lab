@@ -1,31 +1,31 @@
 # Problem Walkthrough: Data Validation & Quality
 
-## Problem 1: E-commerce Training Data Validation Gate â€” Company: Amazon
+## Problem 1: E-commerce Training Data Validation Gate — Company: Amazon
 
 ### Interview Scenario
 
-> **Interviewer**: "Our training pipelines ingest customer feature snapshots from a few sources, and garbage data has burned us before â€” one pipeline trained on a table where the age column was 20% nulls, and we shipped a model that silently dropped everyone without a birthdate. We want a validation gate, written in Java, that runs before training and fails fast. The gate needs to check: required columns exist, null ratios stay under thresholds, numeric features respect training bounds, key columns are unique, and categorical distributions haven't drifted. We've sketched a `DataValidator` with expectation methods â€” take a look at the lab's skeleton and make the demo actually run."
+> **Interviewer**: "Our training pipelines ingest customer feature snapshots from a few sources, and garbage data has burned us before — one pipeline trained on a table where the age column was 20% nulls, and we shipped a model that silently dropped everyone without a birthdate. We want a validation gate, written in Java, that runs before training and fails fast. The gate needs to check: required columns exist, null ratios stay under thresholds, numeric features respect training bounds, key columns are unique, and categorical distributions haven't drifted. We've sketched a `DataValidator` with expectation methods — take a look at the lab's skeleton and make the demo actually run."
 >
-> **Candidate**: "Before I touch anything, I need to run the demo â€” because a validator that can't execute is worse than no validator."
+> **Candidate**: "Before I touch anything, I need to run the demo — because a validator that can't execute is worse than no validator."
 
 ### The Problem
 
-1. Build a `Dataset` with five rows of customer features â€” `user_id`, `age`, `income`, `credit_score`, `risk_tier`, and `transaction_count_7d` â€” where one age value is `null` and one transaction count is `150`.
+1. Build a `Dataset` with five rows of customer features — `user_id`, `age`, `income`, `credit_score`, `risk_tier`, and `transaction_count_7d` — where one age value is `null` and one transaction count is `150`.
 2. Define an expectation suite of 11 checks: four existence, two null-ratio, three range, one uniqueness, and one distribution check.
-3. Run the suite and render a markdown-style report with `âœ“`/`âœ—` icons, observed vs threshold values, and a final `Passed: X / 12` summary.
+3. Run the suite and render a markdown-style report with `✓`/`✗` icons, observed vs threshold values, and a final `Passed: X / 12` summary.
 4. Gate the pipeline: `allPassed()` must be `false` for this dataset, and the validator itself must execute cleanly on Java 21+.
 
 ### Solution Walkthrough
 
-1. **Model the data as columns, not rows.** The `Dataset` holds `Map<String, List<Object>>` in insertion order, and `addColumn(name, values...)` records the max row count. That's the entire contract the expectations need â€” they index by column name, which is exactly what a schema check is about.
-2. **Make every expectation produce a result.** Each `expectColumn*` method constructs an `ExpectationResult` â€” expectation name, `passed`, `observed`, `threshold`, `details` â€” and appends it to the validator's list. There is no early exit: the report shows all 12 outcomes even when the first three pass, so the human can see the full damage.
-3. **Existence check is the schema gate.** `expectColumnToExist` answers `columns.containsKey(column)` â€” trivial, but it is the reason the demo includes `nonexistent_column`: observed 0.00 vs threshold 1.00 proves the check isn't a tautology.
+1. **Model the data as columns, not rows.** The `Dataset` holds `Map<String, List<Object>>` in insertion order, and `addColumn(name, values...)` records the max row count. That's the entire contract the expectations need — they index by column name, which is exactly what a schema check is about.
+2. **Make every expectation produce a result.** Each `expectColumn*` method constructs an `ExpectationResult` — expectation name, `passed`, `observed`, `threshold`, `details` — and appends it to the validator's list. There is no early exit: the report shows all 12 outcomes even when the first three pass, so the human can see the full damage.
+3. **Existence check is the schema gate.** `expectColumnToExist` answers `columns.containsKey(column)` — trivial, but it is the reason the demo includes `nonexistent_column`: observed 0.00 vs threshold 1.00 proves the check isn't a tautology.
 4. **Null ratio is computed, not counted.** `expectColumnNullRatioLessThan` filters `Objects::isNull`, divides by the column size, and embeds `(1/5 null)` in details. The age column fails: 0.20 observed vs 0.05 threshold.
-5. **Fix the range check's type hazard.** The lab's `expectColumnValuesBetween` accepts `Number min, Number max`, which is fine for callers, but it formats the bounds with `%.1f` while passing the raw `Number` â€” an `Integer` argument throws `IllegalFormatConversionException` at runtime, so the demo crashes at the first range check on any modern JDK. The walkthrough formats `min.doubleValue()` / `max.doubleValue()` instead, and compares with `v.doubleValue()` â€” one canonical numeric form for both formatting and arithmetic. (`transaction_count_7d` then fails legitimately: one of five values, 150, is outside `[0, 100]`.)
-6. **Uniqueness compares distinct against total.** `expectColumnValuesUnique` counts non-null distinct values and compares to the non-null total â€” `user_id` passes 5/5.
-7. **Distribution check is KL divergence over expected categories.** `expectColumnValueDistribution` iterates the expected map, computes each category's observed probability, and accumulates `actualP * ln(actualP / expectedP)`. For `risk_tier` â€” low 0.4, medium 0.4, high 0.2 observed vs the same expected â€” the divergence is exactly 0.0, passing the 0.5 threshold.
-8. **The report is the interface.** `printReport` prints the count, `Passed: 8 / 11`, then every result line, then the verdict `âœ“ Critical threshold: SOME FAILED`. `allPassed()` is the boolean the pipeline consumes â€” the CI/CD lab wires it as a stage gate before training.
-9. **Verify by running.** The expected output below is captured from the actual compiled run â€” the three failures are the nonexistent column, the age null ratio, and the transaction count range, nothing else.
+5. **Fix the range check's type hazard.** The lab's `expectColumnValuesBetween` accepts `Number min, Number max`, which is fine for callers, but it formats the bounds with `%.1f` while passing the raw `Number` — an `Integer` argument throws `IllegalFormatConversionException` at runtime, so the demo crashes at the first range check on any modern JDK. The walkthrough formats `min.doubleValue()` / `max.doubleValue()` instead, and compares with `v.doubleValue()` — one canonical numeric form for both formatting and arithmetic. (`transaction_count_7d` then fails legitimately: one of five values, 150, is outside `[0, 100]`.)
+6. **Uniqueness compares distinct against total.** `expectColumnValuesUnique` counts non-null distinct values and compares to the non-null total — `user_id` passes 5/5.
+7. **Distribution check is KL divergence over expected categories.** `expectColumnValueDistribution` iterates the expected map, computes each category's observed probability, and accumulates `actualP * ln(actualP / expectedP)`. For `risk_tier` — low 0.4, medium 0.4, high 0.2 observed vs the same expected — the divergence is exactly 0.0, passing the 0.5 threshold.
+8. **The report is the interface.** `printReport` prints the count, `Passed: 8 / 11`, then every result line, then the verdict `✓ Critical threshold: SOME FAILED`. `allPassed()` is the boolean the pipeline consumes — the CI/CD lab wires it as a stage gate before training.
+9. **Verify by running.** The expected output below is captured from the actual compiled run — the three failures are the nonexistent column, the age null ratio, and the transaction count range, nothing else.
 
 ### Code
 
@@ -53,7 +53,7 @@ public class DataValidationWalkthrough {
         }
 
         String toMarkdown() {
-            String icon = passed ? "âœ“" : "âœ—";
+            String icon = passed ? "✓" : "✗";
             return String.format("  %s %s (observed=%.2f, threshold=%.2f) %s",
                     icon, expectation, observed, threshold, details);
         }
@@ -164,7 +164,7 @@ public class DataValidationWalkthrough {
             for (ExpectationResult r : results) {
                 System.out.println(r.toMarkdown());
             }
-            System.out.printf("%nâœ“ Critical threshold: %s%n",
+            System.out.printf("%n✓ Critical threshold: %s%n",
                     passed == results.size() ? "ALL PASSED" : "SOME FAILED");
         }
 
@@ -209,7 +209,7 @@ public class DataValidationWalkthrough {
         validator.printReport();
 
         System.out.printf("%nValidation %s%n",
-                validator.allPassed() ? "PASSED âœ“" : "FAILED â€” check report above");
+                validator.allPassed() ? "PASSED ✓" : "FAILED — check report above");
     }
 }
 ```
@@ -225,26 +225,26 @@ Columns: [user_id, age, income, credit_score, risk_tier, transaction_count_7d], 
 Data Validation Report: 11 expectations run
 Passed: 8 / 11
 
-  âœ“ expect_column_to_exist: user_id (observed=1.00, threshold=1.00)
-  âœ“ expect_column_to_exist: age (observed=1.00, threshold=1.00)
-  âœ“ expect_column_to_exist: income (observed=1.00, threshold=1.00)
-  âœ— expect_column_to_exist: nonexistent_column (observed=0.00, threshold=1.00)
-  âœ— expect_column_null_ratio_less_than: age (observed=0.20, threshold=0.05) (1/5 null)
-  âœ“ expect_column_null_ratio_less_than: user_id (observed=0.00, threshold=0.00) (0/5 null)
-  âœ“ expect_column_values_between: age (observed=0.00, threshold=0.00) (0/5 out of [18.0, 100.0])
-  âœ“ expect_column_values_between: credit_score (observed=0.00, threshold=0.00) (0/5 out of [300.0, 850.0])
-  âœ— expect_column_values_between: transaction_count_7d (observed=0.20, threshold=0.00) (1/5 out of [0.0, 100.0])
-  âœ“ expect_column_values_unique: user_id (observed=5.00, threshold=5.00)
-  âœ“ expect_column_distribution_kl_divergence: risk_tier (observed=0.00, threshold=0.50)
+  ✓ expect_column_to_exist: user_id (observed=1.00, threshold=1.00)
+  ✓ expect_column_to_exist: age (observed=1.00, threshold=1.00)
+  ✓ expect_column_to_exist: income (observed=1.00, threshold=1.00)
+  ✗ expect_column_to_exist: nonexistent_column (observed=0.00, threshold=1.00)
+  ✗ expect_column_null_ratio_less_than: age (observed=0.20, threshold=0.05) (1/5 null)
+  ✓ expect_column_null_ratio_less_than: user_id (observed=0.00, threshold=0.00) (0/5 null)
+  ✓ expect_column_values_between: age (observed=0.00, threshold=0.00) (0/5 out of [18.0, 100.0])
+  ✓ expect_column_values_between: credit_score (observed=0.00, threshold=0.00) (0/5 out of [300.0, 850.0])
+  ✗ expect_column_values_between: transaction_count_7d (observed=0.20, threshold=0.00) (1/5 out of [0.0, 100.0])
+  ✓ expect_column_values_unique: user_id (observed=5.00, threshold=5.00)
+  ✓ expect_column_distribution_kl_divergence: risk_tier (observed=0.00, threshold=0.50)
 
-âœ“ Critical threshold: SOME FAILED
+✓ Critical threshold: SOME FAILED
 
-Validation FAILED â€” check report above
+Validation FAILED — check report above
 ```
 
-*(The lab's original `expectColumnValuesBetween` crashes with `IllegalFormatConversionException: f != java.lang.Integer` on Java 21+ because `%.1f` receives the raw `Number` argument; this walkthrough normalizes with `min.doubleValue()` / `max.doubleValue()` â€” the fix is the lesson.)*
+*(The lab's original `expectColumnValuesBetween` crashes with `IllegalFormatConversionException: f != java.lang.Integer` on Java 21+ because `%.1f` receives the raw `Number` argument; this walkthrough normalizes with `min.doubleValue()` / `max.doubleValue()` — the fix is the lesson.)*
 
-## Problem 2: Streaming Session-Events Schema Gate â€” Company: Duolingo
+## Problem 2: Streaming Session-Events Schema Gate — Company: Duolingo
 
 ### The Problem
 
@@ -252,13 +252,13 @@ A Kafka consumer ingests ~2M daily app session events as JSON. A schema change s
 
 ### Solution Walkthrough
 
-1. **Validate the sink table, not the raw stream.** The feature table materialized from events is the contract training consumes â€” run the suite against it daily, mirroring Problem 1's validator.
+1. **Validate the sink table, not the raw stream.** The feature table materialized from events is the contract training consumes — run the suite against it daily, mirroring Problem 1's validator.
 2. **Existence checks catch the rename immediately.** `expectColumnToExist("streak")` fails with observed 0.00; the report names the missing column and the pipeline stops before feature engineering.
-3. **Add null-ratio and range expectations for the features derived from the event:** `expectColumnNullRatioLessThan("streak_len", 0.05)` and `expectColumnValuesBetween("streak", 0, 3650)` â€” using the `doubleValue()` fix so the range check survives integer bounds.
-4. **Distribution check on device type and locale** catches event-lake repartitioning bugs that shift the population without breaking schema â€” KL divergence over expected category probabilities, threshold 0.10.
-5. **Fail the daily batch, alert the owning team, and block training until a human triages** â€” validation failures during ingestion are cheaper than model rollbacks, so the gate belongs in the batch orchestrator, not the training repo.
+3. **Add null-ratio and range expectations for the features derived from the event:** `expectColumnNullRatioLessThan("streak_len", 0.05)` and `expectColumnValuesBetween("streak", 0, 3650)` — using the `doubleValue()` fix so the range check survives integer bounds.
+4. **Distribution check on device type and locale** catches event-lake repartitioning bugs that shift the population without breaking schema — KL divergence over expected category probabilities, threshold 0.10.
+5. **Fail the daily batch, alert the owning team, and block training until a human triages** — validation failures during ingestion are cheaper than model rollbacks, so the gate belongs in the batch orchestrator, not the training repo.
 
-## Problem 3: The Stale Expectation Suite â€” Company: Plaid
+## Problem 3: The Stale Expectation Suite — Company: Plaid
 
 ### The Problem
 
@@ -266,7 +266,7 @@ A fraud model's training gate has passed every night for six weeks. The team cha
 
 ### Solution Walkthrough
 
-1. **The suite tested the distribution the team expected â€” but nobody updated the expectation when the label changed.** `expectColumnValueDistribution` on `label` still declared `positive: 0.02`, while the new data carries `positive: 0.06` â€” KL divergence of ~0.47 against a threshold of 0.05 should have fired.
-2. **The bug is governance, not math:** expectation thresholds drifted out of sync with the contract. The fix is to version the expectation suite with the label definition â€” a change to the label is a change to the suite, reviewed in the same PR (Lab 11's model-card discipline).
+1. **The suite tested the distribution the team expected — but nobody updated the expectation when the label changed.** `expectColumnValueDistribution` on `label` still declared `positive: 0.02`, while the new data carries `positive: 0.06` — KL divergence of ~0.47 against a threshold of 0.05 should have fired.
+2. **The bug is governance, not math:** expectation thresholds drifted out of sync with the contract. The fix is to version the expectation suite with the label definition — a change to the label is a change to the suite, reviewed in the same PR (Lab 11's model-card discipline).
 3. **Add the missing checks the suite never had:** `expectColumnToExist("dispute_reported_at")` and a null-ratio check on the new label source column, so a definition change can't silently alter the input schema.
-4. **Alert on stagnation:** an expectation that has passed every run for N days without a code change is suspicious â€” schedule a human review of long-green suites, because a gate nobody ever sees trip is a gate that protects nothing.
+4. **Alert on stagnation:** an expectation that has passed every run for N days without a code change is suspicious — schedule a human review of long-green suites, because a gate nobody ever sees trip is a gate that protects nothing.

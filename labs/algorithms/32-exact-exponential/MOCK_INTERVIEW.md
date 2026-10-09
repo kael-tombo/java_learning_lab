@@ -1,4 +1,4 @@
-# Mock Interview: Exact Exponential Algorithms — Meet-in-the-Middle, Inclusion-Exclusion
+# Mock Interview: Exact Exponential Algorithms â€” Meet-in-the-Middle, Inclusion-Exclusion
 
 ## Interview Details
 - **Topic**: Exact Exponential Algorithms

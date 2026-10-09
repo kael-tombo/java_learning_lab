@@ -1,4 +1,4 @@
-﻿# Apple Interview Guide â€” Oracle APEX Academy
+﻿# Apple Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 
@@ -16,7 +16,7 @@ The Apple interview process for database engineer roles typically spans 4-8 week
 
 ### APEX-Specific Expectations
 
-Apple looks for engineers who build elegant, intuitive, and highly reliable systems. APEX experience demonstrates ability to rapidly create data-driven applications. Apple values craftsmanship â€” attention to detail, clean architecture, and polished user experiences.
+Apple looks for engineers who build elegant, intuitive, and highly reliable systems. APEX experience demonstrates ability to rapidly create data-driven applications. Apple values craftsmanship — attention to detail, clean architecture, and polished user experiences.
 
 Privacy and security are paramount at Apple. Expect deep questions about how you handle sensitive data in APEX applications, encryption at rest and in transit, access control, and audit trails.
 
@@ -409,7 +409,7 @@ ORDER BY mv.inventory_date DESC, w.warehouse_name;
 
 - **Master Hierarchical Queries**: CONNECT BY and recursive CTEs are frequently tested.
 
-- **Zero Tolerance for Bugs**: Discuss testing practices â€” PL/SQL unit tests, integration testing.
+- **Zero Tolerance for Bugs**: Discuss testing practices — PL/SQL unit tests, integration testing.
 
 - **Accessibility**: Know WCAG 2.1, VoiceOver, keyboard navigation.
 
@@ -417,7 +417,7 @@ ORDER BY mv.inventory_date DESC, w.warehouse_name;
 
 - **Security Depth**: Know TDE, DBMS_CRYPTO, FGA, VPD, APEX security features.
 
-- **Design Sensibility**: Discuss UX in APEX â€” theme customization, responsive design, polish.
+- **Design Sensibility**: Discuss UX in APEX — theme customization, responsive design, polish.
 
 ### Lab 03: Advanced Components
 

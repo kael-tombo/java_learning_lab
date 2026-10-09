@@ -20,9 +20,9 @@ Distributed locks coordinate access to shared resources across multiple nodes. T
 - Comparison of lock providers
 
 ## Package Structure
-- com.distributed.distributedlocks â€” Core implementations
-  - DistributedLock.java â€” Lock interface
-  - RedisLock.java â€” Redis-based distributed lock
-  - ZooKeeperLock.java â€” ZooKeeper-based lock
-  - FencingToken.java â€” Fencing token management
-  - LeaseManager.java â€” Lease-based lock management
+- com.distributed.distributedlocks — Core implementations
+  - DistributedLock.java — Lock interface
+  - RedisLock.java — Redis-based distributed lock
+  - ZooKeeperLock.java — ZooKeeper-based lock
+  - FencingToken.java — Fencing token management
+  - LeaseManager.java — Lease-based lock management

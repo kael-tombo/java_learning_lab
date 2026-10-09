@@ -1,1 +1,1 @@
-# 04-optimization — Mental Models\n\nKey conceptual frameworks for understanding 04-optimization.
+# 04-optimization â€” Mental Models\n\nKey conceptual frameworks for understanding 04-optimization.

@@ -7,7 +7,7 @@
 SAML uses XML Digital Signature (XML-DSig) for integrity and authentication:
 
 **RSA Signature Algorithm**:
-- Key generation: n = p × q (RSA modulus)
+- Key generation: n = p Ã— q (RSA modulus)
 - Signature: s = m^d mod n (private key signing)
 - Verification: m = s^e mod n (public key verification)
 
@@ -26,7 +26,7 @@ SAML uses XML Digital Signature (XML-DSig) for integrity and authentication:
 SAML assertions are time-bound:
 - NotBefore: t0
 - NotOnOrAfter: t1 = t0 + ?t (where ?t is typically 5 minutes)
-- Clock skew tolerance: ±d (typically 5 minutes)
+- Clock skew tolerance: Â±d (typically 5 minutes)
 - Valid window: [t0 - d, t1 + d]
 
 ### Base64 Encoding Overhead
@@ -38,7 +38,7 @@ SAML assertions are time-bound:
 ### Probability of Hash Collision
 
 - SHA-256: 2^128 collision resistance (birthday bound)
-- For n signed assertions, collision probability: n²/2^257
+- For n signed assertions, collision probability: nÂ²/2^257
 - Practical collision risk: negligible for enterprise SSO
 
 ### Cryptographic Hash Functions

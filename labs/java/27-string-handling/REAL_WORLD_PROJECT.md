@@ -2,12 +2,12 @@
 
 ## Incident Scenario
 Black-Friday promo job renders 2.4M SMS messages, OOM-kills at 70% and the
-survivors ship mojibake (`Ã©` for `é`) plus wrong names for Turkish users
+survivors ship mojibake (`é` for `é`) plus wrong names for Turkish users
 (`I` vs `ı` casing bug). Marketing halts the blast; carrier bills for dupes.
 
 ## Symptoms
 - Heap climbs linearly; Young GC every 2s, then `OutOfMemoryError: Java heap`.
-- French/Spanish names show `Ã©`, `Ã±`; Turkish `İlker` lowercases wrong.
+- French/Spanish names show `é`, `ñ`; Turkish `İlker` lowercases wrong.
 - Throughput 800 msgs/s, p99 render 45ms; retry doubles sends (no idempotency).
 - Logs show `Pattern.compile` per message and `+` concat in a loop.
 
@@ -46,7 +46,7 @@ compounded by single-threaded render with no backpressure.
 ```
 1. Freeze job; save heap dump + JFR + bad output sample.
 2. Flip to fixed build (builder + charset + hoisted pattern) on canary 5%.
-3. Verify: heap flat, no Ã© in sample, TR names golden-pass.
+3. Verify: heap flat, no é in sample, TR names golden-pass.
 4. Resume with dedupe ledger ON; monitor carrier callbacks.
 5. Postmortem: lint rules + golden files + allocation gate.
 ```

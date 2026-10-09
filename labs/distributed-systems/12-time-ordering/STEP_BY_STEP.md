@@ -1,4 +1,4 @@
-﻿# Step-by-Step â€” Time Ordering
+﻿# Step-by-Step — Time Ordering
 
 ## Step 1: Lamport Clock
 1. Class with private int counter

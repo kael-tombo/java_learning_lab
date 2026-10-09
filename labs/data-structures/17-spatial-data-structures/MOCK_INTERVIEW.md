@@ -1,4 +1,4 @@
-# Mock Interview: Spatial Data Structures — Quadtrees, R-Trees, k-d Trees
+# Mock Interview: Spatial Data Structures â€” Quadtrees, R-Trees, k-d Trees
 
 ## Interview Details
 - **Topic**: Spatial Data Structures

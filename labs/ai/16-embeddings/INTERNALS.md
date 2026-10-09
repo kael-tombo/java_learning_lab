@@ -1,1 +1,1 @@
-# 16-embeddings — Internals\n\nDetailed internal mechanics and implementation details.
+# 16-embeddings â€” Internals\n\nDetailed internal mechanics and implementation details.

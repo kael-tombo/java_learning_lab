@@ -1,4 +1,4 @@
-# 12 — Azure Fundamentals — Visual Guide
+# 12 â€” Azure Fundamentals â€” Visual Guide
 
 ## System Overview
 

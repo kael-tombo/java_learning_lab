@@ -1,1 +1,1 @@
-# 04-optimization — Performance\n\nPerformance considerations, benchmarks, and optimization tips.
+# 04-optimization â€” Performance\n\nPerformance considerations, benchmarks, and optimization tips.

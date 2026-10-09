@@ -1,4 +1,4 @@
-# 10 — AWS Serverless — Visual Guide
+# 10 â€” AWS Serverless â€” Visual Guide
 
 ## System Overview
 

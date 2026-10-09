@@ -1,4 +1,4 @@
-﻿# JSON Serialization â€” Theoretical Foundation
+﻿# JSON Serialization — Theoretical Foundation
 
 ## Core Concepts
 
@@ -57,7 +57,7 @@ JSON serialization is the dominant format for REST APIs and web services. Unders
 Generic type information is erased at runtime, requiring TypeReference or TypeFactory for parameterized types.
 
 ### Theorem 2: Deserialization Order
-Properties can be deserialized in any order â€” the framework must wait for all required properties before constructing immutable objects.
+Properties can be deserialized in any order — the framework must wait for all required properties before constructing immutable objects.
 
 ### Theorem 3: Polymorphic Type Resolution
 Polymorphic serialization requires explicit type information (dedicated field, wrapper object) since JSON has no native type discrimination.
@@ -71,4 +71,4 @@ Jackson annotations like @JsonProperty, @JsonIgnore, @JsonFormat provide fine-gr
 For large documents, the streaming API (JsonParser/JsonGenerator) avoids building the full object tree in memory.
 
 ### Insight 3: Serialization is Not Serialization
-Java object serialization and JSON serialization are fundamentally different â€” JSON serialization uses public API (getters/setters), while Java serialization accesses private fields directly.
+Java object serialization and JSON serialization are fundamentally different — JSON serialization uses public API (getters/setters), while Java serialization accesses private fields directly.

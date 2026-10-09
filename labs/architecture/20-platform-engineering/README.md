@@ -29,30 +29,30 @@ By completing this lab, you will be able to:
 
 ## Lab Structure
 Each lab in this module follows a consistent structure:
-- **README.md** — Overview, learning objectives, and prerequisites
-- **THEORY.md** — Comprehensive theoretical foundation with formal definitions
-- **MATH_FOUNDATION.md** — Quantitative analysis and mathematical modeling
-- **CODE_DEEP_DIVE.md** — Detailed walkthrough of the implementation
-- **EXERCISES.md** — Practice problems with increasing difficulty
-- **QUIZ.md** — Self-assessment questions to validate understanding
-- **ARCHITECTURE.md** — Architectural decisions and trade-off analysis
-- **SECURITY.md** — Security considerations and threat modeling
-- **PERFORMANCE.md** — Performance characteristics and benchmarks
-- **REFACTORING.md** — Refactoring strategies and migration paths
-- **DEBUGGING.md** — Debugging techniques and common issues
-- **COMMON_MISTAKES.md** — Anti-patterns and frequent errors
-- **STEP_BY_STEP.md** — Guided tutorial with concrete steps
-- **VISUAL_GUIDE.md** — Diagrams and visual explanations
-- **INTERNALS.md** — Internal mechanics and implementation details
-- **HOW_IT_WORKS.md** — High-level mechanical explanation
-- **MENTAL_MODELS.md** — Conceptual frameworks and thinking tools
-- **HISTORY.md** — Historical context and evolution
-- **WHY_IT_MATTERS.md** — Business value and strategic importance
-- **WHY_IT_EXISTS.md** — Problem context and motivation
-- **REFERENCES.md** — Further reading, papers, and resources
-- **REFLECTION.md** — Guided reflection and retrospective questions
-- **INTERVIEW.md** — Common interview questions and answers
-- **FLASHCARDS.md** — Spaced repetition learning cards
+- **README.md** â€” Overview, learning objectives, and prerequisites
+- **THEORY.md** â€” Comprehensive theoretical foundation with formal definitions
+- **MATH_FOUNDATION.md** â€” Quantitative analysis and mathematical modeling
+- **CODE_DEEP_DIVE.md** â€” Detailed walkthrough of the implementation
+- **EXERCISES.md** â€” Practice problems with increasing difficulty
+- **QUIZ.md** â€” Self-assessment questions to validate understanding
+- **ARCHITECTURE.md** â€” Architectural decisions and trade-off analysis
+- **SECURITY.md** â€” Security considerations and threat modeling
+- **PERFORMANCE.md** â€” Performance characteristics and benchmarks
+- **REFACTORING.md** â€” Refactoring strategies and migration paths
+- **DEBUGGING.md** â€” Debugging techniques and common issues
+- **COMMON_MISTAKES.md** â€” Anti-patterns and frequent errors
+- **STEP_BY_STEP.md** â€” Guided tutorial with concrete steps
+- **VISUAL_GUIDE.md** â€” Diagrams and visual explanations
+- **INTERNALS.md** â€” Internal mechanics and implementation details
+- **HOW_IT_WORKS.md** â€” High-level mechanical explanation
+- **MENTAL_MODELS.md** â€” Conceptual frameworks and thinking tools
+- **HISTORY.md** â€” Historical context and evolution
+- **WHY_IT_MATTERS.md** â€” Business value and strategic importance
+- **WHY_IT_EXISTS.md** â€” Problem context and motivation
+- **REFERENCES.md** â€” Further reading, papers, and resources
+- **REFLECTION.md** â€” Guided reflection and retrospective questions
+- **INTERVIEW.md** â€” Common interview questions and answers
+- **FLASHCARDS.md** â€” Spaced repetition learning cards
 
 ## Estimated Time
 - Theory review: 1-2 hours
@@ -64,7 +64,7 @@ Each lab in this module follows a consistent structure:
 Navigate into this lab directory and begin with THEORY.md to build your foundational understanding, then proceed to CODE_DEEP_DIVE.md for the implementation walkthrough. Use EXERCISES.md to practice and MINI_PROJECT/ for a comprehensive exercise.
 
 ## Related Labs
-- [01-Microservices](../01-microservices/) — Foundation in service decomposition
-- [05-Saga Pattern](../05-saga-pattern/) — Transaction coordination patterns
-- [08-Event Sourcing](../08-event-sourcing/) — Event-driven data management
-- [09-Six Port Architecture](../09-six-port-architecture/) — Port adapter patterns
+- [01-Microservices](../01-microservices/) â€” Foundation in service decomposition
+- [05-Saga Pattern](../05-saga-pattern/) â€” Transaction coordination patterns
+- [08-Event Sourcing](../08-event-sourcing/) â€” Event-driven data management
+- [09-Six Port Architecture](../09-six-port-architecture/) â€” Port adapter patterns

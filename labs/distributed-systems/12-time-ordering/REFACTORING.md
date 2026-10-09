@@ -1,4 +1,4 @@
-﻿# Refactoring â€” Time Ordering
+﻿# Refactoring — Time Ordering
 
 ## 1. Extract Clock Interface
 **Before:** Inline clock operations

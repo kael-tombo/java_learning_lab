@@ -1,4 +1,4 @@
-﻿# Protocol Buffers â€” Mathematical Foundation
+﻿# Protocol Buffers — Mathematical Foundation
 
 ## 1. Varint Encoding
 
@@ -64,7 +64,7 @@ key = (field_number << 3) | wire_type
 
 ### Packed Repeated Fields
 When using packed=true, repeated scalar fields are written as a single length-delimited blob:
-packed_size = key_size + length_varint + Î£(field_value_sizes)
+packed_size = key_size + length_varint + Σ(field_value_sizes)
 
 ## 5. Default Value Optimization
 

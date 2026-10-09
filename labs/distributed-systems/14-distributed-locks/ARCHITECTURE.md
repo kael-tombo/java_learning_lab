@@ -1,4 +1,4 @@
-﻿# Architecture â€” Distributed Locks
+﻿# Architecture — Distributed Locks
 
 ## Lock Service Architecture
 Client -> Lock Service (Redis/ZK/Etcd)

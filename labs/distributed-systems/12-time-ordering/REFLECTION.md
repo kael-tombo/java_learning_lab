@@ -1,4 +1,4 @@
-﻿# Reflection â€” Time Ordering
+﻿# Reflection — Time Ordering
 
 ## Key Takeaways
 - Logical time differs fundamentally from physical time

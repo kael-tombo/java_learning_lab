@@ -1,4 +1,4 @@
-# Mock Interview: Advanced Trees — AVL, Red-Black and B-Trees
+# Mock Interview: Advanced Trees â€” AVL, Red-Black and B-Trees
 
 ## Interview Details
 - **Topic**: Advanced Trees

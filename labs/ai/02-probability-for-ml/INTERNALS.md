@@ -1,1 +1,1 @@
-# 02-probability-for-ml — Internals\n\nDetailed internal mechanics and implementation details.
+# 02-probability-for-ml â€” Internals\n\nDetailed internal mechanics and implementation details.

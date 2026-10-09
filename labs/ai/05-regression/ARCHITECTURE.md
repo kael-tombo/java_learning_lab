@@ -1,1 +1,1 @@
-# 05-regression — Architecture\n\nSystem design and architectural patterns for 05-regression.
+# 05-regression â€” Architecture\n\nSystem design and architectural patterns for 05-regression.

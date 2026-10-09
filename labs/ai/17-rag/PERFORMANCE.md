@@ -1,1 +1,1 @@
-# 17-rag — Performance\n\nPerformance considerations, benchmarks, and optimization tips.
+# 17-rag â€” Performance\n\nPerformance considerations, benchmarks, and optimization tips.

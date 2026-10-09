@@ -1,4 +1,4 @@
-# Mock Interview: Treap — Randomized Binary Search Tree
+# Mock Interview: Treap â€” Randomized Binary Search Tree
 
 ## Interview Details
 - **Topic**: Treap

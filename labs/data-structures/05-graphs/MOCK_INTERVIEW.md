@@ -1,4 +1,4 @@
-# Mock Interview: Graphs — BFS, DFS and Topological Sort
+# Mock Interview: Graphs â€” BFS, DFS and Topological Sort
 
 ## Interview Details
 - **Topic**: Graphs

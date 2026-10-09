@@ -1,4 +1,4 @@
-# Mock Interview: Divide and Conquer — Recursive Problem Decomposition
+# Mock Interview: Divide and Conquer â€” Recursive Problem Decomposition
 
 ## Interview Details
 - **Topic**: Divide and Conquer

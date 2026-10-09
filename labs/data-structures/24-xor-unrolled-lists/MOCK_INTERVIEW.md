@@ -1,4 +1,4 @@
-# Mock Interview: XOR and Unrolled Linked Lists — Memory-Efficient List Structures
+# Mock Interview: XOR and Unrolled Linked Lists â€” Memory-Efficient List Structures
 
 ## Interview Details
 - **Topic**: XOR and Unrolled Linked Lists

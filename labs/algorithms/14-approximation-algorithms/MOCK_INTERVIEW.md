@@ -1,4 +1,4 @@
-# Mock Interview: Approximation Algorithms — NP-Hard Approximation
+# Mock Interview: Approximation Algorithms â€” NP-Hard Approximation
 
 ## Interview Details
 - **Topic**: Approximation Algorithms

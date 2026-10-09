@@ -1,1 +1,1 @@
-# 18-prompt-engineering — References\n\nPapers, articles, and resources for 18-prompt-engineering.
+# 18-prompt-engineering â€” References\n\nPapers, articles, and resources for 18-prompt-engineering.

@@ -1,4 +1,4 @@
-# 13 — GCP Fundamentals — How It Works
+# 13 â€” GCP Fundamentals â€” How It Works
 
 ## Core Mechanism
 

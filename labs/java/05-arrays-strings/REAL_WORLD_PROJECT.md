@@ -1,7 +1,7 @@
 # REAL-WORLD PROJECT — Arrays & Strings: Import Outage + Mojibake
 
 ## Incident Scenario
-09:40 — supplier import (80k SKUs) OOMs the pod, then names render as `CafÃ©`. Catalog frozen; search degraded.
+09:40 — supplier import (80k SKUs) OOMs the pod, then names render as `Café`. Catalog frozen; search degraded.
 
 ## Symptoms
 - Log: `OutOfMemoryError: Java heap space` at `report += line` in loop (O(n²) concat on 80k rows).

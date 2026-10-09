@@ -24,15 +24,15 @@
 
 ## Online Resources
 
-8. LeetCode Explore: Disjoint Set Union â€” https://leetcode.com/explore/learn/card/graph/
-9. Visualgo: Union-Find Visualization â€” https://visualgo.net/en/ufds
-10. CP-Algorithms: Disjoint Set Union â€” https://cp-algorithms.com/data_structures/disjoint_set_union.html
+8. LeetCode Explore: Disjoint Set Union — https://leetcode.com/explore/learn/card/graph/
+9. Visualgo: Union-Find Visualization — https://visualgo.net/en/ufds
+10. CP-Algorithms: Disjoint Set Union — https://cp-algorithms.com/data_structures/disjoint_set_union.html
 
 ## Video Lectures
 
 11. MIT OpenCourseWare: 6.006 Introduction to Algorithms, Lecture on Union-Find
-12. Princeton Algorithms Part I: Coursera â€” Union-Find lectures by Robert Sedgewick
-13. William Fiset: Union-Find video series â€” YouTube
+12. Princeton Algorithms Part I: Coursera — Union-Find lectures by Robert Sedgewick
+13. William Fiset: Union-Find video series — YouTube
 
 ## Related Topics
 

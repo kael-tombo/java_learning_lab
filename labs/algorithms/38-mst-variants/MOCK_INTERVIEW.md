@@ -1,4 +1,4 @@
-# Mock Interview: MST Variants — Boruvek, Steiner Tree, Dynamic MST
+# Mock Interview: MST Variants â€” Boruvek, Steiner Tree, Dynamic MST
 
 ## Interview Details
 - **Topic**: MST Variants

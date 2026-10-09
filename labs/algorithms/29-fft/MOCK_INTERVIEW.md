@@ -1,4 +1,4 @@
-# Mock Interview: Fast Fourier Transform — Cooley-Tukey FFT, NTT
+# Mock Interview: Fast Fourier Transform â€” Cooley-Tukey FFT, NTT
 
 ## Interview Details
 - **Topic**: Fast Fourier Transform

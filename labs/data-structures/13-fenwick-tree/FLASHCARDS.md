@@ -13,7 +13,7 @@
 **Back**: Starting at index i+1, repeatedly accumulate bit[i] and decrement i by lsb(i) until i = 0.
 
 ## Front: What is the space complexity of BIT?
-**Back**: O(n) â€” stores one array of size n+1.
+**Back**: O(n) — stores one array of size n+1.
 
 ## Front: How do you compute range sum [l, r] with BIT?
 **Back**: rangeSum(l, r) = prefixSum(r) - prefixSum(l-1).
@@ -22,7 +22,7 @@
 **Back**: Process array left to right. For each element, query BIT for count of larger elements already seen, then add current element to BIT.
 
 ## Front: What is a 2D BIT?
-**Back**: A BIT of BITs supporting submatrix sum queries and point updates in O(logÂ² n) time.
+**Back**: A BIT of BITs supporting submatrix sum queries and point updates in O(log² n) time.
 
 ## Front: How does range update + point query work?
 **Back**: Use difference array technique. add(l, val) and add(r+1, -val). Prefix sum gives the value at each point.

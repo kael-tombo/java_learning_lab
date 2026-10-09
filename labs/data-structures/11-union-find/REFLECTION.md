@@ -8,7 +8,7 @@ Union-Find demonstrates that sometimes the most elegant solutions are also the m
 
 1. **Simple ideas can be profound**: The concept of tracking parent pointers and merging trees is straightforward, but the theoretical analysis reveals depth in the inverse Ackermann function.
 
-2. **Optimizations compound**: Neither path compression nor union by rank alone achieves the inverse Ackermann bound â€” it's the combination that creates the remarkable efficiency.
+2. **Optimizations compound**: Neither path compression nor union by rank alone achieves the inverse Ackermann bound — it's the combination that creates the remarkable efficiency.
 
 3. **Amortization matters**: The O(alpha(n)) bound is amortized, meaning occasional expensive operations are paid for by many cheap ones. This is a common pattern in data structures.
 

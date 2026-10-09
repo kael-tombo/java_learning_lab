@@ -4,11 +4,11 @@
 
 ### Vulnerability Risk Assessment
 
-**Risk = Likelihood × Impact**
+**Risk = Likelihood Ã— Impact**
 
 OWASP Risk Rating:
-- Likelihood: Threat Agent × Vulnerability Factors
-- Impact: Technical Impact × Business Impact
+- Likelihood: Threat Agent Ã— Vulnerability Factors
+- Impact: Technical Impact Ã— Business Impact
 - Overall Score: Likelihood + Impact / 2
 
 ### False Positive Rate
@@ -19,7 +19,7 @@ OWASP Risk Rating:
 
 ### Fuzzing Coverage
 
-Branch coverage = executed branches / total branches × 100%
+Branch coverage = executed branches / total branches Ã— 100%
 - Random fuzzing: ~30-50% coverage
 - Mutation fuzzing: ~40-60% coverage
 - Feedback-guided: ~60-80% coverage
@@ -35,7 +35,7 @@ Branch coverage = executed branches / total branches × 100%
 ### Probability of Exploitation
 
 - CVSS v3 exploitability sub-score:
-  ES = 8.22 × AV × AC × PR × UI
+  ES = 8.22 Ã— AV Ã— AC Ã— PR Ã— UI
 - Range: 0.0 - 10.0
 - Base Score classification:
   - None: 0.0
@@ -47,7 +47,7 @@ Branch coverage = executed branches / total branches × 100%
 ### Sample Size for Penetration Testing
 
 Confidence interval for vulnerability discovery:
-- n = Z² × p × (1-p) / E²
+- n = ZÂ² Ã— p Ã— (1-p) / EÂ²
 - Z = 1.96 (95% confidence)
 - p = expected prevalence
 - E = margin of error

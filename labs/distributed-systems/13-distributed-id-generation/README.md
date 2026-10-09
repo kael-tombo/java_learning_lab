@@ -26,9 +26,9 @@ Distributed ID generation creates unique identifiers across multiple nodes witho
 - Monotonicity and ordering properties
 
 ## Package Structure
-- com.distributed.idgeneration â€” Core implementations
-  - SnowflakeIdGenerator.java â€” Twitter-style Snowflake IDs
-  - UuidV7Generator.java â€” Time-ordered UUID v7
-  - UlidGenerator.java â€” ULID implementation
-  - IdGenerator.java â€” Common interface
-  - SequenceIdGenerator.java â€” Coordinated sequence IDs
+- com.distributed.idgeneration — Core implementations
+  - SnowflakeIdGenerator.java — Twitter-style Snowflake IDs
+  - UuidV7Generator.java — Time-ordered UUID v7
+  - UlidGenerator.java — ULID implementation
+  - IdGenerator.java — Common interface
+  - SequenceIdGenerator.java — Coordinated sequence IDs

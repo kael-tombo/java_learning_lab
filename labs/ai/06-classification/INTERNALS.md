@@ -1,1 +1,1 @@
-# 06-classification — Internals\n\nDetailed internal mechanics and implementation details.
+# 06-classification â€” Internals\n\nDetailed internal mechanics and implementation details.

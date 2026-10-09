@@ -1,4 +1,4 @@
-# Mock Interview: String Algorithms — KMP, Rabin-Karp, Pattern Matching
+# Mock Interview: String Algorithms â€” KMP, Rabin-Karp, Pattern Matching
 
 ## Interview Details
 - **Topic**: String Algorithms

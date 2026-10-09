@@ -1,1 +1,1 @@
-# 04-optimization — Internals\n\nDetailed internal mechanics and implementation details.
+# 04-optimization â€” Internals\n\nDetailed internal mechanics and implementation details.

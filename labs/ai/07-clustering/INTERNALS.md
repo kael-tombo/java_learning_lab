@@ -1,1 +1,1 @@
-# 07-clustering — Internals\n\nDetailed internal mechanics and implementation details.
+# 07-clustering â€” Internals\n\nDetailed internal mechanics and implementation details.

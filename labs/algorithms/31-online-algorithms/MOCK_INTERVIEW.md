@@ -1,4 +1,4 @@
-# Mock Interview: Online Algorithms — Competitive Analysis, Paging
+# Mock Interview: Online Algorithms â€” Competitive Analysis, Paging
 
 ## Interview Details
 - **Topic**: Online Algorithms

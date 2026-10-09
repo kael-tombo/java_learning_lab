@@ -1,4 +1,4 @@
-# Mock Interview: Branch and Bound — Optimization with Pruning
+# Mock Interview: Branch and Bound â€” Optimization with Pruning
 
 ## Interview Details
 - **Topic**: Branch and Bound

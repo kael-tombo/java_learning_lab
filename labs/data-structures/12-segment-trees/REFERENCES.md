@@ -19,15 +19,15 @@
 
 ## Online Resources
 
-7. CP-Algorithms: Segment Tree â€” https://cp-algorithms.com/data_structures/segment_tree.html
-8. Visualgo: Segment Tree Visualization â€” https://visualgo.net/en/segmenttree
+7. CP-Algorithms: Segment Tree — https://cp-algorithms.com/data_structures/segment_tree.html
+8. Visualgo: Segment Tree Visualization — https://visualgo.net/en/segmenttree
 9. LeetCode Explore: Segment Tree
 
 ## Video Lectures
 
 10. MIT OpenCourseWare: Advanced Data Structures (Segment Trees)
-11. Algorithms Live: Segment Tree and Its Applications â€” YouTube
-12. William Fiset: Segment Tree series â€” YouTube
+11. Algorithms Live: Segment Tree and Its Applications — YouTube
+12. William Fiset: Segment Tree series — YouTube
 
 ## Related Topics
 

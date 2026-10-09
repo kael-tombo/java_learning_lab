@@ -1,4 +1,4 @@
-# 13 — GCP Fundamentals
+# 13 â€” GCP Fundamentals
 
 ## Overview
 GCP Compute Engine, Cloud Storage, Cloud SQL, GKE, IAM. This lab provides hands-on experience with real Java implementations and cloud SDK patterns.
@@ -28,11 +28,11 @@ GCP Compute Engine, Cloud Storage, Cloud SQL, GKE, IAM. This lab provides hands-
 | FLASHCARDS.md | Spaced-repetition review cards |
 
 ## Key Topics
-- **Compute Engine** — GCP virtual machines
-- **Cloud Storage** — GCP object storage
-- **Cloud SQL** — Managed MySQL/PostgreSQL
-- **GKE** — Google Kubernetes Engine
-- **GCP IAM** — Identity and access management
+- **Compute Engine** â€” GCP virtual machines
+- **Cloud Storage** â€” GCP object storage
+- **Cloud SQL** â€” Managed MySQL/PostgreSQL
+- **GKE** â€” Google Kubernetes Engine
+- **GCP IAM** â€” Identity and access management
 
 ## Next Lab
 ? [Multi-Cloud](../6-multi-cloud)

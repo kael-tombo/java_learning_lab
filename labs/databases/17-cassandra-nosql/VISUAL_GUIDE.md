@@ -43,15 +43,15 @@
         \                   /
          '--------+--------'
                   |
-            hash(key_K) â†’ Node B (nearest clockwise)
+            hash(key_K) → Node B (nearest clockwise)
 `
 
 ### Write Flow
 `
-Client â†’ API Gateway â†’ Router (hash routing key)
+Client → API Gateway → Router (hash routing key)
                              |
                      +-------v--------+
-                     | Find Node       |  hash(key) â†’ node-id
+                     | Find Node       |  hash(key) → node-id
                      +-------+--------+
                              |
                      +-------v--------+
@@ -70,7 +70,7 @@ Client â†’ API Gateway â†’ Router (hash routing key)
 
 ### Read Flow (Single Node)
 `
-Client â†’ API Gateway â†’ Router (extract routing key)
+Client → API Gateway → Router (extract routing key)
                              |
                      +-------v--------+
                      | Identify Node    |
@@ -88,7 +88,7 @@ Client â†’ API Gateway â†’ Router (extract routing key)
 
 ### Scatter-Gather Flow
 `
-Client â†’ Query without routing key
+Client → Query without routing key
                      |
              +-------v--------+
              | Broadcast to    |
@@ -118,11 +118,11 @@ Client â†’ Query without routing key
 `
 Before: [N0:80%] [N1:40%] [N2:35%] [N3:45%]
                    |
-                   â–¼  (add N4)
+                   ▼  (add N4)
                    |
 During: [N0:60%] [N1:40%] [N2:35%] [N3:45%] [N4:20%]
-                   â”‚
-                   â–¼
+                   │
+                   ▼
 After:  [N0:50%] [N1:40%] [N2:35%] [N3:35%] [N4:40%]
 `
 
@@ -130,13 +130,13 @@ After:  [N0:50%] [N1:40%] [N2:35%] [N3:35%] [N4:40%]
 `
 Range Distribution:          Hash Distribution:
 â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â” â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ N0     â”‚ N1     â”‚ N2     â”‚ â”‚ N0     â”‚ N1     â”‚ N2     â”‚
-â”‚ A-D    â”‚ E-H    â”‚ I-L    â”‚ â”‚ 7A3F   â”‚ B2C1   â”‚ 9E8D   â”‚
-â”‚ M-P    â”‚ Q-T    â”‚ U-Z    â”‚ â”‚ 1B4A   â”‚ 5C9F   â”‚ 3D7E   â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”¤ â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ Good: Range queries fast  â”‚ â”‚ Good: Even distribution  â”‚
-â”‚ Bad: Hotspots on new data â”‚ â”‚ Bad: Cross-node ranges   â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+│ N0     │ N1     │ N2     │ │ N0     │ N1     │ N2     │
+│ A-D    │ E-H    │ I-L    │ │ 7A3F   │ B2C1   │ 9E8D   │
+│ M-P    │ Q-T    │ U-Z    │ │ 1B4A   │ 5C9F   │ 3D7E   │
+├────────┴────────┴────────┤ ├────────┴────────┴────────┤
+│ Good: Range queries fast  │ │ Good: Even distribution  │
+│ Bad: Hotspots on new data │ │ Bad: Cross-node ranges   │
+└───────────────────────────┘ └──────────────────────────┘
 `
 "@
 
@@ -149,16 +149,16 @@ Range Distribution:          Hash Distribution:
 ### Component Diagram
 `
 â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚                    Router Layer                         â”‚
-â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
-â”‚  â”‚Hash Ring â”‚  â”‚Partition â”‚  â”‚Scatter-Gather        â”‚ â”‚
-â”‚  â”‚Manager   â”‚  â”‚Manager   â”‚  â”‚Engine                â”‚ â”‚
-â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
-â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” â”‚
-â”‚  â”‚Health    â”‚  â”‚Connectionâ”‚  â”‚Metrics Collector     â”‚ â”‚
-â”‚  â”‚Checker   â”‚  â”‚Pool      â”‚  â”‚                      â”‚ â”‚
-â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜ â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+│                    Router Layer                         │
+│  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” │
+│  │Hash Ring │  │Partition │  │Scatter-Gather        │ │
+│  │Manager   │  │Manager   │  │Engine                │ │
+│  └──────────┘  └──────────┘  └──────────────────────┘ │
+│  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” │
+│  │Health    │  │Connection│  │Metrics Collector     │ │
+│  │Checker   │  │Pool      │  │                      │ │
+│  └──────────┘  └──────────┘  └──────────────────────┘ │
+└────────────────────────────────────────────────────────┘
 `
 
 ### Hash Ring Manager Internals
@@ -181,8 +181,8 @@ public String findNode(String key) {
 
 **Memory Layout:**
 - TreeMap: O(log N) for insert/delete/lookup
-- N = physical nodes Ã— virtual nodes per physical node
-- For 100 physical nodes Ã— 150 virtual nodes = 15,000 entries
+- N = physical nodes × virtual nodes per physical node
+- For 100 physical nodes × 150 virtual nodes = 15,000 entries
 - Memory: ~2-3 MB
 
 ### Connection Pool Internals
@@ -252,9 +252,9 @@ public CompletableFuture<Result> scatterGather(Query query) {
 
 **State Machine:**
 `
-IDLE â†’ ANALYZING â†’ PLANNING â†’ MIGRATING â†’ VERIFYING â†’ UPDATING â†’ CLEANUP â†’ IDLE
-                           â†“                        â†‘
-                        (error) â†’ ROLLING_BACK â”€â”€â”€â”€â”€â”˜
+IDLE → ANALYZING → PLANNING → MIGRATING → VERIFYING → UPDATING → CLEANUP → IDLE
+                           ↓                        ↑
+                        (error) → ROLLING_BACK ─────┘
 `
 
 ### Monitoring Internals

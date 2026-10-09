@@ -1,4 +1,4 @@
-# Mock Interview: Game Theory — Minimax, Nash Equilibrium, Nim
+# Mock Interview: Game Theory â€” Minimax, Nash Equilibrium, Nim
 
 ## Interview Details
 - **Topic**: Game Theory

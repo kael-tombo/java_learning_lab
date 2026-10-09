@@ -1,4 +1,4 @@
-﻿# Google Interview Guide â€” Oracle APEX Academy
+﻿# Google Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 
@@ -44,7 +44,7 @@ Google values clean, maintainable code, algorithmic thinking, and data processin
 
 - **SQL Problem Statement**: Write a SQL query to find employees who earn more than their direct managers. Return the employee's name and salary, along with their manager's name and salary.
 
-- **Interview Walkthrough**: This classic self-join problem tests your ability to work with hierarchical data in a single table. Join the EMP table to itself where one instance represents employees (e) and the other represents managers (m). The join condition is e.mgr = m.empno. Compare salaries in the WHERE clause. Google loves this problem because it mirrors real-world data integrity checks â€” detecting salary anomalies in organizational data.
+- **Interview Walkthrough**: This classic self-join problem tests your ability to work with hierarchical data in a single table. Join the EMP table to itself where one instance represents employees (e) and the other represents managers (m). The join condition is e.mgr = m.empno. Compare salaries in the WHERE clause. Google loves this problem because it mirrors real-world data integrity checks — detecting salary anomalies in organizational data.
 
 - **SQL Solution**:
 
@@ -96,7 +96,7 @@ ORDER BY d.dname, e.sal DESC;
 
 - **Oracle-Specific Syntax**: DENSE_RANK() with OVER (PARTITION BY ... ORDER BY ...) is ANSI standard. Oracle has supported analytic functions since Oracle 8i, making them mature and well-optimized. Oracle also supports RANK() (which includes gaps for ties) and ROW_NUMBER() (which assigns unique numbers even with ties).
 
-- **What Google Evaluates**: Understanding of window functions â€” a must-have for Google data roles. Google expects candidates to explain WHY they chose DENSE_RANK over RANK or ROW_NUMBER. Can you articulate the business implications of ties, gaps, and unique assignments?
+- **What Google Evaluates**: Understanding of window functions — a must-have for Google data roles. Google expects candidates to explain WHY they chose DENSE_RANK over RANK or ROW_NUMBER. Can you articulate the business implications of ties, gaps, and unique assignments?
 
 - **Follow-ups**: 1) What if you need EXACTLY 3 rows per department (no ties)? Use ROW_NUMBER. 2) Add a department filter dynamically using a bind variable. 3) Rewrite using a correlated subquery for comparison.
 
@@ -207,7 +207,7 @@ ORDER BY d.dname, emp_rank;
 
 - **Oracle-Specific Syntax**: RANK() includes gaps for ties. The ORDER BY within OVER supports multiple columns. Oracle also supports NULLS FIRST/LAST in the OVER clause to control NULL positioning in the ranking.
 
-- **What Google Evaluates**: Precision in ranking logic â€” understanding the subtle differences between RANK, DENSE_RANK, and ROW_NUMBER. Google expects you to explain the trade-offs and choose based on business requirements.
+- **What Google Evaluates**: Precision in ranking logic — understanding the subtle differences between RANK, DENSE_RANK, and ROW_NUMBER. Google expects you to explain the trade-offs and choose based on business requirements.
 
 - **Follow-ups**: 1) Show the difference between RANK and DENSE_RANK with example data. 2) Add a running total of salaries within each department. 3) Include a moving average of salary over 3 employees ordered by hire_date.
 
@@ -330,7 +330,7 @@ GROUP BY department;
 
 - **What Google Evaluates**: Understanding of statistical functions in SQL and ability to implement complex calculations without external tools. Google values engineers who can push analytical computation into the database.
 
-- **Follow-ups**: 1) Calculate percentiles (25th, 75th, 90th) in addition to median. 2) Use PERCENTILE_DISC vs PERCENTILE_CONT â€” explain the difference. 3) Create an APEX dashboard showing salary distribution statistics by department.
+- **Follow-ups**: 1) Calculate percentiles (25th, 75th, 90th) in addition to median. 2) Use PERCENTILE_DISC vs PERCENTILE_CONT — explain the difference. 3) Create an APEX dashboard showing salary distribution statistics by department.
 
 ---
 
@@ -441,7 +441,7 @@ GROUP BY department;
 
 ### Company-Specific APEX Interview Strategies
 
-- **Frame APEX as a Data Tool**: Google does not hire for "APEX developers." Frame your APEX experience as database application development and data platform engineering. Emphasize SQL, PL/SQL, and data modeling â€” not page designer skills.
+- **Frame APEX as a Data Tool**: Google does not hire for "APEX developers." Frame your APEX experience as database application development and data platform engineering. Emphasize SQL, PL/SQL, and data modeling — not page designer skills.
 
 - **Scale is Everything**: Every answer should demonstrate awareness of scale. Google operates at planetary scale. When you describe an APEX solution, explain how it would handle 100x more data, 100x more users, and 100x more transactions.
 

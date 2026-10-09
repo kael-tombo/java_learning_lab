@@ -1,4 +1,4 @@
-﻿# Quiz â€” Distributed Locks
+﻿# Quiz — Distributed Locks
 
 1. Redlock requires majority of how many nodes? Answer: 5
 2. ZK locks use which znode type? Answer: Ephemeral sequential

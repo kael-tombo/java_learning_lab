@@ -1,4 +1,4 @@
-# 09 — AWS Security — Internals
+# 09 â€” AWS Security â€” Internals
 
 ## Internal Architecture
 

@@ -2,7 +2,7 @@
 
 The core challenge: distributed systems run on machines with independent clocks that drift. NTP helps but can't eliminate skew.
 
-Instead of asking "when did this happen?" we ask "what caused what?" â€” the happens-before relation.
+Instead of asking "when did this happen?" we ask "what caused what?" — the happens-before relation.
 
 1. **Lamport Clocks**: A counter that increments on each event. Cheap but loses causality.
 2. **Vector Clocks**: Each process keeps a counter per process. Expensive but preserves causality.

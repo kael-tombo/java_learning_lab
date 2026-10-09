@@ -1,1 +1,1 @@
-# 01-linear-algebra-for-ml — Debugging\n\nStrategies and tools for debugging 01-linear-algebra-for-ml implementations.
+# 01-linear-algebra-for-ml â€” Debugging\n\nStrategies and tools for debugging 01-linear-algebra-for-ml implementations.

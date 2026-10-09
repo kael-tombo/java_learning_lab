@@ -4,7 +4,7 @@
 
 ### Risk Scoring
 
-**Trust Score = S(signal? × weight?)**
+**Trust Score = S(signal? Ã— weight?)**
 
 Signal dimensions:
 - Identity: User authentication strength (0-100)
@@ -15,7 +15,7 @@ Signal dimensions:
 
 ### Access Decision Function
 
-P(grant) = s(S(w? × s?) - t)
+P(grant) = s(S(w? Ã— s?) - t)
 
 Where:
 - s(x) = 1/(1 + e??) (sigmoid)
@@ -28,12 +28,12 @@ Where:
 Number of possible segments:
 - N_services = total microservices
 - N_segments = 2^N_services (theoretical max)
-- Practical segments ˜ N_services (per-service perimeters)
+- Practical segments Ëœ N_services (per-service perimeters)
 
 ### Continuous Verification
 
 Session risk reassessment:
-- R(t) = R0 × e^(?t) + N(0, s²)
+- R(t) = R0 Ã— e^(?t) + N(0, sÂ²)
 - R0 = initial risk score
 - ? = risk decay rate
 - s = noise/signal variation

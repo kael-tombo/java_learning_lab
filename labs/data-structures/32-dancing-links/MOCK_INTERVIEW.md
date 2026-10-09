@@ -1,4 +1,4 @@
-# Mock Interview: Dancing Links (DLX) — Exact Cover and Algorithm X
+# Mock Interview: Dancing Links (DLX) â€” Exact Cover and Algorithm X
 
 ## Interview Details
 - **Topic**: Dancing Links (DLX)

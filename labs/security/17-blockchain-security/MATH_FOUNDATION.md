@@ -6,9 +6,9 @@
 
 **Elliptic Curve Digital Signature Algorithm (ECDSA)**
 - Curve: secp256k1 (Ethereum, Bitcoin)
-- Equation: y² = x³ + 7 (mod p)
+- Equation: yÂ² = xÂ³ + 7 (mod p)
 - Private key: random 256-bit integer
-- Public key: K = k × G (scalar multiplication)
+- Public key: K = k Ã— G (scalar multiplication)
 - Address: hash of public key (last 20 bytes for Ethereum)
 
 **Keccak-256 (SHA-3)**:
@@ -22,7 +22,7 @@ Gas cost analysis:
 - External call minimum gas: 2300
 - State modification gas: varies (5000-50000)
 - Profit = stolen_value - attack_cost
-- Attack_cost = gas_price × gas_used
+- Attack_cost = gas_price Ã— gas_used
 
 ### Flash Loan Arithmetic
 
@@ -33,7 +33,7 @@ Gas cost analysis:
 
 ### 51% Attack Probability
 
-P(attack) = S(C(n,k) × p^k × (1-p)^(n-k)) for k > n/2
+P(attack) = S(C(n,k) Ã— p^k Ã— (1-p)^(n-k)) for k > n/2
 
 Where:
 - n = total blocks in confirmation window
@@ -42,17 +42,17 @@ Where:
 
 ### AMM Price Impact
 
-Constant Product: x × y = k
+Constant Product: x Ã— y = k
 - x: reserve of token X
 - y: reserve of token Y
 - k: constant product
-- Price impact: ?y = (?x × y) / (x + ?x)
+- Price impact: ?y = (?x Ã— y) / (x + ?x)
 - Slippage = 1 - (output/expected_output)
 
 ### MEV (Maximal Extractable Value)
 
-- Sandwich profit = buy_price_delta × amount
-- Frontrunning cost = gas_price × (block_gas_limit)
+- Sandwich profit = buy_price_delta Ã— amount
+- Frontrunning cost = gas_price Ã— (block_gas_limit)
 - MEV = S(profitable opportunities) - costs
 
 ### Cryptographic Hash Functions

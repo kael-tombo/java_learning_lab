@@ -14,14 +14,14 @@
 
 ## Online Resources
 
-5. CP-Algorithms: Fenwick Tree â€” https://cp-algorithms.com/data_structures/fenwick.html
-6. Visualgo: BIT Visualization â€” https://visualgo.net/en/fenwicktree
+5. CP-Algorithms: Fenwick Tree — https://cp-algorithms.com/data_structures/fenwick.html
+6. Visualgo: BIT Visualization — https://visualgo.net/en/fenwicktree
 7. YouTube: Fenwick Tree tutorial by William Fiset
 8. YouTube: Fenwick Tree by Algorithms Live
 
 ## Practice Platforms
 
-9. LeetCode â€” Range Sum Query problems
-10. HackerRank â€” BIT challenges
-11. Codeforces â€” BIT tag
-12. AtCoder â€” BIT problems
+9. LeetCode — Range Sum Query problems
+10. HackerRank — BIT challenges
+11. Codeforces — BIT tag
+12. AtCoder — BIT problems

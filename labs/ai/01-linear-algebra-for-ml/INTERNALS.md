@@ -1,1 +1,1 @@
-# 01-linear-algebra-for-ml — Internals\n\nDetailed internal mechanics and implementation details.
+# 01-linear-algebra-for-ml â€” Internals\n\nDetailed internal mechanics and implementation details.

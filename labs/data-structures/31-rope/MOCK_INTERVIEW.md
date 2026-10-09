@@ -1,4 +1,4 @@
-# Mock Interview: Rope Data Structure — Balanced Tree for Strings
+# Mock Interview: Rope Data Structure â€” Balanced Tree for Strings
 
 ## Interview Details
 - **Topic**: Rope Data Structure

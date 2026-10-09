@@ -1,4 +1,4 @@
-# Mock Interview: Arrays — Two Sum and Array Manipulation
+# Mock Interview: Arrays â€” Two Sum and Array Manipulation
 
 ## Interview Details
 - **Topic**: Arrays

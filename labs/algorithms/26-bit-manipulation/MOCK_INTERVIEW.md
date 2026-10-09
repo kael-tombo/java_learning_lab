@@ -1,4 +1,4 @@
-# Mock Interview: Bit Manipulation — XOR Tricks, Bit DP, Subset Enumeration
+# Mock Interview: Bit Manipulation â€” XOR Tricks, Bit DP, Subset Enumeration
 
 ## Interview Details
 - **Topic**: Bit Manipulation

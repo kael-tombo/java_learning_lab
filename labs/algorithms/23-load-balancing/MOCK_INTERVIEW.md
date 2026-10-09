@@ -1,4 +1,4 @@
-# Mock Interview: Load Balancing — Round Robin, Consistent Hashing
+# Mock Interview: Load Balancing â€” Round Robin, Consistent Hashing
 
 ## Interview Details
 - **Topic**: Load Balancing

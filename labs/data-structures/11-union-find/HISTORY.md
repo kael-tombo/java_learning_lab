@@ -2,7 +2,7 @@
 
 ## Origins (1964)
 
-The Union-Find data structure was introduced by Bernard Galler and Michael Fischer in their 1964 paper "An Improved Equivalence Algorithm." They needed a way to manage equivalence relations in compilers â€” specifically for checking type equivalence and handling variable scoping.
+The Union-Find data structure was introduced by Bernard Galler and Michael Fischer in their 1964 paper "An Improved Equivalence Algorithm." They needed a way to manage equivalence relations in compilers — specifically for checking type equivalence and handling variable scoping.
 
 ## Early Refinements (1964-1973)
 
@@ -16,7 +16,7 @@ Between 1964 and 1973, several researchers contributed refinements:
 In 1975, Robert Tarjan published his landmark paper "Efficiency of a Good But Not Linear Set Union Algorithm." He proved:
 
 1. With both path compression and union by rank, the amortized time per operation is O(alpha(n))
-2. This is asymptotically optimal â€” any algorithm for the disjoint set union problem requires at least O(alpha(n)) time per operation in the worst case
+2. This is asymptotically optimal — any algorithm for the disjoint set union problem requires at least O(alpha(n)) time per operation in the worst case
 
 The inverse Ackermann function, alpha(n), grows so slowly that alpha(n) = 4 for n up to 2^65536. For all practical purposes, operations are constant time.
 

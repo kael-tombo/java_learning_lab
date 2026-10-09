@@ -1,4 +1,4 @@
-﻿# Microsoft Interview Guide â€” Oracle APEX Academy
+﻿# Microsoft Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 
@@ -18,7 +18,7 @@ The Microsoft interview process for database engineer and application developer 
 
 Microsoft evaluates candidates for database engineer and application developer roles. APEX experience demonstrates rapid application development skills. Microsoft cares deeply about developer experience, tooling, and cloud integration (Azure).
 
-They value candidates who can work across Oracle and Microsoft technologies. Understanding the differences between PL/SQL and T-SQL is highly valued. Microsoft also emphasizes Growth Mindset â€” a belief that abilities can be developed through dedication and hard work.
+They value candidates who can work across Oracle and Microsoft technologies. Understanding the differences between PL/SQL and T-SQL is highly valued. Microsoft also emphasizes Growth Mindset — a belief that abilities can be developed through dedication and hard work.
 
 ### Key Areas Assessed
 
@@ -131,9 +131,9 @@ WHERE EXISTS (
 );
 ```
 
-- **Oracle-Specific Syntax**: ROWID is a pseudo-column unique to Oracle â€” the physical row address. ROWNUM is Oracle-specific but deprecated for most purposes. Oracle's COMMIT is implicit for DDL but explicit for DML.
+- **Oracle-Specific Syntax**: ROWID is a pseudo-column unique to Oracle — the physical row address. ROWNUM is Oracle-specific but deprecated for most purposes. Oracle's COMMIT is implicit for DDL but explicit for DML.
 
-- **What Microsoft Evaluates**: Data integrity and deduplication strategy. Microsoft interviewers will ask about transaction control â€” wrapping DELETE in a transaction and verifying before COMMIT.
+- **What Microsoft Evaluates**: Data integrity and deduplication strategy. Microsoft interviewers will ask about transaction control — wrapping DELETE in a transaction and verifying before COMMIT.
 
 - **Follow-ups**: 1) Add a unique constraint to prevent future duplicates. 2) Handle case-insensitive duplicates. 3) Use Oracle's MERGE instead of DELETE.
 
@@ -208,7 +208,7 @@ ORDER BY new_id;
 
 - **Difficulty/Frequency**: Medium / High
 
-- **SQL Problem Statement**: Find first-day retention rate â€” fraction of players who logged in the day after their first login.
+- **SQL Problem Statement**: Find first-day retention rate — fraction of players who logged in the day after their first login.
 
 - **Interview Walkthrough**: Use MIN to find first login per player, then JOIN to find next-day logins. Microsoft values this for understanding user engagement metrics.
 

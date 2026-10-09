@@ -1,4 +1,4 @@
-# 10 — AWS Serverless
+# 10 â€” AWS Serverless
 
 ## Overview
 Lambda advanced, Step Functions, EventBridge, SAM framework. This lab provides hands-on experience with real Java implementations and cloud SDK patterns.
@@ -28,11 +28,11 @@ Lambda advanced, Step Functions, EventBridge, SAM framework. This lab provides h
 | FLASHCARDS.md | Spaced-repetition review cards |
 
 ## Key Topics
-- **Lambda** — Serverless compute functions
-- **Step Functions** — Workflow orchestration
-- **EventBridge** — Event bus service
-- **SAM** — Serverless Application Model
-- **DLQ** — Dead-letter queue management
+- **Lambda** â€” Serverless compute functions
+- **Step Functions** â€” Workflow orchestration
+- **EventBridge** â€” Event bus service
+- **SAM** â€” Serverless Application Model
+- **DLQ** â€” Dead-letter queue management
 
 ## Next Lab
 ? [AWS Observability](../3-aws-observability)

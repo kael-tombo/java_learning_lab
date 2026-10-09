@@ -4,7 +4,7 @@
 Generative Adversarial Networks works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.
 
 ## 2. Forward Pass
-Data flows through the model: input features are transformed through layers, each applying a linear transformation (weightsÃ—input+bias) followed by a non-linear activation function. The final layer produces predictions.
+Data flows through the model: input features are transformed through layers, each applying a linear transformation (weights×input+bias) followed by a non-linear activation function. The final layer produces predictions.
 
 ## 3. Loss Computation
 Predictions are compared to true targets using a loss function that quantifies the error. Common losses include mean squared error (regression) and cross-entropy (classification).

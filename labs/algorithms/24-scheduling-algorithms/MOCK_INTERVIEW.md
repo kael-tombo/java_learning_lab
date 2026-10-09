@@ -1,4 +1,4 @@
-# Mock Interview: Scheduling Algorithms — FCFS, SJF, Round Robin, EDF
+# Mock Interview: Scheduling Algorithms â€” FCFS, SJF, Round Robin, EDF
 
 ## Interview Details
 - **Topic**: Scheduling Algorithms

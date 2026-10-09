@@ -1,4 +1,4 @@
-# Mock Interview: Circular Buffers — Ring Buffer Implementations
+# Mock Interview: Circular Buffers â€” Ring Buffer Implementations
 
 ## Interview Details
 - **Topic**: Circular Buffers

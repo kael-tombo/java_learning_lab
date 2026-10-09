@@ -1,1 +1,1 @@
-# 03-calculus-for-ml — Math Foundation\n\nMathematical prerequisites and formalisms for 03-calculus-for-ml.
+# 03-calculus-for-ml â€” Math Foundation\n\nMathematical prerequisites and formalisms for 03-calculus-for-ml.

@@ -1,1 +1,1 @@
-# 04-optimization — Debugging\n\nStrategies and tools for debugging 04-optimization implementations.
+# 04-optimization â€” Debugging\n\nStrategies and tools for debugging 04-optimization implementations.

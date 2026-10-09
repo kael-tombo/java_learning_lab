@@ -1,4 +1,4 @@
-﻿# Common Mistakes â€” Time Ordering
+﻿# Common Mistakes — Time Ordering
 
 1. Assuming C(a) < C(b) implies causality (Lamport)
 2. Forgetting +1 in receive: max(counter, ts) + 1

@@ -1,4 +1,4 @@
-# Mock Interview: Advanced Sorting — Merge, Quick, Heap Sort
+# Mock Interview: Advanced Sorting â€” Merge, Quick, Heap Sort
 
 ## Interview Details
 - **Topic**: Advanced Sorting

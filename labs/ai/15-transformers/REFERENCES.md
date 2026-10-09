@@ -1,1 +1,1 @@
-# 15-transformers — References\n\nPapers, articles, and resources for 15-transformers.
+# 15-transformers â€” References\n\nPapers, articles, and resources for 15-transformers.

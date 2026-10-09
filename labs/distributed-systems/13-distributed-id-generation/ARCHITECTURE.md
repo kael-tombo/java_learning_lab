@@ -1,4 +1,4 @@
-﻿# Architecture â€” ID Generation
+﻿# Architecture — ID Generation
 
 ## Component Diagram
 `

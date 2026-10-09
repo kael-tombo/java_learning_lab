@@ -1,1 +1,1 @@
-# 16-embeddings — Architecture\n\nSystem design and architectural patterns for 16-embeddings.
+# 16-embeddings â€” Architecture\n\nSystem design and architectural patterns for 16-embeddings.

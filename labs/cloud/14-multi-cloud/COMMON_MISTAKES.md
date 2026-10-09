@@ -1,4 +1,4 @@
-# 14 — Multi-Cloud — Common Mistakes
+# 14 â€” Multi-Cloud â€” Common Mistakes
 
 ## 1. Over-Engineering
 Building complex abstractions before they are needed. Start simple, refactor when patterns emerge.

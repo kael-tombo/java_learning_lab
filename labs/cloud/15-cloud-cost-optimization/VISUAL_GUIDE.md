@@ -1,4 +1,4 @@
-# 15 — Cloud Cost Optimization — Visual Guide
+# 15 â€” Cloud Cost Optimization â€” Visual Guide
 
 ## System Overview
 

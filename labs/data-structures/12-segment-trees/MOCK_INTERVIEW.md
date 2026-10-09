@@ -1,4 +1,4 @@
-# Mock Interview: Segment Trees — Range Queries and Lazy Propagation
+# Mock Interview: Segment Trees â€” Range Queries and Lazy Propagation
 
 ## Interview Details
 - **Topic**: Segment Trees

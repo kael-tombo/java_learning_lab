@@ -94,5 +94,5 @@ Manages range-based partitions with split/merge support. Uses NavigableMap for e
 - Cache hash values where possible
 
 ### Memory Usage
-- Hash ring state: O(V Ã— N) where V = virtual nodes, N = physical nodes
+- Hash ring state: O(V × N) where V = virtual nodes, N = physical nodes
 - For V=150 and N=100: ~15,000 entries, minimal memory footprint

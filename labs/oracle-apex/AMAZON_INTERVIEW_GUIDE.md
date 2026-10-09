@@ -1,4 +1,4 @@
-﻿# Amazon Interview Guide â€” Oracle APEX Academy
+﻿# Amazon Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 
@@ -20,7 +20,7 @@ The Amazon interview process for database engineer and application developer rol
 
 Amazon looks for builders who can deliver results with bias for action. APEX experience is valued as evidence of ability to rapidly prototype and deliver production applications. Amazon's interview approach is heavily structured around their Leadership Principles (LPs). Every answer should tie back to one or more LPs.
 
-Amazon expects you to think at scale â€” even if your APEX experience was for small teams, discuss how your design decisions would scale. They also value deep diving into technical details, so be prepared to explain the internals of your solutions.
+Amazon expects you to think at scale — even if your APEX experience was for small teams, discuss how your design decisions would scale. They also value deep diving into technical details, so be prepared to explain the internals of your solutions.
 
 ### Key Areas Assessed
 
@@ -46,7 +46,7 @@ Amazon expects you to think at scale â€” even if your APEX experience was f
 
 - **SQL Problem Statement**: For each product category, find the product with the highest total sales amount. Return category name, product name, and total sales. If there are ties, return all tied products.
 
-- **Interview Walkthrough**: Amazon loves this problem because it maps directly to their e-commerce business. Join products, sales, and categories. Aggregate sales by product within category using SUM. Use RANK() to find the top seller(s) per category. The RANK function handles ties naturally â€” if two products have the same total sales, both are returned.
+- **Interview Walkthrough**: Amazon loves this problem because it maps directly to their e-commerce business. Join products, sales, and categories. Aggregate sales by product within category using SUM. Use RANK() to find the top seller(s) per category. The RANK function handles ties naturally — if two products have the same total sales, both are returned.
 
 - **SQL Solution**:
 
@@ -88,7 +88,7 @@ ORDER BY category_name;
 
 - **SQL Problem Statement**: Find customers who have purchased at least one unit of every product in the 'Electronics' category. Return customer name and the number of electronics products purchased.
 
-- **Interview Walkthrough**: This is a relational division problem â€” find customers for whom there is no product in the electronics category that they haven't bought. Use a double NOT EXISTS or GROUP BY with COUNT and HAVING. Amazon needs this type of analysis for recommendation systems.
+- **Interview Walkthrough**: This is a relational division problem — find customers for whom there is no product in the electronics category that they haven't bought. Use a double NOT EXISTS or GROUP BY with COUNT and HAVING. Amazon needs this type of analysis for recommendation systems.
 
 - **SQL Solution**:
 
@@ -114,7 +114,7 @@ HAVING COUNT(DISTINCT p.product_id) = (
 - **Oracle-Specific Syntax**: Oracle supports MINUS operator (same as EXCEPT) for an elegant alternative:
 SELECT customer_name FROM customers c WHERE NOT EXISTS (SELECT product_id FROM products p JOIN categories cat ON p.category_id = cat.category_id WHERE cat.category_name = 'Electronics' MINUS SELECT oi.product_id FROM orders o JOIN order_items oi ON o.order_id = oi.order_id WHERE o.customer_id = c.customer_id);
 
-- **What Amazon Evaluates**: Relational division thinking â€” Amazon needs to find "customers who bought from all subcategories" for its recommendation engine. Understanding of set operations (MINUS/EXCEPT) shows depth.
+- **What Amazon Evaluates**: Relational division thinking — Amazon needs to find "customers who bought from all subcategories" for its recommendation engine. Understanding of set operations (MINUS/EXCEPT) shows depth.
 
 - **Follow-ups**: 1) Find customers who bought from ALL categories. 2) Find customers who bought at least 3 products from every category. 3) Optimize for a product catalog of 10M+ items.
 
@@ -126,7 +126,7 @@ SELECT customer_name FROM customers c WHERE NOT EXISTS (SELECT product_id FROM p
 
 - **Difficulty/Frequency**: Medium / High
 
-- **SQL Problem Statement**: Given a login_attempts table with attempt_id, user_id, ip_address, attempt_time, and success_flag (Y/N), write a query to identify brute-force attacks â€” defined as 5+ failed attempts from the same IP address within any 15-minute window.
+- **SQL Problem Statement**: Given a login_attempts table with attempt_id, user_id, ip_address, attempt_time, and success_flag (Y/N), write a query to identify brute-force attacks — defined as 5+ failed attempts from the same IP address within any 15-minute window.
 
 - **Interview Walkthrough**: This is a sliding window problem. Use Oracle's analytic functions with RANGE BETWEEN INTERVAL for temporal sliding windows. Amazon prioritizes security and this scenario mirrors their threat detection systems.
 
@@ -169,7 +169,7 @@ ORDER BY max_attempts DESC, ip_address;
 
 - **SQL Problem Statement**: Write a query to mask PII for customer support agents. Mask email addresses by showing first character and domain (j***@example.com). Mask credit card numbers by showing only last 4 digits.
 
-- **Interview Walkthrough**: Use Oracle's string manipulation functions â€” SUBSTR, INSTR, RPAD/LPAD. Oracle provides powerful built-in functions for data masking at the query level.
+- **Interview Walkthrough**: Use Oracle's string manipulation functions — SUBSTR, INSTR, RPAD/LPAD. Oracle provides powerful built-in functions for data masking at the query level.
 
 - **SQL Solution**:
 
@@ -233,7 +233,7 @@ ORDER BY order_day;
 
 - **Oracle-Specific Syntax**: TRUNC(date) truncates to midnight. EXTRACT(YEAR/MONTH FROM date) is standard. Oracle's ROWS UNBOUNDED PRECEDING is standard SQL.
 
-- **What Amazon Evaluates**: Understanding of running totals with reset â€” essential for financial reporting. Amazon expects clean handling of date boundaries.
+- **What Amazon Evaluates**: Understanding of running totals with reset — essential for financial reporting. Amazon expects clean handling of date boundaries.
 
 - **Follow-ups**: 1) Add a rolling 7-day average alongside the running total. 2) Handle months with no sales. 3) Aggregate by week with the same monthly reset logic.
 

@@ -1,1 +1,1 @@
-# 15-transformers — Internals\n\nDetailed internal mechanics and implementation details.
+# 15-transformers â€” Internals\n\nDetailed internal mechanics and implementation details.

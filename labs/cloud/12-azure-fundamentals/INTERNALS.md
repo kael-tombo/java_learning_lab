@@ -1,4 +1,4 @@
-# 12 — Azure Fundamentals — Internals
+# 12 â€” Azure Fundamentals â€” Internals
 
 ## Internal Architecture
 

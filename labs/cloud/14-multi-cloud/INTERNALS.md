@@ -1,4 +1,4 @@
-# 14 — Multi-Cloud — Internals
+# 14 â€” Multi-Cloud â€” Internals
 
 ## Internal Architecture
 

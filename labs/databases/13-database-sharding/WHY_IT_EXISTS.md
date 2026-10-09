@@ -55,7 +55,7 @@ Distributed databases exist because data growth is exponential and hardware capa
 
 In 2000, a 1TB database was large. In 2026, many applications generate 1TB daily. Without distributed architectures, every growing application eventually hits a wall.
 
-This is not an optimizationâ€”it's a fundamental requirement for building systems that can grow without bound. It represents the practical application of the divide-and-conquer principle to data management.
+This is not an optimization—it's a fundamental requirement for building systems that can grow without bound. It represents the practical application of the divide-and-conquer principle to data management.
 
 ## Why It's Not Going Away
 - **Data continues to grow**: IoT, AI, video, real-time analytics

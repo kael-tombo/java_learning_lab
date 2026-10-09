@@ -1,4 +1,4 @@
-# Mock Interview: Parallel Algorithms — Fork-Join and Parallel Sorting
+# Mock Interview: Parallel Algorithms â€” Fork-Join and Parallel Sorting
 
 ## Interview Details
 - **Topic**: Parallel Algorithms

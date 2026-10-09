@@ -1,4 +1,4 @@
-# Mock Interview: van Emde Boas Tree — O(log log U) Operations
+# Mock Interview: van Emde Boas Tree â€” O(log log U) Operations
 
 ## Interview Details
 - **Topic**: van Emde Boas Tree

@@ -1,4 +1,4 @@
-﻿# Visual Guide â€” Time Ordering
+﻿# Visual Guide — Time Ordering
 
 ## Lamport Clock Flow
 `
@@ -22,7 +22,7 @@ P1: [3,4,1] <--ack--- P2: [3,4,1]
 "@
 
 W "INTERNALS.md" @"
-# Internals â€” Time Ordering
+# Internals — Time Ordering
 
 ## Lamport Clock
 - 4 bytes int counter (or 8 bytes long)

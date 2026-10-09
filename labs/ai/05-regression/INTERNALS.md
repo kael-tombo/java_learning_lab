@@ -1,1 +1,1 @@
-# 05-regression — Internals\n\nDetailed internal mechanics and implementation details.
+# 05-regression â€” Internals\n\nDetailed internal mechanics and implementation details.

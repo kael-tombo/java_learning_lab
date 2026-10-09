@@ -1,4 +1,4 @@
-# 12 — Azure Fundamentals
+# 12 â€” Azure Fundamentals
 
 ## Overview
 Azure VMs, Blob Storage, Azure SQL, AKS, managed identities. This lab provides hands-on experience with real Java implementations and cloud SDK patterns.
@@ -28,11 +28,11 @@ Azure VMs, Blob Storage, Azure SQL, AKS, managed identities. This lab provides h
 | FLASHCARDS.md | Spaced-repetition review cards |
 
 ## Key Topics
-- **Azure VMs** — Virtual machine compute
-- **Blob Storage** — Object storage
-- **Azure SQL** — Managed relational database
-- **AKS** — Azure Kubernetes Service
-- **Managed Identities** — Azure AD authentication
+- **Azure VMs** â€” Virtual machine compute
+- **Blob Storage** â€” Object storage
+- **Azure SQL** â€” Managed relational database
+- **AKS** â€” Azure Kubernetes Service
+- **Managed Identities** â€” Azure AD authentication
 
 ## Next Lab
 ? [GCP Fundamentals](../5-gcp-fundamentals)
