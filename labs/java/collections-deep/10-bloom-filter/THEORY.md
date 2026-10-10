@@ -1,165 +1,121 @@
-# Bloom Filter — Theoretical Foundation
+# Bloom Filter Deep Dive — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-Bit array, hash functions, false positive probability, optimal size calculator, counting Bloom filter
+A Bloom filter answers "is x in the set?" with **no false negatives and a
+tunable false-positive rate**, using ~10 bits per element instead of storing
+the elements at all. Structure: an `m`-bit array (all zero) plus `k`
+independent hash functions. To add x, set bits `h₁(x) … hₖ(x)`. To query x,
+answer "possibly present" iff all `k` bits are set — a single zero bit is
+proof of absence.
 
-### 2. Theoretical Foundation
-The Bloom Filter is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+There is no `java.util` Bloom filter (Guava has one; the JDK doesn't), so this
+lab builds it from scratch — which is also how you learn why the parameters
+interact the way they do.
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+## The False-Positive Formula (derived, not quoted)
 
-### 3. Algorithmic Details
+After inserting n elements with k hashes into m bits:
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+1. P(a given bit is still 0) = `(1 − 1/m)^(kn) ≈ e^(−kn/m)`.
+2. A false positive needs all k probed bits set:
+   **p = (1 − e^(−kn/m))^k**.
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+For the canonical sizing (n = 10 000 elements at p = 1%):
 
-### 4. Trade-offs
+| k | measured FPR class | formula value |
+|---|-------------------|---------------|
+| 1 | ~9.9% | 0.0991 |
+| 3 | ~1.9% | 0.0194 |
+| 5 | ~1.1% | 0.0111 |
+| 7 | ~1.0% | 0.0100 |
+| 10 | ~1.3% | 0.0130 |
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+Too few hashes → each query checks too few bits (easy to get lucky). Too many
+→ the array saturates and every query finds its bits set. The minimum sits at
+the optimum below (all values recomputed for this doc — see CODE_DEEP_DIVE
+snippet 3, which measures them empirically).
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+## Optimal Parameters (both derived by minimizing p)
 
-### 5. Mathematical Basis
+- **Hashes**: `k = (m/n)·ln 2`. At m/n ≈ 9.6 bits per element, k ≈ 6.64 → 7.
+- **Size**: `m = −n·ln p / (ln 2)²`. For n = 10 000, p = 0.01: m ≈ 95 851
+  bits ≈ **12 KB**. Ten thousand strings in 12 kilobytes with 99% query
+  accuracy — that's the entire appeal.
+- At optimal k, exactly half the bits are set (`e^(−kn/m) = 1/2`), and
+  `p = (1/2)^k = 0.5^6.64 ≈ 0.01`. The filter is a half-full bit array; the
+  information-theoretic reading is that each element costs `k = −log₂ p`
+  bits of evidence.
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+Rule of thumb: **~10 bits per element per 1% FPR decade** (1% → 9.6 bits,
+0.1% → 14.4 bits, each extra decimal digit costs ~4.8 bits/element).
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+## Double Hashing: k Functions from 2 (Kirsch–Mitzenmacher)
 
-## Summary
-The Bloom Filter represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+Computing k independent hashes is wasteful. The standard construction needs
+only two:
 
-## Key Theorems
+```java
+g_i(x) = h1(x) + i * h2(x)  (mod m),   i = 0 .. k-1
+```
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+Kirsch and Mitzenmacher (2006) showed this preserves the asymptotic false-
+positive rate — no need for k hash evaluations. The implementation splits one
+64-bit mix (e.g. SplitMix64-style finalizer over `hashCode`) into two 32-bit
+halves. Constraint: `h2` must be odd (else the probe sequence has period < m
+and never visits half the array); force `h2 | 1`.
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+## What a Bloom Filter Cannot Do
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+- **No deletion** — clearing bits could unset a bit shared with another
+  element, creating false negatives. (Counting Bloom filters replace bits
+  with 4-bit counters: +1 on add, −1 on remove, query `counter > 0`. Costs
+  4× memory, counters can overflow/underflow if misused.)
+- **No enumeration** — the elements aren't stored; you can't iterate or count
+  (`size` is unknowable from the bits alone).
+- **No false-negative freedom under saturation** — the guarantee "no false
+  negatives" assumes the filter was sized for its load. Insert 10× the
+  designed n and p → ~1: the math degrades continuously, it doesn't throw.
+- **Hash quality is load-bearing** — `String.hashCode()` (31-multiplier,
+  weak low bits) directly as `h1`/`h2` correlates the probes. Always run the
+  raw hash through a finalizer (xor-shift/multiply avalanche) first.
 
-## Key Insights
+## Complexity
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+| Operation | Cost | Notes |
+|-----------|------|-------|
+| add | O(k) bit sets | k ≈ 7 typical |
+| query (mightContain) | O(k) bit tests | early exit on first zero |
+| memory | m bits, fixed at construction | never grows |
+| union | O(m/word) OR | same (m, k, hash) required |
+| intersection | NOT closable | AND of filters overestimates differently; size unknown |
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+Union deserves emphasis: OR-ing two filters with identical parameters yields
+the filter of the union — the only composable sketch in the collections
+family. This is why distributed systems (Cassandra, Bigtable/HBase, Chrome
+Safe Browsing) ship them: each node builds locally, the coordinator ORs.
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+## Counting Variant and Alternatives
 
+- **Counting Bloom filter**: 4-bit counters per cell; supports remove;
+  overflow at 15 must be guarded (saturating add) or it wraps into false
+  negatives.
+- **Cuckoo filter** (Fan et al., 2014): stores fingerprints in a cuckoo hash
+  table; supports deletion, slightly better space for p < 3%, but fails past
+  load ~95% and needs fingerprint size tuned to p.
+- **Quotient filter / XOR filter**: static-set successors with better cache
+  behavior (XOR filters are immutable — build once, query fast).
 
-## Further Exploration
+Pick Bloom when: set membership only, additions only, tiny memory, and a 1%
+error budget is fine. Reach for the alternatives when deletion or enumeration
+enters the requirements.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Key Invariants
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. A zero bit at any of x's k positions ⟺ x was never added (no false
+   negatives) — the only hard guarantee.
+2. At optimal k, fraction of set bits ≈ 1/2 after n insertions.
+3. `p = (1 − e^(−kn/m))^k` predicts measured FPR within sampling noise when
+   hashes are uniform — non-uniform hashes break the formula before they
+   break the code.
+4. Filters are mergeable by OR **iff** (m, k, hash functions) are identical.
