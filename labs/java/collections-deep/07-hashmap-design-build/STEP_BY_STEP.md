@@ -1,161 +1,35 @@
-# Build Your Own HashMap — Step-by-Step Implementation
+# Step by Step: Probing by Hand
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab07/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab07/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+Table n=8 (mask 7). Spreads given as already-mixed indices.
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
+1. `put(A→1)`, idx 1. Slot 1 empty → insert. `[., A, ., ., ., ., ., .]`
+2. `put(B→2)`, idx 1. Slot 1 = A ≠ B → probe 2, empty → insert.
+   Run forms: slots 1–2 occupied.
+3. `put(C→3)`, idx 2. Slots 2 (B), 3 empty → insert at 3. Run 1–3.
+4. `get(B)`: idx 1 → A, probe 2 → hit. 2 steps.
+5. `remove(A)`: probe finds A at 1 → mark DELETED. `[., ✝, B, C, ...]`
+6. `get(C)`: idx 2 → B, probe 3 → hit. Passes no tombstone here.
+7. `get(B)`: idx 1 → DELETED (continue!) → 2 → hit. Deletion intact.
+8. `put(D→4)`, idx 1. Probe: 1 is tombstone (remember), 2 = B, 3 = C,
+   4 empty → insert D at first tombstone (slot 1). Reuse ✓.
+   `[., D, B, C, ...]`, tombstones back to 0.
+9. Watch the trigger: with cap 0.7, n=8 allows 5 live+tombstone. The 6th
+   insert doubles to 16 and rehashes only live entries — runs dissolve
+   because `h & 15` spreads wider than `h & 7`.
 
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab07;
+Failure drill: skip step 5's tombstone (null the slot instead) and `get(B)`
+from idx 1 hits EMPTY at 1 → false miss. That single wrong null is the
+entire reason tombstones exist.
+## Bonus trace: resize at n=8, cap 0.7
 
-import java.util.Objects;
+Live: B@2, C@3, D@1, E@5, F@6 (5 entries, 0 tombstones). Trigger:
+(5+0)/8 = 0.625 — insert G hashing to 2:
 
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
+1. Probe 2 (B), 3 (C), 4 empty → insert G@4. Now 6/8 = 0.75 > 0.7.
+2. `resize(16)`: fresh table, rehash each live key via `h & 15`.
+   Suppose new indices: D@1, B@2, G@4, C@11, E@5, F@14 — the old run
+   1–4 shatters because bit 3 of the hash now participates.
+3. `size` recounted to 6, tombstones 0. Old table dropped as a whole.
 
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
-
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
-
-## Step 4: Implement Core Operations
-
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
-
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
-
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
-
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
-
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Note what did NOT happen: no slot copied position-for-position, no
+tombstone transferred, no spread re-applied to spread values.

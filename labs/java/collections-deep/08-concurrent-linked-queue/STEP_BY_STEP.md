@@ -1,161 +1,33 @@
-# ConcurrentLinkedQueue — Step-by-Step Implementation
+# Step by Step: Lock-Free Offer and Poll
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab08/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab08/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+Queue: head → H(dummy, item=null) → A(1) → B(2), tail → H (stale by 2).
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
+## offer(C)
 
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab08;
+1. Snapshot `t = tail = H`. `p = t = H`.
+2. `q = p.next = A` (non-null) → advance `p = A`, `q = B` → advance
+   `p = B`, `q = null`. True end found.
+3. `CAS(B.next: null → C)` succeeds — C is now a member (linearized).
+4. `p (B) != t (H)` → `casTail(H, B)` — hop two at a time; tail now B
+   (still one behind C — allowed).
+5. State: H → A → B → C. Tail at B. Next offer walks one step. Fine.
 
-import java.util.Objects;
+## poll()
 
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
+1. Snapshot `h = head = H`. `p = H`: item null (dummy) → advance, `q = A`.
+2. `p = A`: item 1, live → `casItem(1, null)`. Suppose success → return 1.
+3. `p (A) != h (H)` → `updateHead(H, A)`; self-link H (`H.next = H`) so
+   stragglers restart and GC reclaims H.
+4. State: head → A(dead) → B(2) → C. Next poll skips A (null item).
 
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+## Contended poll drill
 
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
+Two threads at B simultaneously: both read item 2, both `casItem(2,null)`.
+Hardware admits one. Winner returns 2; loser sees null, advances to C.
+Neither blocks; loser's cost is one extra node visit.
 
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
+## Self-link restart drill
 
-## Step 4: Implement Core Operations
-
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
-
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
-
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
-
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
-
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+A straggler holding H walks `H.next = H` → `p == q` → abandons the walk,
+re-reads `head` (now A), continues from live chain. No infinite loop, no
+use-after-free.

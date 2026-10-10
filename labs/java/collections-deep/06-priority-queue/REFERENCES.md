@@ -1,118 +1,37 @@
-# PriorityQueue — References
+# References: PriorityQueue
 
-## Official Documentation
-- [Java Collections Framework Overview](https://docs.oracle.com/javase/tutorial/collections/)
-- [HashMap JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html)
-- [Java Language Specification, Chapter 17](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)
-- [JEP Index](https://openjdk.org/jeps/0)
+- OpenJDK source: `src/java.base/share/classes/java/util/PriorityQueue.java`
+  — `siftUp`/`siftDown`, `heapify`, `removeAt`, growth via
+  `ArraysSupport.newLength`.
+- OpenJDK source: `src/java.base/share/classes/java/util/concurrent/PriorityBlockingQueue.java`
+  — the lock-based thread-safe sibling.
+- J. W. J. Williams, "Algorithm 232 — Heapsort", *CACM* 7(6), 1964 — the
+  binary heap and sift operations.
+- R. W. Floyd, "Algorithm 245 — Treesort 3", *CACM* 7(12), 1964 — O(n)
+  bottom-up heap construction.
+- Cormen et al., *Introduction to Algorithms* (CLRS), Ch. 6 "Heapsort" —
+  sift correctness, heapify analysis, heap vs sorted-array trade-offs.
+- Bloch & Gafter, *Java Puzzlers* / Bloch, *Effective Java* (Item 14,
+  "Consider implementing Comparable") — ordering contracts the heap relies
+  on.
+- Goetz et al., *Java Concurrency in Practice* — why unsynchronized
+  collections + fail-fast iterators are not a concurrency strategy.
+- `java.util.Queue`, `java.util.Comparator` javadoc — `offer` vs `add`,
+  `poll` vs `remove`, `peek` vs `element` null/throw matrix.
+## Javadoc entry points
 
-## Books
-- **Effective Java, 4th Edition** — Joshua Bloch
-- **Java Concurrency in Practice** — Brian Goetz
-- **Modern Java in Action** — Raoul-Gabriel Urma
-- **Core Java, 12th Edition** — Cay S. Horstmann
-- **Algorithm Design Manual** — Steven Skiena
-- **Introduction to Algorithms (CLRS)** — Cormen, Leiserson, Rivest, Stein
+- `java.util.PriorityQueue` — constructor contracts (`initialCapacity < 1`
+  rejection), Queue-method null/throw matrix (`offer` vs `add`, `poll` vs
+  `remove`, `peek` vs `element`).
+- `java.util.Queue` and `java.util.Collection` — `addAll` bulk path that
+  heapifies instead of offering one by one.
+- `java.util.Comparator` (`reverseOrder`) — the one-line max-heap switch.
 
-## Research Papers
-- "The Java Memory Model" — Manson, Pugh, Adve (POPL 2005)
-- "Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms" — Michael, Scott (1996)
-- "A Scalable Lock-Free Hash Table" — Triplett, McKenney, Walpole, Wienand (2010)
+## Further reading
 
-## Blog Posts and Articles
-- [Baeldung: Java Collections Guide](https://www.baeldung.com/java-collections)
-- Inside Java: Collections Framework
-- [Shipilev: Java Memory Model Pragmatics](https://shipilev.net/blog/2016/close-encounters-of-jmm-kind/)
-- [Mechanical Sympathy](https://mechanical-sympathy.blogspot.com/)
-
-## Tools
-- [JMH (Java Microbenchmark Harness)](https://github.com/openjdk/jmh)
-- [JOL (Java Object Layout)](https://openjdk.org/projects/code-tools/jol/)
-- [async-profiler](https://github.com/async-profiler/async-profiler)
-- [VisualVM](https://visualvm.github.io/)
-- [Eclipse MAT](https://eclipse.dev/mat/)
-- [GCeasy](https://gceasy.io/)
-
-## Related Labs
-- Previous lab in module
-- Next lab in module
-- Performance Deep Dive labs
-- Concurrency Deep Dive labs
-- JVM Deep Dive labs
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Sedgewick & Wayne, *Algorithms* (4th ed.), Ch. 2 "Priority Queues" —
+  binary-heap API, swim/sink (their names for siftUp/siftDown), heapsort.
+- OpenJDK `ArraysSupport.newLength` — the shared growth routine behind the
+  +2-below-64 / 50%-above rule.
+- *Java Concurrency in Practice*, Ch. 5 — `PriorityBlockingQueue` as the
+  concurrent counterpart and why its `peek` still locks.

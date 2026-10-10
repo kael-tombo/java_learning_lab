@@ -1,120 +1,40 @@
-# ArrayList Deep Dive — Quiz
+# Quiz: ArrayList Deep Dive
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in ArrayList Deep Dive?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1. What capacities follow 10 under 1.5x growth?
+<details><summary>Answer</summary>
+10 -> 15 -> 22 -> 33 (each <code>oldCap + (oldCap &gt;&gt; 1)</code>, computed
+in <code>ArraysSupport.newLength</code> with min-growth and max-size clamps).
+</details>
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## Q2. What allocates on `new ArrayList<>()` vs `new ArrayList<>(0)`?
+<details><summary>Answer</summary>
+Neither allocates. The no-arg ctor uses <code>DEFAULTCAPACITY_EMPTY_ELEMENTDATA</code>
+(first add -> 10); the zero-arg uses <code>EMPTY_ELEMENTDATA</code> (grows to
+exactly what is needed). Two sentinels, two first-grow behaviors.
+</details>
 
-## Question 3: Memory
-How much additional memory overhead does ArrayList Deep Dive have per element (approximately)?
+## Q3. What does fastRemove do with the freed slot, and why?
+<details><summary>Answer</summary>
+Sets <code>elementData[--size] = null</code>: without it the array would pin a
+logically-removed object and leak memory until overwritten.
+</details>
 
-## Question 4: Concurrency
-Is ArrayList Deep Dive safe for concurrent access without external synchronization? Explain why or why not.
+## Q4. Which method does NOT bump modCount, and what breaks because of it?
+<details><summary>Answer</summary>
+<code>set(i, e)</code> — value replacement is not structural. An iterator will
+not detect a concurrent <code>set</code>; only add/remove/grow trip fail-fast.
+</details>
 
-## Question 5: Scalability
-How does ArrayList Deep Dive perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q5. How many moves do 1M unsized appends cost vs presized?
+<details><summary>Answer</summary>
+~3M word moves unsized (geometric series at 1.5x) vs exactly 1M presized —
+same O(n), 3x constant. That gap is the entire case for
+<code>ensureCapacity</code>.
+</details>
 
-## Question 6: Design
-Why was ArrayList Deep Dive designed this way? What alternatives were considered during its development?
-
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
-
-## Question 8: Comparison
-Compare ArrayList Deep Dive with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
-
-## Question 9: Real-World
-Describe a real-world scenario where ArrayList Deep Dive is the optimal choice.
-Describe a scenario where it would be a poor choice.
-
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
-
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Q6. Why is ArrayList still thread-unsafe under synchronizedList for iteration?
+<details><summary>Answer</summary>
+The wrapper syncs each method, but iteration spans many calls — you must still
+hold <code>synchronized (list)</code> around the loop, or use
+CopyOnWriteArrayList (copy-on-write, snapshot iterators).
+</details>

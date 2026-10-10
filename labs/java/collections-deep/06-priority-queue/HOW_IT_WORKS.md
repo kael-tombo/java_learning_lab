@@ -1,146 +1,35 @@
-# PriorityQueue — How It Works
+# How PriorityQueue Works
 
-## Mechanical Explanation
+## The array is the tree
 
-### The Core Mechanism
-PriorityQueue works by organizing data in a specific structure that enables efficient operations.
-The fundamental mechanism relies on a clever mapping between keys and storage locations.
+No `Node` class exists. For `[1, 3, 2, 5, 9, 8, 7]`:
 
-### Step-by-Step Execution
+- 1 is root. Children of 0: indices 1 (3) and 2 (2). Children of 1: 3 (5),
+  4 (9). Every parent compares ≤ its children — that is the whole invariant.
 
-#### Insertion
-When a new key-value pair is inserted:
-1. The key's hash code is computed using key.hashCode()
-2. A supplemental hash is applied to improve distribution across buckets
-3. The hash is mapped to an index in the backing array using bitwise AND
-4. If the bucket is empty, a new node is created and placed there
-5. If occupied, the chain is traversed:
-   - Key exists -> update value, return old value
-   - Key not found -> append new node at end of chain
-6. After insertion, if size exceeds threshold, the array is resized
+## Insert: siftUp
 
-#### Lookup
-When a key is looked up:
-1. Hash code computed and mapped to index using same algorithm
-2. Bucket at that index is examined
-3. If empty -> key not found, return null
-4. If occupied, chain is traversed comparing keys using equals()
-5. Key found -> return associated value
-6. End of chain -> return null
+`offer(0)` on that heap: place 0 at index 7, compare with parent
+`(7-1) >>> 1 = 3` (value 5) → move 5 down; k=3, parent 1 (value 3) →
+move 3 down; k=1, parent 0 (value 1) → 0 < 1? No: 0 < 1, so keep moving;
+k=0, loop guard `k > 0` stops. Root becomes 0. Three comparisons, O(log n).
 
-#### Resizing
-When resizing is triggered:
-1. New array of twice the capacity is allocated
-2. Each entry is rehashed (or reassigned) to the new array
-3. For hash-based structures, entries split into low/high buckets based on hash & oldCapacity
-4. Threshold is recalculated: newCapacity * loadFactor
-5. Old array becomes eligible for garbage collection
+## Remove: last-to-root + siftDown
 
-### Concurrency Model
-For concurrent variants:
-- **Lock-Free**: CAS operations on head/tail pointers avoid blocking
-- **Lock-Based**: Segmented locks reduce contention compared to single lock
-- **Snapshot**: Copy-on-write semantics for safe iteration without locking
+`poll()` saves 1, moves 7 (last) to index 0, then sifts down: children of
+0 are 3 and 2 → smaller is 2 → pull 2 up; continue at index 2 with
+children 8 and 7 → pull 7 up; 7 (leaf level) fits. New root 2.
 
-### Memory Model
-The Java Memory Model guarantees:
-- **Visibility**: volatile fields ensure cross-thread visibility of latest writes
-- **Atomicity**: Reference assignment is atomic for all types except long/double
-- **Ordering**: final fields guarantee initialization safety
-- **Happens-Before**: Monitor enter/exit, volatile read/write establish ordering
+## Heapify: why bulk load is O(n)
 
-### Interaction with Garbage Collection
-- **Short-lived objects**: Iterators, temporary nodes collected in young generation
-- **Tenured objects**: Long-lived collections promoted to old generation
-- **GC roots**: Static collections prevent GC of all referenced objects
-- **Reference types**: WeakHashMap uses weak references for automatic cleanup
+Leaves (n/2 nodes) need no work; their parents need ≤ 1 sift step, next
+level ≤ 2, and so on. Total Σ (n/2^(h+1))·h ≤ 2n. `addAll` exploits this;
+repeated `offer` does not.
 
-### Performance Characteristics
+## What the heap does NOT do
 
-#### When It's Fast
-- Uniform hash distribution: most buckets have 0-1 elements
-- Sequential access patterns: good cache locality
-- Appropriate initial capacity: no resize overhead
-
-#### When It's Slow
-- Poor hash distribution: long chains, O(n) lookup
-- Frequent resizing: repeated array allocation and rehashing
-- Concurrent contention: threads competing for locks
-- Cache misses: pointer chasing through linked list chains
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- It never sorts the array. Iteration, `toString`, `toArray` all show heap
+  layout. Sorted output = repeated `poll()` (O(n log n) total).
+- `remove(x)` finds by `equals` scan, swaps the last element into the hole,
+  then tries `siftDown` first and `siftUp` if the element did not move
+  (`es[i] == moved` check in `removeAt`).

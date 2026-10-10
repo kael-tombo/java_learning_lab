@@ -1,120 +1,39 @@
-# TreeMap & TreeSet — Quiz
+# Quiz: TreeMap / TreeSet
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in TreeMap & TreeSet?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1. What are RED and BLACK in the source, literally?
+<details><summary>Answer</summary>
+<code>RED = false; BLACK = true</code> — plain booleans on each Entry, not an
+enum. New inserts are red; the root is forced black.
+</details>
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## Q2. Is `"a"` already in a case-insensitive TreeSet containing `"A"`?
+<details><summary>Answer</summary>
+Yes — identity is <code>compareTo/compare == 0</code>, not
+<code>equals()</code>. Adding <code>"a"</code> is a silent no-op returning
+false; <code>equals</code> disagrees with the set here by design.
+</details>
 
-## Question 3: Memory
-How much additional memory overhead does TreeMap & TreeSet have per element (approximately)?
+## Q3. What null check runs on an EMPTY map, and why?
+<details><summary>Answer</summary>
+<code>addEntryToEmptyMap</code> calls <code>compare(key, key)</code> first —
+forcing the ClassCastException/NPE for bad keys before anything is inserted,
+so a doomed put fails atomically on size 0 too.
+</details>
 
-## Question 4: Concurrency
-Is TreeMap & TreeSet safe for concurrent access without external synchronization? Explain why or why not.
+## Q4. What does subMap return — and what happens when you write through it?
+<details><summary>Answer</summary>
+A live bounded view (NavigableSubMap), not a copy. Writes go into the backing
+tree (range-checked against the parent's bounds); tree writes show in the view.
+</details>
 
-## Question 5: Scalability
-How does TreeMap & TreeSet perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q5. How does iteration walk without a sorted array copy?
+<details><summary>Answer</summary>
+Via on-the-fly <code>successor()</code> links: O(n) total, O(log n) worst per
+first next-step, fail-fast on modCount drift like other collections.
+</details>
 
-## Question 6: Design
-Why was TreeMap & TreeSet designed this way? What alternatives were considered during its development?
-
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
-
-## Question 8: Comparison
-Compare TreeMap & TreeSet with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
-
-## Question 9: Real-World
-Describe a real-world scenario where TreeMap & TreeSet is the optimal choice.
-Describe a scenario where it would be a poor choice.
-
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
-
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Q6. Bound the height of a 1M-entry tree and the rotations per insert.
+<details><summary>Answer</summary>
+Height &lt;= 2*log2(n+1) ~= 40. At most 2 rotations per insert (3 per delete);
+recoloring does the rest — balancing is O(1) rotations after an O(log n) find.
+</details>

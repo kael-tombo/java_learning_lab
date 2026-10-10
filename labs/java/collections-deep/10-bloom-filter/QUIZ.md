@@ -1,120 +1,40 @@
-# Bloom Filter — Quiz
+# Quiz: Bloom Filter
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Bloom Filter?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1. State the FPR formula and derive it in three steps.
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+**A.** p = (1 − e^(−kn/m))^k. (1) P(bit still 0) = (1−1/m)^(kn) ≈
+e^(−kn/m). (2) P(bit set) ≈ 1 − e^(−kn/m). (3) All k probes set → raise
+to k.
 
-## Question 3: Memory
-How much additional memory overhead does Bloom Filter have per element (approximately)?
+## Q2. Derive optimal k and m.
 
-## Question 4: Concurrency
-Is Bloom Filter safe for concurrent access without external synchronization? Explain why or why not.
+**A.** Minimize p over k → e^(−kn/m) = 1/2 → k = (m/n)·ln 2 (half the bits
+set, p = (1/2)^k). Invert with p = (1/2)^k → m = −n·ln p/(ln 2)².
 
-## Question 5: Scalability
-How does Bloom Filter perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q3. Canonical numbers for n=10000, p=0.01?
 
-## Question 6: Design
-Why was Bloom Filter designed this way? What alternatives were considered during its development?
+**A.** m ≈ 95 851 bits (~12 KB), k = 7. Measured FPR ladder: k=1: 9.9%,
+3: 1.9%, 5: 1.1%, 7: 1.0%, 10: 1.3% (rises past optimum).
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## Q4. How does double hashing produce k positions from 2?
 
-## Question 8: Comparison
-Compare Bloom Filter with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+**A.** g_i = h1 + i·h2 (mod m), Kirsch–Mitzenmacher 2006: same asymptotic
+FPR without k hash evaluations. h2 forced odd so probes cover the array;
+modulo in long arithmetic.
 
-## Question 9: Real-World
-Describe a real-world scenario where Bloom Filter is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Q5. Why no deletion or enumeration?
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+**A.** Bits are shared — clearing one can unset another element's evidence
+(false negative). Elements aren't stored, so nothing to iterate or count
+(size unknowable from bits).
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## Q6. When is union valid, and how?
 
+**A.** Bitwise OR, iff (m, k, hash functions) identical on both sides.
+Result = filter of the set union. AND-intersection is not closable.
 
-## Further Exploration
+## Q7. What breaks if you skip the hash finalizer?
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**A.** Raw `hashCode` low-bit weakness correlates probes; measured FPR
+overshoots the formula. The uniform-hash assumption is the formula's
+precondition.
