@@ -108,7 +108,6 @@ labs/java/collections-deep/08-concurrent-linked-queue/STEP_BY_STEP.md,65,65,100,
 labs/java/collections-deep/08-concurrent-linked-queue/VISUAL_GUIDE.md,58,58,100,0
 labs/java/collections-deep/08-concurrent-linked-queue/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/collections-deep/09-copyonwrite-arraylist/ARCHITECTURE.md,73,73,100,0
-labs/java/collections-deep/09-copyonwrite-arraylist/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/collections-deep/09-copyonwrite-arraylist/COMMON_MISTAKES.md,83,83,100,0
 labs/java/collections-deep/09-copyonwrite-arraylist/DEBUGGING.md,76,76,100,0
 labs/java/collections-deep/09-copyonwrite-arraylist/FLASHCARDS.md,77,77,100,0
@@ -854,7 +853,6 @@ labs/java/collections-deep/06-priority-queue/README.md,72,70,97,0
 labs/java/collections-deep/07-hashmap-design-build/README.md,72,70,97,0
 labs/java/collections-deep/08-concurrent-linked-queue/README.md,72,70,97,0
 labs/java/collections-deep/09-copyonwrite-arraylist/README.md,72,70,97,0
-labs/java/collections-deep/09-copyonwrite-arraylist/THEORY.md,98,95,97,0
 labs/java/collections-deep/10-bloom-filter/README.md,72,70,97,0
 labs/java/collections-deep/10-bloom-filter/THEORY.md,98,95,97,0
 labs/java/concurrency-deep/01-thread-lifecycle/README.md,72,70,97,0
