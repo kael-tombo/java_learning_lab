@@ -1,165 +1,148 @@
 # Lock Framework (AQS) — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-AQS (AbstractQueuedSynchronizer), CLH lock queue, ConditionObject, ReentrantLock vs synchronized benchmarks
+`AbstractQueuedSynchronizer` (AQS) is the single engine behind
+`ReentrantLock`, `Semaphore`, `CountDownLatch`, `ReentrantReadWriteLock`,
+`StampedLock`'s cousins, and most of `java.util.concurrent`: an `int state`
+plus a FIFO queue of waiter nodes. Subclasses define *what the state means*
+(lock count, permits, latch count) via `tryAcquire`/`tryRelease`; AQS owns
+*queuing, parking, and wakeup*. Learn AQS once, read every synchronizer ever.
 
-### 2. Theoretical Foundation
-The Lock Framework (AQS) is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## State + Queue: The Two Fields That Matter
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+```java
+private volatile int state;              // subclass-defined meaning
+private transient volatile Node head;    // queue head (dummy on init)
+private transient volatile Node tail;    // queue tail
+```
 
-### 3. Algorithmic Details
+- `state` is the *only* shared mutable data (a lock count of 0/1…n, a permit
+  count, a latch count). All mutation goes through CAS
+  (`compareAndSetState`).
+- `head`/`tail` anchor a doubly-linked CLH-variant queue of `Node`s, one per
+  blocked thread. The head is always a dummy (its thread already acquired or
+  is acquiring); the tail is where newcomers enqueue.
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+CLH lineage: the original Craig–Landin–Hagersten lock spins on a
+predecessor's flag; AQS inverts it — each node parks (`LockSupport.park`)
+until its *predecessor* releases and unparks it. Park-instead-of-spin is what
+keeps an AQS queue cheap under contention (no cache-line spinning storm).
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+## The Acquire Path (exclusive, interruptible-optional)
 
-### 4. Trade-offs
+```
+tryAcquire(arg) succeeds? → done (fast path, no queue)
+else → enqueue Node → loop:
+         predecessor == head? → tryAcquire again (may succeed now)
+         else → park (LockSupport), unless interrupted/timed-out
+on wakeup → predecessor == head? tryAcquire → success: become head, unpark successor
+```
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+Three subtleties:
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+1. **Barging**: a newcomer calls `tryAcquire` *before* queuing. If the lock
+   just released, the newcomer can steal it from the queued head — higher
+   throughput (no context switch to the waiter), unbounded unfairness
+   (starvation legal). This is the documented nonfair default.
+2. **Cancellation**: interrupt/timeout unlinks the node (`CANCELLED` status)
+   and the queue self-heals — successors re-link to a live predecessor
+   (`cleanQueue`). Cancel storms don't corrupt the queue, they just churn it.
+3. **Head never holds application state**: after acquiring, the thread sets
+   itself as head and its old node becomes garbage. `head` is a *position
+   marker*, and `getFirstQueuedThread()`-style introspection walks from it.
 
-### 5. Mathematical Basis
+## Fair vs Nonfair (ReentrantLock source-verified, JDK 23)
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+```java
+// NonfairSync: first attempt is UNGUARDED — barges even with a queue
+if (compareAndSetState(0, 1)) { setExclusiveOwnerThread(current); return true; }
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+// FairSync: acquires only if reentrant or queue is EMPTY
+if (c == 0) {
+    if (!hasQueuedThreads() && compareAndSetState(0, 1)) { ... }
+}
+```
 
-## Summary
-The Lock Framework (AQS) represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+- Nonfair: higher throughput, possible starvation. Default for a reason —
+  the barging thread is already running (hot caches, no unpark latency).
+- Fair: FIFO-ish ordering (`hasQueuedThreads` check), measurably slower in
+  microbenchmarks (extra queue check + unpark latency on the handoff), still
+  not *strictly* FIFO (a releaser can re-barge between `unlock` and the
+  successor's wakeup — "fair" means no *overt* barging, not a hard queue
+  discipline).
+- Reentrancy in both: owner re-entry just `setState(c+1)` (overflow checked:
+  `Maximum lock count exceeded` past 2³¹−1).
 
-## Key Theorems
+## Node Status Bits (JDK 23 — the scheme changed!)
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+Older JDKs used `waitStatus` with `SIGNAL = -1, CONDITION = -2, PROPAGATE =
+-3, CANCELLED = 1`. JDK 23's rewritten AQS uses a `status` int with **bitwise
+Unsafe ops** (`getAndBitwiseAndInt`) and new constants:
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+```java
+static final int WAITING   = 1;            // must be 1
+static final int COND      = 2;            // in a condition wait
+static final int CANCELLED = 0x80000000;   // must be negative
+```
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+(Verified in `AbstractQueuedSynchronizer.java` from the JDK 23 sources.)
+Any guide quoting SIGNAL/PROPAGATE describes the pre-rewrite internals —
+the *protocol* (predecessor signals successor, cancelled nodes unlink) is
+unchanged; only the encoding moved. State this carefully in reviews: the
+algorithm is stable, the bit layout is not API.
 
-## Key Insights
+## ConditionObject: AQS's Wait-Set
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+`ConditionObject` (`lock.newCondition()`) moves a node from the sync queue
+to a *condition queue* on `await()`, fully releasing `state` (reentrancy
+depth saved and restored), and back on `signal()`:
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+- `await()` = enqueue-on-condition + release-all + park; wakeup =
+  re-enqueue-on-sync + re-acquire (may BLOCK behind others — signal hands
+  off *eligibility*, not the lock).
+- `signal()` moves the *longest-waiting* condition node to the sync queue;
+  `signalAll()` moves all. Same while-loop discipline as `Object.wait`
+  (spurious wakeups allowed by spec).
+- `awaitUninterruptibly`, `awaitNanos`, `awaitUntil` mirror the `Object`
+  variants with nanosecond precision and deadline semantics.
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+One lock, many conditions = the fix for the "single wait-set" limitation of
+`synchronized` (lab 02): producer/consumer pairs get separate `notFull`/
+`notEmpty` queues (exactly how `ArrayBlockingQueue` is built).
 
+## Shared Mode: Semaphores, Latches, ReadWriteLocks
 
-## Further Exploration
+Exclusive mode (`lock()`) grants one owner; shared mode (`acquireShared`)
+grants while `tryAcquireShared` returns non-negative:
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+- `Semaphore(5)`: state = permits; acquire decrements, release increments;
+  multiple holders coexist; `release()` can *increase* beyond the initial
+  count (permits are not capped — a bug source when releases outnumber
+  acquires).
+- `CountDownLatch(n)`: state = count; `await` blocks until 0; **one-shot**
+  (no reset — that's `CyclicBarrier`/`Phaser`, lab 09).
+- `ReentrantReadWriteLock`: state packs *two* counters (high 16 bits reader
+  count, low 16 exclusive count — 65 535 max each; overflow past that throws).
+  Read-hold + write-request = deadlock by design (lock *downgrading*
+  write→read is safe; *upgrading* read→write deadlocks).
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## AQS vs synchronized (when to reach for the framework)
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+Same table shape as lab 02, one level deeper: AQS adds timeouts
+(`tryLock(t)`), interruption (`lockInterruptibly`), fairness choice,
+multiple conditions, and shared-mode primitives — at the cost of explicit
+`unlock` in `finally` (no block structure to save you) and weaker JIT
+transparency (library calls vs bytecodes; lock elision doesn't apply).
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## Key Invariants
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. `state` transitions only via CAS (or under exclusive hold for reentrancy
+   bumps); queue links only via CAS/volatile writes.
+2. Head is always a dummy; a thread becomes head exactly when it acquires.
+3. Cancelled nodes unlink without breaking the chain (successors skip to
+   live predecessors).
+4. `signal` transfers queue membership, never lock ownership — re-acquisition
+   still races.
+5. Fair mode checks queue emptiness before CAS; nonfair barges first and
+   asks never.
