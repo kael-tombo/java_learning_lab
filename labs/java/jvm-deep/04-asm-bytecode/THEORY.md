@@ -1,202 +1,105 @@
-# THEORY — ASM Bytecode Manipulation
+# ASM Bytecode Manipulation — Theoretical Foundation
 
-## Overview
+## Orientation: Why This Lab Uses `java.lang.classfile`
 
-ASM is a lightweight, high-performance Java bytecode manipulation framework. It uses the **Visitor pattern** to traverse and transform class files.
+This lab is named for ASM (OW2's visitor-framework library, the industry
+standard for bytecode engineering since 2002) — but ASM is an external
+dependency, and every claim here is verified by execution. So the *runnable*
+surface is the JDK's own successor API, **`java.lang.classfile`** (preview
+since 22 — JEP 457; second preview in 23 — built for exactly ASM's use
+cases), with an explicit ASM↔classfile concept map below. The ideas
+(visitors/builders, parse→transform→emit, max-stack computation) transfer
+directly; only the class names differ.
 
----
+Build flags for every snippet: `javac --release 23 --enable-preview` /
+`java --enable-preview` (same preview rig as lab 10's verifier).
 
-## 1. Core Architecture
+## The Visitor Idea (ASM) and the Builder Idea (classfile API)
 
-### Visitor Pattern
+ASM parses a class by *events*: `ClassReader` walks the bytes and calls
+`visitMethod`, `visitFieldInsn`, `visitInsn`... on your `ClassVisitor`
+subclass; `ClassWriter` re-emits. You never hold "the class" — you handle a
+stream of callbacks (SAX for bytecode).
 
-ASM uses the Visitor pattern to separate structure traversal from operations:
+`java.lang.classfile` inverts the ergonomics without changing the power:
 
-```java
-ClassReader cr = new ClassReader("MyClass");
-ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+| ASM | `java.lang.classfile` |
+|---|---|
+| `ClassReader.accept(visitor)` | `ClassFile.of().parse(bytes)` → `ClassModel` (random-access view) |
+| `ClassVisitor`/`MethodVisitor` callbacks | `ClassTransform`/`MethodTransform` lambdas `(builder, element) -> ...` |
+| `ClassWriter` + `visitEnd` → `toByteArray()` | `ClassFile.of().build(name, builder -> ...)` → `byte[]`, or `.transform(model, t)` |
+| `COMPUTE_MAXS`/`COMPUTE_FRAMES` flags | always-on: builders compute stack/locals and frames unless told otherwise |
+| `Opcodes.ASM9` version gate | `ClassFileVersion` on build; preview flag at compile time |
 
-// Visitor chain: ClassReader → ClassVisitor → MethodVisitor → ...
-ClassVisitor cv = new ClassVisitor(Opcodes.ASM9, cw) {
-    @Override
-    public MethodVisitor visitMethod(int access, String name, 
-                                     String desc, String sig, String[] exc) {
-        MethodVisitor mv = cv.visitMethod(access, name, desc, sig, exc);
-        return new MethodVisitor(Opcodes.ASM9, mv) {
-            @Override
-            public void visitInsn(int opcode) {
-                if (opcode == Opcodes.RETURN) {
-                    mv.visitFieldInsn(Opcodes.GETSTATIC, 
-                        "java/lang/System", "out", "Ljava/io/PrintStream;");
-                    mv.visitLdcInsn("Method exit");
-                    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL,
-                        "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-                }
-                mv.visitInsn(opcode);
-            }
-        };
-    }
-};
-cr.accept(cv, 0);
-byte[] modified = cw.toByteArray();
-```
+Dropping a method in ASM = override `visitMethod`, return `null` for the
+target. In classfile API = skip `builder.with(element)` for it in the
+transform lambda. Same operation, opposite control flow.
 
-### Core Visitors
-
-| Visitor | Purpose |
-|---------|---------|
-| `ClassVisitor` | Visit class structure (fields, methods, annotations) |
-| `MethodVisitor` | Visit method bytecode instructions |
-| `FieldVisitor` | Visit fields |
-| `AnnotationVisitor` | Visit annotations |
-| `TypeAnnotationVisitor` | Visit type annotations |
-
----
-
-## 2. ClassReader / ClassWriter
-
-### ClassReader
+## Parse → Inspect → Transform → Emit
 
 ```java
-// Read from file
-ClassReader cr = new ClassReader("MyClass");
-
-// From byte array
-ClassReader cr = new ClassReader(bytes);
-
-// Skip debug info, frames for speed
-ClassReader cr = new ClassReader(bytes);
-cr.accept(cv, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+ClassFile cf = ClassFile.of();
+ClassModel model = cf.parse(bytes);                    // read
+model.methods().forEach(m -> ...);                     // inspect
+byte[] out = cf.transform(model, (b, e) -> {           // transform
+    if (drop(e)) return;                               //   (skip = delete)
+    b.with(e);                                         //   (pass = keep)
+});
 ```
 
-### ClassWriter
+`ClassModel` is a *view* over the original bytes (lazy, cheap); `build`
+materializes new bytes. Elements (`MethodModel`, `FieldModel`, attributes)
+are immutable values — transformation never mutates in place, it selects
+into a new builder. This is the same persistent-data-structure discipline
+as `String` transforms, applied to classes.
+
+## Generating Code: CodeBuilder Ops Mirror Bytecode 1:1
 
 ```java
-// COMPUTE_MAXS: auto-calculate max_stack/max_locals
-// COMPUTE_FRAMES: auto-generate stack map frames
-ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+cb.withMethodBody("add", MethodTypeDesc.of(CD_int, CD_int, CD_int),
+        ClassFile.ACC_PUBLIC | ClassFile.ACC_STATIC,
+        cob -> cob.iload(0).iload(1).iadd().ireturn());
 ```
 
----
+Each builder call appends one instruction (`iload(0)` → `iload_0`
+form chosen automatically); labels (`newLabel`/`labelBinding`) +
+branches (`if_icmpge(label)`, `goto_(label)`) express control flow; the
+builder derives `max_stack`/`max_locals` and StackMapTable frames itself
+(ASM's `COMPUTE_MAXS`/`COMPUTE_FRAMES`, but default-on rather than
+opt-in — the historical bug class of hand-computed frames simply doesn't
+exist here).
 
-## 3. MethodVisitor — Instruction Manipulation
+## What the API Deliberately Won't Do
 
-### Instruction Visiting
+- **No verification bypass**: generated classes verify like any other —
+  inconsistent builder output fails at `defineClass` link time
+  (`VerifyError`), never silently.
+- **No version lies**: `ClassFileVersion.of(61, 0)` stamps the major; the
+  runtime still enforces it (a 67-stamped class on a 21 JVM is rejected no
+  matter which API produced it).
+- **No load-time weaving built in**: retransformation needs
+  `java.lang.instrument` agents; the classfile API is the *editing*
+  library, not the *attachment* mechanism (same split as ASM + agent).
 
-```java
-public class MyMethodVisitor extends MethodVisitor {
-    @Override
-    public void visitInsn(int opcode) {
-        if (opcode == Opcodes.INVOKEVIRTUAL) {
-            // Intercept virtual calls
-        }
-        super.visitInsn(opcode);
-    }
-}
-```
+## ASM Concepts That Still Matter ( mapped)
 
-### Common Opcodes
+- **Tree API (`ClassNode`) vs streaming**: ASM offers both (object model
+  for whole-class rewrites, visitors for streaming). classfile API's
+  `ClassModel` view + immutable elements play the tree role; transforms
+  play the streaming role — one API covers both, which is why the mapping
+  table above has fewer rows on the right.
+- **`COMPUTE_FRAMES` cost**: ASM computes frames by classpath analysis
+  (needs the hierarchy); classfile builders track types as they emit, so
+  frames fall out of construction. Consequence: generated code verifies
+  more often on the first try.
+- **Version gates (`ASM9`, `ASM8`...)**: ASM rejects newer class files than
+  its model; classfile API versions with the JDK (preview churn is the
+  current equivalent — pin your snippets, as this lab does to 23).
 
-| Category | Opcodes |
-|----------|---------|
-| **Constants** | `iconst_m1`, `iconst_0-5`, `bipush`, `sipush`, `ldc` |
-| **Load/Store** | `iload`, `istore`, `aload`, `astore`, `lload`, `lastore` |
-| **Arithmetic** | `iadd`, `isub`, `imul`, `idiv`, `irem` |
-| **Logic** | `iand`, `ior`, `ixor`, `ishl`, `ishr` |
-| **Stack** | `dup`, `pop`, `swap`, `dup2` |
-| **Control** | `goto`, `ifeq`, `ifne`, `iflt`, `if_icmpeq`, `tableswitch` |
-| **Calls** | `invokevirtual`, `invokestatic`, `invokespecial`, `invokeinterface`, `invokedynamic` |
-| **Objects** | `new`, `newarray`, `checkcast`, `instanceof` |
-| **Fields** | `getfield`, `putfield`, `getstatic`, `putstatic` |
-| **Arrays** | `newarray`, `anewarray`, `iaload`, `iastore` |
-| **Return** | `return`, `ireturn`, `areturn`, `lreturn`, `dreturn`, `freturn` |
+## Key Invariants
 
----
-
-## 4. Practical Patterns
-
-### 1. Method Timing Adapter
-
-```java
-class TimingAdapter extends MethodVisitor {
-    @Override
-    public void visitCode() {
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
-        super.visitCode();
-    }
-
-    @Override
-    public void visitInsn(int opcode) {
-        if (opcode >= IRETURN && opcode <= RETURN) {
-            mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-            mv.visitLdcInsn("Method took: ");
-            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false);
-            mv.visitInsn(LSUB);
-            mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(J)V", false);
-        }
-        super.visitInsn(opcode);
-    }
-}
-```
-
-### 2. Null Check Injection
-
-```java
-public class NullCheckAdapter extends MethodVisitor {
-    @Override
-    public void visitVarInsn(int opcode, int var) {
-        if (opcode == ALOAD) {
-            mv.visitInsn(DUP);
-            mv.visitInsn(ACONST_NULL);
-            mv.visitJumpInsn(IF_ACMPNE, new Label());
-            mv.visitTypeInsn(NEW, "java/lang/NullPointerException");
-            mv.visitInsn(DUP);
-            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/NullPointerException", "<init>", "()V", false);
-            mv.visitInsn(ATHROW);
-            mv.visitLabel(new Label());
-        }
-        super.visitVarInsn(opcode, var);
-    }
-}
-```
-
----
-
-## 5. ClassWriter Flags
-
-| Flag | Purpose |
-|------|---------|
-| `COMPUTE_MAXS` | Auto-calculate max_stack/max_locals |
-| `COMPUTE_FRAMES` | Auto-generate stack map frames |
-| `COMPOSITE` | Combine with other flags |
-
-```java
-ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-```
-
----
-
-## 6. Debugging Tips
-
-```bash
-# Verify modified class
-java -Xverify:all -cp modified.jar MyClass
-
-# Dump bytecode
-javap -c -p -v MyClass
-
-# ASMifier: generate ASM code from existing class
-java -cp asm.jar org.objectweb.asm.util.ASMifier MyClass
-```
-
----
-
-## Common Pitfalls
-
-| Pitfall | Solution |
-|---------|----------|
-| Stack map frames missing | Use `COMPUTE_FRAMES` |
-| max_stack/max_locals wrong | Use `COMPUTE_MAXS` |
-| Stack map frames invalid | Ensure `COMPUTE_FRAMES` + valid bytecode |
-| Local variable table missing | Use `ClassWriter.COMPUTE_MAXS` |
-| Verify error | Run `java -Xverify:all` |
+1. Parse views are lazy over the input bytes; builds materialize new arrays.
+2. Elements are immutable — transforms select, never mutate.
+3. Dropping = withholding from the builder; ordering otherwise preserved.
+4. Builders compute stack/locals/frames; humans specify instructions.
+5. Output verifies under the same rules as `javac` output (lab 01/03).

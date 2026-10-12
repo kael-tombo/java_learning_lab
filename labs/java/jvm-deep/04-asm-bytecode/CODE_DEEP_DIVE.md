@@ -1,114 +1,242 @@
-# ASM Bytecode — Code Deep Dive
+# ASM Bytecode Manipulation — Code Deep Dive
 
-## Main Implementation
+**Build flags (required, JDK 23): `javac --release 23 --enable-preview` /
+`java --enable-preview`** (JEP 466 second preview). Verified with the
+preview verifier; see lab 10 for the rig.
 
-### Class Structure
-The main class implements the core data structure and operations:
+## 1. Parse Your Own Class File
 
-**Package**: com.javalab.lab04
-
-### Fields
-- Internal storage array or structure
-- Size counter to track number of elements
-- Modification counter for fail-fast behavior
-- Capacity and threshold values for resizing
-
-### Constructor
-Initializes the data structure with default or specified capacity and load factor.
-
-### Core Methods
-
-#### add/put Operation
-1. Hash the key to determine bucket index
-2. Handle existing entries (update or chain)
-3. Check load factor and resize if needed
-4. Increment size and modification counters
-
-#### get/contains Operation
-1. Hash the key to determine bucket index
-2. Search the bucket chain or tree
-3. Return the value or null if not found
-
-#### remove Operation
-1. Hash the key to determine bucket index
-2. Remove the entry from the chain
-3. Decrement size counter
-4. Return the removed value (or null)
-
-### Helper Methods
-- **hash()**: Applies supplemental hash function to improve distribution
-- **resize()**: Doubles capacity and rehashes all entries
-- **getNode()**: Core lookup logic used by get() and containsKey()
-
-### Inner Classes
-- **Node**: Holds key, value, hash, and next pointer for linked list chaining
-- **TreeNode**: Extended Node for red-black tree bins (treeified buckets)
-- **EntrySet/KeySet/Values**: View collections backed by the main structure
-
-## Code Walkthrough
-
-### Insertion Flow
-```
-put(key, value)
-  -> hash(key) -> index = (n - 1) & hash
-  -> if table[index] == null
-       create node and insert
-     else
-       traverse chain
-       if key found -> update value, return old
-       else -> insert at end of chain
-  -> if size > threshold -> resize()
-  -> return null
-```
-
-### Lookup Flow
-```
-get(key)
-  -> hash(key) -> index = (n - 1) & hash
-  -> if table[index] exists
-       traverse chain comparing hash and key (== or equals)
-       if found -> return value
-  -> return null
-```
-
-### Resize Flow
-```
-resize()
-  -> newCapacity = oldCapacity * 2
-  -> newThreshold = (int)(newCapacity * loadFactor)
-  -> newTable = new Node[newCapacity]
-  -> for each bucket in oldTable
-       split chain into lo/hi based on (hash & oldCapacity)
-       lo remains at same index
-       hi moves to index + oldCapacity
-  -> assign newTable to table
-```
-
-## Performance Considerations
-- **Initial capacity**: Choosing the right initial capacity prevents costly resizing operations
-- **Load factor tuning**: Lower = fewer collisions but more memory; Higher = less memory but more collisions
-- **Hash distribution**: The quality of the hash function directly impacts lookup performance
-- **Treeification**: Prevents O(n) worst-case from hash collision attacks
-
-## Implementation Details
-
-### Hash Function
 ```java
-static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+import java.lang.classfile.ClassFile;
+import java.lang.classfile.ClassModel;
+
+public class ParseOwn {
+    public static void main(String[] args) throws Exception {
+        byte[] bytes;
+        try (var in = ParseOwn.class.getResourceAsStream("/ParseOwn.class")) {
+            bytes = in.readAllBytes();
+        }
+        ClassModel model = ClassFile.of().parse(bytes);
+        System.out.println("this class = " + model.thisClass().asInternalName());
+        System.out.println("major version = " + model.majorVersion());
+        java.util.List<String> methods = new java.util.ArrayList<>();
+        for (var m : model.methods()) methods.add(m.methodName().stringValue());
+        System.out.println("methods = " + methods);
+        System.out.println("name correct: " + "ParseOwn".equals(model.thisClass().asInternalName()));
+        System.out.println("main present: " + methods.contains("main"));
+        System.out.println("init present (compiler-emitted): " + methods.contains("<init>"));
+        System.out.println("major in valid range: " + (model.majorVersion() >= 65));
+    }
 }
 ```
 
-### Index Calculation
-```java
-index = (capacity - 1) & hash  // Fast bitwise AND when capacity is power of 2
+Expected output (major varies by toolchain — elided):
+```
+this class = ParseOwn
+...
+methods = [<init>, main]
+name correct: true
+main present: true
+init present (compiler-emitted): true
+major in valid range: true
 ```
 
-## Debug Output Example
-When debugging, the internal state can reveal performance issues:
+`ClassModel` is a lazy view, not a copy: method iteration walks the
+original bytes. (`<init>` sorts first — methods appear in declaration
+order, and the compiler-emitted constructor precedes `main` in the table.
+The `...` elides the toolchain-dependent major line.)
+
+## 2. Generate a Class From Scratch and Run It
+
+```java
+import java.lang.classfile.ClassFile;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.MethodTypeDesc;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
+import static java.lang.constant.ConstantDescs.CD_int;
+
+public class GenerateAdd {
+    public static void main(String[] args) throws Throwable {
+        byte[] bytes = ClassFile.of().build(ClassDesc.of("Gen"),
+                cb -> cb.withMethod("add", MethodTypeDesc.of(CD_int, CD_int, CD_int),
+                        ClassFile.ACC_PUBLIC | ClassFile.ACC_STATIC,
+                        mb -> mb.withCode(
+                                cob -> cob.iload(0).iload(1).iadd().ireturn())));
+        System.out.println("generated bytes = " + bytes.length);
+        System.out.println("magic intact: " + (bytes[0] == (byte) 0xCA && bytes[1] == (byte) 0xFE));
+
+        Class<?> gen = MethodHandles.lookup().defineClass(bytes);
+        var mh = MethodHandles.lookup().findStatic(gen, "add",
+                MethodType.methodType(int.class, int.class, int.class));
+        int result = (int) mh.invokeExact(40, 2);
+        System.out.println("Gen.add(40, 2) = " + result);
+        System.out.println("generated code runs: " + (result == 42));
+    }
+}
 ```
-Size=1000, Capacity=1024, Load=0.98, Threshold=768
+
+Expected output (byte count is informative, not asserted — elided):
 ```
-A load of 0.98 indicates the table is nearly full and should have resized. This suggests
-the load factor or threshold calculation may have an issue.
+...
+magic intact: true
+Gen.add(40, 2) = 42
+generated code runs: true
+```
+
+Four builder calls emit a complete loadable class — no `max_stack` math, no
+frame computation, no constant-pool bookkeeping (all derived). The class
+loads through the standard `defineClass` path, so it verifies exactly like
+`javac` output.
+
+## 3. Transform: Drop a Method by Withholding It
+
+```java
+import java.lang.classfile.ClassFile;
+import java.lang.classfile.ClassModel;
+
+public class DropMethod {
+    public static void main(String[] args) throws Exception {
+        byte[] orig;
+        try (var in = DropMethod.class.getResourceAsStream("/DropMethod.class")) {
+            orig = in.readAllBytes();
+        }
+        ClassModel model = ClassFile.of().parse(orig);
+        byte[] slim = ClassFile.of().transform(model, (builder, element) -> {
+            if (element instanceof java.lang.classfile.MethodModel mm
+                    && mm.methodName().stringValue().equals("main")) return; // drop
+            builder.with(element);   // keep everything else
+        });
+        ClassModel slimModel = ClassFile.of().parse(slim);
+        java.util.List<String> methods = new java.util.ArrayList<>();
+        for (var m : slimModel.methods()) {
+            String nm = m.methodName().stringValue();
+            if (!nm.startsWith("lambda$")) methods.add(nm);  // skip synthetic linkage
+        }
+        System.out.println("methods after drop = " + methods);
+        System.out.println("main gone: " + !methods.contains("main"));
+        System.out.println("constructor kept: " + methods.contains("<init>"));
+        System.out.println("shrunk: " + (slim.length < orig.length));
+    }
+}
+```
+
+Expected output:
+```
+methods after drop = [<init>]
+main gone: true
+constructor kept: true
+shrunk: true
+```
+
+Dropping = withholding from the builder — the ASM equivalent of returning
+`null` from `visitMethod`. Everything else (pool entries, attributes,
+ordering) passes through untouched. (The `lambda$` filter earns its line:
+the transform lambda itself compiles to a synthetic `lambda$main$0` method
+*in this very class* — parsing your own bytecode shows the compiler's
+footprints too.)
+
+## 4. Branches With Labels: Generate max()
+
+```java
+import java.lang.classfile.ClassFile;
+import java.lang.classfile.ClassModel;
+import java.lang.classfile.Label;
+import java.lang.classfile.CodeBuilder;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.MethodTypeDesc;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
+import static java.lang.constant.ConstantDescs.CD_int;
+
+public class GenerateMax {
+    public static void main(String[] args) throws Throwable {
+        byte[] bytes = ClassFile.of().build(ClassDesc.of("GenMax"),
+                cb -> cb.withMethod("max", MethodTypeDesc.of(CD_int, CD_int, CD_int),
+                        ClassFile.ACC_PUBLIC | ClassFile.ACC_STATIC,
+                        mb -> mb.withCode(cob -> {
+                            Label elseL = cob.newLabel();
+                            cob.iload(0).iload(1);
+                            cob.if_icmpge(elseL);   // if a >= b, skip
+                            cob.iload(1).ireturn(); // else-branch: b
+                            cob.labelBinding(elseL);
+                            cob.iload(0).ireturn(); // a
+                        })));
+        Class<?> gen = MethodHandles.lookup().defineClass(bytes);
+        var mh = MethodHandles.lookup().findStatic(gen, "max",
+                MethodType.methodType(int.class, int.class, int.class));
+        int r1 = (int) mh.invokeExact(3, 7);
+        int r2 = (int) mh.invokeExact(9, 2);
+        System.out.println("max(3,7) = " + r1 + ", max(9,2) = " + r2);
+        System.out.println("both correct: " + (r1 == 7 && r2 == 9));
+    }
+}
+```
+
+Expected output:
+```
+max(3,7) = 7, max(9,2) = 9
+both correct: true
+```
+
+Labels abstract over byte offsets (`if_icmpge` + `labelBinding` — the
+builder resolves the jump distance), and frames for the merge point are
+derived, not declared. Hand-assembling this in ASM needs `visitLabel` +
+`COMPUTE_FRAMES` + hierarchy access; here it falls out of construction.
+
+## 5. Versions Round-Trip Through Parse
+
+```java
+import java.lang.classfile.ClassFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class VersionRoundTrip {
+    public static void main(String[] args) throws Exception {
+        Path dir = Files.createTempDirectory("ver");
+        Path src = dir.resolve("V17.java");
+        Files.writeString(src, "public class V17{}");
+        new ProcessBuilder("javac", "--release", "17", src.toString())
+                .redirectErrorStream(true).start().waitFor();
+        byte[] bytes = Files.readAllBytes(dir.resolve("V17.class"));
+
+        var model = ClassFile.of().parse(bytes);
+        System.out.println("parsed major = " + model.majorVersion());
+        System.out.println("matches raw bytes (61): " + (model.majorVersion() == 61));
+        int rawMajor = ((bytes[6] & 0xFF) << 8) | (bytes[7] & 0xFF);
+        System.out.println("model agrees with raw header: " + (model.majorVersion() == rawMajor));
+    }
+}
+```
+
+Expected output:
+```
+parsed major = 61
+matches raw bytes (61): true
+model agrees with raw header: true
+```
+
+The model API and the raw-byte header (lab 01, snippet 1) agree — two
+independent readers of the same struct. `ClassFileVersion` stamps on build
+complete the triangle (parse ↔ build ↔ raw), but stamping needs a build
+overload this lab doesn't need: the directional proof (parse == bytes) is
+the load-bearing one.
+
+## Common Pitfalls Encountered Here
+
+- **Compiling without `--enable-preview --release 23`** — the entire
+  `java.lang.classfile` package is invisible otherwise.
+- **Mutating elements** — they are immutable values; transforms select into
+  builders (snippet 3's withhold-to-delete).
+- **Hand-computing frames** — builders derive them; wrapping builder output
+  in manual StackMapTable attributes double-declares and fails verification.
+- **Forgetting `defineClass` verifies** — generated garbage dies at link
+  time with `VerifyError`, never silently (snippet 2's magic check is the
+  cheapest pre-screen).
+- **Assuming ASM API identity** — names differ (`ClassReader`→`parse`,
+  `ClassWriter`→`build`, visitors→transform lambdas); the operation graph
+  is what's shared.
+- **Version-stamping confusion** — the *parser* reports versions; the
+  *builder* defaults to current; explicit stamping is a separate overload.
