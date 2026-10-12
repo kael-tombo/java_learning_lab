@@ -1,165 +1,131 @@
 # Volatile Semantics — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-JSR-133 happens-before, memory barrier insertion (x86 vs ARM), atomicity vs visibility, DCL problem
+`volatile` gives a field two properties and nothing more:
 
-### 2. Theoretical Foundation
-The Volatile Semantics is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+1. **Visibility** — a write to a volatile field *happens-before* every
+   subsequent read of that field (JLS §17.4.5). No stale caches, ever.
+2. **Atomicity of access** — reads/writes of the volatile itself are atomic,
+   *including* `long` and `double` (JLS §17.7 permits tearing for
+   non-volatile 64-bit fields; `volatile` forbids it).
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+What it does **not** give: atomicity of *compound* actions. `volatile int
+count; count++` is a race — read, modify, write as three steps with no mutual
+exclusion. Visibility ≠ atomicity is the sentence this whole lab hangs on.
 
-### 3. Algorithmic Details
+## Happens-Before: The Four Rules You Use Daily (JLS §17.4)
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+1. **Program order**: within one thread, each action happens-before the next
+   in program order (as-if — the JVM may reorder invisibly as long as the
+   thread itself can't tell).
+2. **Volatile**: a write to volatile V happens-before every later read of V.
+3. **Monitor**: unlock of M happens-before later lock of M (lab 02's edge).
+4. **Thread lifecycle**: `start()` happens-before the thread's first action;
+   the thread's last action happens-before `join()` returns; interruption and
+   executor-submit/shutdown have their own edges (`java.util.concurrent`
+   documents one per action — "actions prior to submitting a Runnable
+   happen-before its execution").
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+Transitivity chains them: write X → write volatile V → read V → read X means
+the read of X sees the write. This *piggybacking* pattern (snippet 3) is how
+a single volatile flag safely publishes arbitrarily much non-volatile data.
 
-### 4. Trade-offs
+## What the Hardware Does (x86 vs ARM, qualitatively)
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+The JVM inserts memory barriers to implement the edges; the cost depends on
+the CPU's memory model:
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+- **x86 (TSO — strong model)**: loads are never reordered with loads, stores
+  never with stores. A volatile *read* is nearly free (no fence needed —
+  just no compiler reordering). A volatile *write* needs a StoreLoad fence
+  (HotSpot uses `xchg`, which implies `lock` prefix full barrier) — on the
+  order of ~10–20ns, comparable to an uncontended CAS.
+- **ARM/POWER (weak model)**: both directions need explicit fences
+  (`dmb ish` on ARMv8 for the full-fence cases). Volatile costs more there
+  than on x86 — which is why "volatile is cheap" benchmarks don't port.
 
-### 5. Mathematical Basis
+You never emit barriers yourself (`Unsafe`/`VarHandle` aside); the point is
+cost intuition: volatile reads ≈ plain reads on x86, volatile writes ≈
+fences everywhere.
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+## The Double-Checked Locking Story (why JSR-133 exists)
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+Pre-Java-5 DCL was broken:
 
-## Summary
-The Volatile Semantics represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+```java
+// BROKEN without volatile (pre-2004 semantics AND post-2004 without volatile)
+Helper helper;
+Helper get() {
+    if (helper == null) {                    // (1) unsynchronized read
+        synchronized (this) {
+            if (helper == null)
+                helper = new Helper();       // (2) construct + publish
+        }
+    }
+    return helper;
+}
+```
 
-## Key Theorems
+Without `volatile`, step (2)'s object construction (allocate → init fields →
+assign reference) can be *reordered* so the reference publishes before the
+fields initialize — a second thread passes check (1), reads a non-null but
+half-constructed object. JSR-133 (Java 5, 2004 — the memory-model rewrite by
+Pugh, Manson, Goetz and others) made `volatile` + the new happens-before
+rules fix it: declare `helper volatile`, and the write inside the lock
+happens-before every later read. The idiom is correct *only* with the
+keyword; `final`-field initialization safety (JLS §17.5) covers the
+immutable-fields case separately.
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+Modern guidance: DCL-with-volatile is correct but usually pointless —
+`static` holder idiom (initialization-on-demand, JVM class-init lock does
+the synchronization) or an enum singleton (Bloch, Effective Java Item 3)
+achieve the same with zero ceremony.
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+## volatile vs synchronized vs AtomicX vs VarHandle
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+| Need | Tool |
+|---|---|
+| Flag / state bit visible across threads | `volatile boolean` |
+| Publish an object graph once | `volatile` ref / `final` fields / static holder |
+| Counter, accumulator | `AtomicLong` / `LongAdder` (not `volatile` + `++`) |
+| Read-modify-write (CAS loops) | `AtomicReference.compareAndSet` |
+| Mutual exclusion over compound actions | `synchronized` / `Lock` |
+| Fine-grained ordering (acquire/release/opaque) | `VarHandle` modes |
 
-## Key Insights
+`VarHandle` (Java 9) exposes what `volatile` bundles: `getVolatile`/
+`setVolatile` (same as volatile access), `getAcquire`/`setRelease`
+(cheaper one-directional edges), `getOpaque`/`setOpaque` (visibility without
+ordering — progress without happens-before), `compareAndSet`/`getAndAdd`.
+Rule: stay with `volatile` until a profiler or an algorithm (seekable atomic
+index, sequence barriers à la Disruptor) forces you down a level.
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+## The volatile-Array Trap
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+`volatile int[] arr` makes the *reference* volatile; the *elements* are plain.
+`arr[0] = 1` from one thread is invisible to others until some real edge
+crosses. Element-level volatility needs `AtomicIntegerArray` (volatile
+semantics per element via Unsafe intrinsics) or a `VarHandle` over the array
+with `getVolatile`/`setVolatile`. This is a top-three volatile bug in the
+wild — the keyword sits next to the type and reads like it covers the
+contents.
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+## 64-bit Fields
 
+JLS §17.7: implementations *may* split non-volatile `long`/`double`
+accesses into two 32-bit halves (word tearing) — a reader can see half of
+one write and half of another. In practice no HotSpot port tears, but the
+*guarantee* exists only with `volatile`. Portable code never relies on
+"works on my CPU" here.
 
-## Further Exploration
+## Key Invariants
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Volatile write → later volatile read is a happens-before edge (with
+   transitivity through program order on both sides).
+2. `volatile` scales to exactly one access: compound actions need atomic
+   classes or locks.
+3. Reordering freedom ends at synchronization actions — the compiler/CPU may
+   reorder anything *except* across these edges (roof of the JMM).
+4. DCL is correct iff the field is volatile (or the holder idiom/enum is
+   used instead).
+5. Array volatility never extends to elements.
