@@ -23,7 +23,6 @@ labs/java/jvm-deep/01-class-file-format/STEP_BY_STEP.md,65,65,100,0
 labs/java/jvm-deep/01-class-file-format/VISUAL_GUIDE.md,58,58,100,0
 labs/java/jvm-deep/01-class-file-format/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/jvm-deep/02-class-loading/ARCHITECTURE.md,73,73,100,0
-labs/java/jvm-deep/02-class-loading/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/jvm-deep/02-class-loading/COMMON_MISTAKES.md,83,83,100,0
 labs/java/jvm-deep/02-class-loading/DEBUGGING.md,76,76,100,0
 labs/java/jvm-deep/02-class-loading/INTERNALS.md,92,92,100,0
@@ -1748,7 +1747,6 @@ labs/algorithms/data-structures/THEORY.md,75,46,61,0
 labs/data-science/analysis-deep/10-data-pipelines/THEORY.md,32,19,59,0
 labs/data-science/ml-pipelines-deep/01-feature-stores/THEORY.md,32,19,59,0
 labs/data-science/ml-pipelines-deep/06-model-monitoring/THEORY.md,32,19,59,0
-labs/java/jvm-deep/02-class-loading/THEORY.md,98,58,59,0
 labs/java/jvm-deep/07-gc-1-g1/THEORY.md,98,58,59,0
 labs/java/jvm-deep/08-gc-2-zgc/THEORY.md,98,58,59,0
 labs/java/jvm-deep/09-gc-3-shenandoah/THEORY.md,98,58,59,0

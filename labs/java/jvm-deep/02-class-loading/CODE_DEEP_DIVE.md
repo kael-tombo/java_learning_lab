@@ -1,114 +1,224 @@
 # Class Loading — Code Deep Dive
 
-## Main Implementation
+All snippets run on any JDK 9+ (verified on JDK 23), no dependencies.
 
-### Class Structure
-The main class implements the core data structure and operations:
+## 1. The Hierarchy Is Measurable (and Has No Extension Loader)
 
-**Package**: com.javalab.lab02
-
-### Fields
-- Internal storage array or structure
-- Size counter to track number of elements
-- Modification counter for fail-fast behavior
-- Capacity and threshold values for resizing
-
-### Constructor
-Initializes the data structure with default or specified capacity and load factor.
-
-### Core Methods
-
-#### add/put Operation
-1. Hash the key to determine bucket index
-2. Handle existing entries (update or chain)
-3. Check load factor and resize if needed
-4. Increment size and modification counters
-
-#### get/contains Operation
-1. Hash the key to determine bucket index
-2. Search the bucket chain or tree
-3. Return the value or null if not found
-
-#### remove Operation
-1. Hash the key to determine bucket index
-2. Remove the entry from the chain
-3. Decrement size counter
-4. Return the removed value (or null)
-
-### Helper Methods
-- **hash()**: Applies supplemental hash function to improve distribution
-- **resize()**: Doubles capacity and rehashes all entries
-- **getNode()**: Core lookup logic used by get() and containsKey()
-
-### Inner Classes
-- **Node**: Holds key, value, hash, and next pointer for linked list chaining
-- **TreeNode**: Extended Node for red-black tree bins (treeified buckets)
-- **EntrySet/KeySet/Values**: View collections backed by the main structure
-
-## Code Walkthrough
-
-### Insertion Flow
-```
-put(key, value)
-  -> hash(key) -> index = (n - 1) & hash
-  -> if table[index] == null
-       create node and insert
-     else
-       traverse chain
-       if key found -> update value, return old
-       else -> insert at end of chain
-  -> if size > threshold -> resize()
-  -> return null
-```
-
-### Lookup Flow
-```
-get(key)
-  -> hash(key) -> index = (n - 1) & hash
-  -> if table[index] exists
-       traverse chain comparing hash and key (== or equals)
-       if found -> return value
-  -> return null
-```
-
-### Resize Flow
-```
-resize()
-  -> newCapacity = oldCapacity * 2
-  -> newThreshold = (int)(newCapacity * loadFactor)
-  -> newTable = new Node[newCapacity]
-  -> for each bucket in oldTable
-       split chain into lo/hi based on (hash & oldCapacity)
-       lo remains at same index
-       hi moves to index + oldCapacity
-  -> assign newTable to table
-```
-
-## Performance Considerations
-- **Initial capacity**: Choosing the right initial capacity prevents costly resizing operations
-- **Load factor tuning**: Lower = fewer collisions but more memory; Higher = less memory but more collisions
-- **Hash distribution**: The quality of the hash function directly impacts lookup performance
-- **Treeification**: Prevents O(n) worst-case from hash collision attacks
-
-## Implementation Details
-
-### Hash Function
 ```java
-static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+public class LoaderTree {
+    public static void main(String[] args) {
+        ClassLoader app = ClassLoader.getSystemClassLoader();
+        ClassLoader platform = ClassLoader.getPlatformClassLoader();
+        System.out.println("bootstrap (String's loader) = " + String.class.getClassLoader());
+        System.out.println("platform name = " + platform.getName());
+        System.out.println("app name = " + app.getName());
+        System.out.println("app's parent is platform: " + (app.getParent() == platform));
+        System.out.println("platform's parent is bootstrap (null): " + (platform.getParent() == null));
+        System.out.println("this class loaded by app: "
+                + (LoaderTree.class.getClassLoader() == app));
+        System.out.println("hierarchy exhaustive (bootstrap<-platform<-app): true");
+    }
 }
 ```
 
-### Index Calculation
-```java
-index = (capacity - 1) & hash  // Fast bitwise AND when capacity is power of 2
+Expected output:
+```
+bootstrap (String's loader) = null
+platform name = platform
+app name = app
+app's parent is platform: true
+platform's parent is bootstrap (null): true
+this class loaded by app: true
+hierarchy exhaustive (bootstrap<-platform<-app): true
 ```
 
-## Debug Output Example
-When debugging, the internal state can reveal performance issues:
+The last line's contortion earns its keep: there is no fourth loader to
+print. Pre-9 diagrams with an extension rung describe a JVM that no longer
+exists (JEP 220).
+
+## 2. loadClass Doesn't Initialize; forName Does
+
+```java
+public class InitVsLoad {
+    public static class Payload {
+        static boolean initialized = false;
+        static { initialized = true; System.out.println("  <clinit> ran"); }
+    }
+
+    public static void main(String[] args) throws Exception {
+        ClassLoader loader = InitVsLoad.class.getClassLoader();
+
+        // Evidence is positional: NO "<clinit> ran" line appears before the
+        // next print (a reflective field read here would itself trigger init,
+        // so the absence of the side effect IS the observation).
+        Class<?> c1 = loader.loadClass("InitVsLoad$Payload");
+        System.out.println("after loadClass, <clinit> silent: true");
+
+        Class<?> c2 = Class.forName("InitVsLoad$Payload");
+        System.out.println("after forName, initialized flag: " + Payload.initialized);
+        System.out.println("same Class object: " + (c1 == c2));
+    }
+}
 ```
-Size=1000, Capacity=1024, Load=0.98, Threshold=768
+
+Expected output:
 ```
-A load of 0.98 indicates the table is nearly full and should have resized. This suggests
-the load factor or threshold calculation may have an issue.
+after loadClass, <clinit> silent: true
+  <clinit> ran
+after forName, initialized flag: true
+same Class object: true
+```
+
+`loadClass` links but defers `<clinit>` — proved by absence: no `<clinit>`
+line precedes the first print. `forName` initializes eagerly. Same `Class`
+object throughout: loading happened once, initialization is a separate,
+later event. (Deliberately, no reflective field read follows `loadClass` —
+reflection itself is active use and would trigger `<clinit>`, destroying
+the observation. Absence-of-side-effect is the instrument here.)
+
+## 3. Same Bytes, Two Loaders: ClassCastException on Identical Names
+
+```java
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class SplitIdentity {
+    static class DirLoader extends ClassLoader {
+        final Path dir;
+        DirLoader(Path dir) { super(null); this.dir = dir; }   // NO parent: full isolation (see note)
+        @Override protected Class<?> findClass(String name) throws ClassNotFoundException {
+            Path f = dir.resolve(name + ".class");
+            if (!Files.isRegularFile(f)) throw new ClassNotFoundException(name);
+            try {
+                byte[] b = Files.readAllBytes(f);
+                return defineClass(name, b, 0, b.length);
+            } catch (java.io.IOException e) {
+                throw new ClassNotFoundException(name, e);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        Path dir = Files.createTempDirectory("split");
+        Path src = dir.resolve("Widget.java");
+        Files.writeString(src, "public class Widget { public int x = 5; }");
+        new ProcessBuilder("javac", "-d", dir.toString(), src.toString())
+                .redirectErrorStream(true).start().waitFor();
+
+        Class<?> w1 = new DirLoader(dir).loadClass("Widget");
+        Class<?> w2 = new DirLoader(dir).loadClass("Widget");
+        System.out.println("same bytes, different Class objects: " + (w1 != w2));
+        Object o1 = w1.getDeclaredConstructor().newInstance();
+        boolean castFails = false;
+        try {
+            w2.cast(o1);   // identical name — but different runtime type
+        } catch (ClassCastException e) {
+            castFails = true;
+        }
+        System.out.println("cross-loader cast rejected: " + castFails);
+        System.out.println("each instance answers its own loader: "
+                + (o1.getClass().getClassLoader() != ClassLoader.getSystemClassLoader()));
+    }
+}
+```
+
+Expected output:
+```
+same bytes, different Class objects: true
+cross-loader cast rejected: true
+each instance answers its own loader: true
+```
+
+Note `super(null)`: a null parent means *bootstrap-only* delegation, so even
+`java.lang.Object` inside `Widget` resolves (bootstrap provides it) while
+`Widget` itself stays loader-local. Production isolating loaders usually
+keep the app loader as parent and override `findClass` only — the null
+parent here makes the split total and the demonstration airtight. (Every
+"deployed the same jar twice, now X can't cast to X" incident is this
+picture.)
+
+## 4. Compile-Time Constants Never Initialize
+
+```java
+public class ConstNoInit {
+    public static class Config {
+        static { System.out.println("  <clinit> ran (unexpected if inlined)"); }
+        static final int PORT = 8080;          // compile-time constant
+        static int computed = Integer.parseInt("9090");  // NOT constant
+    }
+
+    public static void main(String[] args) {
+        System.out.println("PORT = " + Config.PORT);   // inlined: no init
+        System.out.println("reading computed triggers init: "
+                + (Config.computed == 9090));
+    }
+}
+```
+
+Expected output:
+```
+PORT = 8080
+  <clinit> ran (unexpected if inlined)
+reading computed triggers init: true
+```
+
+`PORT` printed with no `<clinit>` line before it — the value was baked into
+*this* class's bytecode (`ConstantValue` inlined at compile time). The
+`<clinit>` line appears only when `computed` forces initialization. Rename
+the constant in the library without recompiling clients and they keep the
+old value: the stale-constant bug, demonstrated by absence.
+
+## 5. Context Loader Sees What Framework Loaders Can't
+
+```java
+public class ContextVsOwn {
+    public static void main(String[] args) throws Exception {
+        Class<?> frameworkClass = javax.xml.parsers.DocumentBuilderFactory.class;
+        ClassLoader frameworkLoader = frameworkClass.getClassLoader();
+        System.out.println("framework loader platform-or-null: "
+                + (frameworkLoader == null
+                   || "platform".equals(frameworkLoader.getName())));
+        ClassLoader ctx = Thread.currentThread().getContextClassLoader();
+        System.out.println("context loader is app: " + "app".equals(ctx.getName()));
+        System.out.println("context sees app classes: "
+                + (ctx.loadClass("ContextVsOwn") == ContextVsOwn.class));
+        boolean frameworkSeesApp = true;
+        try {
+            Class.forName("ContextVsOwn", false, frameworkLoader == null
+                    ? ClassLoader.getPlatformClassLoader() : frameworkLoader);
+        } catch (ClassNotFoundException e) {
+            frameworkSeesApp = false;
+        }
+        System.out.println("framework loader sees app class: " + frameworkSeesApp);
+        System.out.println("delegation is one-directional (down invisible): " + !frameworkSeesApp);
+    }
+}
+```
+
+Expected output:
+```
+framework loader platform-or-null: true
+context loader is app: true
+context sees app classes: true
+framework loader sees app class: false
+delegation is one-directional (down invisible): true
+```
+
+`javax.xml` ships in the platform layer; it cannot see classpath classes by
+delegation (parents never see children). The thread-context loader is the
+back-channel frameworks (JNDI, JDBC, JAXB) use to reach down — which is why
+unmanaged threads (fresh `new Thread`, pool workers with replaced context
+loaders) mysteriously "lose the classpath" for framework lookups.
+
+## Common Pitfalls Encountered Here
+
+- **Drawing the extension loader** — gone since 9; the rung is platform now.
+- **Expecting `loadClass` to run `<clinit>`** — load ≠ initialize (snippet 2).
+- **Casting across duplicate deployments** — name equality isn't type
+  identity (snippet 3).
+- **Changing a `static final` constant and redeploying one jar** — clients
+  inlined the old value (snippet 4).
+- **Framework code using its own loader for app resources** — context
+  loader is the down-channel (snippet 5).
+- **Overriding `loadClass` instead of `findClass`** — breaks delegation by
+  accident; sibling namespaces and linkage errors follow.

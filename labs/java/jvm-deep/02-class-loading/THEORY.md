@@ -1,165 +1,126 @@
 # Class Loading — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-Loading/linking/initialization, bootstrap/extension/application classloaders, custom classloader
+Loading a class is three phases — **loading** (find bytes, build `Class`),
+**linking** (verify, prepare, resolve), **initialization** (run
+`<clinit>`, JLS §12.4) — executed lazily on first *active use*. And class
+identity is **name + defining loader**: the same bytes loaded twice are two
+different, mutually uncastable classes. Everything surprising about
+classloading (use the wrong `getResource`, `ClassCastException` on
+identical names, containers isolating apps) reduces to one of these two
+facts.
 
-### 2. Theoretical Foundation
-The Class Loading is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## The Loader Hierarchy (JDK 9+, measured on JDK 23)
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+```
+bootstrap (null — native code, java.base core)   String.class.getClassLoader() == null
+    ▲ parent
+platform ("platform" — java.sql, java.xml, ...)  getPlatformClassLoader()
+    ▲ parent
+app ("app" — classpath / module path)            getSystemClassLoader()
+```
 
-### 3. Algorithmic Details
+Measured: `system parent=platform`, `platform parent=null`. The pre-9
+**extension classloader is gone** — `java.ext.dirs` ignored, extensions
+mechanism removed (JEP 220 modularized the JDK; platform loader covers the
+old extension domain). Any doc diagramming bootstrap→extension→application
+describes Java 8.
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+## Delegation: Parent First, Always by Default
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+`ClassLoader.loadClass(name)` delegates to the parent *before* attempting
+`findClass` itself:
 
-### 4. Trade-offs
+```
+loadClass(name):
+    1. check already-loaded cache
+    2. parent.loadClass(name)   (recurses to bootstrap)
+    3. only if parent failed: findClass(name)  (your bytes)
+```
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+Consequences:
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+- Core classes can't be shadowed: your classpath `java.lang.String` never
+  loads (bootstrap wins first). This is a *security* property, not just
+  tidiness.
+- Breaking delegation (override `loadClass` to check self first, as servlet
+  containers and OSGi do for webapp isolation) creates *sibling namespaces*
+  — same name, different loaders, `ClassCastException` on assignment.
+- `getParent()` chains are inspectable at runtime; a `null` parent means
+  "delegate to bootstrap."
 
-### 5. Mathematical Basis
+## loadClass vs Class.forName: Initialization Is the Difference
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+| Call | Loads? | Links? | Initializes (`<clinit>`)? |
+|---|---|---|---|
+| `loader.loadClass(name)` | yes | yes (verify+prepare; resolve lazy) | **no** |
+| `Class.forName(name)` | yes | yes | **yes** |
+| `Class.forName(name, false, loader)` | yes | yes | no (explicit) |
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+JLS §12.4 initialization triggers (active use): `new`, static method
+invoke, static (non-constant) field read/write, reflection (`Class.forName`
+default), subclass initialization (parent first). Compile-time constants
+(`static final int X = 3`) do **not** trigger initialization — they're
+inlined at the *use* site (lab 01's `ConstantValue` attribute is the
+mechanism).
 
-## Summary
-The Class Loading represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+`<clinit>` runs under an initialization lock with recursive-request
+detection: circular static initializers across classes deadlock or observe
+defaults — the classic `static A a = new A()` puzzles. The JVM guarantees
+`<clinit>` runs exactly once (thread-safe by specification, not by your
+synchronization).
 
-## Key Theorems
+## Linking in Three Sub-Steps
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+1. **Verification** — bytecode type-checking (StackMapTable-checked since
+   50.0, lab 01). Failure = `VerifyError`/`ClassFormatError` at link time,
+   before any code runs.
+2. **Preparation** — static field storage allocated, set to defaults
+   (`null`/`0`/`false`). No Java code executes here.
+3. **Resolution** — symbolic references (pool `Fieldref`/`Methodref`) turned
+   into direct references, lazily (first use) or eagerly at HotSpot's
+   discretion. Failure modes you know by name: `NoSuchMethodError`,
+   `NoSuchFieldError`, `IllegalAccessError` — all *linkage* errors from
+   compiling against a different library version than runtime.
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+## Custom Loaders: The Minimal Correct Shape
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+```java
+class DirLoader extends ClassLoader {
+    DirLoader() { super(DirLoader.class.getClassLoader()); }  // keep delegation
+    @Override protected Class<?> findClass(String name) throws ClassNotFoundException {
+        byte[] b = readBytes(name);          // your source: dir, jar, network, generated
+        if (b == null) throw new ClassNotFoundException(name);
+        return defineClass(name, b, 0, b.length);   // + optional ProtectionDomain
+    }
+}
+```
 
-## Key Insights
+Rules: override `findClass`, never `loadClass` (unless you mean to break
+delegation); each `defineClass` call mints a *new* `Class` (define twice →
+`LinkageError: duplicate class definition`); classes define package
+membership on first define (sealing checks). `defineClass` also runs
+verification — a loader can't smuggle unverifiable bytecode past the
+verifier.
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+## Resources Follow the Same Delegation
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+`getResource(name)` / `getResourceAsStream` delegate parent-first too —
+which is why `Thread.currentThread().getContextClassLoader()` exists:
+framework code (JNDI, JDBC drivers, logging) loaded high in the hierarchy
+needs to see *application* resources below it. Forgetting the context loader
+(manifesting as "resource not found though it's on the classpath") is the
+`ClassNotFoundException`-adjacent classic. In modules (JPMS),
+`Module.getResourceAsStream` + `open`/`opens` directives further gate
+reflective and resource access (`InaccessibleObjectException` is the
+enforcement you meet first).
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+## Key Invariants
 
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Identity = (binary name, defining loader). Same bytes ≠ same class.
+2. Delegation is parent-first by default; shadowing `java.*` is impossible
+   through delegation.
+3. Loading/linking never runs application code; only initialization does.
+4. `<clinit>` executes exactly once, under JVM-held locking.
+5. Compile-time constants never trigger initialization.
