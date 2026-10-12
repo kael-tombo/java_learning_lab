@@ -1,165 +1,105 @@
 # Class File Format — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-Magic number, constant pool, field/method/attribute tables, Code attribute, LineNumberTable
+A `.class` file is a binary struct defined by JVMS §4: magic number,
+version, constant pool, then field/method/attribute tables. Everything the
+JVM knows about your code — names, types, bytecode, debug info, verification
+metadata — lives in these tables. `javap -v` is the human decoder ring; this
+lab reads the format directly and cross-checks with `javap`.
 
-### 2. Theoretical Foundation
-The Class File Format is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## The Header: Magic + Version (8 bytes, verified below)
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+| Bytes | Field | Example (`--release 17`) |
+|---|---|---|
+| 0–3 | `magic` = `0xCAFEBABE` | always |
+| 4–5 | `minor_version` | 0 (almost always) |
+| 6–7 | `major_version` | 61 |
 
-### 3. Algorithmic Details
+Major versions, all verified by compiling with explicit `--release` flags
+on JDK 23: 8→52, 11→55, 17→61, 21→65, 23→67. Full table: 45=1.1, 46=1.2,
+47=1.3, 48=1.4, 49=5, 50=6, 51=7, 52=8, 53=9, 54=10, 55=11, 56=12, 57=13,
+58=14, 59=15, 60=16, 61=17, 62=18, 63=19, 64=20, 65=21, 66=22, 67=23. The
+JVM rejects classes newer than itself (`UnsupportedClassVersionError`) but
+runs anything older — bytecode is forward-compatible by construction.
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+## Constant Pool: The Deduplicated String Table of Everything
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+Immediately after the version: `constant_pool_count` (u2, = entries + 1 —
+index 0 is reserved/unusable), then the entries. Tags you meet daily:
+`Utf8=1`, `Integer=3`, `Float=4`, `Long=5`, `Double=6`, `Class=7`,
+`String=8`, `Fieldref=9`, `Methodref=10`, `InterfaceMethodref=11`,
+`NameAndType=12`, `MethodHandle=15`, `MethodType=16`, `Dynamic=17`,
+`InvokeDynamic=18`, `Module=19`, `Package=20`.
 
-### 4. Trade-offs
+Two structural quirks with teeth:
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+1. **`Long`/`Double` occupy TWO pool slots.** After `#12 = Long`, the next
+   entry is `#14` — index 13 is unusable by spec (JVMS §4.4.5). Verified in
+   `javap -v` output in this lab's snippet 3. Any hand-rolled pool parser
+   that increments by 1 corrupts every subsequent index.
+2. **Index 0 means "absent"**, not "first entry": a zero `super_class`
+   means `java.lang.Object` itself; zero attribute indices are impossible
+   (verified implicitly — every attribute references a real Utf8).
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+`String` entries don't hold characters — they point at `Utf8` entries
+(`#23 = String #24 // hi`). Three hops (Methodref → Class/NameAndType →
+Utf8) resolve one method call. This indirection is what makes constant-pool
+*deduplication* work: the same method name/descriptor triple is stored once
+no matter how many call sites use it.
 
-### 5. Mathematical Basis
+## Methods: Code Attribute Anatomy
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+Each method carries attributes; executable code lives in `Code`:
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+```
+Code:
+  stack=3, locals=4, args_size=3     // max_stack, max_locals (incl. receiver + args)
+  <bytecode>                          // the instruction stream
+  LineNumberTable:                    // pc -> source line (debugging)
+  StackMapTable:                      // verification frames (see below)
+```
 
-## Summary
-The Class File Format represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+- `max_stack`/`max_locals` are computed by `javac`, not the JVM — the
+  verifier *checks* them (a method claiming `stack=1` that pushes 2 fails
+  verification with `VerifyError`).
+- `args_size` counts the receiver (`aload_0`) + parameters: an instance
+  method `(IZ)I` has `locals=4` = this + int + boolean + one local `y`
+  (verified in snippet 4).
+- Exception handlers live in the Code attribute's exception table
+  (start_pc/end_pc/handler_pc/catch_type) — `try/catch` is metadata around
+  straight-line bytecode, not an instruction.
 
-## Key Theorems
+## StackMapTable: Verification Without Dataflow (since 50.0 / Java 6)
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+Older verifiers inferred types by iterating bytecode to a fixed point
+(slow, version-sensitive). Since class-file version 50, `javac` *emits* the
+answer: `StackMapTable` frames declare the operand-stack/locals types at
+every jump target, and the verifier merely *checks* them (single pass).
+Split verification (JEP-less, JSR-202) is why modern startup verifies
+lazily and fast. Straight-line methods need no frames — the attribute
+appears only where control flow merges (verified: present with branches,
+absent without, snippet 5).
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+## Attributes Worth Knowing by Name
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+- `ConstantValue` — compile-time-constant `static final` initializers
+  (inlined by *other* classes at their compile time — changing a constant
+  requires recompiling *clients*, the classic stale-constant bug).
+- `BootstrapMethods` — `invokedynamic` linkage (lambdas, string concat);
+  the pool's `InvokeDynamic`/`Dynamic` entries point here.
+- `NestHost`/`NestMembers` (11+) — nestmates for `private` access across
+  nested classes (replaces synthetic accessor bridges).
+- `Record` (16+), `PermittedSubclasses` (17+) — declarative class-shape
+  metadata the access checker enforces.
+- `SourceFile`, `LineNumberTable`, `LocalVariableTable` — debug info;
+  stripped with `-g:none` (stack traces then show `Unknown Source`).
 
-## Key Insights
+## Key Invariants
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
-
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
-
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Bytes 0–3 are always `CAFEBABE`; bytes 6–7 select the language level.
+2. Pool index 0 is unusable; `Long`/`Double` consume two slots.
+3. `max_stack`/`max_locals` are compiler-computed, verifier-checked.
+4. Every jump target in version-50+ code has a StackMapTable frame.
+5. `static final` constants propagate at *client-compile* time via
+   `ConstantValue`, not at runtime.
