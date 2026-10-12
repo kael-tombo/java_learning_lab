@@ -2,7 +2,7 @@
 
 ## Overview
 
-Method Handles (JEP 274) and `invokedynamic` (JVMS 5.4.3.5, used by lambdas via JEP 126) provide low-level, efficient mechanisms for dynamic method invocation — the backbone of lambdas, dynamic languages, and framework internals.
+Method Handles (JSR 292, Java 7; extended by JEP 274 in Java 9) and `invokedynamic` (JSR 292; used by lambdas since Java 8 via `LambdaMetafactory`) provide low-level, efficient mechanisms for dynamic method invocation — the backbone of lambdas, dynamic languages, and framework internals.
 
 ---
 
@@ -33,9 +33,9 @@ MethodHandle mh = lookup.findStatic(Math.class, "sqrt",
 MethodHandle mh = lookup.findVirtual(String.class, "substring",
     MethodType.methodType(String.class, int.class, int.class));
 
-// Constructor
-MethodHandle mh = lookup.findConstructor(ArrayList.class,
-    MethodType.methodType(ArrayList.class));
+// Constructor (note: void return in the MethodType, always)
+MethodHandle ctor = lookup.findConstructor(ArrayList.class,
+    MethodType.methodType(void.class, int.class)); // ArrayList(int)
 
 // Field getter/setter
 MethodHandle getter = lookup.findGetter(Point.class, "x", int.class);
@@ -44,12 +44,13 @@ MethodHandle setter = lookup.findSetter(Point.class, "x", int.class);
 
 ### Access Modes
 
-| Method | Access Check |
-|--------|--------------|
-| `findStatic` | At lookup time |
-| `findVirtual` | At lookup time (receiver type) |
+| Method | Access check timing |
+|--------|----------------------|
+| `findStatic` | At lookup (creation) time |
+| `findVirtual` | At lookup time (receiver type checked) |
 | `findConstructor` | At lookup time |
-| `findVirtual` / `findSpecial` | At linkage time |
+| `findSpecial` | At lookup time (caller-sensitive: only the caller's own super/private) |
+| `findGetter` / `findSetter` | At lookup time (final fields reject setters) |
 
 ---
 
@@ -177,11 +178,11 @@ MethodHandle pipeline = MethodHandles.filterArguments(h, 0, g)
 
 ## 7. Performance Considerations
 
-| Aspect | MethodHandle | Reflection | Direct Call |
-|--------|--------------|------------|-------------|
-| First call | Link + JIT | Slow | JIT compiles |
-| Warm call | Inlined by JIT | Slow | Inlined |
-| Memory | Low | High | Minimal |
-| Security | Checks at linkage | Checks every call | None |
+| Aspect | MethodHandle | Reflection (`Method.invoke`) | Direct call |
+|--------|--------------|-------------------------------|-------------|
+| First call | Linkage (type check + target bind) | Access check + boxing + dispatch | JIT compiles |
+| Warm call | Inlined by JIT (often to direct call) | Per-call check + box/unbox | Inlined |
+| Argument passing | Exact types, no boxing (for primitives) | `Object[]` boxing per call | Exact types |
+| Security | Checked once at lookup/creation | Checked on every invocation | None (compile time) |
 
 **Best practice**: Warm up MethodHandles before measuring; use in hot paths after warmup.
