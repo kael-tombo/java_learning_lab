@@ -1,165 +1,120 @@
 # Atomic Classes — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-CAS loop, VarHandle.compareAndSet, AtomicInteger vs synchronized, ABA problem, striped counters (LongAdder)
+`java.util.concurrent.atomic` provides lock-free read-modify-write on single
+variables: `getAndIncrement`, `compareAndSet`, `getAndUpdate` — each a single
+hardware CAS (`lock cmpxchg` on x86) with volatile memory effects. No monitor,
+no park, no BLOCKED state: a failed CAS just retries the loop.
 
-### 2. Theoretical Foundation
-The Atomic Classes is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+Implementation note (JDK 23 source): `AtomicInteger` holds `private volatile
+int value` plus a `private static final long VALUE` field offset, and
+`incrementAndGet()` is literally `U.getAndAddInt(this, VALUE, 1) + 1` — one
+Unsafe intrinsic bound to one instruction. The *specification* of the memory
+effects is written in terms of `VarHandle` (`compareAndSet`,
+`getAndAdd`, ...); the *mechanism* is Unsafe intrinsics underneath.
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+## The CAS Loop Pattern
 
-### 3. Algorithmic Details
+Every read-modify-write that isn't a single intrinsic is a loop:
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+```java
+int prev, next;
+do {
+    prev = atomic.get();            // volatile read
+    next = transform(prev);
+} while (!atomic.compareAndSet(prev, next));   // single CAS: commit or retry
+```
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+Correctness argument: `compareAndSet` succeeds only if the value is still
+`prev` — i.e., nobody modified it since our read. Linearization point = the
+winning CAS. Cost model: uncontended ≈ one CAS (~10–20ns x86); contended =
+retries burn CPU with no progress guarantee per thread (lock-free:
+*some* thread always progresses; *your* thread may starve — same caveat as
+lab 08's queue).
 
-### 4. Trade-offs
+`getAndUpdate`/`accumulateAndGet` are this loop pre-written (with the
+function applied *outside* the CAS — so side-effecting functions may run
+multiple times; the function must be side-effect-free).
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+## compareAndSet vs compareAndExchange vs weakCompareAndSet
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+- `compareAndSet(e, x)` → boolean: did I win? (May fail spuriously on some
+  platforms — but on x86 it doesn't; the "weak" distinction matters for ARM.)
+- `compareAndExchange(e, x)` → the *witness* value (actual current value):
+  lets you skip a re-read on failure (`prev = witness; retry`).
+- `weakCompareAndSet` → boolean, allowed to fail spuriously even when `e`
+  matches: use *only* in retry loops (where spurious failure just costs one
+  more iteration), never as a one-shot test. Plain `compareAndSet` is the
+  default; weak is the experts' micro-optimization.
 
-### 5. Mathematical Basis
+## The ABA Problem
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+CAS checks *value equality*, not *unchanged-since*: value A → B → A reads as
+"no change" to `compareAndSet(A, C)`. Consequences bite when the *transitions*
+matter (reused nodes in lock-free stacks/queues — pop A, pop B, push A back:
+a CAS expecting A succeeds on a different A with a different `next`).
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+Fixes, in escalating cost order:
 
-## Summary
-The Atomic Classes represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+1. **Don't reuse identities** (GC-allocated nodes — the CLQ trick from lab
+   08: fresh object per offer means A→B→A on the *reference* can't alias).
+2. **`AtomicStampedReference<V>`** — (reference, int stamp) pair CASed
+   together; stamp increments per mutation so A₁ ≠ A₂.
+3. **`AtomicMarkableReference<V>`** — (reference, boolean) pair; cheaper
+   one-bit version for deleted-or-not marking.
 
-## Key Theorems
+Stamped references cost a `Pair` allocation per access — use only where ABA
+is a real hazard (Treiber stacks, hazard-pointer schemes), not counters.
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+## Striped Counters: LongAdder / LongAccumulator / DoubleAdder
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+One CAS word shared by many writers = contention collapse (lab 01 of
+collections-deep showed the CHM version: `CounterCell[]`). `LongAdder`
+applies the same striping to counters:
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+- Writers hash to per-thread cells (`Cell[]`, created on demand, grow on
+  contention); `sum()` adds `base + Σ cells`.
+- `sum()` is **not atomic** — concurrent increments during the sum may be
+  missed or double-counted; the result is "at some point during the call"
+  fuzzy. `sumThenReset()` exists for quiescent-point metrics.
+- Ordering: `LongAdder` beats `AtomicLong` above ~2–4 contending writers;
+  below that the cell infrastructure is pure overhead. `DoubleAdder`/
+  `DoubleAccumulator` extend to floating point (bit-wise CAS on the long
+  representation); `LongAccumulator` generalizes with a binary operator
+  (max/min tracking).
 
-## Key Insights
+## AtomicInteger vs synchronized: The Decision Rule
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+| | `Atomic*` | `synchronized` |
+|---|---|---|
+| Single-variable RMW | one CAS, no block | monitor enter/exit, may park |
+| Compound multi-variable invariants | impossible (torn across two CASes) | natural (one critical section) |
+| Contended throughput | degrades via retries (CPU burn) | degrades via parking (context switches) |
+| Memory footprint | object header + value (+ padding) | none extra |
+| Semantics on failure | caller retries / moves on | caller waits |
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+Two atomics can't transact together — `atomicA.set(..); atomicB.set(..)` has
+an observable intermediate state. Invariants spanning variables need a lock
+(or a single packed `AtomicLong` updated by one CAS, the bit-field trick).
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+## False Sharing and @Contended
 
+CAS words on the same cache line ping-pong between cores: two unrelated
+`AtomicLong`s adjacent in memory contend on *hardware* despite logical
+independence. `LongAdder` cells are padded (`@jdk.internal.vm.annotation.
+Contended`, 128 bytes with `-XX:-RestrictContended` needed for user code)
+precisely to isolate them. Measure first (`-XX:+PrintFieldLayout`, perf
+counters), pad second — 128 bytes per counter is real memory.
 
-## Further Exploration
+## Key Invariants
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Every RMW linearizes at exactly one winning CAS; losers retry with fresh
+   reads.
+2. Update functions passed to `getAndUpdate`/`accumulateAndGet` must be
+   side-effect-free (re-execution is normal, not exceptional).
+3. `sum()` on striped counters is a fuzzy snapshot, never an atomic total.
+4. ABA safety comes from identity freshness, stamps, or marks — never from
+   CAS alone.
+5. `@Contended` padding trades memory for contention isolation; default cell
+   padding already handles the common case.
