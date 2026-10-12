@@ -34,7 +34,6 @@ labs/java/jvm-deep/02-class-loading/STEP_BY_STEP.md,65,65,100,0
 labs/java/jvm-deep/02-class-loading/VISUAL_GUIDE.md,58,58,100,0
 labs/java/jvm-deep/02-class-loading/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/jvm-deep/03-bytecode-introduction/ARCHITECTURE.md,73,73,100,0
-labs/java/jvm-deep/03-bytecode-introduction/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/jvm-deep/03-bytecode-introduction/COMMON_MISTAKES.md,83,83,100,0
 labs/java/jvm-deep/03-bytecode-introduction/DEBUGGING.md,76,76,100,0
 labs/java/jvm-deep/03-bytecode-introduction/INTERNALS.md,92,92,100,0
