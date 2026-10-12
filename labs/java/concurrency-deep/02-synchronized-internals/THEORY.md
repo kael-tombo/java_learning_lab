@@ -1,165 +1,125 @@
 # Synchronized Internals — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-Monitor enter/exit, biased locking (removed in 21+), lightweight/heavyweight locks, object header mark word
+`synchronized` is a **monitor** operation, not a lock object: the JVM binds
+each `synchronized` block to an object monitor, acquires it on entry, and
+releases it on exit — including exceptional exit. The compiler emits this
+pair explicitly:
 
-### 2. Theoretical Foundation
-The Synchronized Internals is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+```
+monitorenter
+... body ...
+monitorexit        // normal path
+... exception table routes every Throwable to a second monitorexit ...
+```
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+One `monitorenter`, potentially *multiple* `monitorexit` bytecodes (normal +
+exceptional paths) — which is why "synchronized always releases" holds even
+when the body throws. (Verified in this lab's CODE_DEEP_DIVE via `javap -c`.)
 
-### 3. Algorithmic Details
+## The Three Lock Levels (post–biased-locking HotSpot)
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+Biased locking is gone — disabled by default in JDK 15 (JEP 374), **removed
+in JDK 18** (JDK-8256425), and the flag itself unrecognized by JDK 23
+(`Unrecognized VM option 'UseBiasedLocking'`). What remains is a two-step
+ladder plus the header fast path:
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+1. **Stack locking (lightweight)**: uncontended acquisition CASes the
+   object's mark word to point at a lock record on the acquiring thread's
+   stack ("displaced mark word"). No OS mutex, no park — a handful of
+   instructions. Recursive entry just pushes another (nearly free) record.
+2. **Inflation (heavyweight)**: on real contention the monitor *inflates* —
+   HotSpot allocates an `ObjectMonitor` (C++ object with OS mutex +
+   condition variables: `_cxq` contention queue, `_EntryList`, `_WaitSet`)
+   and swings the mark word to point at it. Contenders now park in the OS.
+3. **Deflation**: when the monitor is released and uncontended, HotSpot may
+   deflate back to stack locking. The observable contract — mutual
+   exclusion — never changes with the level.
 
-### 4. Trade-offs
+The mark word (64-bit object header: identity hash, GC age bits, lock state)
+is the traffic light; the monitor is the building behind it. Most programs
+live at level 1 almost all the time — which is why uncontended
+`synchronized` costs ~10–20ns, not microseconds.
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+## Memory Semantics: synchronized Is a Happens-Before Edge
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+JLS §17.4: an unlock on monitor M *happens-before* every subsequent lock of
+M. Practical consequences:
 
-### 5. Mathematical Basis
+- Everything your thread wrote before releasing `synchronized(o)` is visible
+  to the next thread that acquires `synchronized(o)` — no `volatile`
+  needed on the guarded fields.
+- The edge is tied to the *monitor*, not the code: two blocks synchronized
+  on *different* objects share no edge, even if they touch the same fields.
+  Same fields + different locks = data race wearing a disguise.
+- `wait()` releases the monitor and re-acquires it before returning — so
+  the post-`wait()` code sees everything the notifier wrote before
+  `notify()`, provided both synchronize on the same object.
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+## wait/notify Protocol (and Its Sharp Edges)
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+- `wait()`, `notify()`, `notifyAll()` require holding the monitor —
+  otherwise `IllegalMonitorStateException`. The check is dynamic (the JVM
+  verifies ownership at the call), not static.
+- **Always `wait()` in a `while` loop re-checking the condition.**
+  Spurious wakeups are real (allowed by the spec, occur on some platforms),
+  and `notifyAll()` wakes threads whose condition may already be false
+  again (stolen signal). `if (cond) wait()` is a bug; `while (cond) wait()`
+  is the idiom.
+- `notify()` wakes *one* arbitrary waiter; `notifyAll()` wakes all (they
+  then serialize re-acquiring the monitor). Prefer `notifyAll()` unless you
+  can prove exactly one waiter can proceed *and* no other waiter exists for
+  a different condition on the same monitor (the classic multi-condition
+  pitfall that makes `notify()` lose signals).
+- `wait()` has two exits — notified/interrupted *or* (timed variant)
+  timeout — and re-acquires the monitor before either returns. A notifier
+  that still holds the lock keeps waiters BLOCKED after waking them.
 
-## Summary
-The Synchronized Internals represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+## synchronized Methods, Blocks, and Static Locks
 
-## Key Theorems
+- Instance `synchronized` method ⟺ `synchronized(this)` wrapping the body.
+- `static synchronized` method ⟺ `synchronized(TheClass.class)`.
+- These are **different monitors**: a static and an instance synchronized
+  method on the same class do *not* exclude each other. Instance–instance
+  pairs on the *same object* do; on *different objects* don't. Every
+  "synchronized doesn't seem to work" bug is a wrong-monitor bug — draw
+  which object is the lock before anything else.
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+## Reentrancy
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+Monitors are reentrant per-thread: a thread holding M may re-enter
+`synchronized` on M freely (recursion, nested calls, super-calls). The
+monitor counts entries and needs equal exits. Consequences: (a) calling an
+overridable method from a constructor inside `synchronized` can't deadlock
+against itself; (b) reentrancy means *any* path that re-enters while holding
+an inconsistent invariant is a self-inflicted race the lock can't prevent —
+locks compose badly with alien (overridable/callback) methods.
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+## synchronized vs j.u.c. Locks
 
-## Key Insights
+| | `synchronized` | `ReentrantLock` |
+|---|---|---|
+| Acquisition | block-structured only (exit at scope end) | `lock()`/`unlock()` anywhere — and must be paired by hand |
+| Interruptible wait | no | `lockInterruptibly()` |
+| Timeout | no | `tryLock(t, unit)` |
+| Fairness option | no (no FIFO guarantee) | optional fair mode |
+| Condition queues | one (`wait` set) | many (`newCondition()`) |
+| Contended state | BLOCKED | WAITING (parking) |
+| JIT treatment | lock elision/coarsening apply | library calls, less transparent to JIT |
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+`synchronized` wins on simplicity and JIT optimization (lock elision removes
+locks on non-escaping objects; lock coarsening merges adjacent blocks on the
+same monitor). `ReentrantLock` wins the moment you need timeouts,
+interruption, fairness, or multiple conditions.
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+## Key Invariants
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Monitor entry and exit are paired on *every* path, including exceptions
+   (compiler-generated, not programmer discipline).
+2. Unlock → subsequent-lock on the same monitor is a happens-before edge.
+3. Wait sets belong to the monitor; `wait`/`notify` without ownership throws.
+4. Inflation is one-way per contention episode but deflatable; level is an
+   implementation detail — semantics never change with it.
+5. No fairness: among BLOCKED threads the winner is unspecified (and on some
+   platforms effectively LIFO-ish) — starvation is legal.

@@ -24,7 +24,6 @@ labs/java/concurrency-deep/01-thread-lifecycle/STEP_BY_STEP.md,65,65,100,0
 labs/java/concurrency-deep/01-thread-lifecycle/VISUAL_GUIDE.md,58,58,100,0
 labs/java/concurrency-deep/01-thread-lifecycle/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/concurrency-deep/02-synchronized-internals/ARCHITECTURE.md,73,73,100,0
-labs/java/concurrency-deep/02-synchronized-internals/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/concurrency-deep/02-synchronized-internals/COMMON_MISTAKES.md,83,83,100,0
 labs/java/concurrency-deep/02-synchronized-internals/DEBUGGING.md,76,76,100,0
 labs/java/concurrency-deep/02-synchronized-internals/FLASHCARDS.md,77,77,100,0
@@ -664,7 +663,6 @@ labs/java/performance-deep/05-gc-log-analysis/MENTAL_MODELS.md,75,74,99,0
 labs/java/performance-deep/05-gc-log-analysis/WHY_IT_MATTERS.md,91,90,99,0
 labs/java/concurrency-deep/01-thread-lifecycle/README.md,72,70,97,0
 labs/java/concurrency-deep/02-synchronized-internals/README.md,72,70,97,0
-labs/java/concurrency-deep/02-synchronized-internals/THEORY.md,98,95,97,0
 labs/java/concurrency-deep/03-volatile-semantics/README.md,72,70,97,0
 labs/java/concurrency-deep/03-volatile-semantics/THEORY.md,98,95,97,0
 labs/java/concurrency-deep/04-atomic-classes/README.md,72,70,97,0
