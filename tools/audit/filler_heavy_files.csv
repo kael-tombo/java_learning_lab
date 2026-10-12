@@ -67,7 +67,6 @@ labs/java/jvm-deep/05-method-handles/STEP_BY_STEP.md,65,65,100,0
 labs/java/jvm-deep/05-method-handles/VISUAL_GUIDE.md,58,58,100,0
 labs/java/jvm-deep/05-method-handles/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/jvm-deep/06-jit-compilation/ARCHITECTURE.md,73,73,100,0
-labs/java/jvm-deep/06-jit-compilation/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/jvm-deep/06-jit-compilation/COMMON_MISTAKES.md,83,83,100,0
 labs/java/jvm-deep/06-jit-compilation/DEBUGGING.md,76,76,100,0
 labs/java/jvm-deep/06-jit-compilation/INTERNALS.md,92,92,100,0
@@ -79,7 +78,6 @@ labs/java/jvm-deep/06-jit-compilation/STEP_BY_STEP.md,65,65,100,0
 labs/java/jvm-deep/06-jit-compilation/VISUAL_GUIDE.md,58,58,100,0
 labs/java/jvm-deep/06-jit-compilation/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/jvm-deep/07-gc-1-g1/ARCHITECTURE.md,73,73,100,0
-labs/java/jvm-deep/07-gc-1-g1/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/jvm-deep/07-gc-1-g1/COMMON_MISTAKES.md,83,83,100,0
 labs/java/jvm-deep/07-gc-1-g1/DEBUGGING.md,76,76,100,0
 labs/java/jvm-deep/07-gc-1-g1/INTERNALS.md,92,92,100,0
@@ -91,7 +89,6 @@ labs/java/jvm-deep/07-gc-1-g1/STEP_BY_STEP.md,65,65,100,0
 labs/java/jvm-deep/07-gc-1-g1/VISUAL_GUIDE.md,58,58,100,0
 labs/java/jvm-deep/07-gc-1-g1/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/jvm-deep/08-gc-2-zgc/ARCHITECTURE.md,73,73,100,0
-labs/java/jvm-deep/08-gc-2-zgc/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/jvm-deep/08-gc-2-zgc/COMMON_MISTAKES.md,83,83,100,0
 labs/java/jvm-deep/08-gc-2-zgc/DEBUGGING.md,76,76,100,0
 labs/java/jvm-deep/08-gc-2-zgc/INTERNALS.md,92,92,100,0
@@ -103,7 +100,6 @@ labs/java/jvm-deep/08-gc-2-zgc/STEP_BY_STEP.md,65,65,100,0
 labs/java/jvm-deep/08-gc-2-zgc/VISUAL_GUIDE.md,58,58,100,0
 labs/java/jvm-deep/08-gc-2-zgc/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/jvm-deep/09-gc-3-shenandoah/ARCHITECTURE.md,73,73,100,0
-labs/java/jvm-deep/09-gc-3-shenandoah/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/jvm-deep/09-gc-3-shenandoah/COMMON_MISTAKES.md,83,83,100,0
 labs/java/jvm-deep/09-gc-3-shenandoah/DEBUGGING.md,76,76,100,0
 labs/java/jvm-deep/09-gc-3-shenandoah/INTERNALS.md,92,92,100,0
@@ -115,7 +111,6 @@ labs/java/jvm-deep/09-gc-3-shenandoah/STEP_BY_STEP.md,65,65,100,0
 labs/java/jvm-deep/09-gc-3-shenandoah/VISUAL_GUIDE.md,58,58,100,0
 labs/java/jvm-deep/09-gc-3-shenandoah/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/jvm-deep/10-jvm-tuning/ARCHITECTURE.md,73,73,100,0
-labs/java/jvm-deep/10-jvm-tuning/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/jvm-deep/10-jvm-tuning/COMMON_MISTAKES.md,83,83,100,0
 labs/java/jvm-deep/10-jvm-tuning/DEBUGGING.md,76,76,100,0
 labs/java/jvm-deep/10-jvm-tuning/INTERNALS.md,92,92,100,0
@@ -127,7 +122,6 @@ labs/java/jvm-deep/10-jvm-tuning/STEP_BY_STEP.md,65,65,100,0
 labs/java/jvm-deep/10-jvm-tuning/VISUAL_GUIDE.md,58,58,100,0
 labs/java/jvm-deep/10-jvm-tuning/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/memory-deep/01-jmm-foundations/ARCHITECTURE.md,73,73,100,0
-labs/java/memory-deep/01-jmm-foundations/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/memory-deep/01-jmm-foundations/COMMON_MISTAKES.md,83,83,100,0
 labs/java/memory-deep/01-jmm-foundations/DEBUGGING.md,76,76,100,0
 labs/java/memory-deep/01-jmm-foundations/INTERNALS.md,92,92,100,0
@@ -139,7 +133,6 @@ labs/java/memory-deep/01-jmm-foundations/STEP_BY_STEP.md,65,65,100,0
 labs/java/memory-deep/01-jmm-foundations/VISUAL_GUIDE.md,58,58,100,0
 labs/java/memory-deep/01-jmm-foundations/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/memory-deep/02-reordering/ARCHITECTURE.md,73,73,100,0
-labs/java/memory-deep/02-reordering/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/memory-deep/02-reordering/COMMON_MISTAKES.md,83,83,100,0
 labs/java/memory-deep/02-reordering/DEBUGGING.md,76,76,100,0
 labs/java/memory-deep/02-reordering/INTERNALS.md,92,92,100,0
@@ -151,7 +144,6 @@ labs/java/memory-deep/02-reordering/STEP_BY_STEP.md,65,65,100,0
 labs/java/memory-deep/02-reordering/VISUAL_GUIDE.md,58,58,100,0
 labs/java/memory-deep/02-reordering/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/memory-deep/03-memory-barriers/ARCHITECTURE.md,73,73,100,0
-labs/java/memory-deep/03-memory-barriers/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/memory-deep/03-memory-barriers/COMMON_MISTAKES.md,83,83,100,0
 labs/java/memory-deep/03-memory-barriers/DEBUGGING.md,76,76,100,0
 labs/java/memory-deep/03-memory-barriers/INTERNALS.md,92,92,100,0
@@ -163,7 +155,6 @@ labs/java/memory-deep/03-memory-barriers/STEP_BY_STEP.md,65,65,100,0
 labs/java/memory-deep/03-memory-barriers/VISUAL_GUIDE.md,58,58,100,0
 labs/java/memory-deep/03-memory-barriers/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/memory-deep/04-final-semantics/ARCHITECTURE.md,73,73,100,0
-labs/java/memory-deep/04-final-semantics/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/memory-deep/04-final-semantics/COMMON_MISTAKES.md,83,83,100,0
 labs/java/memory-deep/04-final-semantics/DEBUGGING.md,76,76,100,0
 labs/java/memory-deep/04-final-semantics/INTERNALS.md,92,92,100,0
@@ -175,7 +166,6 @@ labs/java/memory-deep/04-final-semantics/STEP_BY_STEP.md,65,65,100,0
 labs/java/memory-deep/04-final-semantics/VISUAL_GUIDE.md,58,58,100,0
 labs/java/memory-deep/04-final-semantics/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/memory-deep/05-dcl-pattern/ARCHITECTURE.md,73,73,100,0
-labs/java/memory-deep/05-dcl-pattern/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/memory-deep/05-dcl-pattern/COMMON_MISTAKES.md,83,83,100,0
 labs/java/memory-deep/05-dcl-pattern/DEBUGGING.md,76,76,100,0
 labs/java/memory-deep/05-dcl-pattern/INTERNALS.md,92,92,100,0
@@ -187,7 +177,6 @@ labs/java/memory-deep/05-dcl-pattern/STEP_BY_STEP.md,65,65,100,0
 labs/java/memory-deep/05-dcl-pattern/VISUAL_GUIDE.md,58,58,100,0
 labs/java/memory-deep/05-dcl-pattern/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/modern-java-deep/01-records-deep/ARCHITECTURE.md,73,73,100,0
-labs/java/modern-java-deep/01-records-deep/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/modern-java-deep/01-records-deep/COMMON_MISTAKES.md,83,83,100,0
 labs/java/modern-java-deep/01-records-deep/DEBUGGING.md,76,76,100,0
 labs/java/modern-java-deep/01-records-deep/INTERNALS.md,92,92,100,0
@@ -199,7 +188,6 @@ labs/java/modern-java-deep/01-records-deep/STEP_BY_STEP.md,65,65,100,0
 labs/java/modern-java-deep/01-records-deep/VISUAL_GUIDE.md,58,58,100,0
 labs/java/modern-java-deep/01-records-deep/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/modern-java-deep/02-sealed-classes/ARCHITECTURE.md,73,73,100,0
-labs/java/modern-java-deep/02-sealed-classes/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/modern-java-deep/02-sealed-classes/COMMON_MISTAKES.md,83,83,100,0
 labs/java/modern-java-deep/02-sealed-classes/DEBUGGING.md,76,76,100,0
 labs/java/modern-java-deep/02-sealed-classes/INTERNALS.md,92,92,100,0
@@ -211,7 +199,6 @@ labs/java/modern-java-deep/02-sealed-classes/STEP_BY_STEP.md,65,65,100,0
 labs/java/modern-java-deep/02-sealed-classes/VISUAL_GUIDE.md,58,58,100,0
 labs/java/modern-java-deep/02-sealed-classes/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/modern-java-deep/03-pattern-matching/ARCHITECTURE.md,73,73,100,0
-labs/java/modern-java-deep/03-pattern-matching/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/modern-java-deep/03-pattern-matching/COMMON_MISTAKES.md,83,83,100,0
 labs/java/modern-java-deep/03-pattern-matching/DEBUGGING.md,76,76,100,0
 labs/java/modern-java-deep/03-pattern-matching/INTERNALS.md,92,92,100,0
@@ -223,7 +210,6 @@ labs/java/modern-java-deep/03-pattern-matching/STEP_BY_STEP.md,65,65,100,0
 labs/java/modern-java-deep/03-pattern-matching/VISUAL_GUIDE.md,58,58,100,0
 labs/java/modern-java-deep/03-pattern-matching/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/modern-java-deep/04-virtual-threads/ARCHITECTURE.md,73,73,100,0
-labs/java/modern-java-deep/04-virtual-threads/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/modern-java-deep/04-virtual-threads/COMMON_MISTAKES.md,83,83,100,0
 labs/java/modern-java-deep/04-virtual-threads/DEBUGGING.md,76,76,100,0
 labs/java/modern-java-deep/04-virtual-threads/INTERNALS.md,92,92,100,0
@@ -235,7 +221,6 @@ labs/java/modern-java-deep/04-virtual-threads/STEP_BY_STEP.md,65,65,100,0
 labs/java/modern-java-deep/04-virtual-threads/VISUAL_GUIDE.md,58,58,100,0
 labs/java/modern-java-deep/04-virtual-threads/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/modern-java-deep/05-structured-concurrency-2/ARCHITECTURE.md,73,73,100,0
-labs/java/modern-java-deep/05-structured-concurrency-2/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/modern-java-deep/05-structured-concurrency-2/COMMON_MISTAKES.md,83,83,100,0
 labs/java/modern-java-deep/05-structured-concurrency-2/DEBUGGING.md,76,76,100,0
 labs/java/modern-java-deep/05-structured-concurrency-2/INTERNALS.md,92,92,100,0
@@ -247,7 +232,6 @@ labs/java/modern-java-deep/05-structured-concurrency-2/STEP_BY_STEP.md,65,65,100
 labs/java/modern-java-deep/05-structured-concurrency-2/VISUAL_GUIDE.md,58,58,100,0
 labs/java/modern-java-deep/05-structured-concurrency-2/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/performance-deep/01-profiling-async/ARCHITECTURE.md,73,73,100,0
-labs/java/performance-deep/01-profiling-async/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/performance-deep/01-profiling-async/COMMON_MISTAKES.md,83,83,100,0
 labs/java/performance-deep/01-profiling-async/DEBUGGING.md,76,76,100,0
 labs/java/performance-deep/01-profiling-async/INTERNALS.md,92,92,100,0
@@ -259,7 +243,6 @@ labs/java/performance-deep/01-profiling-async/STEP_BY_STEP.md,65,65,100,0
 labs/java/performance-deep/01-profiling-async/VISUAL_GUIDE.md,58,58,100,0
 labs/java/performance-deep/01-profiling-async/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/performance-deep/02-jmh-benchmarks/ARCHITECTURE.md,73,73,100,0
-labs/java/performance-deep/02-jmh-benchmarks/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/performance-deep/02-jmh-benchmarks/COMMON_MISTAKES.md,83,83,100,0
 labs/java/performance-deep/02-jmh-benchmarks/DEBUGGING.md,76,76,100,0
 labs/java/performance-deep/02-jmh-benchmarks/INTERNALS.md,92,92,100,0
@@ -271,7 +254,6 @@ labs/java/performance-deep/02-jmh-benchmarks/STEP_BY_STEP.md,65,65,100,0
 labs/java/performance-deep/02-jmh-benchmarks/VISUAL_GUIDE.md,58,58,100,0
 labs/java/performance-deep/02-jmh-benchmarks/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/performance-deep/03-jfr-streaming/ARCHITECTURE.md,73,73,100,0
-labs/java/performance-deep/03-jfr-streaming/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/performance-deep/03-jfr-streaming/COMMON_MISTAKES.md,83,83,100,0
 labs/java/performance-deep/03-jfr-streaming/DEBUGGING.md,76,76,100,0
 labs/java/performance-deep/03-jfr-streaming/INTERNALS.md,92,92,100,0
@@ -283,7 +265,6 @@ labs/java/performance-deep/03-jfr-streaming/STEP_BY_STEP.md,65,65,100,0
 labs/java/performance-deep/03-jfr-streaming/VISUAL_GUIDE.md,58,58,100,0
 labs/java/performance-deep/03-jfr-streaming/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/performance-deep/04-memory-leaks/ARCHITECTURE.md,73,73,100,0
-labs/java/performance-deep/04-memory-leaks/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/performance-deep/04-memory-leaks/COMMON_MISTAKES.md,83,83,100,0
 labs/java/performance-deep/04-memory-leaks/DEBUGGING.md,76,76,100,0
 labs/java/performance-deep/04-memory-leaks/INTERNALS.md,92,92,100,0
@@ -295,7 +276,6 @@ labs/java/performance-deep/04-memory-leaks/STEP_BY_STEP.md,65,65,100,0
 labs/java/performance-deep/04-memory-leaks/VISUAL_GUIDE.md,58,58,100,0
 labs/java/performance-deep/04-memory-leaks/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/performance-deep/05-gc-log-analysis/ARCHITECTURE.md,73,73,100,0
-labs/java/performance-deep/05-gc-log-analysis/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/performance-deep/05-gc-log-analysis/COMMON_MISTAKES.md,83,83,100,0
 labs/java/performance-deep/05-gc-log-analysis/DEBUGGING.md,76,76,100,0
 labs/java/performance-deep/05-gc-log-analysis/INTERNALS.md,92,92,100,0

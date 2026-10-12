@@ -8,34 +8,44 @@ The Just-In-Time (JIT) compiler is the JVM's secret weapon for performance. It t
 
 ## 1. Compilation Tiers
 
-| Tier | Compiler | Trigger | Optimization Level |
-|------|----------|---------|-------------------|
-| 0 | Interpreter | First execution | None |
-| 1 | C1 (Client) | Low threshold | Basic optimizations |
-| 2 | C1 (Client) | Higher threshold | More optimizations |
-| 3 | C2 (Server) | High threshold | Aggressive optimizations |
-| 4 | C2 (Server) | Highest threshold | Full optimization + profiling |
+| Tier | Compiler | Profiling | Role |
+|------|----------|-----------|------|
+| 0 | Interpreter | collects (invocation + back-edge counters) | first execution, profiling source |
+| 1 | C1 | none | quick compile, no profiling overhead |
+| 2 | C1 | limited (invocation counters only) | stepping stone, rare to rest here |
+| 3 | C1 | full (branch + type profiles) | profile-rich code feeding C2 decisions |
+| 4 | C2 | uses profiles gathered at tiers 0–3 | fully optimized, speculative |
 
-### Tier Thresholds (Default)
+(Tier 3 is C1 *with* profiling — not C2. C2 exists only at tier 4.)
 
-| Tier | Invocation Counter | Back-edge Counter |
-|------|-------------------|-------------------|
-| 0 → 1 | 1,500 | N/A |
-| 1 → 2 | 5,000 | 10,000 |
-| 2 → 3 | 10,000 | 20,000 |
-| 3 → 4 | 15,000 | 30,000 |
+### Tier Thresholds (measured defaults, JDK 23 via `PrintFlagsFinal`)
 
-*Counters reset on class redefinition, GC, deoptimization.*
+| Transition | Invocation threshold | Back-edge (loop) threshold |
+|------------|---------------------|----------------------------|
+| → tier 3 (C1 full profile) | 200 (`Tier3InvocationThreshold`) | 60,000 (`Tier3BackEdgeThreshold`) |
+| → tier 4 (C2) | 5,000 (`Tier4InvocationThreshold`) | 40,000 (`Tier4BackEdgeThreshold`) |
+
+Compile thresholds (`Tier3CompileThreshold=2000`, `Tier4CompileThreshold=15000`)
+scale the raw counters by method size and tier history — small methods
+compile sooner. (`CompileThreshold=10000` applies to the *non-tiered*
+path, not the default tiered pipeline.) A previous revision of this file
+listed 1500/5000/10000-style values — those belong to no current default;
+the table above was read off the running JVM.
+
+*Counters decay (not just reset) across GC/safepoints and drop on
+redefinition and deoptimization — hotness is a moving average, not a
+latch.*
 
 ---
 
 ## 2. Compilation Pipeline
 
 ```
-Bytecode → Interpreter → C1 (Client) → C2 (Server)
-              ↓              ↓           ↓
-         Profiling       Light opts    Aggressive opts
-         Collection      (no profiling)  + profiling data
+Bytecode → Interpreter → C1 (tiers 1-3) → C2 (tier 4)
+              ↓              ↓                  ↓
+         Counters +      Quick code;        Speculative,
+         branch/type     tiers 2-3 add      profile-driven,
+         profiles        profiling          deoptimizable
 ```
 
 ### C1 (Client Compiler)
@@ -65,9 +75,11 @@ foo() { bar(); }    foo() { ...bar body... }
 
 **Benefits**: Eliminates call overhead, enables further optimizations (constant propagation, dead code elimination).
 
-**Heuristics**:
-- Hotness (invocation count)
-- Method size (< 35 bytes default for C1, < 325 for C2)
+**Heuristics** (measured flag names, JDK 23):
+- Hotness (tier-3/tier-4 invocation thresholds above — C1 engages at ~200,
+  C2 at ~5000 invocations)
+- Method size (< 35 bytes `MaxInlineSize` for regular inlining,
+  < 325 bytes `FreqInlineSize` for hot call sites)
 - Recursion depth
 - Hotness of caller
 
@@ -123,7 +135,10 @@ When assumption fails:
 Compiled code → Uncommon trap → Interpreter → Recompile (less aggressive) → Compiled
 ```
 
-**Cost**: ~100-500μs per deoptimization. Rare in steady state.
+**Cost**: a deoptimization round-trips through the interpreter and usually
+triggers recompilation — microseconds to low milliseconds per event, rare
+in steady state (which is why profiles stabilize: uncommon paths stay
+uncommon).
 
 ---
 
@@ -131,13 +146,13 @@ Compiled code → Uncommon trap → Interpreter → Recompile (less aggressive) 
 
 ### Inlining Decision Factors
 
-| Factor | C1 Threshold | C2 Threshold |
-|--------|--------------|--------------|
-| Method size (bytecode) | < 35 bytes | < 325 bytes |
-| Hotness (invocations) | > 1,500 | > 10,000 |
+| Factor | C1 | C2 |
+|--------|----|----|
+| Method size (bytecode) | < 35 bytes (`C1MaxInlineSize`) | < 35 regular / < 325 hot (`MaxInlineSize` / `FreqInlineSize`) |
+| Hotness (invocations) | ~200 (tier-3 entry) | ~5000 (tier-4 entry) |
 | Call site frequency | High | Very high |
 | Recursion | No | Limited depth |
-| Synchronization | No | Yes (with bias) |
+| Synchronization | Yes (lock coarsening/elision apply) | Yes |
 
 ### Inline Cache
 
@@ -184,8 +199,8 @@ available via GraalVM, not as a stock OpenJDK component.
 # Print assembly (requires hsdis)
 -XX:+PrintAssembly
 
-# Print deoptimizations
--XX:+PrintDeoptimizationDetails
+# Print deoptimizations (diagnostic; needs UnlockDiagnosticVMOptions)
+-XX:+UnlockDiagnosticVMOptions -XX:+TraceDeoptimization
 
 # Disable tiered compilation
 -XX:-TieredCompilation
