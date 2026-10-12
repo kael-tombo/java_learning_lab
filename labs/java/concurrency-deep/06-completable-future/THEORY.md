@@ -1,165 +1,121 @@
 # CompletableFuture — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-CompletableFuture chain, supplyAsync/runAsync, thenApply/thenCompose, allOf/anyOf, exceptionally/completeExceptionally
+`CompletableFuture<T>` is a *writable* future plus a *monadic* pipeline:
+stages (`thenApply`/`thenCompose`/`thenCombine`/`allOf`...) attached to a
+future fire when it completes, in *whatever thread completes it* — unless
+you pick the `*Async` variant with an explicit executor. Two ideas compose
+everything here: **completion triggers dependents**, and **the completing
+thread runs them** (the async variants only change *where* they run).
 
-### 2. Theoretical Foundation
-The CompletableFuture is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## Who Runs Your Stage: The Thread Rule
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+| Method shape | Runs in... |
+|---|---|
+| `thenApply(f)` (no executor) | the thread that completed the upstream stage — could be main, a pool thread, or the `complete()` caller |
+| `thenApplyAsync(f)` | `ForkJoinPool.commonPool()` (default) |
+| `thenApplyAsync(f, exec)` | your executor |
+| `supplyAsync(s)` | common pool (default) or given executor |
 
-### 3. Algorithmic Details
+Consequences:
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+- Non-async stages on an already-complete future run **synchronously in the
+  calling thread** — `completedFuture(1).thenApply(f)` never touches a pool.
+  Attaching chains to completed futures is free.
+- `*Async` without executor means the **common pool** — a CPU-count-sized
+  `ForkJoinPool` shared with parallel streams. Blocking I/O stages there
+  starve every other user (the classic "my parallel stream hung" incident is
+  usually a CF chain squatting the common pool). I/O-bound pipelines get a
+  dedicated executor, always.
+- Edge case from the source: `USE_COMMON_POOL = commonPoolParallelism > 1`
+  — on a single-CPU container the default silently becomes a
+  **thread-per-task executor**. Same code, unbounded threads, different
+  machine. Size your own pool if the deployment target varies.
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+## thenApply (map) vs thenCompose (flatMap)
 
-### 4. Trade-offs
+- `thenApply(x -> f(x))`: `T → U`, result `CF<U>`. Pure transformation.
+- `thenCompose(x -> cf(x))`: `T → CF<U>`, result `CF<U>` — flattened.
+  Using `thenApply` with a future-returning function gives the classic
+  `CF<CF<U>>` nesting bug (compiles, never the value you wanted).
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+Mnemonic from streams: `map` vs `flatMap`, identical distinction.
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+## Combining: thenCombine / allOf / anyOf
 
-### 5. Mathematical Basis
+- `a.thenCombine(b, (x, y) -> ...)`: waits for *both*, merges with a
+  function. `thenAcceptBoth`/`runAfterBoth` are the side-effect shapes.
+- `allOf(cf1, cf2, ...)`: `CF<Void>` — completes when **all** complete; it
+  carries **no values** (source signature: `allOf(CF<?>...) → CF<Void>`).
+  Extract results afterwards via `join()` on each input (all complete, so
+  `join` can't block). If any input failed, `allOf` completes exceptionally
+  — but a *different* input's exception may be the one surfaced.
+- `anyOf(...)`: `CF<Object>` — first completion wins (value *or* exception).
+  Cast the `Object` back yourself.
+- Neither allOf nor anyOf *cancels* the losers/leftovers — stray stages keep
+  running (and holding resources) unless you cancel them explicitly.
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+## Exceptions: Three Handlers, Three Contracts
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+| Handler | Input | Fires on... | Use |
+|---|---|---|---|
+| `exceptionally(f)` | `Throwable → T` | failure only | fallback value; result stays exceptional if f throws |
+| `handle((v, ex) -> ...)` | `(T, Throwable) → U` | always (value or null + ex or null) | unify success/failure into one type |
+| `whenComplete((v, ex) -> ...)` | peek, returns original | always | logging/metrics; cannot change the outcome |
 
-## Summary
-The CompletableFuture represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+Plus: `completeExceptionally(ex)` forces failure from the outside (the
+producer-side dual of `complete(v)`); `orTimeout(t)` /
+`completeOnTimeout(v, t)` (Java 9+) bound waiting in place — both return
+`this` and complete the future itself, not a derived stage.
 
-## Key Theorems
+`join()` vs `get()`: `join` throws *unchecked* `CompletionException`
+(wrapping the cause) — pipeline-friendly; `get` throws checked
+`ExecutionException` + `InterruptedException` — interop-friendly. Same
+outcome, different ceremony.
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+## cancel() Does NOT Interrupt (source-verified)
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+```java
+public boolean cancel(boolean mayInterruptIfRunning) {
+    boolean cancelled = (result == null) &&
+        internalComplete(new AltResult(new CancellationException()));
+    postComplete();
+    return cancelled || isCancelled();
+}
+```
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+`mayInterruptIfRunning` is **ignored** — there is no thread to interrupt
+(CF doesn't own its runners). Cancel only wins if the future hasn't
+completed yet; an already-running `supplyAsync` task runs to completion
+regardless, and dependent stages see `CancellationException`. True
+cancellation (interrupting a running task) requires owning the
+`Thread`/`Future` from your own executor (`ExecutorService.submit` +
+`future.cancel(true)`), not a CF chain.
 
-## Key Insights
+## The Stack Gotchas
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+- **Default-pool blocking**: `supplyAsync(() -> blockingIO())` on the
+  common pool + `join()` = pool starvation under load. Dedicated
+  bounded executor for blocking stages.
+- **`getNow(default)`** returns the value *or default if incomplete* — not
+  "wait briefly"; confusing it with a timed get is a silent-skew bug.
+- **`complete()` races**: first completion wins; late `complete()` calls
+  return `false` and are dropped silently. Exactly-once completion needs
+  external coordination.
+- **Exception swallowing in `allOf` chains**: `allOf(...).join()` throws the
+  *first-recorded* failure; sibling failures attach as suppressed — log the
+  full `CompletionException`, not just `getMessage()`.
+- **Recursive `*Async` self-submission to a tiny pool**: chain stages that
+  `join()` inner futures on a 1-thread executor deadlock against themselves
+  (thread waits for a stage that needs the same thread).
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+## Key Invariants
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. A stage runs in the completing thread (sync methods) or the designated
+   executor (async methods) — never anywhere else.
+2. `allOf` yields no values (`CF<Void>`); `anyOf` yields `Object`.
+3. Cancel is a state race, not an interruption — running tasks finish.
+4. The default executor is the common pool *when parallelism > 1*,
+   thread-per-task otherwise.
+5. First completion (value, exception, or cancellation) wins permanently.
