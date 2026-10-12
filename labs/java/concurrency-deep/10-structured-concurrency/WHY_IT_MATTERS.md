@@ -1,141 +1,59 @@
-# Structured Concurrency — Why It Matters
+# Why It Matters: What Scopes Buy You
 
-## Practical Importance
+## Containment by default
 
-### In Everyday Java Development
-Structured Concurrency appears in virtually every Java application:
-- Configuration maps and property bags
-- Caching frequently accessed data
-- Grouping and organizing objects
-- Managing collections of entities
-- Building REST API responses
-- Implementing business rules and workflows
+The block guarantees no subtask survives it. Code review stops asking
+"who shuts this down?" because the answer is always the closing brace.
+Leak audits shrink from whole-codebase thread hunts to checking that
+work actually runs inside scopes.
 
-### Performance Impact
-Choosing the right implementation can mean:
-- **10x-100x** difference in throughput for common operations
-- **Memory savings** of 30-50% in data-heavy applications
-- **Latency reduction** from O(n) to O(1) for critical paths
-- **Scalability improvements** in concurrent systems
+## Fail-fast without machinery
 
-### Common Use Cases
+One failing backend cancels its siblings and surfaces through
+`throwIfFailed()` — no latch, no atomic first-error slot, no manual
+cancel loop. Conjunctive fan-out (need every result) drops from dozens
+of coordination lines to fork-join-throwIfFailed.
 
-#### Enterprise Applications
-- Session management in web applications
-- Database result set caching
-- Configuration management and properties
-- Message routing and queuing
-- Entity state tracking in ORM frameworks
+## Hedging without races in user code
 
-#### Big Data Systems
-- In-memory data grids and caches
-- Stream processing state stores
-- Distributed cache nodes
-- Data partition management
+`ShutdownOnSuccess` turns replica racing into fork-join-result. The
+first answer wins, losers are cancelled, and no user-level race decides
+which exception masks which value. Retry-and-race logic that used to
+need careful `CompletableFuture.anyOf` plumbing becomes declarative.
 
-#### Real-Time Systems
-- Game state management
-- Financial trading systems (order books)
-- Telemetry data aggregation
-- Real-time analytics dashboards
+## Cancellation that actually propagates
 
-## Why Developers Should Care
+Policy-driven `shutdown()` interrupts every live subtask the moment the
+decisive completion lands. Siblings parked in interruptible calls wake
+immediately; the scope still reaps the stubborn ones at `close()`. The
+window between "outcome known" and "resources freed" collapses.
 
-### Interview Relevance
-This is one of the most common topics in Java interviews:
-- Implementation details and complexity analysis
-- Performance characteristics and trade-offs
-- Concurrent behavior and thread safety
-- Design decisions and alternatives
-- Use case selection criteria
+## Readable fan-out
 
-### Code Quality
-Understanding this topic leads to:
-- Better API design decisions
-- More performant applications
-- Fewer production incidents
-- Cleaner, more maintainable code
+Scoped code reads like sequential code with `fork` sprinkled in: fork
+handles, join once, use results. A newcomer traces one block instead of
+a graph of stages, callbacks, and executors. Onboarding cost for
+concurrent paths approaches that of straight-line code.
 
-### Career Impact
-Mastering these concepts:
-- Differentiates senior engineers from juniors
-- Enables architectural decision-making authority
-- Improves code review effectiveness
-- Builds debugging and profiling skills
+## Composable nesting
 
+Scopes inside subtasks give divide-and-conquer (lab 07's recursive
+shapes) failure propagation and containment the raw pool never had.
+Each level's `throwIfFailed()` converts child failure into the parent's
+unit of failure, so deep trees report coherently instead of partially.
 
-## Further Exploration
+## Enforcement over convention
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+Ownership and binding rules throw (`WrongThreadException`,
+`IllegalStateException`, `StructureViolationException`) instead of
+documenting wishes. Misuse fails loudly at the call site rather than
+corrupting results three methods away, which shortens debugging from
+hours to minutes.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## A stable core under a moving surface
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Preview syntax will keep shifting until finalization (JEP 505 reshaped
+parts after this lab's JDK 23 pin), but the five invariants — lexical
+containment, owner-only control, two policies, three subtask states,
+thread-per-subtask on virtual threads — carry across releases.
+Learning them pays off on every JDK from 21 onward.

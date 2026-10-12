@@ -1,120 +1,61 @@
 # StampedLock — Quiz
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in StampedLock?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1. What does `tryOptimisticRead()` return when a writer holds the lock?
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+**A.** 0 — which `validate` always reports as invalid. The caller must fall
+back to `readLock()`. Sampling under write hold never yields a usable stamp.
 
-## Question 3: Memory
-How much additional memory overhead does StampedLock have per element (approximately)?
+## Q2. What must an optimistic section avoid before validation?
 
-## Question 4: Concurrency
-Is StampedLock safe for concurrent access without external synchronization? Explain why or why not.
+**A.** All side effects and all uses of the data: no I/O, no mutation, no
+branching on it, and no inconsistency-intolerant operations (indexing,
+dividing, unbounded loops). Copy fields to locals, validate, then act.
 
-## Question 5: Scalability
-How does StampedLock perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q3. What does `validate(stamp)` actually check?
 
-## Question 6: Design
-Why was StampedLock designed this way? What alternatives were considered during its development?
+**A.** Whether the version bits of `stamp` still equal the version bits of
+current `state`, checked after a load fence. Equality means no write
+completed between sampling and the fence — the copied snapshot was stable.
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## Q4. `tryConvertToWriteLock` returns 0. What happened and what do you do?
 
-## Question 8: Comparison
-Compare StampedLock with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+**A.** Conversion was refused — other readers hold the lock or a writer
+intervened. Release the read hold with `unlockRead`, acquire `writeLock()`
+explicitly, re-check the condition that motivated the write, then mutate.
 
-## Question 9: Real-World
-Describe a real-world scenario where StampedLock is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Q5. Is StampedLock reentrant? What happens on re-acquire?
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+**A.** No. There is no owner tracking, so a second acquire (even from the
+holding thread) queues behind the first and waits forever — self-deadlock.
+Pass stamps into callees instead of re-acquiring.
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## Q6. What happens when you call `newCondition()` on either Lock view?
 
+**A.** Both throw `UnsupportedOperationException`. StampedLock has no
+wait-sets, so no `await`/`signal` exists. Use `ReentrantLock` for
+condition-based designs.
 
-## Further Exploration
+## Q7. Which unlock pairs with a converted stamp?
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+**A.** The generic `unlock(stamp)` dispatches on stamp bits and handles any
+stamp; typed `unlockRead`/`unlockWrite` are faster for unconverted stamps.
+Every acquired stamp needs exactly one matching unlock.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Q8. Why can stamps never serve as security capabilities?
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+**A.** They are finite, recycled after ~1 year of continuous operation, and
+documented as guessable ("not cryptographically secure"). A stale or
+guessed stamp may spuriously validate — it proves nothing about identity.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## Q9. When does optimism perform worse than a plain read lock?
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+**A.** When writer rate times window length is large: hot writers or long
+optimistic sections make most attempts fail, so reads pay attempt plus
+fallback — more than `readLock()` alone. Measure the crossover per
+workload; it is not a constant.
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## Q10. What is the sole-reader conversion guarantee?
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**A.** A single outstanding reader converts to write atomically via CAS,
+with no release/reacquire window for another writer to slip through.
+Contended conversion (multiple readers) is refused with 0 instead.

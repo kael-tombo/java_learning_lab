@@ -1,144 +1,55 @@
 # Phaser — Architecture
 
-## Design Goals
-1. **Performance**: Optimized for average-case O(1) operations
-2. **Memory Efficiency**: Minimal per-element overhead
-3. **API Consistency**: Follows Java Collections Framework interfaces
-4. **Fail-Fast Safety**: Detects concurrent modification during iteration
-5. **Serialization**: Supports standard Java serialization mechanism
+## Single packed state
 
-## Component Diagram
-```
-+--------------------------------------------------+
-|                   Interface                        |
-|         Map<K,V> / Collection<E>                   |
-+------------------------+-------------------------+
-                         | implements
-+------------------------v-------------------------+
-|              Abstract Class                        |
-|        AbstractMap<K,V> / AbstractCollection<E>    |
-+------------------------+-------------------------+
-                         | extends
-+------------------------v-------------------------+
-|              Concrete Class                        |
-|           MainImplementation<K,V>                  |
-+--------------------------------------------------+
-| - table: Node<K,V>[]                              |
-| - size: int                                       |
-| - modCount: int                                   |
-| - threshold: int                                  |
-| - loadFactor: float                               |
-+--------------------------------------------------+
-| + put(K,V): V                                     |
-| + get(K): V                                       |
-| + remove(K): V                                    |
-| + containsKey(K): boolean                         |
-| + keySet(): Set<K>                                |
-| + values(): Collection<V>                         |
-| + entrySet(): Set<Map.Entry<K,V>>                 |
-+--------------------------------------------------+
-```
+`Phaser` packs phase, party counts, and termination into one managed
+`long` state word (see `java.util.concurrent.Phaser` source): phase number
+in the high bits, registered/unarrived counts below, termination derived
+(negative phase). All updates go through CAS loops on that word, so
+arrival, registration, and advance are lock-free mutations with Treiber-ish
+retry — no `synchronized` anywhere on the hot path.
 
-## Package Structure
-```
-com.javalab.lab09
-+-- MainImplementation.java
-+-- MainImplementationTest.java
-```
+## Component map
 
-## Extension Points
-- Subclassing for specialized behavior
-- Custom equals/hashCode on key objects
-- Comparator injection for sorted variants
-- Serialization proxy pattern for custom serialization
+- **Arrival counters**: `arrive()` and `arriveAndAwaitAdvance()` CAS the
+  unarrived field down; the last arrival triggers the advance path.
+- **Waiter queue**: arriving-and-waiting parties park on an internal Treiber
+  stack of nodes keyed by phase; the advance unparks exactly the waiters of
+  the completed phase. `arrive()`-only parties never enqueue.
+- **Registration logic**: `register()`/`bulkRegister` CAS the registered
+  (and unarrived) counts up against the CURRENT phase — never retroactive.
+  Deregistration CASes them down while counting as an arrival.
+- **Advance engine**: on last arrival, runs `onAdvance(phase, parties)`;
+  false → publish phase+1 and unpark; true → publish terminated (negative)
+  state and release everyone.
+- **Tiering links**: a child holds a reference to its parent and registers
+  itself as one parent party; child advances propagate upward and parent
+  advances gate the child.
+- **Termination flag**: not a separate boolean — encoded as phase < 0, so
+  every reader (`getPhase`, `awaitAdvance`) observes it atomically.
 
-## Architectural Decisions
+## Data flow of one phase
 
-### Decision 1: Array-Based Backing Store
-Using arrays provides contiguous memory allocation for cache-friendly access,
-O(1) index-based bucket lookup, and simple resize via array copy.
+1. Parties registered (unarrived > 0).
+2. `arrive` calls decrement unarrived; non-final arrivals return (or park
+   for the await variants).
+3. Final arrival invokes `onAdvance`; per its return, publish next phase or
+   terminated state.
+4. Parked waiters of that phase unpark with the new phase value;
+   `arriveAndAwaitAdvance` callers observe k+1, `awaitAdvance(k)` callers
+   observe current != k.
 
-### Decision 2: Chain-Based Collision Resolution
-Chaining was chosen over open addressing because it provides better cache
-performance under high load, simpler deletion, and more predictable performance.
+## Why split arrive/await scales
 
-### Decision 3: Power-of-Two Sizing
-Capacities are powers of two enabling fast bitwise index calculation (hash & (capacity-1))
-and simplifying resize rehashing (entries split on hash & oldCapacity).
+Pure signallers (`arrive`) skip the waiter stack entirely — no node
+allocation, no park. Pure observers (`awaitAdvance`) skip arrival
+accounting. Only true rendezvous participants pay both, so producer-heavy
+and observer-heavy shapes cost less than a barrier that forces both on
+everyone.
 
+## Tiering topology
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Leaves rendezvous their local parties, then the leaf (as one parent party)
+arrives upward. Root advance cascades back down. Each tier adds one hop of
+latency per phase but divides contention: a 10k-party rendezvous becomes,
+for example, 100 groups of 100 instead of one 10k-wide CAS storm.

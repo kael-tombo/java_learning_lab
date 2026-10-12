@@ -1,120 +1,52 @@
-# Structured Concurrency — Quiz
+# Quiz: Structured Concurrency
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Structured Concurrency?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1: Which flags build the JDK 23 preview snippets?
+A: `javac --release 23 --enable-preview` to compile, `java
+--enable-preview` to run. Without them the preview types are invisible
+and the error mimics a missing import.
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## Q2: A scope forks two backends and needs both answers. Which policy
+and which calls?
+A: `ShutdownOnFailure`: `fork` both, `join()`, `throwIfFailed()`, then
+`get()` each handle. First failure cancels the sibling automatically.
 
-## Question 3: Memory
-How much additional memory overhead does Structured Concurrency have per element (approximately)?
+## Q3: Three replicas race; any single answer suffices. Which policy
+and which call reads the winner?
+A: `ShutdownOnSuccess<T>`: `fork` all three, `join()`, then `result()`.
+The first `SUCCESS` triggers shutdown of the losers.
 
-## Question 4: Concurrency
-Is Structured Concurrency safe for concurrent access without external synchronization? Explain why or why not.
+## Q4: A helper thread calls scope.join() and gets an exception. Name
+it and state the rule.
+A: `WrongThreadException`. Only the creating (owner) thread may
+`join()`, `close()`, or `result()`; subtask threads may only own nested
+scopes, never drive the outer one.
 
-## Question 5: Scalability
-How does Structured Concurrency perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q5: Code forks a subtask after the try block closed. What happens?
+A: `fork()` throws `IllegalStateException` immediately and starts no
+thread. Closed means closed — create a new scope for new work.
 
-## Question 6: Design
-Why was Structured Concurrency designed this way? What alternatives were considered during its development?
+## Q6: Forks happen after scoped values were rebound. What happens?
+A: `StructureViolationException`. Fork-time bindings must match the
+bindings captured at scope creation; subtasks inherit lexically.
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## Q7: After join(), handle X is SUCCESS, Y is FAILED, Z never finished.
+Give each state and one legal accessor.
+A: X is `SUCCESS` — `get()` returns the value. Y is `FAILED` —
+`exception()` returns the cause, `get()` throws. Z is `UNAVAILABLE` —
+only `state()` is meaningful; `get()` throws.
 
-## Question 8: Comparison
-Compare Structured Concurrency with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## Q8: joinUntil(Instant.now().plusMillis(200)) expires with a slow child
+running. What is thrown, and does anything leak?
+A: `TimeoutException` to the owner; nothing leaks because `close()` on
+block exit still waits for and shuts down the slow child.
 
-## Question 9: Real-World
-Describe a real-world scenario where Structured Concurrency is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Q9: Why did a compute-loop subtask delay block exit after shutdown()?
+A: It ignored thread interrupts, so shutdown's interruption had no
+effect until `close()` reaped it. Loops must poll the interrupt flag;
+blocking calls already throw on interrupt.
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
-
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Q10: When is thread-per-subtask with platform threads a mistake?
+A: Large fan-outs: each platform thread costs roughly a megabyte of
+stack, so hundreds of subtasks waste memory. Virtual threads are the
+intended carrier; nesting depth scales with them, not with platform
+threads.

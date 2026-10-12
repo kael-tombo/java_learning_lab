@@ -1,123 +1,62 @@
 # Phaser — Common Mistakes
 
-## Mistake 1: Incorrect equals/hashCode
-**Problem**: Custom objects used without properly overriding equals() and hashCode().
-**Effect**: Keys not found, duplicates occur, behavior unpredictable.
-**Fix**: Always override both methods. Use Objects.hash().
+## 1. Awaiting a stale getPhase() instead of your arrival
 
-## Mistake 2: Assuming Insertion Order
-**Problem**: Depending on specific iteration order without checking contract.
-**Effect**: Works in testing, fails in production with different implementation.
-**Fix**: Use LinkedHashMap/LinkedHashSet when order matters.
+```java
+// WRONG: phase may advance between sampling and awaiting
+int p = phaser.getPhase();
+doWork();
+phaser.awaitAdvance(p);   // may return instantly — rendezvous skipped
+```
 
-## Mistake 3: Concurrent Modification
-**Problem**: Modifying non-thread-safe collection while iterating.
-**Effect**: ConcurrentModificationException at runtime.
-**Fix**: Use concurrent collections or synchronize externally.
+Fix: `int k = phaser.arrive(); ... phaser.awaitAdvance(k);` or use
+`arriveAndAwaitAdvance()`. Only your arrival value has defined meaning.
 
-## Mistake 4: Using Mutable Keys
-**Problem**: Modifying key object after insertion into hash-based collection.
-**Effect**: Object in wrong bucket, cannot be found, memory leaks.
-**Fix**: Use immutable keys (String, Integer, records).
+## 2. Confusing the two return conventions
 
-## Mistake 5: Ignoring Initial Capacity
-**Problem**: Default capacity for large expected dataset.
-**Effect**: Multiple resizing operations degrade performance.
-**Fix**: Use constructor with initial capacity: new HashMap<>(expectedSize).
+`arrive()` yields the arrival phase k; `arriveAndAwaitAdvance()` yields
+k+1. Code that stores one and compares against the other is off by one
+forever: label variables `arrivalPhase` vs `advancedPhase` and never mix
+them.
 
-## Mistake 6: LinkedList Random Access
-**Problem**: Using LinkedList.get(index) in a loop.
-**Effect**: O(n^2) time complexity instead of O(n).
-**Fix**: Use iterator or ArrayList for random access.
+## 3. Forgetting deregistration on failure paths
 
-## Mistake 7: Stream Overuse
-**Problem**: Complex stream pipelines on large collections.
-**Effect**: Poor performance, high memory usage.
-**Fix**: Use simple loops for critical paths.
+A thread that dies between `register()` and its arrival holds the phase
+open forever — every survivor parks indefinitely. Wrap arrivals in
+`try/finally` with `arriveAndDeregister()` on the failure path, or give a
+supervisor `forceTermination()` authority.
 
-## Mistake 8: Not Trimming After Bulk Load
-**Problem**: Keeping oversized internal array after bulk loading.
-**Effect**: Wasted memory.
-**Fix**: Call trimToSize() after bulk loading.
+## 4. Registering and never arriving
 
-## Mistake 9: Assuming Thread Safety
-**Problem**: Using HashMap in multi-threaded context.
-**Effect**: Data corruption, infinite loops (pre-Java 8), lost updates.
-**Fix**: Use ConcurrentHashMap for concurrent access.
+Each `register()` adds an unarrived party the current phase must wait for.
+Spawn-then-crash without arrival wedges the phase identically to mistake
+3 — register immediately before starting the worker, and account for the
+slot if the start itself throws.
 
+## 5. Blocking inside onAdvance
 
-## Further Exploration
+`onAdvance` runs on the final arrival's thread with all parties parked.
+I/O, locking, or heavy scans there stall the entire rendezvous and risk
+deadlock (it re-enters locks waiters hold). Keep it a pure predicate on
+`(phase, registeredParties)` plus volatile flags.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 6. Treating termination like breakage
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Post-termination `arrive()` returns negative and awaits pass through —
+normal open-gate behavior, not errors. Code that throws on negative phases
+invents failures at exactly the computation's end. Check `isTerminated()`
+and exit cleanly.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 7. Orphaned tiers
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+A child created with `new Phaser(parent)` occupies one parent slot even
+with zero parties of its own. Forgetting to deregister empty children
+leaves the parent waiting on nothing — always pair tier creation with a
+deregistration path.
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## 8. Phase-overflow blindness
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+`int` phases wrap after 2^31 advances to negative (spurious termination).
+Only hot loops running months qualify — but guards of the form
+`phase < 0 → error` must instead consult `isTerminated()` and expected
+phase counts.

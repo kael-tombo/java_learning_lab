@@ -1,135 +1,68 @@
-# Structured Concurrency — Performance
+# Performance: Sizing Scopes
 
-## Time Complexity
+## Thread-per-subtask costs
 
-### Operation Costs
-| Operation | Average Case | Worst Case | Notes |
-|-----------|-------------|-----------|-------|
-| Insert    | O(1)        | O(n)      | Resizing or collisions |
-| Lookup    | O(1)        | O(n)      | Hash collisions |
-| Delete    | O(1)        | O(n)      | After locating element |
-| Contains  | O(1)        | O(n)      | Same as lookup |
-| Iteration | O(n)        | O(n)      | Traverses all elements |
-| Size      | O(1)        | O(1)      | Maintained as field |
+Each fork spends roughly one thread. On virtual threads that cost is
+small (heap-allocated stacks, scheduler parking); on platform threads
+it is roughly a megabyte of committed stack plus OS scheduling weight.
+Size the carrier to the fan-out: virtual by default, platform only for
+a handful of long-lived subtasks.
 
-### Amortized Analysis
-Individual operations may be expensive (resize), but amortized cost over a sequence
-of operations is O(1) for most data structures.
+## Virtual threads as the intended carrier
 
-## Memory Footprint
+Virtual-thread schedulers park blocked subtasks cheaply, so a fan-out
+of hundreds blocked on I/O stays affordable. Platform-thread pools
+cap out far earlier under the same shape. The scope API does not pick
+the carrier for you — construct subtask threads accordingly and keep
+the default virtual unless you have a measured reason.
 
-### Object Overhead
-- **Base object header**: 12-16 bytes (depending on JVM flags)
-- **Reference**: 4 bytes (Compressed OOPs) or 8 bytes
-- **int fields**: 4 bytes each
-- **Padding**: Aligned to 8-byte boundaries
+## Fail-fast shortens tail latency
 
-### Per-Element Storage
-| Structure | Per-Element Overhead | Cache Locality |
-|-----------|---------------------|----------------|
-| HashMap   | ~32 bytes + K + V   | Poor (chains) |
-| ArrayList | 4-8 bytes (ref)     | Excellent |
-| LinkedList| ~24 bytes (3 ptrs)  | Poor |
-| TreeMap   | ~40 bytes (4 ptrs)  | Poor |
+`ShutdownOnFailure` cancels siblings the instant the first failure
+lands, freeing their threads and downstream resources. Against manual
+cancel loops the win is the reaction gap: policy shutdown fires on the
+completing thread with no owner round-trip, so wasted work after a
+failure approaches zero for interruptible subtasks.
 
-## Optimization Techniques
+## Hedging trades redundancy for latency
 
-### CPU Cache Behavior
-- **Sequential access**: Array-based structures have excellent cache locality
-- **Pointer chasing**: Linked structures have poor cache locality
-- **False sharing**: Concurrent writes to adjacent memory cause cache line bouncing
+`ShutdownOnSuccess` spends N subtasks' work to buy the minimum latency
+across replicas. Worth it when replicas are cheap and tails hurt
+(slow-backend hedging); wasteful when every subtask is expensive and
+success times barely vary. Measure the latency spread before hedging.
 
-### JIT Compilation
-- **Inlining**: Small methods (get(), put()) are prime candidates for inlining
-- **Intrinsification**: System.arraycopy() is a hotspot intrinsic
-- **Branch Prediction**: Common-case fast paths benefit from predictable branching
-- **Loop Unrolling**: Iteration over arrays can be unrolled by JIT
+## joinUntil bounds worst-case waits
 
-### GC Impact
-- **Young Gen**: Short-lived iterators, temporary collections collected in young gen
-- **Old Gen**: Long-lived maps and caches promoted to old gen
-- **Allocation Rate**: Frequent resize causes allocation spikes
-- **Card Table**: Large collections increase GC root scanning overhead
+A deadline converts unbounded tail waits into a fixed budget plus
+`TimeoutException` handling. Set it from service budgets (e.g. caller
+SLA minus margin), not from average subtask time — the deadline guards
+the tail, and `close()` still reaps whatever was cut off.
 
-## Profiling Tools
-- **JMH**: Java Microbenchmark Harness for accurate microbenchmarks
-- **async-profiler**: CPU/wall-clock/allocation profiling
-- **JFR**: Java Flight Recorder event collection
-- **JOL**: Java Object Layout for memory analysis
+## Interruption responsiveness dominates
 
+An interruptible subtask frees its thread within microseconds of
+`shutdown()`; an interrupt-ignoring loop holds it until `close()`
+drags it out. Cancellation latency is a subtask property, not a scope
+property — profile the subtask's poll interval, not the scope.
 
-## Further Exploration
+## Nesting overhead is one scope per level
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+Each nesting level adds one scope object plus its latch — negligible
+against subtask work. Depth costs stack frames in recursive shapes
+(lab 07's divide-and-conquer), not scope machinery. Keep splitting
+while leaves hold real work; stop when the leaf body is cheaper than a
+fork.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Custom handleComplete must stay cheap
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+The hook runs on completing subtask threads that race each other, so
+keep it to counting and flagging under appropriate synchronization. A
+slow or contended override serializes completions and stretches join
+latency — record-and-shutdown, never compute, inside the callback.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## What to measure in this lab
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Block latency (fork-to-close), cancellation gap (decisive completion to
+sibling interrupt), thread count and carrier during fan-out, and wasted
+work after first failure/success. Four numbers tell you whether the
+scope shape pays for itself against the `invokeAll` baseline.

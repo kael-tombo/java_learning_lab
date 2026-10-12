@@ -1,134 +1,58 @@
 # StampedLock — Debugging
 
-## Debugging Strategies
+## Symptom: threads stuck, no progress (suspected self-deadlock)
 
-### Print-Based Debugging
-```java
-System.out.println("State: " + collection);
-System.out.println("Size: " + collection.size());
-System.out.println("Contains key X: " + collection.containsKey("X"));
-```
+A write-locked thread that re-acquires (directly or via a callee) parks
+behind itself forever. In a thread dump look for a thread in
+`StampedLock.writeLock/readLock` whose stack shows it already holds the
+same lock higher up the stack (e.g., outer method took `writeLock`, inner
+method takes it again). No `Blocked` on a monitor appears — it is parked
+on the StampedLock queue. Fix by passing the stamp down instead of
+re-acquiring; verify with a timed `tryWriteLock` probe that returns 0.
 
-### IDE Debugger Inspection
-Modern IDEs provide collection visualizers:
-- **IntelliJ IDEA**: Shows internal structure, hash codes, conflicts
-- **Eclipse**: Detail formatters for common collections
-- **VS Code**: Java Debug Extension with variable inspection
+## Symptom: validation fails constantly
 
-### JFR Events
-Java Flight Recorder captures collection-related events:
-- **Allocation events**: When collections allocate new backing arrays
-- **GC events**: Collection overhead during GC pauses
-- **Lock events**: Contention on synchronized collections
+Instrument: count `validate` false-returns per thousand reads. Sustained
+high rates mean the writer fraction times window length is too large
+(MATH_FOUNDATION's `wT` model). Confirm with writer throughput logging,
+then either shrink the optimistic body to bare field copies or switch the
+path to plain `readLock()`. Sporadic bursts point at a periodic writer
+(checkpoint thread, config reloader) — correlate timestamps.
 
-### Heap Dump Analysis
-```bash
-jmap -dump:live,format=b,file=heap.hprof <pid>
-```
-Use Eclipse MAT or JProfiler to analyze:
-- **Dominator tree**: Find largest collections
-- **GC root paths**: Why collections aren't collected
-- **OQL queries**: Filter specific collection types
+## Symptom: torn or impossible values despite locking
 
-### Thread Dump Analysis
-```bash
-jstack <pid> > threaddump.txt
-```
-Look for threads stuck in collection code, infinite resize loops, deadlocks.
+The optimistic body acted before validation, or a field was read twice
+(once for a check, once for use) with a write between. Audit that every
+guarded field is copied exactly once into a local, validated, and only the
+local is used thereafter. Watch for method calls on unvalidated data that
+read the fields a second time internally.
 
-## Debugging Tools
+## Symptom: UnsupportedOperationException from newCondition
 
-### JOL (Java Object Layout)
-```java
-System.out.println(GraphLayout.parseInstance(map).toFootprint());
-```
+Not a bug in your code's logic — it is the design. Both Lock views refuse
+conditions. Migrate the wait/notify shape to `ReentrantLock` plus its
+`Condition`, or restructure to polling/queue-based handoff.
 
-### jhsdb
-```bash
-jhsdb jmap --heap --pid <pid>
-jhsdb jmap --histo --pid <pid>
-```
+## Symptom: reader-count drift / IllegalMonitorStateException-ish failures
 
-## Debugging Checklist
-1. Check equals() and hashCode() implementations
-2. Verify collection is the correct type
-3. Confirm thread safety guarantees
-4. Check for ConcurrentModificationException patterns
-5. Verify initial capacity for expected data size
+A stamp unlocked twice, unlocked with the wrong typed method, or never
+unlocked. Map each acquire to its release in review: `readLock` pairs
+`unlockRead`, `writeLock` pairs `unlockWrite`, converted stamps pair
+`unlock`. Add assertions (`isReadLocked`/`isWriteLocked`) at scope exits
+in tests.
 
+## Symptom: conversion always returns 0
 
-## Further Exploration
+Either genuine reader fan-out (many concurrent readers — expected) or a
+leaked read hold somewhere keeping the count above one. Dump
+reader-holding threads and check for missing `unlockRead` on exception
+paths (missing `finally`).
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Tooling notes
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- `jstack` / `jcmd Thread.print`: StampedLock park sites appear as
+  `LockSupport.park` under `StampedLock.acquireWrite/acquireRead`.
+- For validation-rate studies, wrap `validate` in a counting helper rather
+  than sampling — the event is too cheap to observe externally.
+- Reproduce self-deadlock only with timed attempts (`tryWriteLock`) in
+  tests; the blocking form hangs the harness instead of failing it.

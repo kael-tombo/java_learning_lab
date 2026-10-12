@@ -1,161 +1,56 @@
 # StampedLock — Mental Models
 
-## Analogy 1: Library Index System
-Think of StampedLock like a library's book indexing system:
-- **HashMap**: The card catalog — find books quickly by title (key), but physical arrangement is arbitrary
-- **TreeMap**: The Dewey Decimal System — books organized in sorted order for range queries
-- **ArrayList**: A bookshelf where books are in order, easy to browse sequentially
-- **LinkedList**: A treasure hunt where each book contains a clue pointing to the next book
+## 1. The library photocopier
 
-## Analogy 2: Restaurant Kitchen
-- **HashMap**: The chef's ingredient bin — grab any ingredient instantly if you know its name
-- **TreeMap**: The walk-in refrigerator — ingredients sorted alphabetically for scanning
-- **ArrayList**: The counter prep line — ingredients in the order they'll be used
-- **LinkedList**: The dishwashing queue — each dirty dish points to the next in line
+Treat the guarded fields as a book in a library that a writer may replace
+at any moment. An optimistic read is glancing at the edition number,
+photocopying two pages, then checking the edition number again. Same number
+— your copies are a consistent pair. Different — shred them and borrow the
+book properly (read lock). Never cite the photocopies before checking.
 
-## Analogy 3: City Infrastructure
-- **HashMap**: A postal system — deliver mail using zip codes (hash codes) to neighborhoods
-- **TreeMap**: Street addresses — navigate by sorted street numbers
-- **ArrayList**: Apartment building — floors numbered sequentially, elevator access is O(1)
-- **LinkedList**: A circular bus route — each stop connects to the next, reaching specific stop requires riding through all previous
+## 2. Stamps are receipts, not keys
 
-## Conceptual Model: The Bucket Array
-Visualize the internal array as a row of buckets:
-```
-Bucket[0] -> Node(key1, val1) -> Node(key2, val2)  [2 elements]
-Bucket[1] -> null                                   [empty]
-Bucket[2] -> Node(key3, val3)                       [1 element]
-...
-Bucket[n] -> Node(key4, val4) -> ...                [chain]
-```
-Each bucket can hold multiple items chained together. The goal is to distribute items evenly.
+A stamp does not grant power the way a key does; it is a receipt saying
+"the world looked like version v when I asked." Receipts can be compared
+(validate), exchanged (convert), and redeemed (unlock) — but flashing an
+old receipt at the door proves nothing. Stamp 0 is a receipt the printer
+refused to print: valid nowhere.
 
-## Conceptual Model: Tree Self-Balancing
-For tree-based structures, think of a mobile hanging from the ceiling:
-```
-    +---+
-    | 8 |  <- New weight added, tilts
-    +---+
-   /     \
-+---+   +---+
-| 3 |   | 12|
-+---+   +---+
-```
-The tree rotates to rebalance:
-```
-    +---+
-    | 5 |  <- After rotation, 5 becomes root
-    +---+
-   /     \
-+---+   +---+
-| 3 |   | 8 |
-+---+   +---+
-         \
-        +---+
-        | 12|
-        +---+
-```
+## 3. Optimism is a bet with a hedge
 
-## Mental Framework: When to Use What
-```
-Need fast key-value access, no ordering?   -> HashMap
-Need sorted keys with range queries?       -> TreeMap
-Need insertion order preserved?            -> LinkedHashMap
-Need thread-safe concurrent access?        -> ConcurrentHashMap
-Need fast index-based access?              -> ArrayList
-Need fast insert/delete at ends?           -> LinkedList
-Need unique elements?                      -> HashSet/TreeSet
-Need min/max always available?             -> PriorityQueue
-```
+Every optimistic attempt is a bet ("no writer will land in my window") with
+a mandatory hedge (the read-lock fallback). The bet is nearly free, so even
+mediocre odds pay — until writers get frequent enough that you pay bet +
+hedge on most reads. Know your workload's writer fraction; that is the odds.
 
-## Memory Model Visualization
-```
-Thread A: write to volatile field
-    |
-    v  (StoreStore + StoreLoad barriers)
-    |
-    All threads see the write
-    |
-Thread B: read from volatile field
-    |
-    v  (LoadLoad + LoadStore barriers)
-    |
-    Thread B sees Thread A's write
-```
+## 4. The version clock
 
+Picture a clock that ticks once per completed write. Optimistic readers
+photograph the clock, read the data, then check the clock hasn't ticked.
+The ~1-year stamp-recycling caveat is the clock having finite digits: leave
+a photograph undeveloped for a year and the clock may have lapped around to
+the same display. Real code validates within microseconds; the model only
+matters as a reason stamps aren't capabilities.
 
-## Further Exploration
+## 5. Sole-reader upgrade as a door swap
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+Conversion from sole-reader to writer is swapping the door sign from
+"1 browser inside" to "closed for renovation" without ever unlocking the
+door — nobody slips through mid-swap. With two readers inside, the swap is
+refused (0): one of them must leave first, which is why the fallback
+releases and re-acquires explicitly.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 6. No-bouncer architecture
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+Reentrant locks have a bouncer who recognizes regulars (owner tracking) and
+waves them back in. StampedLock fired the bouncer to save salary (state).
+Everyone queues, including the owner — which is why re-entry deadlocks.
+Pass your stamp to callees like a hall pass instead of asking the missing
+bouncer for re-entry.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 7. The missing waiting room
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Conditions need a waiting room (wait-set) where threads sleep until
+signalled. StampedLock was built without one — both Lock views point at an
+empty lot and throw `UnsupportedOperationException`. If your design needs
+threads to sleep and be woken, you are in the wrong building entirely.

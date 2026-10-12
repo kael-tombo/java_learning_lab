@@ -1,150 +1,60 @@
-# Phaser — Internal Implementation
+# Phaser — Internals
 
-## Internal Architecture
+Source: `java.base/share/classes/java/util/concurrent/Phaser.java`
+(JDK 23). Every claim below names its anchor in that file.
 
-### Storage Layout
-The internal storage follows a specific memory layout designed for efficient access patterns
-and cache utilization. The primary structure uses an array-based backing store with specific
-growth and shrinkage policies.
+## Packed state word
 
-#### Array/Buffer Details
-- **Initial Capacity**: Default of 16 (HashMap) or 10 (ArrayList), configurable via constructor
-- **Growth Policy**: When capacity is exceeded, the internal array grows by a factor of 2x (HashMap) or 1.5x (ArrayList)
-- **Shrink Policy**: trimToSize() reduces capacity to match current size exactly
+One `volatile long state` encodes phase (high bits), parties, and unarrived
+counts via shifts and masks (`phaseShift`, `partiesShift`, `phaseMask`
+constants). Helpers `getPhase()`, `getRegisteredParties()`,
+`getUnarrivedParties()` are pure decodes — no locking, just bit
+extraction. Termination is `phase < 0` after sign extension, so
+`isTerminated()` is a single comparison.
 
-### Sentinel/Nil Nodes
-Many linked structures use sentinel nodes to simplify boundary conditions:
-- **Head Sentinel**: Precedes first real element, simplifies insertion at beginning
-- **Tail Sentinel**: Follows last real element, simplifies appending
-- **Nil Leaf**: Red-black trees use sentinel nil leaf to fix insertion/deletion fixup
+## arrive() vs arriveAndAwaitAdvance() returns
 
-### State Variables
+`arrive()` returns the phase its arrival counted toward (arrival phase k):
+the fast path CASes unarrived down and, when it was not the last arrival,
+returns k directly. `arriveAndAwaitAdvance()` instead parks (unless it was
+the final arrival driving the advance) and returns the phase observed on
+wakeup — the post-advance phase k+1, or a negative value if the advance
+terminated. That asymmetry is in the source's return paths, not convention.
 
-#### Modification Counter (modCount)
-Each mutating operation increments this counter. Iterators check modCount at the start of
-each iteration operation and throw ConcurrentModificationException if it changed since last check.
+## awaitAdvance(p) loop
 
-#### Structural Fields
-- **size**: Current number of elements stored
-- **capacity**: Current backing array length
-- **threshold**: Capacity * load factor, triggers resize when exceeded
-- **loadFactor**: Configurable density control (default 0.75)
+`awaitAdvance` reads current phase once: if it already differs from `p`,
+return immediately (no park — this is the stale-phase instant return).
+Otherwise enqueue on the waiter stack for phase `p` and park until the
+advance publishes a different phase or termination. Interruptible and
+timed overloads add the corresponding unpark conditions.
 
-### Internal Algorithms
+## onAdvance invocation context
 
-#### Hash Function
-The supplemental hash function spreads key hashes to reduce collisions:
-```java
-static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
-}
-```
-This XORs the high 16 bits into the low 16 bits to improve bit distribution.
+The advance path calls `onAdvance(phase, registeredParties)` inline on the
+thread that recorded the final arrival — while all other parties are
+parked. A slow override therefore stalls every party's wakeup; a throwing
+override propagates on that thread. Keep it a pure predicate of its
+arguments.
 
-#### Index Calculation
-```
-index = (capacity - 1) & hash
-```
-Bitwise AND replaces modulo when capacity is a power of two, which is much faster.
+## Registration CAS
 
-#### Treeification
-When a bucket chain exceeds TREEIFY_THRESHOLD (8), the linked list is converted to a
-red-black tree. This prevents O(n) worst-case lookup for poorly-distributed hash codes.
-The UNTREEIFY_THRESHOLD (6) is lower to prevent oscillation between list and tree.
+`register()`/`bulkRegister(int)` CAS-loop the state word: registered += n,
+unarrived += n, bound to the phase observed at loop entry. If the phase
+advanced mid-loop the CAS retries against the new phase — newcomers always
+land in the actually-current phase, never retroactively satisfy an old one.
 
-### Memory Barriers (Concurrent Variants)
-Concurrent variants use specific memory ordering guarantees:
-- **Volatile reads**: volatile fields establish happens-before relationships
-- **CAS operations**: Atomic compare-and-swap for lock-free updates
-- **VarHandle**: Opaque, acquire, release access modes
+## Deregistration accounting
 
-### Debugging Internals
-- **-XX:+PrintFieldLayout**: Shows object field layout in memory
-- **JHSDB**: HotSpot debugger for inspecting runtime structures
-- **JOL (Java Object Layout)**: Tool for measuring object memory footprint
+`arriveAndDeregister()` decrements unarrived (its arrival) AND registered
+(its departure) in one state transition; if it is the final arrival it
+also drives the advance. Zero-party advance → default `onAdvance` returns
+true → termination. That is the whole "shrink mid-run" mechanism.
 
-### Source Code Navigation
-Key internal methods to study in the JDK source:
-- HashMap: putVal(), getNode(), resize(), treeifyBin()
-- ConcurrentHashMap: putVal(), transfer(), addCount()
-- ArrayList: grow(), add(), remove(), subList()
-- LinkedList: linkFirst(), linkLast(), unlink(), node()
-- TreeMap: put(), getEntry(), fixAfterInsertion(), rotateLeft/Right()
+## Tiering mechanics
 
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+The child constructor registers with the parent (`parent.register()`),
+and child advances `arrive` upward through `parentArrive` plumbing while
+parent termination propagates down. A child with no parties of its own
+still occupies one parent slot until deregistered — orphan tiers must be
+cleaned up or the parent phase waits on an empty child.

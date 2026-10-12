@@ -1,161 +1,63 @@
-# Structured Concurrency — Step-by-Step Implementation
+# Step by Step: First Scope to Nested Tree
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab10/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab10/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Step 1: Set up the JDK 23 preview build
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
+Confirm `javac --version` reports 23, then compile every file here with
+`javac --release 23 --enable-preview` and run with `java
+--enable-preview`. A "cannot find symbol: StructuredTaskScope" error at
+this stage always means the flags are missing, not the import.
 
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab10;
+## Step 2: Fork two calls, join, combine
 
-import java.util.Objects;
+Write a `main` that opens `ShutdownOnFailure` in `try`-with-resources,
+forks a user fetch and an orders fetch, calls `join()` and
+`throwIfFailed()`, and prints both `get()` values combined. Run it and
+confirm the output reads like the sequential version of the same code.
 
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
+## Step 3: Break one branch on purpose
 
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+Make the orders fetch throw `IllegalStateException`. Re-run: observe
+`throwIfFailed()` surfacing that cause, the user handle no longer
+`SUCCESS`, and block exit still prompt. This is fail-fast working.
 
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
+## Step 4: Race two replicas for one answer
 
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
+Rewrite the block as `ShutdownOnSuccess<String>`: fork a fast-failing
+replica and a slow successful one, `join()`, print `result()`. Confirm
+the slow answer wins and the failure never surfaces — the mirror image
+of step 3's semantics.
 
-## Step 4: Implement Core Operations
+## Step 5: Add a deadline
 
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
+Wrap a 5-second sleeper in `ShutdownOnFailure` and replace `join()`
+with `joinUntil(Instant.now().plusMillis(200))`. Catch
+`TimeoutException`, print a one-line diagnosis, and confirm `close()`
+reaps the sleeper with no hang. Decide which of your earlier blocks
+deserve deadlines.
 
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
+## Step 6: Prove ownership to yourself
 
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
+From a second thread, call `join()` on a scope your main thread owns
+and record the `WrongThreadException`. Then delete the intruder and
+confirm the owner-only flow. Internalize: share values, never scopes.
 
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
+## Step 7: Inspect every handle state
 
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
+Build a three-subtask scope (success, failure, slow-cancelled) and
+after `join()` print `state()`, `get()`-or-throws, and `exception()`
+per handle. Match each line to `SUCCESS` / `FAILED` / `UNAVAILABLE`
+before moving on — state literacy pays off in every later step.
 
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
+## Step 8: Nest scopes recursively
 
+Implement the 0..99 split-sum: each level opens an inner
+`ShutdownOnFailure`, forks halves, joins, `throwIfFailed()`, adds the
+halves; the whole run sits in an outer scope. Assert 4950, then inject
+a leaf failure and watch it fold level by level into one outer failure.
 
-## Further Exploration
+## Step 9: Write one custom policy
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Subclass the scope with a `handleComplete` override that shuts down
+after two of three successes. Demonstrate the early shutdown, print the
+cancelled third handle's state, and keep the override synchronized —
+then compare its shape against the two built-ins you now know by heart.

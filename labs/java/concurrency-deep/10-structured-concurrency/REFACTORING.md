@@ -1,148 +1,66 @@
-# Structured Concurrency — Refactoring
+# Refactoring: Toward Scopes
 
-## Refactoring Patterns
+## From manual threads to ShutdownOnFailure
 
-### Pattern 1: Replace Array with Collection
-**Before**:
-```java
-String[] names = new String[100];
-names[0] = "Alice";
-int count = 1;
-```
-**After**:
-```java
-List<String> names = new ArrayList<>();
-names.add("Alice");
-```
+Before: `start()` two threads, `join()` both, hand-rolled first-error
+slot, forgotten interrupt on failure paths. After: fork both in a
+`ShutdownOnFailure` scope, `join()`, `throwIfFailed()`, read both
+`get()` values. Delete the error slot, the cancel loop, and the stray
+daemon audit — containment replaces all three.
 
-### Pattern 2: Replace Raw Type with Generics
-**Before**:
-```java
-List list = new ArrayList();
-list.add("hello");
-String s = (String) list.get(0);
-```
-**After**:
-```java
-List<String> list = new ArrayList<>();
-list.add("hello");
-String s = list.get(0);
-```
+## From ExecutorService.invokeAll to scopes
 
-### Pattern 3: Replace Legacy with Modern Variant
-**Before**: Hashtable, Vector, Stack (synchronized overhead)
-**After**: HashMap, ArrayList, ArrayDeque
+`invokeAll` bounds one call but leaves nesting and scoped-value flow
+manual. When the same fan-out appears at multiple levels, lift each
+level into its own scope: inner scopes own their children, inner
+`throwIfFailed()` folds child failure into one unit, and the outer
+scope sees clean per-branch outcomes instead of future lists.
 
-### Pattern 4: Fix LinkedList Random Access
-**Before**: list.get(i) in loop on LinkedList -> O(n^2)
-**After**: Enhanced for-loop or ArrayList
+## From CompletableFuture chains to scopes
 
-### Pattern 5: Introduce EnumMap for Enum Keys
-**Before**: Map<Color, String> map = new HashMap<>();
-**After**: Map<Color, String> map = new EnumMap<>(Color.class);
+Chains ending in `allOf(...).join()` with `exceptionally` handlers map
+to `ShutdownOnFailure` directly: each stage becomes a forked callable,
+the exceptionally logic becomes either `throwIfFailed()` propagation or
+explicit per-handle `exception()` inspection. Timeout stages using
+`orTimeout` (in-place, returns `this`) become `joinUntil(Instant)` on
+the scope — one deadline for the whole fan-out instead of per-stage
+timers.
 
-### Pattern 6: Use Empty Collection Constants
-**Before**: return new ArrayList<>(); // Allocates every call
-**After**: return Collections.emptyList(); // Reuses singleton
+## From anyOf races to ShutdownOnSuccess
 
-## Step-by-Step Refactoring
+`CompletableFuture.anyOf` plus manual cancellation of losers maps to
+`ShutdownOnSuccess`: fork each alternative, `join()`, `result()`. The
+loser-cancel loop disappears — first success triggers `shutdown()`
+inside the policy. Keep the alternatives' failure semantics in mind:
+unlike `anyOf`, scope failures never surface when a success exists.
 
-### Step 1: Identify the Problem
-- Profiling shows hotspot in collection code
-- Excessive allocations in GC logs
-- ConcurrentModificationException in logs
-- High memory usage from collections
+## Introducing a custom quorum
 
-### Step 2: Choose the Right Alternative
-- ArrayList vs LinkedList: Random access? Use ArrayList
-- HashMap vs TreeMap: Need sorted order? Use TreeMap
-- HashMap vs ConcurrentHashMap: Concurrent access? Use ConcurrentHashMap
+When "all" is too strict and "any" too loose (2-of-3 backends agree),
+subclass the scope and override `handleComplete` to count successes and
+`shutdown()` at quorum. Refactor incrementally: start from a working
+`ShutdownOnFailure` scope, move the completion counting into the hook,
+and keep the fork/join/close skeleton untouched.
 
-### Step 3: Migrate Carefully
-1. Change declaration to interface (if not already)
-2. Update constructor to new implementation
-3. Run existing tests
-4. Profile to verify improvement
+## Splitting an oversized scope
 
-### Step 4: Measure Impact
-- Throughput: Operations/second
-- Latency: Average and P99
-- Memory: Heap usage
-- GC: Pause time and frequency
+A scope forking unrelated work groups (billing plus search plus mail)
+splits into nested scopes per group inside one outer scope. Each inner
+scope gets the policy fitting its group; the outer scope (usually
+`ShutdownOnFailure`) folds group outcomes. Failure attribution improves
+because each group's `throwIfFailed()` names its own culprit.
 
+## Moving deadlines outward
 
-## Further Exploration
+Per-subtask timeouts scattered across callables consolidate into one
+`joinUntil` deadline at the scope. The refactor removes timer code from
+every leaf, makes the budget visible at the block header, and keeps
+cleanup uniform — `close()` reaps whatever the deadline cut off.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Carrier migration: platform to virtual
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Scopes written with platform-thread subtasks migrate by changing the
+thread factory to virtual threads, then raising fan-out to match the
+new budget. Re-measure block latency and thread count after the switch;
+the same scope shape that was wasteful at 200 platform threads is
+routine at 200 virtual ones. No policy or join logic changes.

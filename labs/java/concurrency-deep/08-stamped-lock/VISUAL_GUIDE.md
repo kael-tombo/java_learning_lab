@@ -1,123 +1,74 @@
 # StampedLock — Visual Guide
 
-## ASCII Architecture Diagrams
+## The three modes at a glance
 
-### Internal Array Structure
 ```
-+-------------------------------------------------------+
-|                  Backing Array                          |
-+------+------+------+------+------+------+------+------+
-|  0   |  1   |  2   |  3   |  4   |  5   |  6   |  7   |
-+------+------+------+------+------+------+------+------+
-|  K8  | null |  K3  | null | K1-->| null |  K5  |  K9  |
-|  V8  |      |  V3  |      | V1   |      |  V5  |  V9  |
-+------+------+------+------+--+---+------+------+------+
-                                 |
-                           +-----+-----+
-                           | K1 | V1   |
-                           +-----+-----+
-                           | K7 | V7   |
-                           +-----+-----+
+WRITE:        [W][version v]  exclusive; readers block, optimism returns 0
+PESS. READ:   [R=n][version v]  n readers coexist; writer waits for n -> 0
+OPTIMISTIC:   sample v ... copy fields ... validate(v still current?)
 ```
 
-### Hash Function Flow
-```
-Key "hello" -> hashCode() = 99162322
-             -> XOR high 16: 99162322 ^ (99162322 >>> 16) = 99160825
-             -> Index: 99160825 & (16-1) = 9
-             -> Bucket[9]
-```
+## Happy-path optimistic read (no writer)
 
-### Collision Chain
 ```
-Bucket[4] ---> +---------+    +---------+    +---------+
-               | Key: A  |    | Key: M  |    | Key: Z  |
-               | Val: 1  |--> | Val: 13 |--> | Val: 26 |
-               | hash:65 |    | hash:77 |    | hash:90 |
-               +---------+    +---------+    +---------+
+Reader                      State word
+  |  tryOptimisticRead() ---> [v7, no W]  returns v7
+  |  cx = x, cy = y           (plain reads)
+  |  validate(v7) ----------> [v7, no W]  MATCH -> use (cx, cy)
 ```
 
-### Resize Operation
+## Writer intervenes (validation fails)
+
 ```
-Before (capacity=4): size=4, threshold=3 -> RESIZE
-After (capacity=8): keys redistributed by hash & (newCap-1)
+Reader                      Writer                 State word
+  |  sample v7                 |                      v7
+  |  cx = x (old)              | writeLock, mutate    v7+W
+  |  cy = y ...                | unlockWrite          v8
+  |  validate(v7) --------> MISMATCH (v7 vs v8): discard, readLock, re-read
 ```
 
-## See DIAGRAMS/ directory for full resolution diagrams.
+## Stamp 0 path (writer holding at sample time)
 
+```
+Reader                      State word
+  |  tryOptimisticRead() ---> [W set]  returns 0
+  |  copy (may be mid-write!) 
+  |  validate(0) -----------> always FALSE -> fallback to readLock()
+```
 
-## Further Exploration
+Never skip validation: the 0 path still copies garbage first.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Upgrade outcomes
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+```
+SOLE READER:   readLock --tryConvert--> [W]  success, no window
+CONTENDED:     readLock --tryConvert--> 0     unlockRead + writeLock fallback
+OPT + FREE:    optimistic --tryConvert--> [W] success
+OPT + BUSY:    optimistic --tryConvert--> 0   take writeLock explicitly
+```
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Reentrancy trap
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+```
+Thread A: writeLock (held)
+Thread A: writeLock again ---> enqueued behind itself ---> waits forever
+(no owner field exists to notice both requests are from A)
+```
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+Sanctioned shape: pass the stamp INTO callees; never re-acquire inside.
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## Condition refusal
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+```
+asReadLock().newCondition()  ---> UnsupportedOperationException
+asWriteLock().newCondition() ---> UnsupportedOperationException
+(no wait-sets anywhere in the design)
+```
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Unlock pairing
+
+```
+readLock / writeLock / convert-success  --> exactly one unlock* each
+unlockRead  unlockWrite  unlock(stamp-generic, slower)
+NEVER double-unlock; NEVER skip; try/finally always.
+```

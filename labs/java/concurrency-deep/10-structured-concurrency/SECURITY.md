@@ -1,125 +1,61 @@
-# Structured Concurrency — Security
+# Security: Scopes and Least Surprise
 
-## Denial of Service via Hash Collisions
-The most significant security concern is hash collision attacks:
-- **Hash DoS**: Attacker crafts keys with identical hash codes
-- **Effect**: All keys map to same bucket -> O(n^2) operations
-- **Mitigation**: Treeification (Java 8+) converts long chains to red-black trees
-- **Defense**: Random hash seed (introduced in Java 8)
+## Containment limits blast radius
 
-## Hash Collision Attack Prevention
-```java
-// Java 8+ HashMap uses TreeNode after TREEIFY_THRESHOLD (8)
-// String.hashCode() randomization is available via:
--Djdk.map.althashing.threshold=512
-```
+A compromised or buggy subtask cannot outlive its block: `close()`
+reaps it even on exceptional exit. Long-lived exfiltration threads
+planted inside scoped work die with the scope, unlike strays from raw
+`start()`/`submit()` that persist for the JVM lifetime.
 
-## Serialization Security
-- Collections containing sensitive data require careful serialization
-- Override writeObject/readObject for custom serialization
-- Use transient modifier for sensitive internal data
-- Validate serialized data before deserialization
-- Be aware of deserialization gadget chains
+## Owner-only control blocks hijack
 
-## Thread Safety Guarantees
-- **Non-thread-safe variants**: External synchronization required
-- **Synchronized wrappers**: Per-method sync but compound ops not atomic
-- **Concurrent variants**: Thread-safe for individual operations
-- **Copy-on-write**: Safe iteration but memory-heavy
+`WrongThreadException` rejects any non-owner driving `join()`,
+`close()`, or `result()`. An attacker thread sharing the heap cannot
+prematurely join a victim's scope, steal its `result()`, or close it
+early — control stays with the creator by exception enforcement.
 
-## Memory Exposure via Unmodifiable Views
-```java
-List<Integer> internal = new ArrayList<>();
-List<Integer> view = Collections.unmodifiableList(internal);
-// Internal list still accessible via original reference!
-```
-Use defensive copying for true immutability:
-```java
-public List<Integer> getData() {
-    return List.copyOf(internal); // Creates immutable copy
-}
-```
+## Binding checks prevent context confusion
 
-## Security Checklist
-1. Validate all keys before insertion
-2. Do not expose internal arrays via reflection
-3. Use Collections.unmodifiableXxx for API returns
-4. Avoid using mutable objects as keys
-5. Consider ConcurrentHashMap for shared state
+`StructureViolationException` on fork under diverging scoped-value
+bindings stops privilege or tenant context from silently changing
+mid-scope. A subtask always runs under the bindings its scope captured,
+so tenant IDs, credentials, and locale handles propagate lexically
+rather than ambiently.
 
+## Failure messages as information channels
 
-## Further Exploration
+`throwIfFailed()` and per-handle `exception()` expose backend failure
+detail (class names, messages, causes). Log them server-side; do not
+forward raw causes to untrusted callers — wrap in a generic error at
+trust boundaries so replica topology and backend identity stay hidden.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Cancellation as denial-of-service hygiene
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Fail-fast and deadline (`joinUntil`) scopes bound how long attacker-
+slow backends can hold threads. A hung replica under `ShutdownOnSuccess`
+loses to faster answers and is interrupted; under `ShutdownOnFailure` a
+hung sibling dies with the first failure. Always pair untrusted fan-out
+with either a policy that shuts down or an explicit deadline.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Interrupt-ignoring subtasks as hold-open risk
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+A subtask that swallows interrupts extends block exit indefinitely,
+which a malicious or pathological callable can exploit to pin threads.
+Treat interrupt-honoring as a security property: audit subtask code for
+flag polling, prefer interruptible calls, and keep `joinUntil`
+deadlines on any scope touching untrusted work.
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## Custom handleComplete runs on attacker-influenced threads
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+The hook executes on completing subtask threads, which race. Keep it
+free of shared mutable state beyond properly synchronized counters —
+an unsynchronized override is both a correctness bug and a vector for
+inconsistent shutdown decisions under adversarial timing.
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+## Nesting and privilege layering
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Inner scopes inherit the subtask thread's context, so a privileged
+outer block must not fork untrusted callables where inner scopes could
+observe ambient authority. Structure untrusted work as leaves with
+minimal bindings; keep secret-bearing bindings above scopes that never
+fork outside trusted code.

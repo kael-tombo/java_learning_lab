@@ -1,154 +1,76 @@
-# Structured Concurrency — Exercises
+# Exercises: Structured Concurrency (JDK 23 Preview)
 
-## Beginner Exercises
+All tasks compile with `javac --release 23 --enable-preview` and run
+with `java --enable-preview`. Snippets are pinned to the JDK 23 surface
+and must be re-verified — never assumed — on later releases, since this
+API is still in preview, not final.
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of Structured Concurrency.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
-```
+## 1. Fan-out pair, all results required
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
-```
+Fork two callables under `ShutdownOnFailure`, `join()`,
+`throwIfFailed()`, combine both `get()` values. Predict the printed
+combination before running; then make one callable throw and record
+which exception `throwIfFailed()` surfaces and what the sibling's
+`state()` reads afterwards.
 
-## Intermediate Exercises
+## 2. Fail-fast timing proof
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+Fork a 5-second sleeper plus a 50 ms failure under
+`ShutdownOnFailure`. Time the block: `join()` plus `throwIfFailed()`
+must return far sooner than 5 seconds, proving the failure cancelled
+the sibling. Print both subtask states to confirm `FAILED` versus
+never-completed.
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
-```
+## 3. Hedged replicas, first success wins
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+Fork one failing fast replica and one slow successful replica under
+`ShutdownOnSuccess<String>`. After `join()`, assert `result()` equals
+the slow replica's answer. Swap the delays so both succeed at different
+times and note that exactly one answer is possible per run only when a
+single subtask can succeed — avoid asserting which racer wins.
 
-## Advanced Exercises
+## 4. Deadline with joinUntil
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+Fork a 5-second subtask under `ShutdownOnFailure` and call
+`joinUntil(Instant.now().plusMillis(200))`. Catch the expected
+`TimeoutException`, let `close()` run, and verify the process exits
+promptly with no lingering threads. Compare against an unbounded
+`join()` version and state when each shape is appropriate.
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 5. Ownership rejection
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
+Create a scope on the main thread, fork one subtask, then start a
+second thread that calls `scope.join()`. Record the exception class
+(`WrongThreadException`) and confirm the owner can still `join()`
+afterwards. Explain in one sentence why handing scope handles to other
+threads is always wrong while handing result values is fine.
 
-## Challenge Exercises
+## 6. Fork-after-close
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+Open and close a scope with no forks, then call `fork()` on the closed
+instance and record the `IllegalStateException`. Then verify the dual:
+`close()` without any prior `join()` on a live subtask still cleans up
+by timing block exit with a slow child inside.
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+## 7. State inspection drill
 
-## Bonus Exercises
+After a mixed join (one success, one failure, one cancelled sibling),
+print `state()`, `get()`-or-throws, and `exception()` for every handle.
+Match each handle to `SUCCESS` / `FAILED` / `UNAVAILABLE` and write down
+which accessor is legal in each state before checking against the run.
 
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
+## 8. Nested scopes compose
 
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
+Write a recursive sum over 0..99 that forks left/right halves inside an
+inner `ShutdownOnFailure` per level, with the whole computation inside
+an outer scope. Assert the total equals 4950. Then inject a failure in
+one leaf and trace how inner `throwIfFailed()` converts it into the
+outer scope's single failed unit.
 
+## 9. Custom quorum policy
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Subclass `StructuredTaskScope` with a `handleComplete` override that
+counts successes and calls `shutdown()` once two of three subtasks
+succeed. Keep the override thread-safe (completions race), collect
+partial values from `SUCCESS` handles after `join()`, and demonstrate
+the third subtask's cancellation when the quorum lands early.

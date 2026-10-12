@@ -1,161 +1,52 @@
-# Phaser — Step-by-Step Implementation
+# Phaser — Step by Step
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab09/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab09/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Exercise 1: three-phase rendezvous, exact returns
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
+1. `Phaser p = new Phaser(1); p.bulkRegister(2);` — 3 parties, phase 0.
+2. Start 2 workers looping `arriveAndAwaitAdvance()` 3 times.
+3. Main loops `arrivals[i] = p.arriveAndAwaitAdvance()` 3 times.
+4. Assert returns are exactly 1, 2, 3 (post-advance values).
+5. Assert `getPhase() == 3` and `getUnarrivedParties() == 3` (next phase
+   fully open), then `arriveAndDeregister()` for cleanup.
 
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab09;
+## Exercise 2: signal now, wait later
 
-import java.util.Objects;
+1. `new Phaser(1)` + `register()` = 2 parties (main + worker).
+2. Worker calls `int k = phaser.arrive();` then immediately proceeds
+   (set a flag proving it moved on), calling `awaitAdvance(k)` later.
+3. Main asserts phase still 0 and `getUnarrivedParties() == 1` (itself).
+4. Main calls `arriveAndAwaitAdvance()`; worker's pending await releases.
+5. Join, assert phase 1, deregister. Note: no barrier or latch permits the
+   split of step 2 across methods.
 
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
+## Exercise 3: shrink the barrier mid-run
 
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+1. Main + 2 workers rendezvous phase 0 together.
+2. Worker 0 calls `arriveAndDeregister()`; worker 1 and main call
+   `arriveAndAwaitAdvance()`.
+3. After phase 0, assert `getRegisteredParties() == 2`.
+4. Advance phase 1 with survivors; assert phase 2 reached with 2 parties.
 
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
+## Exercise 4: terminate on your predicate
 
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
+1. Subclass with `onAdvance` returning `phase >= 1 || parties == 0`.
+2. Advance once: assert phase 1, still alive.
+3. Advance again: assert `isTerminated()` and `getPhase() < 0`.
+4. Assert `arrive()` returns negative and `awaitAdvance(anything)` returns
+   at once — the open gate, with no exceptions anywhere.
 
-## Step 4: Implement Core Operations
+## Exercise 5: the stale-phase trap
 
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
+1. Single-party phaser: `int k = solo.arrive();` then
+   `awaitAdvance(k)` — assert instant return of k+1.
+2. Two-party phaser where the second party never arrives: observe that
+   awaiting a `getPhase()` snapshot has no defined meaning — always await
+   your own arrival's return. Never block a demo harness on this; use
+   `arriveAndDeregister` to exit cleanly.
 
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
+## Review checklist
 
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
-
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
-
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Arrival values feed awaits; `getPhase()` never does.
+- Every register has a matching arrival-or-deregister on all paths.
+- `onAdvance` is a predicate, not a work site.
+- Demos deregister main at the end so nothing outlives the test.

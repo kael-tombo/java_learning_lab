@@ -1,120 +1,64 @@
 # Phaser — Quiz
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Phaser?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1. What do the seven verbs each do?
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+**A.** `register`/`bulkRegister` add unarrived parties; `arrive` signals
+without waiting; `arriveAndAwaitAdvance` signals and waits;
+`arriveAndDeregister` signals and leaves; `awaitAdvance` and its
+interruptible twin wait without signalling; `onAdvance` decides
+termination at each advance.
 
-## Question 3: Memory
-How much additional memory overhead does Phaser have per element (approximately)?
+## Q2. `arrive()` returned 0 but `arriveAndAwaitAdvance()` returned 1. Why?
 
-## Question 4: Concurrency
-Is Phaser safe for concurrent access without external synchronization? Explain why or why not.
+**A.** Different conventions: `arrive()` yields the arrival phase k (the
+phase counted toward), while the combined call yields the post-advance
+phase k+1. Both observed the 0 → 1 advance; they just name different ends.
 
-## Question 5: Scalability
-How does Phaser perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q3. When does `awaitAdvance(p)` return?
 
-## Question 6: Design
-Why was Phaser designed this way? What alternatives were considered during its development?
+**A.** As soon as the current phase differs from `p` — advanced past it or
+terminated. If the phase already differs at call time it returns at once,
+which is why awaiting stale values silently skips rendezvous.
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## Q4. What does `register()` do to the current phase?
 
-## Question 8: Comparison
-Compare Phaser with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+**A.** Adds unarrived parties to it — the phase cannot advance until the
+newcomers arrive or deregister. Late joiners hold the phase; registration
+is never retroactive.
 
-## Question 9: Real-World
-Describe a real-world scenario where Phaser is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Q5. How does a Phaser terminate, and what does termination feel like?
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+**A.** `onAdvance` returns true (default: only at zero parties),
+`forceTermination()`, or `int` wraparound. Afterwards `getPhase() < 0`
+and every arrival/await passes through immediately — an open gate, with no
+exceptions (unlike a broken `CyclicBarrier`).
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## Q6. What must `onAdvance` never do?
 
+**A.** Block, lock, or do heavy work — it runs on the final arrival's
+thread while all parties wait. Keep it a pure predicate of
+`(phase, registeredParties)` and volatile flags.
 
-## Further Exploration
+## Q7. A thread dies between `register()` and arrival. Consequence and fix?
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+**A.** Its unarrived slot holds the phase open forever; survivors park
+indefinitely. Fix with `try/finally` + `arriveAndDeregister()` on failure
+paths, or supervisor `forceTermination()` as a breaker.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Q8. When is tiering (`new Phaser(parent)`) justified?
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+**A.** When arrival-CAS contention on one word dominates profiles
+(thousands of parties, hot phases). Children rendezvous locally; each
+occupies one parent slot. Single-level suffices until measured otherwise.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## Q9. Phaser vs CyclicBarrier vs CountDownLatch in one line each?
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+**A.** Phaser: dynamic reusable rendezvous with split signal/sync.
+Barrier: fixed-gang reunion with breakage semantics. Latch: one-shot
+countdown gate, never reusable.
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## Q10. What is the phase-overflow hazard?
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**A.** Phases are `int`s; 2^31 advances wrap to negative, reading as
+spurious termination. Realistic only for hot loops running months — but
+`phase < 0` guards must confirm via `isTerminated()` rather than assuming.

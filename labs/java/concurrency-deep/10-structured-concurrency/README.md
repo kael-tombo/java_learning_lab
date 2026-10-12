@@ -1,147 +1,63 @@
-# Structured Concurrency
+# Structured Concurrency (Lab 10)
 
-## Overview
-StructuredTaskScope, ShutdownOnFailure/Success, task scope hierarchy, cancellation propagation
+JDK 23 preview API: compile with `javac --release 23 --enable-preview`
+and run with `java --enable-preview`. Pinned to the JDK 23 surface
+because JEP 505 reshaped parts of the API later; concepts below are
+stable, syntax is version-pinned.
 
-## Learning Objectives
-- Understand the internal mechanics of Structured Concurrency
-- Implement working code that demonstrates core concepts
-- Analyze performance characteristics and trade-offs
-- Apply this knowledge in real-world Java applications
+## What this lab covers
 
-## Prerequisites
-- Java 21+
-- Basic understanding of Java collections framework
-- Familiarity with data structures and algorithms
+`java.util.concurrent.StructuredTaskScope` treats concurrent subtasks as
+owned by a lexical block. The `try`-with-resources block is the structure:
+nothing forked inside may outlive `close()`, failures route to the join
+point, and cancellation flows downward to live subtasks.
 
-## Lab Structure
-This micro-lab follows the standard 24-file pedagogical structure with 7 subdirectories for hands-on work.
+## The two built-in policies
 
-## Quick Start
-1. Navigate to the source directory: `src/main/java/com/javalab/10/`
-2. Review the main implementation class
-3. Run tests using: `mvn test` or `gradle test`
-4. Complete the exercises in EXERCISES.md
-5. Build the MINI_PROJECT to cement understanding
+- `ShutdownOnFailure` — conjunctive fan-out. Fork N subtasks, `join()`,
+  then `throwIfFailed()` rethrows the first failure. First failure calls
+  `shutdown()` so siblings are cancelled instead of orphaned.
+- `ShutdownOnSuccess<T>` — disjunctive race. First success triggers
+  shutdown; `result()` returns the winner. Use for hedged or replicated
+  requests where one answer is enough.
 
-## File Index
-| File | Description |
-|------|-------------|
-| README.md | Overview and navigation |
-| THEORY.md | Comprehensive theoretical foundation |
-| MATH_FOUNDATION.md | Mathematical prerequisites |
-| CODE_DEEP_DIVE.md | Detailed code walkthroughs |
-| EXERCISES.md | Practice problems with solutions |
-| QUIZ.md | Self-assessment questions |
-| ARCHITECTURE.md | Design and architectural considerations |
-| SECURITY.md | Security implications |
-| PERFORMANCE.md | Performance characteristics and optimization |
-| REFACTORING.md | Improving existing code |
-| DEBUGGING.md | Debugging strategies and tools |
-| COMMON_MISTAKES.md | Pitfalls and anti-patterns |
-| STEP_BY_STEP.md | Guided tutorial-style implementation |
-| VISUAL_GUIDE.md | Diagrams and visual explanations |
-| INTERNALS.md | Under-the-hood implementation details |
-| HOW_IT_WORKS.md | Step-by-step mechanical explanation |
-| MENTAL_MODELS.md | Analogies and mental frameworks |
-| HISTORY.md | Evolution across Java versions |
-| WHY_IT_MATTERS.md | Practical importance in real-world development |
-| WHY_IT_EXISTS.md | Historical context and motivation |
-| REFERENCES.md | Further reading and resources |
-| REFLECTION.md | Guided self-reflection prompts |
-| INTERVIEW.md | Common interview questions |
-| FLASHCARDS.md | Spaced-repetition learning cards |
+Custom policies extend `StructuredTaskScope` and override `handleComplete`,
+invoked once per subtask completion. Quorum, deadline, and partial-result
+shapes all build on that single hook.
 
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| MINI_PROJECT/ | Small hands-on project |
-| REAL_WORLD_PROJECT/ | Production-scale project |
-| CHALLENGE/ | Advanced challenge problems |
-| TESTS/ | Unit and integration tests |
-| BENCHMARK/ | Performance benchmarks |
-| DIAGRAMS/ | Visual aids and architecture diagrams |
-| SOLUTION/ | Solutions to exercises and projects |
+## Ownership in one paragraph
 
-## Time Estimate
-- Reading: 30-45 minutes
-- Exercises: 45-60 minutes
-- Mini Project: 60-90 minutes
-- Total: 2-3 hours
+Only the thread that created a scope may `join()`, `close()`, or read
+`result()`; any other thread gets `WrongThreadException`. Forking after
+`close()` throws `IllegalStateException`. Forking under different
+scoped-value bindings than creation throws `StructureViolationException`.
+Subtask threads may fork nested scopes — nesting composes level by level.
 
+## Subtask handles
 
-## Further Exploration
+Each `fork()` returns a `Subtask` with `state()` (`UNAVAILABLE` while
+running, then `SUCCESS` or `FAILED`), `get()` (value, unchecked after a
+successful join), and `exception()` (the failure or null). The built-in
+policies usually hide this layer behind `throwIfFailed()` / `result()`.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Bounded waits and cleanup
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+`joinUntil(Instant)` waits until a deadline and throws `TimeoutException`
+on expiry. `close()` without a prior `join()` still waits for and shuts
+down leftovers — explicit `join()` first stays the idiom because join
+states what you wait for while close only guarantees cleanup.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Threading model
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+One thread per subtask. That design assumes cheap threads: size scopes
+with virtual threads, not platform threads. Hundreds of platform-thread
+subtasks waste roughly a megabyte of stack each; virtual threads make
+thread-per-subtask affordable and let nesting scale.
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## How to work this lab
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Read THEORY.md, then CODE_DEEP_DIVE.md — both are source-verified
+against JDK 23 and never contradicted here. Then pick a path: HOW_IT_WORKS
+for the lifecycle, STEP_BY_STEP for a guided build, EXERCISES for runnable
+preview-API tasks, QUIZ and FLASHCARDS for recall, DEBUGGING for the four
+enforcement exceptions, PERFORMANCE for sizing numbers.

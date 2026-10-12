@@ -1,123 +1,62 @@
-# Structured Concurrency — Reflection
+# Reflection: Structured Concurrency
 
-## Guided Reflection Prompts
+## Containment
 
-### Understanding
-1. Before studying this micro-lab, what was your understanding of Structured Concurrency?
-2. What was the most surprising aspect of the internal implementation?
-3. How has your mental model of this concept changed after the deep dive?
+Where in your current codebase could a child task outlive its spawner
+today? Name one `start()` or `submit()` site and describe what
+`close()`-guaranteed containment would change about its shutdown audit.
 
-### Application
-4. In your current projects, where would Structured Concurrency be the right choice?
-5. Where have you seen Structured Concurrency used incorrectly in codebases you've worked with?
-6. Can you think of a system that would fail without the correct choice?
+## Policy choice
 
-### Design Trade-offs
-7. What design trade-offs does Structured Concurrency make and why?
-8. If you were redesigning it, what would you do differently?
-9. How do the performance characteristics affect your programming style?
+Take a fan-out you own: is it conjunctive (every result needed) or
+disjunctive (one answer suffices)? Which scope policy fits, and what
+does the current hand-rolled equivalent do with the losing branches?
 
-### Deeper Questions
-10. How does Structured Concurrency interact with the Java Memory Model?
-11. What role does Structured Concurrency play in concurrent systems?
-12. How does garbage collection behavior affect the choice?
-13. What are the limits? When should you use a database instead?
+## Failure routing
 
-### Teaching Others
-14. How would you explain Structured Concurrency to a junior developer?
-15. What analogy works best for conveying its core concepts?
-16. What common mistakes would you warn them about?
+When one branch of your fan-out fails, where does the exception go
+right now — and who cancels the siblings? Compare that path, step by
+step, with `join()` plus `throwIfFailed()` under `ShutdownOnFailure`.
 
-### Connection to Broader Topics
-17. How does Structured Concurrency relate to operating system data structures?
-18. What database concepts are similar?
-19. How do distributed systems use similar structures?
-20. What other programming languages implement this differently and why?
+## Ownership discipline
 
-## Self-Assessment
-- [ ] I can explain the time complexity of all operations
-- [ ] I can implement a simplified version from memory
-- [ ] I can identify when this is the wrong choice
-- [ ] I can debug common issues related to this concept
-- [ ] I can optimize code using this concept
-- [ ] I can teach the concept to others
+Do any of your helpers accept executors, futures, or latches they did
+not create? What would break if those handles followed the scope rule
+— creator drives, everyone else reads values — enforced by exception?
 
-## Learning Summary
-Write a brief summary (2-3 paragraphs) of what you learned and how you plan to apply it.
+## Deadline posture
 
+Which of your concurrent calls has an unbounded wait with no deadline?
+What budget would you set for `joinUntil`, and what should the catch
+block do with partial handle states when it fires?
 
-## Further Exploration
+## Interruption honesty
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+Do your subtasks honor thread interrupts, or would `shutdown()` leave
+them running until reaped? Pick one compute loop and sketch the flag
+poll that would make it cancellable.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Nesting opportunities
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+Where do you repeat fan-out bookkeeping at multiple levels (service
+calling services calling backends)? Sketch those levels as nested
+scopes and state what each level's `throwIfFailed()` would mean.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## Carrier awareness
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+Are your fan-outs sized for platform or virtual threads? Estimate one
+fan-out's thread count times per-thread stack cost and judge whether
+the current carrier is defensible.
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## Preview pragmatics
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+This API is preview (JDK 23 pin here, JEP 505 reshaping later). What is
+your migration plan when the spelling moves — and which of the five
+stable invariants would survive that move untouched in your code?
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Custom policy design
+
+What quorum, threshold, or partial-result rule would serve your domain
+better than all-or-first? Draft its `handleComplete` predicate in
+words: what it counts, when it calls `shutdown()`, and what the owner
+reads afterwards.
