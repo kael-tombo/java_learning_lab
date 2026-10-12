@@ -36,7 +36,6 @@ labs/java/concurrency-deep/09-phaser/STEP_BY_STEP.md,65,65,100,0
 labs/java/concurrency-deep/09-phaser/VISUAL_GUIDE.md,58,58,100,0
 labs/java/concurrency-deep/09-phaser/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/concurrency-deep/10-structured-concurrency/ARCHITECTURE.md,73,73,100,0
-labs/java/concurrency-deep/10-structured-concurrency/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/concurrency-deep/10-structured-concurrency/COMMON_MISTAKES.md,83,83,100,0
 labs/java/concurrency-deep/10-structured-concurrency/DEBUGGING.md,76,76,100,0
 labs/java/concurrency-deep/10-structured-concurrency/FLASHCARDS.md,77,77,100,0
@@ -674,7 +673,6 @@ labs/data-structures/23-dsu-rollbacks/MOCK_INTERVIEW.md,65,61,94,0
 labs/data-structures/27-count-min-sketch/MOCK_INTERVIEW.md,64,60,94,0
 labs/data-structures/33-treap/MOCK_INTERVIEW.md,64,60,94,0
 labs/data-structures/34-persistent-segment-tree/MOCK_INTERVIEW.md,65,61,94,0
-labs/java/concurrency-deep/10-structured-concurrency/THEORY.md,101,95,94,0
 labs/math/discrete-deep/01-logic-proofs/MATH_FOUNDATION.md,35,33,94,0
 labs/math/discrete-deep/02-set-theory/MATH_FOUNDATION.md,35,33,94,0
 labs/math/discrete-deep/03-combinatorics/MATH_FOUNDATION.md,35,33,94,0

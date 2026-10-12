@@ -1,171 +1,110 @@
 # Structured Concurrency — Theoretical Foundation
 
-## Core Concepts
+## Status Banner (read first)
 
-### 1. Fundamental Principle
-StructuredTaskScope, ShutdownOnFailure/Success, task scope hierarchy, cancellation propagation
+This lab targets the **JDK 23 preview API** (`--enable-preview --release
+23` — every snippet states its flags). The trail, all verified: incubator
+in 19 (JEP 428) and 20 (JEP 437); previews in 21 (JEP 453) through 25 (JEP
+505, *fifth* preview — still not final). JEP 505 reshaped parts of the API,
+so code below is pinned to the JDK 23 surface, and the concepts (which are
+stable) are called out separately from the syntax (which moved).
 
-### 2. Theoretical Foundation
-The Structured Concurrency is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## Core Concept
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+Unstructured concurrency (`thread.start()`, `executor.submit()`) lets a
+task outlive its spawner: the parent returns while children still run, fail
+silently, or leak. Structured concurrency inverts the default — a
+`StructuredTaskScope` is a **lexical scope that owns its subtasks**:
 
-### 3. Algorithmic Details
+```java
+try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+    Subtask<String> a = scope.fork(() -> fetchA());
+    Subtask<Integer> b = scope.fork(() -> fetchB());
+    scope.join();              // wait for all (or policy shutdown)
+    scope.throwIfFailed();     // rethrow first failure
+    return combine(a.get(), b.get());
+} // close() waits, then shuts down leftovers — no task escapes the block
+```
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+The `try`-with-resources *is* the structure: subtasks cannot outlive the
+block, failures propagate to the join point, and cancellation flows
+downward. If it looks like single-threaded code with `fork` sprinkled in,
+that resemblance is the entire design goal.
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+## The Two Policies (JDK 23)
 
-### 4. Trade-offs
+- **`ShutdownOnFailure`**: first failing subtask triggers `shutdown()` —
+  siblings are interrupted/cancelled; `join()` then `throwIfFailed()`
+  rethrows the *first* exception (wrapping runtime exceptions appropriately).
+  Use when subtasks are conjunctive (need all results: fan-out/fan-in).
+- **`ShutdownOnSuccess<T>`**: first *successful* subtask triggers shutdown;
+  `result()` returns it (throws `ExecutionException` if failures came first
+  with no success, `IllegalStateException` if nothing completed). Use for
+  hedged/redundant requests (race replicas, first-answer-wins).
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+Both extend `StructuredTaskScope<T>`; custom policies subclass it and
+override `handleComplete` (called per subtask completion — the extension
+point for quorum/deadline/partial-result policies).
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+## Ownership Rules (source-verified, JDK 23)
 
-### 5. Mathematical Basis
+The source enforces structure with exceptions, not documentation:
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+- Only the **owner thread** (the one that created the scope) may
+  `join()`/`close()`/`result()` — anyone else gets `WrongThreadException`.
+  Subtask threads *may* fork nested scopes (nesting composes).
+- `fork` after `close` → `IllegalStateException`.
+- `fork` requires the same scoped-value bindings as scope creation, else
+  `StructureViolationException` (structured concurrency + scoped values are
+  co-designed: bindings propagate lexically into subtasks).
+- `close()` without prior `join()` still waits/shuts down (the scope never
+  leaks threads by falling off the end) — but explicit `join()` first is
+  the idiom (join defines *what you wait for*; close defines *cleanup*).
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+## Cancellation Propagation
 
-## Summary
-The Structured Concurrency represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+`scope.shutdown()` interrupts/cancels all live subtasks; a subtask failure
+under `ShutdownOnFailure` triggers it automatically. Interruption flows the
+same channel as `ExecutorService` (thread interrupt flag) — subtasks must
+still honor it (blocking calls throw, compute loops must poll). What the
+scope *adds* over manual bookkeeping: no orphan can survive the block, and
+the first-failure-wins policy is three lines instead of latch-and-atomic
+machinery.
 
-## Key Theorems
+## Subtask States (JDK 23: UNAVAILABLE / SUCCESS / FAILED)
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+```java
+Subtask.State s = subtask.state();   // UNAVAILABLE (running), SUCCESS, FAILED
+subtask.get();        // value or throws (FAILED → exception)
+subtask.exception();  // the failure or null
+```
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+Inspect states after `join()` for partial-result patterns (custom policies);
+the two built-in policies hide this layer behind `throwIfFailed`/`result`.
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+## vs CompletableFuture Chains vs ExecutorService.invokeAll
 
-## Key Insights
+| | Scope | CF chains | invokeAll |
+|---|---|---|---|
+| Lifetime bound | lexical block (compiler-visible) | manual (or leaks) | call return |
+| Failure policy | built-in (failure/success) + custom | hand-rolled exceptionally/handle | first exception, others cancelled |
+| Cancellation | automatic downward | manual per-stage | `cancel(true)` each |
+| Threading | per-subtask thread (virtual-thread-first design) | pool-dependent | pool |
+| Nesting | natural (scopes in subtasks) | works, unstructured | works, unstructured |
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+The conceptual debt CF chains accumulate (who owns which stage, who cancels
+leftovers — lab 06's pitfalls) is exactly what the scope pays off. The price:
+preview status and the virtual-thread-first threading model (each subtask
+wants its own thread — platform-thread-per-subtask at scale is wasteful;
+virtual threads are the intended carrier).
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+## Key Invariants
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-
-- **JEP 453: Structured Concurrency (Preview)** (OpenJDK, Ron Pressler & Alan Bateman, created 2023-04-21, delivered in JDK 21) — https://openjdk.org/jeps/453 — The JEP's `handle()`/`ShutdownOnFailure` example shows subtask lifetimes confined to the `try (scope)` block with automatic short-circuit cancellation; apply that pattern in `src/main/java/com/javalab/10/MainImplementation.java` instead of manually cancelling `Future`s. Re-run `EXERCISES.md` Exercise 5 (concurrent access) and confirm no thread leaks when one subtask fails.
-- **JEP 453 § "Task structure should reflect code structure"** (same source/URL) — single-threaded `handle()` only starts `fetchOrder()` after `findUser()` completes, so failure implicitly skips the rest; mirror that in `SOLUTION/` by composing scope results only after `scope.join().throwIfFailed()`. Use `INTERVIEW.md` Q&A on "why not ExecutorService?" with the JEP's answer: `Future` permits unstructured join-by-any-thread, while `Subtask.get()` never blocks and is only valid post-join.
-- **JEP 453 § Observability (`jcmd Thread.dump_to_file -format=json`)** (same source/URL) — scopes render as a thread tree with parent references, unlike flat `ExecutorService` dumps; wire this into `DEBUGGING.md` by capturing a dump of a nested-scope run from `MainImplementation.java` and checking the forked threads appear as children of the scope owner.
+1. No subtask outlives its scope's block (close guarantees it).
+2. Only the owner joins/closes/reads results (`WrongThreadException`
+   otherwise).
+3. First failure (ShutdownOnFailure) or first success (ShutdownOnSuccess)
+   decides the scope; leftovers are shut down.
+4. `fork` after close, or under changed scoped-value bindings, is rejected.
+5. Subtask threading is thread-per-task — size with virtual threads, not
+   platform threads.
