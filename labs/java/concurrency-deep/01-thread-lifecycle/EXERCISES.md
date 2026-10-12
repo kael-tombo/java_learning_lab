@@ -1,154 +1,41 @@
-# Thread Lifecycle — Exercises
+# Exercises: Thread Lifecycle
 
-## Beginner Exercises
+## 1. Print every state (15 min)
+Write `States.java`: create a thread, print NEW; start it, print RUNNABLE; `join(50)` a sleeping thread, print TIMED_WAITING; block two threads on one `synchronized` guard, print BLOCKED from the loser; `wait()` one thread, print WAITING; join to end, print TERMINATED. APIs: `getState/start/sleep/synchronized/Object.wait/join`.
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of Thread Lifecycle.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
-```
+## 2. Prove BLOCKED != parked (20 min)
+Park thread A on `ReentrantLock.lock()` held by B, and thread C on `synchronized` held by D. Dump with `jstack`: A must show `WAITING (parking)`, C must show `BLOCKED (on object monitor)`. Explain the subsystem split in two sentences.
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
-```
+## 3. Interrupt matrix (20 min)
+Interrupt one thread in each of: `sleep`, `Object.wait`, `LockSupport.park`, `synchronized`-entry. Record: InterruptedException + cleared status (first two), silent return + preserved status (park), no effect (BLOCKED). Restore status where required.
 
-## Intermediate Exercises
+## 4. start() single-use proof (10 min)
+Start, join, then start again; catch and print `IllegalThreadStateException`. Replace with an executor resubmission achieving the "run twice" goal legally.
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+## 5. Virtual-thread dump reading (21+, 20 min)
+Launch 1,000 virtual threads parked on a latch; `jcmd Thread.print` and count WAITING lines. Repeat with 1,000 platform threads to feel the footprint difference; note where `synchronized` would pin carriers.
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
-```
+## Submission checklist
+- [ ] Each task ran on your JVM with output pasted. [ ] Predictions written before runs. [ ] One deliberate break-and-fix per lab recorded.
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+## 6. Daemon vs non-daemon exit (15 min)
+Task: start one daemon thread sleeping 60s and one non-daemon thread awaiting a 3s latch; record wall-clock process exit.
+Check: first run exits near 3s with the daemon line never printing; then make both daemon and watch the process exit immediately.
+APIs: `setDaemon/isDaemon/isAlive`; success = you can state which thread held the JVM open and why.
 
-## Advanced Exercises
+## 7. Dump-diff drill (20 min)
+Task: block 4 threads on one `synchronized` guard while 2 threads park on a held `ReentrantLock`; capture two `jstack` dumps 5s apart.
+Check: label every thread `BLOCKED (on object monitor)` vs `WAITING (parking)`, name the monitor holder by `<0x...>` address, and mark each thread stuck vs progressing.
+APIs: `jstack`, `synchronized`, `ReentrantLock.lock`; success = holder address traced identically in both dumps.
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+## 8. isAlive blind spot (10 min)
+Task: print `isAlive()` plus `getState()` for a never-started thread and for a started-then-joined thread.
+Check: both report `isAlive() == false` while states read NEW vs TERMINATED; write the two-line guard (`getState() == NEW` vs `== TERMINATED`) that distinguishes them.
+APIs: `isAlive/getState/join`; success = the guard stated without hedging, plus the restart attempt rejected with `IllegalThreadStateException`.
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
-
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
-
-## Challenge Exercises
-
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
-
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
-
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Submission additions
+- [ ] Dump excerpts pasted with BLOCKED vs parking tokens labeled per thread.
+- [ ] Interrupt-status values recorded after every wake (cleared vs preserved).
+- [ ] Virtual-thread counts (21+) reported separately from platform-thread counts.
+- [ ] The single-use `start()` rejection captured verbatim (`IllegalThreadStateException`).
+- [ ] Predictions-vs-runs table filled for at least the dump-diff and interrupt tasks.

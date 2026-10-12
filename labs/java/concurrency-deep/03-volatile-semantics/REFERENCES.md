@@ -1,118 +1,41 @@
-# Volatile Semantics — References
-
-## Official Documentation
-- [Java Collections Framework Overview](https://docs.oracle.com/javase/tutorial/collections/)
-- [HashMap JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html)
-- [Java Language Specification, Chapter 17](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)
-- [JEP Index](https://openjdk.org/jeps/0)
+# References: Volatile Semantics
 
 ## Books
-- **Effective Java, 4th Edition** — Joshua Bloch
-- **Java Concurrency in Practice** — Brian Goetz
-- **Modern Java in Action** — Raoul-Gabriel Urma
-- **Core Java, 12th Edition** — Cay S. Horstmann
-- **Algorithm Design Manual** — Steven Skiena
-- **Introduction to Algorithms (CLRS)** — Cormen, Leiserson, Rivest, Stein
+- Brian Goetz et al., *Java Concurrency in Practice* (2006) — safe publication, visibility vs atomicity, wait/notify idioms, atomic vs lock guidance.
+- Joshua Bloch, *Effective Java* (3rd ed.) — Item 3 (enum singleton vs DCL), synchronization and lazy-initialization guidance.
+- Doug Lea, *Concurrent Programming in Java* (1999) — monitor and lock-free foundations behind JSR-166.
 
-## Research Papers
-- "The Java Memory Model" — Manson, Pugh, Adve (POPL 2005)
-- "Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms" — Michael, Scott (1996)
-- "A Scalable Lock-Free Hash Table" — Triplett, McKenney, Walpole, Wienand (2010)
+## Specifications and FAQs
+- JLS 17.4 (memory model / happens-before), 17.1 (synchronization), 17.5 (final-field safety), 17.7 (non-atomic long/double).
+- JSR-133 FAQ by Bill Pugh (memory-model rationale, DCL fix). JSR-166 (Doug Lea, 2004, java.util.concurrent).
+- JEP 374 (biased locking retirement, JDK 15), JEP 444 (virtual threads, Java 21), JEP 193 (VarHandle, Java 9).
 
-## Blog Posts and Articles
-- [Baeldung: Java Collections Guide](https://www.baeldung.com/java-collections)
-- Inside Java: Collections Framework
-- [Shipilev: Java Memory Model Pragmatics](https://shipilev.net/blog/2016/close-encounters-of-jmm-kind/)
-- [Mechanical Sympathy](https://mechanical-sympathy.blogspot.com/)
+## Source and docs
+- OpenJDK JDK 23: `java.base/java/lang/Thread.java`, `java.base/java/lang/Object.java` (wait/notify), `java.base/java/util/concurrent/atomic/*`, `java.base/java/util/concurrent/atomic/Striped64.java` (cell javadoc), `java.base/java/lang/invoke/VarHandle.java`.
+- HotSpot: `objectMonitor.cpp`, `synchronizer.cpp`, `markWord.hpp`, `thread.cpp`.
+- `javap -c`, `jstack`, `jcmd Thread.print`, JFR `jdk.JavaMonitorEnter` documentation.
 
-## Tools
-- [JMH (Java Microbenchmark Harness)](https://github.com/openjdk/jmh)
-- [JOL (Java Object Layout)](https://openjdk.org/projects/code-tools/jol/)
-- [async-profiler](https://github.com/async-profiler/async-profiler)
-- [VisualVM](https://visualvm.github.io/)
-- [Eclipse MAT](https://eclipse.dev/mat/)
-- [GCeasy](https://gceasy.io/)
+## Lab-specific entry points
+- JLS 17.4.5 (volatile write->read edge); JSR-133 change list for DCL correctness condition.
+- `VarHandle` access-mode table (volatile vs acquire/release vs opaque) and array-element access.
 
-## Related Labs
-- Previous lab in module
-- Next lab in module
-- Performance Deep Dive labs
-- Concurrency Deep Dive labs
-- JVM Deep Dive labs
+## How to cite
+- Prefer JLS section + javadoc + source path over any blog. Every claim in THEORY.md traces to one line above.
 
+## Annotated: what to open first for visibility questions
+- JLS 17.4.5 (volatile write -> read edge): the single arrow every publication argument cites — read the section, not summaries of it.
+- JLS 17.4 (happens-before rules + transitivity): program order, monitor, lifecycle edges and their composition — the full chain vocabulary in one section.
+- JLS 17.5 (final-field safety): why immutable payloads publish without volatile — the exception that simplifies config/state design.
+- JLS 17.7 (word tearing): the permission that makes plain long/double reads unportable — one paragraph that ends all "works on my CPU" debates.
+- Bill Pugh's JSR-133 FAQ: the DCL failure execution and the volatile fix narrated by the model’s co-author — the historical proof in plain words.
+- Goetz et al., JCIP ch. 3 (sharing objects) and ch. 16 (memory model): safe-publication catalog, piggybacking, and the volatile-array trap as working rules.
 
-## Further Exploration
+## VarHandle and atomics entry points
+- `VarHandle` access-mode table (plain vs opaque vs acquire/release vs volatile): the unbundled cost ladder beneath the `volatile` keyword — descend only profiler-driven.
+- `VarHandle` array-element access (`getVolatile`/`setVolatile` over arrays): the per-element answer to the volatile-reference trap.
+- `AtomicIntegerArray` javadoc: per-element volatile semantics via intrinsics — the shipped alternative to hand-rolled element fences.
+- JSR-166 (Doug Lea, 2004): the per-action edge catalog (submit -> execute, countDown -> await) — transitivity applied to executors and synchronizers.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Hardware notes (qualitative sources)
+- x86 TSO descriptions (Intel SDM ordering chapter): loads-with-loads / stores-with-stores ordering that makes volatile reads nearly free — cite for cost intuition, never for correctness.
+- ARMv8 barrier documentation (`dmb ish` semantics): why both volatile directions need explicit fences off x86 — the portability warning in vendor words.

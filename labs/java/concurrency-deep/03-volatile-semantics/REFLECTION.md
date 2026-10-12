@@ -1,123 +1,39 @@
-# Volatile Semantics — Reflection
+# Reflection: Volatile Semantics
 
-## Guided Reflection Prompts
+## Recall without notes
+1. State the lab's key fact (Volatile gives visibility + access atomicity (incl. long/double) but NOT compound-action atomicity (volatile++ races: read-modify-write in three steps); DCL is correct only with volatile (or holder idiom/enum singleton); transitivity A->B->C chains edges; volatile reads are near-free on x86 (TSO) while writes need a fence, both directions need fences on ARM (qualitative only); volatile arrays cover the reference, never the elements.) in under 40 words.
+2. List the structures (volatile field access (JLS 17.4.5), program-order/monitor/lifecycle edges, StoreLoad fences (`xchg`+`lock` on x86, `dmb ish` on ARMv8), safe-publication piggybacking, `VarHandle` access modes) and one API each from (`volatile` field read/write, double-checked locking with volatile, `AtomicIntegerArray`/VarHandle array-element volatile access, `VarHandle.getAcquire/setRelease/getOpaque` (contrast)) that touches them.
 
-### Understanding
-1. Before studying this micro-lab, what was your understanding of Volatile Semantics?
-2. What was the most surprising aspect of the internal implementation?
-3. How has your mental model of this concept changed after the deep dive?
+## Connect
+3. Which invariant from THEORY.md did your STEP_BY_STEP.md probe demonstrate? Quote the probe output line that proves it.
+4. Where does this lab's mechanism meet the neighboring lab (lifecycle<->monitors<->volatile<->atomics)? Name one concrete handoff (e.g. BLOCKED vs parking, unlock edge vs volatile edge, CAS vs lock for one counter).
 
-### Application
-4. In your current projects, where would Volatile Semantics be the right choice?
-5. Where have you seen Volatile Semantics used incorrectly in codebases you've worked with?
-6. Can you think of a system that would fail without the correct choice?
+## Challenge your intuition
+5. Write the wrong version first (one COMMON_MISTAKES.md bug), predict its failure mode, then run it. Where did your prediction differ from the run?
+6. Which of your predictions relied on timing or fairness? Restate it using only specified edges and invariants.
 
-### Design Trade-offs
-7. What design trade-offs does Volatile Semantics make and why?
-8. If you were redesigning it, what would you do differently?
-9. How do the performance characteristics affect your programming style?
+## Transfer
+7. Name one place in your own codebase where the Java Memory Model happens-before edges for volatile fields: visibility, ordering, and limits is assumed but unchecked. What single edge, guard change, or API swap would make it checkable?
+8. What will you measure (PERFORMANCE.md harness) before claiming the fix helped?
 
-### Deeper Questions
-10. How does Volatile Semantics interact with the Java Memory Model?
-11. What role does Volatile Semantics play in concurrent systems?
-12. How does garbage collection behavior affect the choice?
-13. What are the limits? When should you use a database instead?
+## Exit ticket
+- Two sentences: what breaks, and which source (JLS 17.4 (happens-before), 17.5 (final-field safety), 17.7 (word tearing), JSR-133 (2004 memory-model rewrite), `VarHandle.java` (Java 9)) you would open first when it does.
 
-### Teaching Others
-14. How would you explain Volatile Semantics to a junior developer?
-15. What analogy works best for conveying its core concepts?
-16. What common mistakes would you warn them about?
+## Draw the chain (new prompts)
+9. Write the piggyback chain for your own config-reload path in -po-/-hb- symbols; circle the single cross-thread arrow and name its JLS rule.
+10. Exhibit the colliding `volatile++` schedule for two threads (both read 5, both write 6) and mark the edge-free gap the race lives in.
+11. State the DCL counterexample execution (reference visible, fields zero) as a legal schedule — then point at the keyword that removes it from the legal set.
 
-### Connection to Broader Topics
-17. How does Volatile Semantics relate to operating system data structures?
-18. What database concepts are similar?
-19. How do distributed systems use similar structures?
-20. What other programming languages implement this differently and why?
+## Break one link
+12. Take a working publication harness and move the flag write first; predict the failure in symbols, run it, and record where prediction and run diverged.
+13. Make the DCL field plain and stress it; characterize the outcome honestly (likely still passes — races hide) and explain why passing changes nothing about the verdict.
+14. Swap `AtomicIntegerArray` back to `volatile int[]` in the array exercise; name the exact hop that vanishes (element edge) while the reference edge stays.
 
-## Self-Assessment
-- [ ] I can explain the time complexity of all operations
-- [ ] I can implement a simplified version from memory
-- [ ] I can identify when this is the wrong choice
-- [ ] I can debug common issues related to this concept
-- [ ] I can optimize code using this concept
-- [ ] I can teach the concept to others
+## Transfer extension
+15. Find every cross-thread flag in your codebase; classify each as volatile/atomic/interrupt/plain — plain ones are bugs until proven single-threaded.
+16. Find every `++`/`+=` on a shared field; sort into AtomicLong/LongAdder/lock replacements with the contention level that picks the winner.
 
-## Learning Summary
-Write a brief summary (2-3 paragraphs) of what you learned and how you plan to apply it.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Exit-ticket extension
+- One more sentence: the hb arrow you omitted most often (po-vs-hb confusion, array trap, DCL keyword) and the incident that taught it.
+- File your StaleSpin numbers (plainSpins vs volSpins with BOUND) as the lab's receipt.
+- Name the weakest hb chain currently in your codebase (fewest explicit edges) and the single keyword that hardens it.

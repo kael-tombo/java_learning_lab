@@ -1,120 +1,46 @@
-# Synchronized Internals — Quiz
+# Quiz: Synchronized Internals
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Synchronized Internals?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+1. **What bytecodes implement a synchronized block, and why two exits?**
+   A: One monitorenter plus (at least) two monitorexit sites — normal path and exception-table path — so throwing still releases the monitor.
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+2. **Where do biased locks stand on JDK 15/18/23?**
+   A: Disabled by default in 15 (JEP 374), removed in 18, flag unrecognized on 23. Reason only about stack-locking vs inflated.
 
-## Question 3: Memory
-How much additional memory overhead does Synchronized Internals have per element (approximately)?
+3. **What lives in an inflated ObjectMonitor?**
+   A: OS mutex + condition state: _cxq contention queue, _EntryList, _WaitSet; the mark word points at it after inflation.
 
-## Question 4: Concurrency
-Is Synchronized Internals safe for concurrent access without external synchronization? Explain why or why not.
+4. **State the unlock->lock visibility rule and its scope.**
+   A: JLS 17.4: unlock on M happens-before later locks of M. Same monitor only — different objects share no edge even over the same fields.
 
-## Question 5: Scalability
-How does Synchronized Internals perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+5. **Why must wait() sit in a while loop?**
+   A: Spurious wakeups are legal and notifyAll can wake threads whose condition is already false again (stolen signal). Re-check after every return.
 
-## Question 6: Design
-Why was Synchronized Internals designed this way? What alternatives were considered during its development?
+6. **Do a static synchronized and an instance synchronized method on one class exclude each other?**
+   A: No — Class-object monitor vs this monitor are disjoint. Same-object instance pairs exclude; cross-object pairs do not.
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+7. **What do lock elision and coarsening do?**
+   A: JIT removes locks on non-escaping objects (elision) and merges adjacent same-monitor blocks (coarsening). synchronized-only benefits; library locks are opaque to these.
 
-## Question 8: Comparison
-Compare Synchronized Internals with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+8. **synchronized vs ReentrantLock: when does each win?**
+   A: synchronized: simplicity, JIT treatment, auto-release. ReentrantLock: lockInterruptibly, tryLock timeouts, fairness, multiple conditions; contention parks (WAITING) instead of BLOCKED.
 
-## Question 9: Real-World
-Describe a real-world scenario where Synchronized Internals is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Scoring
+- 7-8 correct: done. 5-6: re-read THEORY.md + INTERNALS.md. Below 5: redo STEP_BY_STEP.md before retrying.
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+9. **How do you prove the exceptional release exists for your own build?**
+   A: Compile a throwing synchronized block and run `javap -c -p`: one `monitorenter`, two `monitorexit` sites, plus an `Exception table:` routing the throw path to the second exit.
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+10. **Two threads guard one counter with two different lock objects. Exact or lossy?**
+    A: Lossy — different monitors share no happens-before edge (JLS 17.4, same-M only), so increments race despite both being "synchronized".
 
+11. **A waiter wakes from `wait()` but finds its predicate false. Name two legal causes.**
+    A: Spurious wakeup (spec-allowed, real on some platforms) and stolen signal (a `notifyAll` sibling consumed the condition first) — both are why the loop is `while`, not `if`.
 
-## Further Exploration
+12. **Why does holding a monitor across `sleep` or I/O hurt more than a long computation inside?**
+    A: Computation holds the fast path briefly; sleep/I/O hold exclusion for wall-clock time while waiters queue BLOCKED (uninterruptibly) — nanosecond mechanism, seconds-long serialization.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+13. **Your dump shows BLOCKED threads whose holder is parked in `LockSupport`. Which API is actually contended?**
+    A: Both, in layers: the BLOCKED threads want a `synchronized` monitor held by a thread that itself waits on a park-based primitive — fix the parked holder first; freeing it drains the BLOCKED queue.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## After scoring
+- For every miss, quote the proving line: `javap -c` output, dump token, or JLS section — no paraphrase accepted until the source line is pasted.

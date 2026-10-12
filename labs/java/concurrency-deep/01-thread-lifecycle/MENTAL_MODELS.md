@@ -1,161 +1,42 @@
-# Thread Lifecycle — Mental Models
+# Mental Models: Thread Lifecycle
 
-## Analogy 1: Library Index System
-Think of Thread Lifecycle like a library's book indexing system:
-- **HashMap**: The card catalog — find books quickly by title (key), but physical arrangement is arbitrary
-- **TreeMap**: The Dewey Decimal System — books organized in sorted order for range queries
-- **ArrayList**: A bookshelf where books are in order, easy to browse sequentially
-- **LinkedList**: A treasure hunt where each book contains a clue pointing to the next book
+## 1. Six words, no synonyms
+The JVM has exactly six words for thread posture: NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED. If your description needs a seventh word ("stuck", "zombie", "idle"), translate it into the six before diagnosing.
 
-## Analogy 2: Restaurant Kitchen
-- **HashMap**: The chef's ingredient bin — grab any ingredient instantly if you know its name
-- **TreeMap**: The walk-in refrigerator — ingredients sorted alphabetically for scanning
-- **ArrayList**: The counter prep line — ingredients in the order they'll be used
-- **LinkedList**: The dishwashing queue — each dirty dish points to the next in line
+## 2. RUNNABLE is the waiting room, not the stage
+RUNNABLE means the JVM is not holding the thread back; the OS may still have it queued for a CPU. A spinning loop and a productive worker are both RUNNABLE. Never read RUNNABLE as "executing now".
 
-## Analogy 3: City Infrastructure
-- **HashMap**: A postal system — deliver mail using zip codes (hash codes) to neighborhoods
-- **TreeMap**: Street addresses — navigate by sorted street numbers
-- **ArrayList**: Apartment building — floors numbered sequentially, elevator access is O(1)
-- **LinkedList**: A circular bus route — each stop connects to the next, reaching specific stop requires riding through all previous
+## 3. BLOCKED is a reserved seat with one name on it
+BLOCKED names exactly one cause: a `synchronized` monitor someone else holds. See BLOCKED in a dump and you hunt `- waiting to lock <0x...>` plus the holder's `- locked <0x...>` line. Anything parked (locks, queues, futures) is WAITING, not BLOCKED.
 
-## Conceptual Model: The Bucket Array
-Visualize the internal array as a row of buckets:
-```
-Bucket[0] -> Node(key1, val1) -> Node(key2, val2)  [2 elements]
-Bucket[1] -> null                                   [empty]
-Bucket[2] -> Node(key3, val3)                       [1 element]
-...
-Bucket[n] -> Node(key4, val4) -> ...                [chain]
-```
-Each bucket can hold multiple items chained together. The goal is to distribute items evenly.
+## 4. WAITING needs a letter; TIMED_WAITING also accepts the clock
+A WAITING thread moves only on an event (notify, unpark, join-target death, interrupt). A TIMED_WAITING thread additionally moves on expiry with no signal at all. When a wait never ends, ask which of the two promised arrivals never came.
 
-## Conceptual Model: Tree Self-Balancing
-For tree-based structures, think of a mobile hanging from the ceiling:
-```
-    +---+
-    | 8 |  <- New weight added, tilts
-    +---+
-   /     \
-+---+   +---+
-| 3 |   | 12|
-+---+   +---+
-```
-The tree rotates to rebalance:
-```
-    +---+
-    | 5 |  <- After rotation, 5 becomes root
-    +---+
-   /     \
-+---+   +---+
-| 3 |   | 8 |
-+---+   +---+
-         \
-        +---+
-        | 12|
-        +---+
-```
+## 5. getState is a photograph, not a steering wheel
+The javadoc restricts `getState()` to monitoring. Acting on another thread's photographed state races the shutter: the state changes between check and act. Steer with join/latch/future; photograph with getState/jstack.
 
-## Mental Framework: When to Use What
-```
-Need fast key-value access, no ordering?   -> HashMap
-Need sorted keys with range queries?       -> TreeMap
-Need insertion order preserved?            -> LinkedHashMap
-Need thread-safe concurrent access?        -> ConcurrentHashMap
-Need fast index-based access?              -> ArrayList
-Need fast insert/delete at ends?           -> LinkedList
-Need unique elements?                      -> HashSet/TreeSet
-Need min/max always available?             -> PriorityQueue
-```
+## 6. Virtual threads wear the same uniform, different logistics
+Same six states, but a parked virtual thread unmounts its carrier while a parked platform thread pins a kernel thread. Thousands of WAITING virtual threads is a healthy backlog; thousands of BLOCKED ones still cost carriers each (synchronized pins through JDK 23).
 
-## Memory Model Visualization
-```
-Thread A: write to volatile field
-    |
-    v  (StoreStore + StoreLoad barriers)
-    |
-    All threads see the write
-    |
-Thread B: read from volatile field
-    |
-    v  (LoadLoad + LoadStore barriers)
-    |
-    Thread B sees Thread A's write
-```
+## 7. Interrupts are three contracts sharing one method
+`sleep`/`wait` throw and clear; `park` returns silently and preserves; monitor entry ignores entirely. One `interrupt()` call, three outcomes — always ask which mechanism receives it before predicting anything.
 
+## 8. Dumps are photographs; diagnoses need film
+A single `jstack` cannot separate stuck from slow: identical stacks across two dumps 5s apart mean stuck, while moved monitor addresses mean progressing. Budget two captures plus CPU before concluding.
 
-## Further Exploration
+## 9. Daemons rent, non-daemons own
+A daemon thread rents JVM lifetime — the process may evict it mid-instruction with frames dropped. A non-daemon thread owns a share — the JVM cannot close until it terminates. Classify every thread you create at construction time.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 10. NEW and TERMINATED share a false friend
+`isAlive()` answers "started and not yet dead," so it reports false for both ends of life. Pair it with `getState()` whenever birth-vs-death matters — one boolean cannot carry a six-valued signal.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 11. join() is a finish line; getState() is a speedometer
+`join()` returning proves finality (TERMINATED, stable forever), so post-join reads are safe. `getState()` reports an instant that may already be history. Never substitute the speedometer for the finish line.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Drill
+- Take any production dump: label each thread's wake condition (event, expiry, monitor win, or none) before reading its stack.
+- Narrate one full lifecycle NEW -> RUNNABLE -> BLOCKED -> RUNNABLE -> TERMINATED for a contended worker without notes.
+- Explain to a peer why `ReentrantLock` contention never prints BLOCKED, using only the monitor-vs-park split.
+- Drill the interrupt split cold: name the status outcome (cleared, preserved, ignored) for `sleep`, `park`, and monitor entry in under ten seconds.
+- Recite the daemon-exit rule while pointing at a live `jcmd Thread.print`: every survivor you point at is non-daemon — no exceptions.
+- Name the wake condition (event, expiry, monitor win, none) for any thread in under five seconds — speed here is dump-reading fluency.

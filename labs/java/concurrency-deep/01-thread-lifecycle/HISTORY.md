@@ -1,146 +1,39 @@
-# Thread Lifecycle — History
+# History: Thread Lifecycle
 
-## Origins
-Thread Lifecycle has its roots in fundamental computer science research dating back to the 1950s and 1960s.
-The concept evolved through multiple iterations before becoming a standard part of the
-Java Collections Framework.
+## Green threads to platform threads to virtual threads
+- **1996, JDK 1.0 (James Gosling team, Sun):** `java.lang.Thread` with `start/join/sleep` and the six-state model foundations; early VMs used green threads (user-space scheduling).
+- **Late 1990s-2000s:** native-thread mapping becomes standard; `jstack` and thread-dump culture emerge as the primary production diagnostic.
+- **2004, JSR-166 (Doug Lea):** `java.util.concurrent` adds park-based primitives (`LockSupport`), so dumps learn the `WAITING (parking)` vs `BLOCKED (on object monitor)` split this lab drills.
+- **2023, Java 21 (JEP 444, Ron Pressler / Alan Bateman teams):** virtual threads ship; same six `Thread.State` values, unmounting carriers when parked, with `synchronized` pinning as the documented limitation through JDK 23.
 
-## Timeline
+## What changed and what did not
+- Scheduling substrates changed twice (green -> native -> virtual); the six-state vocabulary and the BLOCKED-means-monitor rule never changed.
+- `Thread.getState` javadoc has always restricted the API to monitoring, not control.
 
-### Pre-Java (1960s-1990s)
-- 1960: Initial theoretical work on underlying data structures by researchers
-- 1970s: Widespread adoption in academic systems programming (UNIX, Pascal)
-- 1980s: Standardization in C++ STL influenced Java's design significantly
-- 1995: Java 1.0 released with java.util.Hashtable and java.util.Vector
+## Dates to remember (confident facts only)
+- JSR-133 memory-model rewrite: 2004 (Java 5). JSR-166 concurrency utilities: 2004 (Java 5).
+- `LongAdder`: Java 8. `VarHandle`: Java 9. Biased locking off by default: JDK 15 (JEP 374); removed: JDK 18.
+- Virtual threads: Java 21 (JEP 444). *Java Concurrency in Practice* (Goetz et al.): 2006.
 
-### Java Evolution
+## Sources
+- REFERENCES.md entries for JLS 17.4/17.5/17.7, JSR-133 FAQ (Pugh), JSR-166, OpenJDK source paths.
 
-#### Java 2 (1998) — Collections Framework
-- Java 1.2 introduced the Collections Framework as a unified architecture
-- HashMap, ArrayList, LinkedList, TreeMap added to java.util
-- Collections utility class with sorting, searching, wrapping methods
-- Load factor concept formalized in java.util.HashMap
+## Why the six-state vocabulary survived
+- Each substrate change (green -> native -> virtual) reimplemented parking and blocking underneath while keeping the reported states fixed, so dumps stayed readable across decades.
+- The BLOCKED-means-monitor rule survived because the monitor subsystem stayed distinct from the park-based subsystem added by JSR-166 in 2004 — two mechanisms, two dump tokens.
+- `getState()` stayed monitoring-only through every revision: no release ever blessed branching on sampled states, because sampling races are structural rather than version-specific.
+- The daemon-exit rule never changed either: green, native, and virtual runtimes all exit when the non-daemon set empties, so shutdown reasoning ports across eras.
 
-#### Java 5 (2004) — Generics
-- JSR-14 added generics to the language
-- Collections gained type safety via generic type parameters
-- ConcurrentHashMap officially added in java.util.concurrent
-- java.util.concurrent.locks package introduced
-- EnumMap and EnumSet for enum-based keys
+## Mechanism depth on the dated entries
+- Green-thread era (JDK 1.0): user-space scheduling meant RUNNABLE covered even more ground — the VM multiplexed many Java threads onto few OS threads, so ready-vs-running was invisible by design.
+- Native-mapping era: dumps gained the parenthetical API tokens (`parking`, `sleeping`, `on object monitor`) because one WAITING value alone was not actionable — the token names the API that must supply the wake.
+- JSR-166 (2004, Doug Lea): `LockSupport.park` gave locks, queues, and futures a non-monitor wait, which is exactly when dump readers had to learn that contention no longer implies BLOCKED.
+- JSR-133 (2004) matters to lifecycle readers too: the `start()`/`join()` edges specified in JLS 17.4 are why joining a TERMINATED thread is a safe publication point, not merely a state observation.
+- JEP 444 (Java 21): virtual threads kept all six values and added unmount-on-park underneath; the `synchronized`-pins-carrier note (through JDK 23) is a scheduler limitation of that release range, not a seventh state.
+- Production practice stabilized on two dumps plus CPU (`jstack` twice, `top -H`): one dump is a photograph, two make a film — a technique independent of substrate.
 
-#### Java 8 (2014) — Major Overhaul
-- HashMap treeification: linked list -> red-black tree at TREEIFY_THRESHOLD=8
-- ConcurrentHashMap rewritten using CAS (removed segment-based locking entirely)
-- Stream API and lambda expressions changed collection usage patterns
-- Map interface gained default methods: getOrDefault, putIfAbsent, computeIfAbsent
-
-#### Java 9-11 (2017-2018)
-- List.of(), Set.of(), Map.of() factory methods for immutable collections
-- Immutable collection internal optimizations (compact storage)
-- Optional improvements for stream integration
-
-#### Java 17+ (2021+) — Modern Enhancements
-- SequencedCollection and SequencedMap interfaces (Java 21+)
-- HashMap treeified bin improvements
-- ConcurrentHashMap performance optimizations
-- Enhanced garbage collection interaction
-
-## Key Design Decisions
-
-### Why Power-of-Two Sizing?
-Hash-based collections use power-of-two capacities because it enables fast bitwise
-index calculation (hash & (capacity-1)) instead of expensive modulo operations.
-
-### Why 0.75 Load Factor?
-The default load factor of 0.75 represents a trade-off between time and space costs.
-Lower values (0.5) reduce collisions but increase memory. Higher values (0.9) save
-memory but increase lookup times.
-
-### Why Treeify at 8?
-The threshold of 8 for treeification balances the cost of tree nodes (larger memory
-footprint) against the O(n) lookup penalty for long chains. With good hash distribution,
-buckets rarely exceed 8 entries.
-
-## Impact
-This data structure has influenced countless applications and frameworks:
-- Database indexing strategies
-- Cache implementations (Caffeine, Guava Cache)
-- Distributed systems key-value stores
-- In-memory data grids (Hazelcast, Ignite)
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## How to use these dates
+- Cite the substrate (green/native/virtual) when an old dump looks alien; cite the subsystem (monitor vs park) when explaining any BLOCKED-vs-WAITING split.
+- When a guide predates 2004, check whether its "blocked" means modern BLOCKED or just "not running" — pre-JSR-166 writing often conflates them.
+- When a guide predates Java 21, its thread-count advice assumes platform threads; re-derive pool sizes before applying it to virtual-thread systems.
+- Treat any state-transition timing claim ("WAITING threads wake in X ms") as unportable folklore — the specification promises events and expiries, never latencies.

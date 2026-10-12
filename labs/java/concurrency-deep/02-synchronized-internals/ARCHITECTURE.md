@@ -1,144 +1,35 @@
-# Synchronized Internals — Architecture
+# Architecture: Synchronized Internals
 
-## Design Goals
-1. **Performance**: Optimized for average-case O(1) operations
-2. **Memory Efficiency**: Minimal per-element overhead
-3. **API Consistency**: Follows Java Collections Framework interfaces
-4. **Fail-Fast Safety**: Detects concurrent modification during iteration
-5. **Serialization**: Supports standard Java serialization mechanism
+## Components (real ones, not generic boxes)
+1. **Program layer** — your code calling `synchronized` blocks/methods, `Object.wait()/wait(t)/notify()/notifyAll()`, `ReentrantLock.lockInterruptibly/tryLock` (contrast), `-XX:+PrintFieldLayout`.
+2. **JDK layer** — object mark word (64-bit header: hash, GC age, lock bits), stack lock records (displaced mark word), inflated `ObjectMonitor` (`_cxq`, `_EntryList`, `_WaitSet`), exception-table second `monitorexit`.
+3. **JVM/HotSpot layer** — scheduler, park/unpark primitives, monitor subsystem; sources in `javap -c` (monitorenter + 2 monitorexit), HotSpot `objectMonitor.cpp`, `synchronizer.cpp`, `markWord.hpp`, JLS 17.1/17.4.
+4. **OS/hardware layer** — kernel threads, futexes/condition variables, cache coherence and fences.
 
-## Component Diagram
+## Structure
 ```
-+--------------------------------------------------+
-|                   Interface                        |
-|         Map<K,V> / Collection<E>                   |
-+------------------------+-------------------------+
-                         | implements
-+------------------------v-------------------------+
-|              Abstract Class                        |
-|        AbstractMap<K,V> / AbstractCollection<E>    |
-+------------------------+-------------------------+
-                         | extends
-+------------------------v-------------------------+
-|              Concrete Class                        |
-|           MainImplementation<K,V>                  |
-+--------------------------------------------------+
-| - table: Node<K,V>[]                              |
-| - size: int                                       |
-| - modCount: int                                   |
-| - threshold: int                                  |
-| - loadFactor: float                               |
-+--------------------------------------------------+
-| + put(K,V): V                                     |
-| + get(K): V                                       |
-| + remove(K): V                                    |
-| + containsKey(K): boolean                         |
-| + keySet(): Set<K>                                |
-| + values(): Collection<V>                         |
-| + entrySet(): Set<Map.Entry<K,V>>                 |
-+--------------------------------------------------+
++------------------- program -------------------+
+|  object monitors: monitorenter/monitorexit pairing, lock levels, and wait/notify protocol                      |
++--------------- JDK (Synchronized Internals) ----------------+
+|  object mark word (64-bit header: hash, GC age, lock bits), stack lock records (displaced mark word), inflated `ObjectMonitor` (`_cxq`, `_EntryList`, `_WaitSet`), exception-table second `monitorexit`   |
++----------- HotSpot / OS / hardware -----------+
+|  threads, monitors, fences, schedulers        |
++-----------------------------------------------+
 ```
 
-## Package Structure
-```
-com.javalab.lab02
-+-- MainImplementation.java
-+-- MainImplementationTest.java
-```
+## Data flow
+1. Application invokes one of: `synchronized` blocks/methods, `Object.wait()/wait(t)/notify()/notifyAll()`, `ReentrantLock.lockInterruptibly/tryLock` (contrast), `-XX:+PrintFieldLayout`.
+2. JDK maps the call onto object mark word (64-bit header: hash, GC age, lock bits), stack lock records (displaced mark word), inflated `ObjectMonitor` (`_cxq`, `_EntryList`, `_WaitSet`), exception-table second `monitorexit`.
+3. HotSpot/OS executes the primitive (thread state change, monitor op, fence, or CAS).
+4. Observable effect returns: state token, mutual exclusion, visibility edge, or updated value.
 
-## Extension Points
-- Subclassing for specialized behavior
-- Custom equals/hashCode on key objects
-- Comparator injection for sorted variants
-- Serialization proxy pattern for custom serialization
+## Key invariant
+- Biased locking disabled by default in JDK 15 (JEP 374), removed in JDK 18, flag unrecognized on JDK 23; uncontended stack-locking fast path costs on the order of ~10-20ns; wait/notify require monitor ownership (else IllegalMonitorStateException) with while-loop re-check; static (Class-object) and instance (this) monitors are disjoint; monitors are reentrant per thread; unlock->lock is a happens-before edge.
 
-## Architectural Decisions
+## Failure modes at this layer
+1. Misidentifying which component owns the state (e.g. wrong monitor object, wrong field, wrong atomic).
+2. Assuming ordering that no edge provides (see MATH_FOUNDATION.md for the exact edges).
+3. Confusing a monitoring signal (thread state, fuzzy sum) with a synchronization guarantee.
 
-### Decision 1: Array-Based Backing Store
-Using arrays provides contiguous memory allocation for cache-friendly access,
-O(1) index-based bucket lookup, and simple resize via array copy.
-
-### Decision 2: Chain-Based Collision Resolution
-Chaining was chosen over open addressing because it provides better cache
-performance under high load, simpler deletion, and more predictable performance.
-
-### Decision 3: Power-of-Two Sizing
-Capacities are powers of two enabling fast bitwise index calculation (hash & (capacity-1))
-and simplifying resize rehashing (entries split on hash & oldCapacity).
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Cross-references
+- Mechanism: HOW_IT_WORKS.md. Sources: INTERNALS.md. Costs: PERFORMANCE.md.

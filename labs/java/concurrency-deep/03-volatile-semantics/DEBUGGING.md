@@ -1,134 +1,43 @@
-# Volatile Semantics — Debugging
+# Debugging: Volatile Semantics
 
-## Debugging Strategies
+## Capture
+- Code search: every `volatile` declaration; every array-typed one is suspect (elements plain).
+- Every `++`/`+=`/check-then-act on a volatile field is a race until proven otherwise.
+- Every DCL-shaped null check must show the `volatile` keyword, the holder idiom, or an enum.
 
-### Print-Based Debugging
-```java
-System.out.println("State: " + collection);
-System.out.println("Size: " + collection.size());
-System.out.println("Contains key X: " + collection.containsKey("X"));
-```
+## Decode symptoms
+- Stale flag (reader never sees update) -> missing volatile/edge on the flag.
+- Half-constructed object via DCL -> field not volatile.
+- Lost increments under load -> volatile counter instead of AtomicLong/LongAdder.
+- Element-visibility failure -> volatile array reference mistaken for volatile elements.
+- ARM-only failure -> barrier assumption tuned to x86 TSO; recheck edges, not timings.
 
-### IDE Debugger Inspection
-Modern IDEs provide collection visualizers:
-- **IntelliJ IDEA**: Shows internal structure, hash codes, conflicts
-- **Eclipse**: Detail formatters for common collections
-- **VS Code**: Java Debug Extension with variable inspection
+## Triage recipe
+1. Draw the intended edge: payload writes -> volatile write -> volatile read -> payload reads. Label each hop with its JLS 17.4 rule.
+2. If any hop is missing (plain field, wrong flag, misordered statements), the fix is the edge, not a sleep/retry.
+3. Confirm with a stress loop (`jshell` + threads) rather than a single run; races hide in single runs.
 
-### JFR Events
-Java Flight Recorder captures collection-related events:
-- **Allocation events**: When collections allocate new backing arrays
-- **GC events**: Collection overhead during GC pauses
-- **Lock events**: Contention on synchronized collections
+## Five-minute checklist
+- [ ] Every cross-thread flag volatile? [ ] No compound ops on volatiles? [ ] DCL fields volatile? [ ] Array elements handled? [ ] long/double tearing covered?
 
-### Heap Dump Analysis
-```bash
-jmap -dump:live,format=b,file=heap.hprof <pid>
-```
-Use Eclipse MAT or JProfiler to analyze:
-- **Dominator tree**: Find largest collections
-- **GC root paths**: Why collections aren't collected
-- **OQL queries**: Filter specific collection types
+## Sources
+- JLS 17.4 (happens-before), 17.5 (final-field safety), 17.7 (word tearing), JSR-133 (2004 memory-model rewrite), `VarHandle.java` (Java 9). Keep THEORY.md open; every diagnosis ends by naming the violated invariant.
 
-### Thread Dump Analysis
-```bash
-jstack <pid> > threaddump.txt
-```
-Look for threads stuck in collection code, infinite resize loops, deadlocks.
+## Edge-drawing protocol (the core move)
+- For every visibility complaint, write the intended chain on paper: payload writes -po-> volatile write -hb-> volatile read -po-> payload reads; label each hop with its JLS 17.4 rule number.
+- Missing-hop catalog: plain flag (no vol edge at all), flag written after the payload read needs it (order swapped), DCL field without the keyword (publication without edge), array elements behind a volatile reference (edge ends at the handle).
+- A chain with all four hops present is a proof; anything shorter is a hypothesis — never "fix" a full chain with sleeps or retries.
 
-## Debugging Tools
+## Hoisting forensics (stale-flag hangs)
+- Spinner on a plain flag that never observes the write after OSR compilation: the JIT hoisted the read out of the loop — legal (no synchronization action forces reload), fatal to the design.
+- Confirm by adding `volatile` and re-running the same harness: early exit vs run-to-bound (CODE_DEEP_DIVE.md snippet 1's structural assertion) separates visibility bugs from logic bugs.
+- Shutdown-flag variant: service ignores stop requests under load but obeys them in tests — the hot loop got OSR-compiled in production only; volatile (or interrupt/latch) is the fix, not a shorter poll interval.
 
-### JOL (Java Object Layout)
-```java
-System.out.println(GraphLayout.parseInstance(map).toFootprint());
-```
+## Cross-architecture triage
+- Fails on ARM, passes on x86 with identical bytecode: a barrier assumption tuned to TSO — some ordering your code relied on needs an explicit edge (volatile write/read pair, lock, or VarHandle mode) that x86 supplied for free.
+- Never "fix" by weakening the x86 test load: the ARM failure names a missing edge in the chain; draw it, add the keyword, re-run on both.
+- Long/double corruption on any platform: check volatility first (JLS 17.7 tearing permission) — half-old values mean the access was never atomic, regardless of what HotSpot usually does.
 
-### jhsdb
-```bash
-jhsdb jmap --heap --pid <pid>
-jhsdb jmap --histo --pid <pid>
-```
-
-## Debugging Checklist
-1. Check equals() and hashCode() implementations
-2. Verify collection is the correct type
-3. Confirm thread safety guarantees
-4. Check for ConcurrentModificationException patterns
-5. Verify initial capacity for expected data size
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Stress-loop confirmation
+- Single-run passes prove nothing for races: loop DCL/piggyback/counter harnesses across thousands of iterations with thread starts jittered (`CountDownLatch` gate), and require the exact/fresh assertions from CODE_DEEP_DIVE.md.
+- Record which configurations fail (thread count, architecture, JIT tier): a race that needs 8 threads to show is still a race at 2 — it just bills you later.

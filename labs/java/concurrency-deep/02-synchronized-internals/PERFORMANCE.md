@@ -1,135 +1,43 @@
-# Synchronized Internals — Performance
+# Performance: Synchronized Internals
 
-## Time Complexity
+## Cost model (orders of magnitude, not promises)
+- Uncontended stack-locking fast path: tens of nanoseconds (~10-20ns scale) — a mark-word CAS to your own stack record, no syscall.
+- Recursive entry: one more nearly-free record push.
+- Inflated contention: OS mutex + park/unpark per waiter — microseconds plus scheduling delay; throughput caps at the critical-section rate.
+- JIT extras: lock elision (non-escaping objects) can remove the lock entirely; coarsening merges adjacent same-monitor blocks. Both show in JIT logs, never in source.
 
-### Operation Costs
-| Operation | Average Case | Worst Case | Notes |
-|-----------|-------------|-----------|-------|
-| Insert    | O(1)        | O(n)      | Resizing or collisions |
-| Lookup    | O(1)        | O(n)      | Hash collisions |
-| Delete    | O(1)        | O(n)      | After locating element |
-| Contains  | O(1)        | O(n)      | Same as lookup |
-| Iteration | O(n)        | O(n)      | Traverses all elements |
-| Size      | O(1)        | O(1)      | Maintained as field |
+## Contention reasoning
+- Throughput under contention ~= 1 / (critical-section time); adding threads past that only grows the EntryList and park traffic.
+- No fairness: winners are unspecified, starvation legal — tail latency, not just mean, degrades.
 
-### Amortized Analysis
-Individual operations may be expensive (resize), but amortized cost over a sequence
-of operations is O(1) for most data structures.
+## How to measure (JMH sketch)
+```java
+@Benchmark @Threads(16)
+public int guardedIncrement() { synchronized (guard) { return ++shared; } }
+```
+Vary thread count and guard granularity; attach `-XX:+PrintCompilation -XX:+LogCompilation` to confirm elision/coarsening rather than assuming it.
 
-## Memory Footprint
+## Tuning levers
+1. Narrow the block to the invariant (move I/O, alien calls out). 2. Split guards per independent invariant. 3. Consider ReentrantLock only for timeout/interrupt/fairness/multiple-conditions — not for raw speed on uncontended paths.
 
-### Object Overhead
-- **Base object header**: 12-16 bytes (depending on JVM flags)
-- **Reference**: 4 bytes (Compressed OOPs) or 8 bytes
-- **int fields**: 4 bytes each
-- **Padding**: Aligned to 8-byte boundaries
+## Rule
+No tuning without a JMH number on the target JVM and architecture. Orders above are orientation; your workload's contention decides.
 
-### Per-Element Storage
-| Structure | Per-Element Overhead | Cache Locality |
-|-----------|---------------------|----------------|
-| HashMap   | ~32 bytes + K + V   | Poor (chains) |
-| ArrayList | 4-8 bytes (ref)     | Excellent |
-| LinkedList| ~24 bytes (3 ptrs)  | Poor |
-| TreeMap   | ~40 bytes (4 ptrs)  | Poor |
+## Inflation economics
+- Onset cost: first real contention pays allocation (ObjectMonitor) plus the first park/unpark round-trip — latency spikes on exactly the request that tips the lock over, then settles at the inflated rate.
+- Steady contention: throughput ≈ 1/C (C = critical-section time) with per-waiter park/unpark microseconds on top; adding threads grows `_EntryList` depth and scheduler traffic, not commits.
+- Deflation churn on bursty guards: repeated inflate/deflate cycles add variance without changing the mean — splitting the guard or narrowing the section removes the cycle, not the load.
+- Virtual-thread multiplier (21+): each BLOCKED virtual thread holds a carrier through JDK 23 pinning — price contention in carriers, not just microseconds, on virtual runtimes.
 
-## Optimization Techniques
+## Measurement protocol
+- Warm up past JIT and inflation settling (millions of acquisitions, as in CODE_DEEP_DIVE.md snippet 5) before reading any number — cold locks measure compilation, not contention.
+- Sweep thread count (1/4/16/64) at fixed work: the knee where ops/s flattens is the contention point; report the knee, not one configuration.
+- Attach `-XX:+PrintCompilation -XX:+LogCompilation` to separate elided/coarsened sites (0ns or merged) from real acquisitions before concluding anything about "synchronized cost".
+- Capture JFR `jdk.JavaMonitorEnter` with stack traces at the knee: the hottest blocked frame names the guard to split, not the method to micro-opt.
 
-### CPU Cache Behavior
-- **Sequential access**: Array-based structures have excellent cache locality
-- **Pointer chasing**: Linked structures have poor cache locality
-- **False sharing**: Concurrent writes to adjacent memory cause cache line bouncing
-
-### JIT Compilation
-- **Inlining**: Small methods (get(), put()) are prime candidates for inlining
-- **Intrinsification**: System.arraycopy() is a hotspot intrinsic
-- **Branch Prediction**: Common-case fast paths benefit from predictable branching
-- **Loop Unrolling**: Iteration over arrays can be unrolled by JIT
-
-### GC Impact
-- **Young Gen**: Short-lived iterators, temporary collections collected in young gen
-- **Old Gen**: Long-lived maps and caches promoted to old gen
-- **Allocation Rate**: Frequent resize causes allocation spikes
-- **Card Table**: Large collections increase GC root scanning overhead
-
-## Profiling Tools
-- **JMH**: Java Microbenchmark Harness for accurate microbenchmarks
-- **async-profiler**: CPU/wall-clock/allocation profiling
-- **JFR**: Java Flight Recorder event collection
-- **JOL**: Java Object Layout for memory analysis
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Tuning levers (ordered by payoff)
+1. Narrow the block to the invariant; move I/O, logging, and alien calls out — section time divides throughput directly.
+2. Split one guard per independent invariant; shared monitors serialize unrelated work at 1/C total.
+3. Batch adjacent same-monitor updates to invite coarsening; keep guarded objects thread-local to invite elision.
+4. Reach for `ReentrantLock` only for timeouts, interruption, fairness, or multiple conditions — never for raw uncontended speed, where stack locking already wins.
+5. On virtual-thread hot paths, prefer park-based locks over `synchronized` to avoid carrier pinning (through JDK 23).

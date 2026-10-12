@@ -1,125 +1,44 @@
-# Synchronized Internals — Security
+# Security: Synchronized Internals
 
-## Denial of Service via Hash Collisions
-The most significant security concern is hash collision attacks:
-- **Hash DoS**: Attacker crafts keys with identical hash codes
-- **Effect**: All keys map to same bucket -> O(n^2) operations
-- **Mitigation**: Treeification (Java 8+) converts long chains to red-black trees
-- **Defense**: Random hash seed (introduced in Java 8)
+## Threat 1 — lock-ordering deadlocks from untrusted call graphs
+Nested `synchronized` on attacker-influenced objects in inconsistent order deadlocks the service. Enforce a global lock order, keep nesting shallow, and prefer one guard per request path.
 
-## Hash Collision Attack Prevention
-```java
-// Java 8+ HashMap uses TreeNode after TREEIFY_THRESHOLD (8)
-// String.hashCode() randomization is available via:
--Djdk.map.althashing.threshold=512
-```
+## Threat 2 — monitor-identity spoofing via shared/interned locks
+Locking on attacker-visible objects (string literals, boxed integers, passed-in parameters) lets outsiders hold your monitor and stall you. Lock only on private final guards you allocate.
 
-## Serialization Security
-- Collections containing sensitive data require careful serialization
-- Override writeObject/readObject for custom serialization
-- Use transient modifier for sensitive internal data
-- Validate serialized data before deserialization
-- Be aware of deserialization gadget chains
+## Threat 3 — alien calls under exclusion (TOCTOU + reentrancy abuse)
+Overridable/callback code inside `synchronized` runs with your invariants half-open; hostile overrides mutate guarded state mid-section. Snapshot inputs, validate, exclude alien calls from the block.
 
-## Thread Safety Guarantees
-- **Non-thread-safe variants**: External synchronization required
-- **Synchronized wrappers**: Per-method sync but compound ops not atomic
-- **Concurrent variants**: Thread-safe for individual operations
-- **Copy-on-write**: Safe iteration but memory-heavy
+## Threat 4 — wait/notify signal manipulation
+`notify` (single arbitrary wakeup) on a shared monitor can be consumed by the wrong waiter, stranding the right one. Use `notifyAll` + `while`-recheck so a stolen signal cannot strand progress; bound waits with timeouts on untrusted inputs.
 
-## Memory Exposure via Unmodifiable Views
-```java
-List<Integer> internal = new ArrayList<>();
-List<Integer> view = Collections.unmodifiableList(internal);
-// Internal list still accessible via original reference!
-```
-Use defensive copying for true immutability:
-```java
-public List<Integer> getData() {
-    return List.copyOf(internal); // Creates immutable copy
-}
-```
+## Checklist
+- [ ] Private final guards only. [ ] Global lock order documented. [ ] No alien calls inside blocks. [ ] wait-in-while + notifyAll + timeouts on exposed paths.
 
-## Security Checklist
-1. Validate all keys before insertion
-2. Do not expose internal arrays via reflection
-3. Use Collections.unmodifiableXxx for API returns
-4. Avoid using mutable objects as keys
-5. Consider ConcurrentHashMap for shared state
+## Threat 5 — shared-identity locks as cross-tenant channels
+- Locking on interned strings, boxed integers, or `Class` objects lets unrelated code (or tenants) synchronize on your monitor — contention becomes a cross-tenant signal or stall vector.
+- Allocate `private final Object` guards per protected invariant; never lock on values that cross trust boundaries (parameters, deserialized keys, literal pool entries).
+- Audit with identity logging: any guard whose `identityHashCode` collides across tenants is a shared channel until re-scoped.
 
+## Threat 6 — `notify()` as a signal-theft primitive
+- On a monitor with mixed waiters, a single `notify()` wakes one arbitrary thread — hostile or merely unlucky scheduling strands the security-critical waiter (timeout expiry, credential refresh) indefinitely.
+- Default to `notifyAll()` plus `while`-recheck on every monitor reachable from untrusted inputs; bound every wait with a timeout so a stolen signal delays but never strands.
+- Log wait-duration outliers per monitor: repeated near-timeout wakes on one guard are the observable shape of signal theft or notifier starvation.
 
-## Further Exploration
+## Threat 7 — monitor-held I/O as an amplification point
+- Request paths that hold a `synchronized` monitor across network/disk I/O let one slow downstream stall every contender — attacker-paced slow responses convert into fleet-wide BLOCKED queues.
+- Move I/O outside the block (snapshot-then-act); where exclusion must span I/O, use `tryLock(t)` with timeouts and fail open safely instead of queueing unboundedly.
+- Cap EntryList exposure: bounded queues plus backpressure ahead of the guard turn unbounded BLOCKED growth into counted rejections.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Detection
+- Scrape `jstack` for BLOCKED counts grouped by monitor address: a single address dominating across captures is the guard to split or bound.
+- Track JFR `jdk.JavaMonitorEnter` stall rates per guard in dashboards; alert on rate steps after deploys, not on absolute values.
+- Review lock-order documentation per service: any new nested acquisition needs its order rank written down before merge — undocumented nesting is a deadlock PR away.
+- Fuzz wait/notify paths with randomized notifier delays in tests; `if`-wait and bare-`notify` fail fast under jitter while `while`+`notifyAll` stays exact.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Checklist additions
+- [ ] Guards are private-final and never cross trust boundaries.
+- [ ] Global lock order documented; new nesting ranks recorded.
+- [ ] notifyAll + while-recheck + timeouts on all exposed monitors.
+- [ ] No I/O, sleep, or alien calls inside request-path blocks.
+- [ ] Contention alerts per guard address wired and tested.

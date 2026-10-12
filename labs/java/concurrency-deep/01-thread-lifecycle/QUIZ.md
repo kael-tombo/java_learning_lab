@@ -1,120 +1,46 @@
-# Thread Lifecycle — Quiz
+# Quiz: Thread Lifecycle
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Thread Lifecycle?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+1. **Name the six Thread.State values and the one-line meaning of each.**
+   A: NEW (never started), RUNNABLE (JVM-unblocked; may still wait for CPU), BLOCKED (waits a synchronized monitor), WAITING (wait/join/park, event-only wake), TIMED_WAITING (sleep/wait(t)/join(t)/parkNanos + timeout wake), TERMINATED (finished, sink).
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+2. **Thread A waits on a ReentrantLock held by B. BLOCKED or WAITING? Why?**
+   A: WAITING (parking) — BLOCKED is synchronized-monitor contention only; lock-framework contention parks via LockSupport.
 
-## Question 3: Memory
-How much additional memory overhead does Thread Lifecycle have per element (approximately)?
+3. **What does RUNNABLE guarantee about execution?**
+   A: Nothing — spinning, descheduled, and productive threads are all RUNNABLE. It reports JVM posture, not OS dispatch.
 
-## Question 4: Concurrency
-Is Thread Lifecycle safe for concurrent access without external synchronization? Explain why or why not.
+4. **Why must application logic never branch on getState()?**
+   A: The javadoc restricts it to monitoring; the state can change between check and act, so branching is a race by construction. Coordinate with join/latch/future.
 
-## Question 5: Scalability
-How does Thread Lifecycle perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+5. **What happens on a second start(), even after termination?**
+   A: IllegalThreadStateException — start() performs NEW->RUNNABLE exactly once per Thread object.
 
-## Question 6: Design
-Why was Thread Lifecycle designed this way? What alternatives were considered during its development?
+6. **How do interrupts affect sleep/wait vs park vs synchronized-entry?**
+   A: sleep/wait throw InterruptedException and clear status; park returns silently preserving status; synchronized-entry (BLOCKED/RUNNABLE) shows no observable effect.
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+7. **When does the JVM exit relative to daemon threads?**
+   A: When all non-daemon threads terminate; daemon threads are abandoned mid-execution. setDaemon(true) must precede start().
 
-## Question 8: Comparison
-Compare Thread Lifecycle with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+8. **A virtual-thread dump shows 5,000 WAITING threads. Alarmed? What if BLOCKED?**
+   A: WAITING thousands = normal parked backlog (carriers unmounted). BLOCKED thousands = carriers pinned (synchronized pins through JDK 23) — investigate the monitor.
 
-## Question 9: Real-World
-Describe a real-world scenario where Thread Lifecycle is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Scoring
+- 7-8 correct: done. 5-6: re-read THEORY.md + INTERNALS.md. Below 5: redo STEP_BY_STEP.md before retrying.
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+9. **Which state does `CountDownLatch.await()` report, and what does interrupt do to it?**
+   A: WAITING (parking) — the latch parks via LockSupport; interrupt throws InterruptedException out of the await.
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+10. **A thread returns from `Object.wait()` but stays BLOCKED for seconds. Why?**
+    A: Waking and re-entering are separate events: after notify it must re-acquire the monitor, and a holder that kept the lock (or a faster rival) keeps it BLOCKED.
 
+11. **Why are post-`join()` reads safe without volatile?**
+    A: JLS 17.4 gives a thread's last action happens-before `join()` returns — joining TERMINATED is a publication edge, not just a state observation.
 
-## Further Exploration
+12. **Two dumps 5s apart show identical BLOCKED stacks on one monitor. Stuck or progressing?**
+    A: Stuck (or starved): same threads on the same `<0x...>` address across the interval means no acquisition completed; moved addresses would mean progress.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+13. **What does `setDaemon(true)` after `start()` do?**
+    A: Throws IllegalThreadStateException — like `start()` itself, the daemon flag is set-once-before-start.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## After scoring
+- For every miss, reproduce the state on demand (CODE_DEEP_DIVE.md snippet 1 forces all six) before re-answering; recall without a run does not stick.

@@ -1,123 +1,39 @@
-# Thread Lifecycle — Reflection
+# Reflection: Thread Lifecycle
 
-## Guided Reflection Prompts
+## Recall without notes
+1. State the lab's key fact (BLOCKED = synchronized-monitor contention only; ReentrantLock contention shows as WAITING (parking); RUNNABLE covers running+ready; getState() is monitoring-only; start() is single-use (second call throws IllegalThreadStateException); virtual threads report the same six states but synchronized pins the carrier through JDK 23 (JEP 444).) in under 40 words.
+2. List the structures (`java.lang.Thread`, `Thread.State` (NEW/RUNNABLE/BLOCKED/WAITING/TIMED_WAITING/TERMINATED), `LockSupport.park/unpark`, thread-dump `state` token) and one API each from (`start()`, `join()/join(t)`, `sleep()`, `Object.wait/notify`, `LockSupport.park/parkNanos`, `getState()/isAlive()`, `setDaemon()`, `interrupt()`) that touches them.
 
-### Understanding
-1. Before studying this micro-lab, what was your understanding of Thread Lifecycle?
-2. What was the most surprising aspect of the internal implementation?
-3. How has your mental model of this concept changed after the deep dive?
+## Connect
+3. Which invariant from THEORY.md did your STEP_BY_STEP.md probe demonstrate? Quote the probe output line that proves it.
+4. Where does this lab's mechanism meet the neighboring lab (lifecycle<->monitors<->volatile<->atomics)? Name one concrete handoff (e.g. BLOCKED vs parking, unlock edge vs volatile edge, CAS vs lock for one counter).
 
-### Application
-4. In your current projects, where would Thread Lifecycle be the right choice?
-5. Where have you seen Thread Lifecycle used incorrectly in codebases you've worked with?
-6. Can you think of a system that would fail without the correct choice?
+## Challenge your intuition
+5. Write the wrong version first (one COMMON_MISTAKES.md bug), predict its failure mode, then run it. Where did your prediction differ from the run?
+6. Which of your predictions relied on timing or fairness? Restate it using only specified edges and invariants.
 
-### Design Trade-offs
-7. What design trade-offs does Thread Lifecycle make and why?
-8. If you were redesigning it, what would you do differently?
-9. How do the performance characteristics affect your programming style?
+## Transfer
+7. Name one place in your own codebase where the six `Thread.State` values and the transitions between them is assumed but unchecked. What single edge, guard change, or API swap would make it checkable?
+8. What will you measure (PERFORMANCE.md harness) before claiming the fix helped?
 
-### Deeper Questions
-10. How does Thread Lifecycle interact with the Java Memory Model?
-11. What role does Thread Lifecycle play in concurrent systems?
-12. How does garbage collection behavior affect the choice?
-13. What are the limits? When should you use a database instead?
+## Exit ticket
+- Two sentences: what breaks, and which source (`java.base/java/lang/Thread.java` (State enum, start/join/sleep), HotSpot `thread.cpp`/`osthread`, `jstack`/`jcmd Thread.print` output) you would open first when it does.
 
-### Teaching Others
-14. How would you explain Thread Lifecycle to a junior developer?
-15. What analogy works best for conveying its core concepts?
-16. What common mistakes would you warn them about?
+## Diagnose a dump (new prompts)
+9. Paste three dump lines (one BLOCKED, one WAITING-parking, one TIMED_WAITING-sleeping) and annotate the API behind each parenthetical without looking at THEORY.md.
+10. For the BLOCKED line: name the monitor address, the holder's address, and what the holder is doing — three facts before any fix proposal.
+11. Which threads in your dump need an *event* and which also accept *expiry*? Sort them into WAITING vs TIMED_WAITING from the tokens alone.
 
-### Connection to Broader Topics
-17. How does Thread Lifecycle relate to operating system data structures?
-18. What database concepts are similar?
-19. How do distributed systems use similar structures?
-20. What other programming languages implement this differently and why?
+## Teach it back
+12. Explain the RUNNABLE caveat ("descheduled counts as RUNNABLE") to a peer using only a CPU-saturated example — no jargon beyond "OS queue".
+13. Whiteboard the transition map from memory, then diff against THEORY.md: missing arrows are the day's re-read list.
+14. Argue both sides: "getState() in a health check is fine" vs "it is a race by construction" — state the exact condition (sampling vs control) that decides the winner.
 
-## Self-Assessment
-- [ ] I can explain the time complexity of all operations
-- [ ] I can implement a simplified version from memory
-- [ ] I can identify when this is the wrong choice
-- [ ] I can debug common issues related to this concept
-- [ ] I can optimize code using this concept
-- [ ] I can teach the concept to others
+## Transfer extension
+15. Find the oldest `Thread` subclass or raw-`start()` call in your codebase; propose the executor or virtual-thread replacement and its shutdown edge.
+16. Price the migration: which `synchronized` blocks on the new path would pin carriers (21+), and what replaces them?
 
-## Learning Summary
-Write a brief summary (2-3 paragraphs) of what you learned and how you plan to apply it.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Exit-ticket extension
+- One more sentence: which interrupt contract (throw-and-clear, silent-preserve, ignore) bit you hardest, and the API that taught it.
+- File the dump-diff pair (two captures) that proved stuck-vs-progressing for your chosen thread.
+- Name the single `jstack` parenthetical you misread most often this week and the API it actually names.

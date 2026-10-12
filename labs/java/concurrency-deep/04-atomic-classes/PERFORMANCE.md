@@ -1,135 +1,49 @@
-# Atomic Classes — Performance
+# Performance: Atomic Classes
 
-## Time Complexity
+## Cost model (x86 orders of magnitude)
+- Uncontended CAS (`lock cmpxchg`): ~10-20ns — the price of one atomic RMW.
+- Contended single word: retries scale with writer count; N writers each failing with probability ~(N-1)/N per attempt burn CPU while aggregate progress stays ~1 commit per CAS latency.
+- LongAdder: below ~2-4 writers the cell machinery is pure overhead (AtomicLong wins); above, striping wins by removing the single-word collision. `sum()` costs O(cells) and is fuzzy.
+- Stamped/markable references: a Pair allocation per access — pay only where ABA is a real hazard.
 
-### Operation Costs
-| Operation | Average Case | Worst Case | Notes |
-|-----------|-------------|-----------|-------|
-| Insert    | O(1)        | O(n)      | Resizing or collisions |
-| Lookup    | O(1)        | O(n)      | Hash collisions |
-| Delete    | O(1)        | O(n)      | After locating element |
-| Contains  | O(1)        | O(n)      | Same as lookup |
-| Iteration | O(n)        | O(n)      | Traverses all elements |
-| Size      | O(1)        | O(1)      | Maintained as field |
+## Contention reasoning (geometric retries)
+- If each attempt collides with probability p, attempts-to-success ~ 1/(1-p); as p -> 1 under many writers, per-thread CPU per commit explodes while system commits stay flat. That curve — not a constant — is the reason to stripe.
+- MATH_FOUNDATION.md works the numbers for N = 2, 8, 32.
 
-### Amortized Analysis
-Individual operations may be expensive (resize), but amortized cost over a sequence
-of operations is O(1) for most data structures.
+## How to measure (JMH sketch)
+```java
+@Param({"1","2","8","32"}) int writers;
+@Benchmark @Threads(32)
+public void increment() { adder.increment(); } // vs atomic.incrementAndGet()
+```
+Plot ops/s vs writer count for both; the crossover (~2-4 writers) picks your counter.
 
-## Memory Footprint
+## Tuning levers
+1. Stripe hot counters (LongAdder/Accumulator). 2. Keep update functions trivial and pure (retry multiplies their cost). 3. Use compareAndExchange witnesses to skip re-reads. 4. Pad only measured false-sharing (`PrintFieldLayout` + counters).
 
-### Object Overhead
-- **Base object header**: 12-16 bytes (depending on JVM flags)
-- **Reference**: 4 bytes (Compressed OOPs) or 8 bytes
-- **int fields**: 4 bytes each
-- **Padding**: Aligned to 8-byte boundaries
+## Rule
+No tuning without a JMH number on the target JVM and architecture. Orders above are orientation; your workload's contention decides.
 
-### Per-Element Storage
-| Structure | Per-Element Overhead | Cache Locality |
-|-----------|---------------------|----------------|
-| HashMap   | ~32 bytes + K + V   | Poor (chains) |
-| ArrayList | 4-8 bytes (ref)     | Excellent |
-| LinkedList| ~24 bytes (3 ptrs)  | Poor |
-| TreeMap   | ~40 bytes (4 ptrs)  | Poor |
+## Crossover mapping (your machine decides)
+- Below ~2-4 writers `AtomicLong` wins: one CAS (~10-20ns) vs cell hashing plus allocation — the infrastructure is pure overhead with nobody to spread.
+- Above the crossover `LongAdder` wins by removing the single-word collision: per-thread retries collapse per MATH_FOUNDATION.md's 1 + (N-1)/S while system commits climb.
+- Find your knee empirically (1/2/8/32 writers, CODE_DEEP_DIVE.md snippet 4 shape): report ops/s plus retries-per-success per point — the knee, not a slogan, picks the counter.
+- Re-find the knee per JVM/architecture: CAS latency and hash spread differ, so a borrowed crossover number is a guess with someone else's hardware.
 
-## Optimization Techniques
+## Function-cost multiplication
+- Retry multiplies the update function, not just the CAS: a 50ns f at E[A] ≈ 8 costs ~400ns of function time per commit — keep f to trivial arithmetic (add, max, bit-ops).
+- `compareAndExchange` witnesses save one volatile re-read per failed lap: at high retry rates the saved reads are the measurable gap vs `compareAndSet`-plus-reread loops.
+- `haveNext`-style short-circuiting (JDK source) trims re-application on matching re-reads — free for idempotent f, no rescue for effectful f; purity is still mandatory.
 
-### CPU Cache Behavior
-- **Sequential access**: Array-based structures have excellent cache locality
-- **Pointer chasing**: Linked structures have poor cache locality
-- **False sharing**: Concurrent writes to adjacent memory cause cache line bouncing
+## Memory and footprint pricing
+- `AtomicLong` per instance: header plus value (plus padding only if you add it) — cheap per counter, dear per hot counter under contention (CPU, not bytes, is the bill).
+- `LongAdder` per instance: base plus demand-grown `Cell[]` at 128-byte `@Contended` padding each — real memory per live cell; size the fleet's adder count accordingly.
+- Stamped/markable references: one `Pair` object per access — allocation pressure on hot paths; restrict to ABA-structural links, never counters or flags.
+- False-sharing audit (`-XX:+PrintFieldLayout` plus perf counters) before padding anything by hand: pad measured neighbors, not every field — 128 bytes per guess adds up.
 
-### JIT Compilation
-- **Inlining**: Small methods (get(), put()) are prime candidates for inlining
-- **Intrinsification**: System.arraycopy() is a hotspot intrinsic
-- **Branch Prediction**: Common-case fast paths benefit from predictable branching
-- **Loop Unrolling**: Iteration over arrays can be unrolled by JIT
-
-### GC Impact
-- **Young Gen**: Short-lived iterators, temporary collections collected in young gen
-- **Old Gen**: Long-lived maps and caches promoted to old gen
-- **Allocation Rate**: Frequent resize causes allocation spikes
-- **Card Table**: Large collections increase GC root scanning overhead
-
-## Profiling Tools
-- **JMH**: Java Microbenchmark Harness for accurate microbenchmarks
-- **async-profiler**: CPU/wall-clock/allocation profiling
-- **JFR**: Java Flight Recorder event collection
-- **JOL**: Java Object Layout for memory analysis
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Tuning levers (ordered by payoff)
+1. Match the counter to writers: AtomicLong cold, LongAdder hot, locked totals for enforcement.
+2. Keep update functions trivial and pure — retry multiplies whatever you write inside f.
+3. Prefer `compareAndExchange` witnesses in hand loops to skip re-reads.
+4. Quiesce before exact reads (`sumThenReset` at quiet points); never enforce from fuzzy `sum()`.
+5. Pack co-updated fields into one word where bit budget allows; lock where it does not.

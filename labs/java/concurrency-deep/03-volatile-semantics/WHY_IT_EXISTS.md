@@ -1,126 +1,41 @@
-# Volatile Semantics — Why It Exists
+# Why It Exists: Volatile Semantics
 
-## The Problem
-Before this concept existed, Java developers had limited options. The original approaches
-had significant drawbacks:
+## The problem before the mechanism
+Shared-memory threads interleave arbitrarily: without the Java Memory Model happens-before edges for volatile fields: visibility, ordering, and limits, every multi-threaded program is a pile of races — stale reads, torn updates, lost signals, deadlocks misdiagnosed. Developers needed a specified, implementable contract rather than folklore about "flushes" and "luck".
 
-1. **Limited Options**: Early Java versions provided only Hashtable and Vector
-2. **No Standardization**: Each developer created their own ad-hoc solutions
-3. **Poor Performance**: Early implementations lacked modern optimizations
-4. **No Type Safety**: Pre-generics collections required casting from Object
+## What this mechanism contributes
+- A precise vocabulary: volatile field access (JLS 17.4.5), program-order/monitor/lifecycle edges, StoreLoad fences (`xchg`+`lock` on x86, `dmb ish` on ARMv8), safe-publication piggybacking, `VarHandle` access modes.
+- Specified operations: `volatile` field read/write, double-checked locking with volatile, `AtomicIntegerArray`/VarHandle array-element volatile access, `VarHandle.getAcquire/setRelease/getOpaque` (contrast).
+- A verifiable implementation: JLS 17.4 (happens-before), 17.5 (final-field safety), 17.7 (word tearing), JSR-133 (2004 memory-model rewrite), `VarHandle.java` (Java 9).
+- The guarantee: Volatile gives visibility + access atomicity (incl. long/double) but NOT compound-action atomicity (volatile++ races: read-modify-write in three steps); DCL is correct only with volatile (or holder idiom/enum singleton); transitivity A->B->C chains edges; volatile reads are near-free on x86 (TSO) while writes need a fence, both directions need fences on ARM (qualitative only); volatile arrays cover the reference, never the elements.
 
-## Why Was It Created?
+## What it deliberately does not do
+- It does not make all concurrent code correct — compound actions, multi-variable invariants, and cross-monitor assumptions stay the programmer's job (see COMMON_MISTAKES.md).
+- It does not promise fairness, timing, or performance levels — only the semantics in THEORY.md.
+- It does not replace higher-level tools (executors, concurrent collections, structured concurrency) for task management.
 
-### Original Motivation
-This concept was created to solve specific requirements:
-- Provide a standard, well-tested implementation
-- Offer predictable performance characteristics
-- Support both ordered and unordered access patterns
-- Enable safe concurrent usage (for concurrent variants)
-- Maintain backward compatibility across Java versions
+## The alternative and why it loses
+Ad-hoc reasoning ("it worked in testing", "sleep fixes it", "one more null check") passes demos and fails under load, on ARM, or after a JIT upgrade. The specified mechanism fails loudly at review time instead of silently in production.
 
-### Design Philosophy
-The Java platform designers followed specific principles:
-- **Correctness First**: All implementations must be provably correct
-- **Performance Matters**: Hotspot-optimized with JIT-friendly patterns
-- **API Consistency**: Uniform interfaces across the framework
-- **Backward Compatibility**: Old code must work with new implementations
+## Bottom line
+Volatile Semantics exists so that ordering, exclusion, or atomicity claims can be checked against a written contract and its sources — not against machine behavior on one laptop.
 
-### Comparison with Alternatives
-Before the Java Collections Framework:
-- **Arrays**: Fixed size, no dynamic growth, no convenience methods
-- **Vector/Hashtable**: Synchronized overhead even in single-threaded use
-- **Custom implementations**: Inconsistent, bug-prone, unoptimized
-- **Third-party libraries**: No standard, portability issues
+## Before happens-before: folklore and its casualties
+- Developers reasoned in "flushes" and "main memory" — metaphors with no specification, so two engineers could agree on the metaphor and ship opposite orderings.
+- DCL circulated as a correct idiom for years while being broken: the folklore ("synchronize the write side and it publishes") narrowed the race without closing it, and testing could not tell the difference.
+- Stale-flag hangs were diagnosed as scheduler bugs: the real culprit (hoisted reads, legal under the old model) was invisible without an edge vocabulary — teams tuned priorities and poll intervals instead.
 
-## What Problem Does It Solve Today?
+## What JSR-133 contributed (and what it refused)
+- Contributed: a closed vocabulary (program order, volatile, monitor, lifecycle edges plus transitivity) in which every visibility claim is either exhibited as a chain or admitted as a race — reviewable on paper.
+- Contributed: the volatile write -> read edge that fixed DCL with one keyword, and the final-field safety rule that freed immutable payloads from ceremony.
+- Refused: ordering for compound actions (volatile++ still races — atomicity stayed a separate tool), fairness or timing promises (events and expiries only), and element coverage for volatile arrays (handle, not cells).
 
-### Modern Usage
-This continues to be relevant because it solves:
-- **Dynamic storage**: Automatic resizing adapts to changing data sizes
-- **Fast access**: O(1) average lookup time for hash-based variants
-- **Predictable iteration**: Defined traversal order for ordered variants
-- **Memory efficiency**: Careful design minimizes overhead
+## Why the bundle stays the default over VarHandle modes
+- `volatile` buys the full edge in both directions with one keyword — correct for flags and publication without mode arithmetic.
+- Acquire/release and opaque exist for measured hot paths (sequence barriers, atomic indexes) where half the fence is provable waste — profiler-driven descents, not defaults.
+- The rule "stay volatile until forced down" keeps the edge visible in source: a reader sees the keyword and knows the guarantee; mode tables require the reader to recompute it.
 
-### Alternative Approaches
-- **Java Stream API**: For functional-style data processing pipelines
-- **Database queries**: When data exceeds available memory
-- **External libraries**: Guava, Eclipse Collections, Apache Commons
-- **Custom implementations**: For specific performance requirements
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## The alternative, priced
+- `sleep`-then-read publication: latency floor of one poll interval plus zero ordering guarantee — slower and still racy, the worst of both.
+- `synchronized`-everywhere for visibility: correct but parks and serializes pure readers — a monitor per flag read at scale is contention bought for nothing.
+- "Works on x86" confidence: passes CI, tears on ARM (barriers), tears 64-bit values anywhere (JLS 17.7) — portability failures billed per platform.

@@ -1,123 +1,74 @@
-# CompletableFuture — Common Mistakes
+# Common Mistakes: CompletableFuture
 
-## Mistake 1: Incorrect equals/hashCode
-**Problem**: Custom objects used without properly overriding equals() and hashCode().
-**Effect**: Keys not found, duplicates occur, behavior unpredictable.
-**Fix**: Always override both methods. Use Objects.hash().
+## 1. Blocking stages on the common pool
 
-## Mistake 2: Assuming Insertion Order
-**Problem**: Depending on specific iteration order without checking contract.
-**Effect**: Works in testing, fails in production with different implementation.
-**Fix**: Use LinkedHashMap/LinkedHashSet when order matters.
+```java
+supplyAsync(() -> blockingHttpCall());  // squats common pool worker
+```
 
-## Mistake 3: Concurrent Modification
-**Problem**: Modifying non-thread-safe collection while iterating.
-**Effect**: ConcurrentModificationException at runtime.
-**Fix**: Use concurrent collections or synchronize externally.
+Under load this starves parallel streams and every other CF user. Fix: pass a
+dedicated bounded executor as the last `*Async` argument.
 
-## Mistake 4: Using Mutable Keys
-**Problem**: Modifying key object after insertion into hash-based collection.
-**Effect**: Object in wrong bucket, cannot be found, memory leaks.
-**Fix**: Use immutable keys (String, Integer, records).
+## 2. `CF<CF<U>>` nesting
 
-## Mistake 5: Ignoring Initial Capacity
-**Problem**: Default capacity for large expected dataset.
-**Effect**: Multiple resizing operations degrade performance.
-**Fix**: Use constructor with initial capacity: new HashMap<>(expectedSize).
+```java
+CF<CF<List<Order>>> nested = user.thenApply(u -> fetchOrdersAsync(u)); // WRONG
+CF<List<Order>> flat = user.thenCompose(u -> fetchOrdersAsync(u));     // RIGHT
+```
 
-## Mistake 6: LinkedList Random Access
-**Problem**: Using LinkedList.get(index) in a loop.
-**Effect**: O(n^2) time complexity instead of O(n).
-**Fix**: Use iterator or ArrayList for random access.
+`thenApply` with a future-returning lambda compiles and nests. `thenCompose`
+is the flatMap — match the lambda's return shape to the combinator.
 
-## Mistake 7: Stream Overuse
-**Problem**: Complex stream pipelines on large collections.
-**Effect**: Poor performance, high memory usage.
-**Fix**: Use simple loops for critical paths.
+## 3. Expecting values from `allOf`
 
-## Mistake 8: Not Trimming After Bulk Load
-**Problem**: Keeping oversized internal array after bulk loading.
-**Effect**: Wasted memory.
-**Fix**: Call trimToSize() after bulk loading.
+```java
+CF<Void> barrier = allOf(a, b, c);
+barrier.thenApply(v -> v);  // v is null — no values here
+```
 
-## Mistake 9: Assuming Thread Safety
-**Problem**: Using HashMap in multi-threaded context.
-**Effect**: Data corruption, infinite loops (pre-Java 8), lost updates.
-**Fix**: Use ConcurrentHashMap for concurrent access.
+Fix: `barrier.thenApply(v -> new Triple(a.join(), b.join(), c.join()))` —
+joins cannot block post-barrier.
 
+## 4. Believing `cancel(true)` interrupts
 
-## Further Exploration
+```java
+CF<String> f = supplyAsync(() -> slowWork());
+f.cancel(true);  // flag IGNORED; slowWork runs to completion
+```
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+Cancel only races an incomplete `result`. To stop running work, own the
+`Future` from `ExecutorService.submit` and cancel *that*.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 5. `getNow` as a timed get
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+```java
+CF<String> f = fetchAsync();
+String s = f.getNow("default");  // returns "default" if INCOMPLETE — never waits
+```
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+Fix: `f.get(200, MILLISECONDS)` for bounded waiting; `getNow` is a
+non-blocking peek.
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## 6. `join()` self-deadlock in tiny pools
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+```java
+Executor one = Executors.newFixedThreadPool(1);
+supplyAsync(() -> inner.join(), one);  // thread waits for work needing itself
+```
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+Chain (`thenCompose`) instead of blocking-join inside pool stages.
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## 7. Forgetting `orTimeout` returns `this`
+
+```java
+CF<String> bounded = fetch.orTimeout(2, SECONDS);  // same object, not a copy
+```
+
+Both timeout methods mutate in place. Aliases of `fetch` observe the deadline
+too — usually desired, surprising when it is not.
+
+## 8. Swallowing sibling failures in `allOf`
+
+`allOf(...).join()` throws the first-recorded failure; siblings attach as
+suppressed. Logging only `getMessage()` hides them — log the full
+`CompletionException` with its suppressed chain.

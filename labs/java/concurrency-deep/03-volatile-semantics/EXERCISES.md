@@ -1,154 +1,41 @@
-# Volatile Semantics — Exercises
+# Exercises: Volatile Semantics
 
-## Beginner Exercises
+## 1. Stale-flag demo (15 min)
+Non-volatile `stop` flag + spinning reader: show the reader missing the write (add a print cap, or reason from JLS 17.4 if the JIT cooperates). Add `volatile`, show prompt visibility. One sentence: which edge fixed it.
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of Volatile Semantics.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
-```
+## 2. volatile++ loses (20 min)
+8 threads x 250k `volatileCounter++`; compare final value vs 2,000,000 across 5 runs (it falls short). Replace with `AtomicLong`/`LongAdder`, show exact. APIs: `AtomicLong.incrementAndGet`, `LongAdder.increment/sum`.
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
-```
+## 3. Safe publication piggyback (20 min)
+Publish `{data, meta}` through one trailing volatile `ready` write; readers check `ready` first. Show readers always see both payload fields. Then move the flag write first and show the break; draw the hb chain.
 
-## Intermediate Exercises
+## 4. DCL fixed three ways (20 min)
+Implement lazy singleton as (a) broken DCL (plain field), (b) volatile DCL, (c) holder idiom, (d) enum singleton (Bloch Item 3). State which are correct and which you would ship.
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+## 5. Array trap + tearing (15 min)
+`volatile int[]` with concurrent element writes vs `AtomicIntegerArray.set/get`: show which gives per-element visibility. Declare why `volatile long` (not plain `long`) is the portable atomic-access answer per JLS 17.7.
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
-```
+## Submission checklist
+- [ ] Each task ran on your JVM with output pasted. [ ] Predictions written before runs. [ ] One deliberate break-and-fix per lab recorded.
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+## 6. Hoisting vs fence, measured (20 min)
+Task: run the StaleSpin harness (CODE_DEEP_DIVE.md snippet 1) on your JVM; record plainSpins (expect run-to-bound) vs volSpins (expect early exit).
+Check: explain in two sentences why the same loop shape diverges — hoisted plain read (compiler-legal) vs fenced volatile read — citing JLS 17.4, not hardware.
+APIs: plain vs `volatile` boolean flags, `Thread.onSpinWait`; success = both assertions true plus the edge named.
 
-## Advanced Exercises
+## 7. Transitivity across three threads (20 min)
+Task: implement the A -> B -> C chain (snippet 5): A writes plain x then volatile v; B spins on v then writes volatile w; C spins on w then reads x.
+Check: C must observe A's value on every run; then break one link (make v plain) and characterize the failure — which hop vanished and why.
+APIs: `volatile` flags, `Thread.onSpinWait`, `CountDownLatch`; success = intact-chain proof plus the broken-link diagnosis in edge symbols.
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+## 8. VarHandle mode ladder (20 min)
+Task: rewrite the safe-publication flag three ways — `volatile`, `VarHandle` acquire/release pair, `VarHandle` opaque pair — and state which orderings each guarantees.
+Check: identify which variant still publishes correctly (volatile, acquire/release) and which only guarantees progress without ordering (opaque); say when you would descend from volatile.
+APIs: `VarHandle.getVolatile/setVolatile/getAcquire/setRelease/getOpaque/setOpaque`; success = the three guarantees stated without conflating visibility with ordering.
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
-
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
-
-## Challenge Exercises
-
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
-
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
-
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Submission additions
+- [ ] StaleSpin numbers (plainSpins vs volSpins) pasted with the BOUND stated.
+- [ ] Piggyback chain drawn in -po-/-hb- symbols for exercise 3 and 7.
+- [ ] DCL verdict table (broken/volatile/holder/enum) with the shipped choice justified.
+- [ ] Array-trap comparison output (volatile-ref vs AtomicIntegerArray) quoted.
+- [ ] One deliberately broken link per lab with the missing hop named.

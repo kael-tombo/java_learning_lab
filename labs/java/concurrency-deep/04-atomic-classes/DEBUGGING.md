@@ -1,134 +1,44 @@
-# Atomic Classes — Debugging
+# Debugging: Atomic Classes
 
-## Debugging Strategies
+## Capture
+- Code search: `getAndUpdate/accumulateAndGet` lambdas with side effects; one-shot `weakCompareAndSet`; `sum()` used as exact total; two-atomic "transactions".
+- Metrics: retry rate (instrument CAS failures per op), contention queue depth, CPU burn vs throughput curve.
 
-### Print-Based Debugging
-```java
-System.out.println("State: " + collection);
-System.out.println("Size: " + collection.size());
-System.out.println("Contains key X: " + collection.containsKey("X"));
-```
+## Decode symptoms
+- Duplicated effects (double logging, double enqueue) -> side-effecting update function re-run (~3x under contention).
+- Spurious "lost race" branches -> one-shot weak CAS misread.
+- Torn multi-field state -> two-atomic commit mistaken for atomic.
+- Throughput cliff past a few writers -> single CAS word saturated; stripe with LongAdder.
+- Money/quota drift -> fuzzy `sum()` treated as exact.
 
-### IDE Debugger Inspection
-Modern IDEs provide collection visualizers:
-- **IntelliJ IDEA**: Shows internal structure, hash codes, conflicts
-- **Eclipse**: Detail formatters for common collections
-- **VS Code**: Java Debug Extension with variable inspection
+## Triage recipe
+1. Reproduce under contention (more writers than ~2-4) and count retries per success; linear growth confirms the hot word.
+2. Replace effects-inside-`f` with pure `f` + post-commit effect; re-measure.
+3. For ABA suspects, log identity transitions (A->B->A) and switch to stamped/markable or fresh allocation.
+4. Verify padding only after measuring (`-XX:+PrintFieldLayout`, perf counters); 128-byte cells cost real memory.
 
-### JFR Events
-Java Flight Recorder captures collection-related events:
-- **Allocation events**: When collections allocate new backing arrays
-- **GC events**: Collection overhead during GC pauses
-- **Lock events**: Contention on synchronized collections
+## Five-minute checklist
+- [ ] Update fns pure? [ ] weak CAS loop-only? [ ] No two-atomic transactions? [ ] sum() metrics-only? [ ] ABA addressed where identity matters?
 
-### Heap Dump Analysis
-```bash
-jmap -dump:live,format=b,file=heap.hprof <pid>
-```
-Use Eclipse MAT or JProfiler to analyze:
-- **Dominator tree**: Find largest collections
-- **GC root paths**: Why collections aren't collected
-- **OQL queries**: Filter specific collection types
+## Sources
+- `java.base/java/util/concurrent/atomic/AtomicInteger.java` (JDK 23), `Striped64.java` class javadoc, `VarHandle` specs, JSR-166 (2004, Doug Lea). Keep THEORY.md open; every diagnosis ends by naming the violated invariant.
 
-### Thread Dump Analysis
-```bash
-jstack <pid> > threaddump.txt
-```
-Look for threads stuck in collection code, infinite resize loops, deadlocks.
+## Retry-rate instrumentation (the core metric)
+- Wrap the CAS loop with a failure counter (failed `compareAndSet` per successful commit): linear growth of retries-per-success with writer count confirms the hot single word — the curve from MATH_FOUNDATION.md made observable.
+- Alert threshold: retries-per-success climbing past ~N (writer count) means saturation — the word is the bottleneck, not the function body; stripe before optimizing the function.
+- After striping (`LongAdder`), the same counter should collapse toward ~1 per commit: unchanged retry rates after the swap mean the contention moved (or was never the word) — re-profile instead of celebrating.
 
-## Debugging Tools
+## Side-effect duplication forensics
+- Doubled log lines, double enqueues, or inflated side counters under load with exact final totals: the update function re-ran on lost CAS races (~3x observed in CODE_DEEP_DIVE.md snippet 2) — pure final value, repeated effects.
+- Confirm by counting function applications vs commits (snippet 2's `applications` counter): applications > commits proves re-execution; the fix is pure `f` plus a post-commit effect, never deduplication downstream.
+- Audit every `getAndUpdate`/`accumulateAndGet` lambda for I/O, logging, counter bumps, and collection mutation — each is a repeatable effect until moved after the commit.
 
-### JOL (Java Object Layout)
-```java
-System.out.println(GraphLayout.parseInstance(map).toFootprint());
-```
+## ABA suspect workup
+- Lock-free stack/pool corruption where values look right but links are wrong: log identity transitions (A -> B -> A on the same reference) around the CAS — a successful `compareAndSet(A, C)` across a B-visit is the positive ID.
+- Fix ladder in cost order: fresh allocation per offer (GC-backed identity freshness, the CLQ trick) first; `AtomicStampedReference` (stamp++ per mutation) where reuse is structural; `AtomicMarkableReference` for deleted-or-not marking.
+- Stamped-reference cost check: a `Pair` allocation per access — profile before and after; stamps on cold paths are pure overhead, on Treiber-style hot paths they are the correctness condition.
 
-### jhsdb
-```bash
-jhsdb jmap --heap --pid <pid>
-jhsdb jmap --histo --pid <pid>
-```
-
-## Debugging Checklist
-1. Check equals() and hashCode() implementations
-2. Verify collection is the correct type
-3. Confirm thread safety guarantees
-4. Check for ConcurrentModificationException patterns
-5. Verify initial capacity for expected data size
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Fuzzy-sum incidents
+- Dashboard/money drift where increments are exact but reports skew: `sum()` walked base + cells mid-mutation — concurrent updates during the walk are missed or double-counted by specification.
+- Confirm by comparing racy `sum()` against a quiescent `sum()` (or `sumThenReset` at a quiet point): divergence that vanishes at rest is fuzz, not loss — enforce from exact sources (`AtomicLong`, locked totals), keep adder sums for metrics.
+- `LongAccumulator` (max/min tracking) has the same walk semantics: identity-element seeding plus concurrent updates means the extremum is "seen during the walk", never a transaction.

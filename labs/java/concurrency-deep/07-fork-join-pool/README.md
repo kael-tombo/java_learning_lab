@@ -1,147 +1,60 @@
-# Fork-Join Pool
+# Lab 07 — Fork-Join Pool: README
 
-## Overview
-Work-stealing, FJTask, RecursiveAction/RecursiveTask, managedBlocker, parallelism level tuning
+## What this lab covers
 
-## Learning Objectives
-- Understand the internal mechanics of Fork-Join Pool
-- Implement working code that demonstrates core concepts
-- Analyze performance characteristics and trade-offs
-- Apply this knowledge in real-world Java applications
+`ForkJoinPool` runs divide-and-conquer tasks that create subtasks: `fork()` a
+`RecursiveTask`, compute half directly, `join()` the other. Idle workers steal
+from busy workers' deques — owner end LIFO (hot, small subtasks first), thief
+end FIFO (large, coarse chunks). `join()` *helps* (executes pending tasks)
+before parking, so fork-then-join chains make progress instead of deadlocking.
+
+## Core facts (from THEORY.md)
+
+- Verbs: `fork()` (queue async), `join()` (await + help), `invoke()` (fork +
+  join from outside); canonical shape forks left, computes right directly.
+- Threshold bounds task-creation overhead: leaf work ~1–10µs; task count ≈
+  `2n/threshold` leaves (~2× that in total nodes).
+- Common pool: parallelism = CPUs − 1 (measured 8→7), set via
+  `java.util.concurrent.ForkJoinPool.common.parallelism`, cap `MAX_CAP =
+  0x7fff`; never shuts down.
+- Plain `new ForkJoinPool()` parallelism = CPUs (measured); `getPoolSize()`
+  may exceed `getParallelism()` only via `ManagedBlocker` compensation
+  (measured 2→3).
+- `asyncMode=true` = FIFO local order (event-style, `newWorkStealingPool`);
+  default `false` = LIFO (divide-and-conquer).
+- Shutdown: `shutdown`/`shutdownNow`/`awaitTermination`/`awaitQuiescence`;
+  `ExecutorService.close()` (i.e. try-with-resources) since Java 19.
+- Parallel streams and CF defaults borrow the common pool.
+
+## Map of this lab
+
+- `THEORY.md` + `CODE_DEEP_DIVE.md` — stealing, verbs, thresholds, common-pool
+  dials, `ManagedBlocker`, shutdown (ground truth, already done)
+- `HOW_IT_WORKS.md`, `ARCHITECTURE.md`, `INTERNALS.md` — deque mechanics,
+  pool topology, help-then-park
+- `MATH_FOUNDATION.md` — work-span bound, `2n/threshold` sizing, measured
+  counts (262143 vs 255)
+- `STEP_BY_STEP.md`, `EXERCISES.md` — sum task, threshold sweep, blocker demo
+- `PERFORMANCE.md`, `DEBUGGING.md`, `COMMON_MISTAKES.md`, `REFACTORING.md`
+- `QUIZ.md`, `FLASHCARDS.md`, `HISTORY.md`, `REFERENCES.md`, reflection pair
 
 ## Prerequisites
-- Java 21+
-- Basic understanding of Java collections framework
-- Familiarity with data structures and algorithms
 
-## Lab Structure
-This micro-lab follows the standard 24-file pedagogical structure with 7 subdirectories for hands-on work.
+- Lab 05 (parking/wakeup — steal queues reuse the same primitives)
+- Lab 06 (CF default pool = the common pool studied here)
+- Recursion comfort (`RecursiveTask.compute()` splits)
 
-## Quick Start
-1. Navigate to the source directory: `src/main/java/com/javalab/07/`
-2. Review the main implementation class
-3. Run tests using: `mvn test` or `gradle test`
-4. Complete the exercises in EXERCISES.md
-5. Build the MINI_PROJECT to cement understanding
+## Starter snippet
 
-## File Index
-| File | Description |
-|------|-------------|
-| README.md | Overview and navigation |
-| THEORY.md | Comprehensive theoretical foundation |
-| MATH_FOUNDATION.md | Mathematical prerequisites |
-| CODE_DEEP_DIVE.md | Detailed code walkthroughs |
-| EXERCISES.md | Practice problems with solutions |
-| QUIZ.md | Self-assessment questions |
-| ARCHITECTURE.md | Design and architectural considerations |
-| SECURITY.md | Security implications |
-| PERFORMANCE.md | Performance characteristics and optimization |
-| REFACTORING.md | Improving existing code |
-| DEBUGGING.md | Debugging strategies and tools |
-| COMMON_MISTAKES.md | Pitfalls and anti-patterns |
-| STEP_BY_STEP.md | Guided tutorial-style implementation |
-| VISUAL_GUIDE.md | Diagrams and visual explanations |
-| INTERNALS.md | Under-the-hood implementation details |
-| HOW_IT_WORKS.md | Step-by-step mechanical explanation |
-| MENTAL_MODELS.md | Analogies and mental frameworks |
-| HISTORY.md | Evolution across Java versions |
-| WHY_IT_MATTERS.md | Practical importance in real-world development |
-| WHY_IT_EXISTS.md | Historical context and motivation |
-| REFERENCES.md | Further reading and resources |
-| REFLECTION.md | Guided self-reflection prompts |
-| INTERVIEW.md | Common interview questions |
-| FLASHCARDS.md | Spaced-repetition learning cards |
+```java
+ForkJoinPool pool = new ForkJoinPool();
+long sum = pool.invoke(new SumTask(array, 0, n));  // fork-left/compute-right/join
+pool.shutdown();
+```
 
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| MINI_PROJECT/ | Small hands-on project |
-| REAL_WORLD_PROJECT/ | Production-scale project |
-| CHALLENGE/ | Advanced challenge problems |
-| TESTS/ | Unit and integration tests |
-| BENCHMARK/ | Performance benchmarks |
-| DIAGRAMS/ | Visual aids and architecture diagrams |
-| SOLUTION/ | Solutions to exercises and projects |
+## Exit criteria
 
-## Time Estimate
-- Reading: 30-45 minutes
-- Exercises: 45-60 minutes
-- Mini Project: 60-90 minutes
-- Total: 2-3 hours
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+You can draw the deque ends, write the canonical fork/compute/join shape, size
+a threshold from `2n/threshold`, state the common-pool defaults and dials,
+route blocking calls through `ManagedBlocker`, and close scoped pools with
+try-with-resources on 19+.

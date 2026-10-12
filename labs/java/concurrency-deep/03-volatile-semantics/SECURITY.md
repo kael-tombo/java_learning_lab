@@ -1,125 +1,44 @@
-# Volatile Semantics — Security
+# Security: Volatile Semantics
 
-## Denial of Service via Hash Collisions
-The most significant security concern is hash collision attacks:
-- **Hash DoS**: Attacker crafts keys with identical hash codes
-- **Effect**: All keys map to same bucket -> O(n^2) operations
-- **Mitigation**: Treeification (Java 8+) converts long chains to red-black trees
-- **Defense**: Random hash seed (introduced in Java 8)
+## Threat 1 — stale-visibility bypass of safety flags
+A non-volatile `shutdown/cancel/revoked` flag may never become visible to worker threads; a revoked credential keeps working. Publish every cross-thread safety decision through volatile/lock/atomic edges, and test revocation under contention.
 
-## Hash Collision Attack Prevention
-```java
-// Java 8+ HashMap uses TreeNode after TREEIFY_THRESHOLD (8)
-// String.hashCode() randomization is available via:
--Djdk.map.althashing.threshold=512
-```
+## Threat 2 — half-published objects via broken DCL
+Unsynchronized lazy singletons (config, keys, policies) can expose partially constructed security state. Demand volatile + DCL, holder idiom, or enum singleton for every lazily published security object.
 
-## Serialization Security
-- Collections containing sensitive data require careful serialization
-- Override writeObject/readObject for custom serialization
-- Use transient modifier for sensitive internal data
-- Validate serialized data before deserialization
-- Be aware of deserialization gadget chains
+## Threat 3 — torn 64-bit reads of limits/nonces
+Non-volatile `long` quota/nonce/counter reads may tear (JLS 17.7 permission) into half-old values, bypassing limits. Declare them volatile or atomic; never rely on "HotSpot does not tear".
 
-## Thread Safety Guarantees
-- **Non-thread-safe variants**: External synchronization required
-- **Synchronized wrappers**: Per-method sync but compound ops not atomic
-- **Concurrent variants**: Thread-safe for individual operations
-- **Copy-on-write**: Safe iteration but memory-heavy
+## Threat 4 — volatile-array confusion leaking stale policy entries
+Policy tables behind a `volatile Entry[]` reference publish the handle, not the cells; updated rules stay invisible. Use per-element volatile semantics (AtomicXArray/VarHandle) or republish-then-swap the whole array reference.
 
-## Memory Exposure via Unmodifiable Views
-```java
-List<Integer> internal = new ArrayList<>();
-List<Integer> view = Collections.unmodifiableList(internal);
-// Internal list still accessible via original reference!
-```
-Use defensive copying for true immutability:
-```java
-public List<Integer> getData() {
-    return List.copyOf(internal); // Creates immutable copy
-}
-```
+## Checklist
+- [ ] Safety flags volatile. [ ] Security singletons safely published. [ ] 64-bit security fields volatile/atomic. [ ] Policy arrays element-safe.
 
-## Security Checklist
-1. Validate all keys before insertion
-2. Do not expose internal arrays via reflection
-3. Use Collections.unmodifiableXxx for API returns
-4. Avoid using mutable objects as keys
-5. Consider ConcurrentHashMap for shared state
+## Threat 5 — revocation flags that never arrive
+- A non-volatile `revoked/cancelled/shutdown` flag lets a cancelled credential, revoked token, or stopped worker keep running: the JIT hoists the reader's check and the revocation never lands.
+- Publish every cross-thread safety decision through a volatile write/read pair (or atomic/interrupt edge); test revocation under OSR-hot loops, not just cold unit tests.
+- Log revocation-to-effect latency in drills: any outlier shaped like "never" is a missing edge, not a slow network.
 
+## Threat 6 — half-published security singletons
+- Lazy policy engines, key holders, and config singletons built on plain-field DCL can expose partially constructed security state — null ciphers, zeroed limits, permissive defaults mid-construction.
+- Demand volatile-DCL, holder idiom, or enum singleton for every lazily published security object; review-gate any hand-rolled lazy init touching auth material.
+- Treat "unreproducible in tests" as the signature, not an alibi: DCL races need specific JIT/CPU interleavings, so absence in CI proves nothing.
 
-## Further Exploration
+## Threat 7 — torn 64-bit security values
+- Quotas, nonces, expiry timestamps, and sequence counters in plain `long`/`double` may tear (JLS 17.7 permission) into half-old values — limit checks compare against a number no thread ever wrote.
+- Declare security-relevant 64-bit fields volatile or atomic; never rely on "HotSpot does not tear" — portability is the requirement, current-CPU behavior is anecdote.
+- Prefer `AtomicLong` with CAS loops where the value is both checked and updated (nonce consumption, quota decrement) — visibility without atomicity still races.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Detection
+- Grep for cross-thread boolean/long flags lacking `volatile` (or atomic wrappers): each hit is a finding until a hb chain is drawn for it.
+- Grep for `volatile.*\[\]` declarations: every volatile array reference is an element-visibility finding until per-element semantics are shown.
+- Grep for lazy-singleton shapes (`if (x == null)` + `synchronized`): each must resolve to volatile-DCL, holder, or enum — anything else is the DCL bug.
+- Include an ARM (or weak-model) run in security CI for visibility-sensitive paths; x86-only CI cannot catch missing-barrier bugs.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Checklist additions
+- [ ] Revocation/cancel flags volatile or interrupt-driven, drill-tested hot.
+- [ ] Security singletons volatile-DCL / holder / enum — no plain-field lazy init.
+- [ ] 64-bit security fields volatile or atomic; no tearing-permission exposure.
+- [ ] Policy arrays element-safe (AtomicXArray/VarHandle) or reference-swapped whole.
+- [ ] Weak-model CI run covers visibility-sensitive paths.

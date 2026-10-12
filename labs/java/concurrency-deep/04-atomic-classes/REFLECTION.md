@@ -1,123 +1,39 @@
-# Atomic Classes — Reflection
+# Reflection: Atomic Classes
 
-## Guided Reflection Prompts
+## Recall without notes
+1. State the lab's key fact (Every RMW linearizes at the winning CAS; losers retry (lock-free: some thread progresses, yours may starve); functions passed to getAndUpdate re-execute on retry (side-effect-free only; expect repeated runs under contention); ABA needs identity freshness/stamps/marks; LongAdder.sum() is a fuzzy non-atomic snapshot; weakCompareAndSet is retry-loops-only; two atomics cannot transact (multi-variable invariants need a lock or single packed CAS).) in under 40 words.
+2. List the structures (`AtomicInteger.value` (volatile int) + `VALUE` field offset, Unsafe intrinsic `U.getAndAddInt` (= `lock cmpxchg` on x86), VarHandle-specified effects, CAS retry loop, (reference,stamp) pairs, `Striped64` cells + base with `@Contended` padding) and one API each from (`compareAndSet/compareAndExchange/weakCompareAndSet`, `getAndIncrement/getAndAdd/getAndUpdate/accumulateAndGet`, `AtomicStampedReference/AtomicMarkableReference`, `LongAdder.increment/sum/sumThenReset`, `LongAccumulator`, `DoubleAdder`) that touches them.
 
-### Understanding
-1. Before studying this micro-lab, what was your understanding of Atomic Classes?
-2. What was the most surprising aspect of the internal implementation?
-3. How has your mental model of this concept changed after the deep dive?
+## Connect
+3. Which invariant from THEORY.md did your STEP_BY_STEP.md probe demonstrate? Quote the probe output line that proves it.
+4. Where does this lab's mechanism meet the neighboring lab (lifecycle<->monitors<->volatile<->atomics)? Name one concrete handoff (e.g. BLOCKED vs parking, unlock edge vs volatile edge, CAS vs lock for one counter).
 
-### Application
-4. In your current projects, where would Atomic Classes be the right choice?
-5. Where have you seen Atomic Classes used incorrectly in codebases you've worked with?
-6. Can you think of a system that would fail without the correct choice?
+## Challenge your intuition
+5. Write the wrong version first (one COMMON_MISTAKES.md bug), predict its failure mode, then run it. Where did your prediction differ from the run?
+6. Which of your predictions relied on timing or fairness? Restate it using only specified edges and invariants.
 
-### Design Trade-offs
-7. What design trade-offs does Atomic Classes make and why?
-8. If you were redesigning it, what would you do differently?
-9. How do the performance characteristics affect your programming style?
+## Transfer
+7. Name one place in your own codebase where lock-free read-modify-write via CAS: AtomicX, stamped references, and striped counters is assumed but unchecked. What single edge, guard change, or API swap would make it checkable?
+8. What will you measure (PERFORMANCE.md harness) before claiming the fix helped?
 
-### Deeper Questions
-10. How does Atomic Classes interact with the Java Memory Model?
-11. What role does Atomic Classes play in concurrent systems?
-12. How does garbage collection behavior affect the choice?
-13. What are the limits? When should you use a database instead?
+## Exit ticket
+- Two sentences: what breaks, and which source (`java.base/java/util/concurrent/atomic/AtomicInteger.java` (JDK 23), `Striped64.java` class javadoc, `VarHandle` specs, JSR-166 (2004, Doug Lea)) you would open first when it does.
 
-### Teaching Others
-14. How would you explain Atomic Classes to a junior developer?
-15. What analogy works best for conveying its core concepts?
-16. What common mistakes would you warn them about?
+## Count your retries (new prompts)
+9. Quote your hand-loop retries-per-success at 1/2/8 writers; fit E[A] ≈ N by eye and state where saturation visibly begins.
+10. Quote the rerun ratio (applications vs commits) from your contention run; name the cheapest line inside f that paid the multiplier.
+11. Which shape were you running — cold sequence, hot metric, extremum, or enforcement total? State whether your counter pick matches the shape now.
 
-### Connection to Broader Topics
-17. How does Atomic Classes relate to operating system data structures?
-18. What database concepts are similar?
-19. How do distributed systems use similar structures?
-20. What other programming languages implement this differently and why?
+## ABA diary
+12. Write your Treiber interleaving as timestamped transitions (pop-A, pop-B, push-A, stale-CAS-win); then write the stamped replay with stamp values per step.
+13. Price the stamp: Pair allocations per access on your hot path — measured or explicitly unmeasured with the reason stated.
+14. Name one structure in your codebase with recycled node identity plus CAS; state its current ABA posture (fresh-alloc, stamped, marked, or exposed).
 
-## Self-Assessment
-- [ ] I can explain the time complexity of all operations
-- [ ] I can implement a simplified version from memory
-- [ ] I can identify when this is the wrong choice
-- [ ] I can debug common issues related to this concept
-- [ ] I can optimize code using this concept
-- [ ] I can teach the concept to others
+## Transfer extension
+15. Find the hottest shared counter in your codebase; classify its writer count and state the AtomicLong-vs-LongAdder verdict with the crossover cited.
+16. Find every `getAndUpdate`/`accumulateAndGet` lambda; mark pure vs effectful — each effectful one gets a post-commit refactor ticket.
 
-## Learning Summary
-Write a brief summary (2-3 paragraphs) of what you learned and how you plan to apply it.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Exit-ticket extension
+- One more sentence: the invariant (linearization, purity, fuzz, ABA, weak-loops-only) you violated most recently and the metric that exposed it.
+- File your adder-crossover numbers (1/2/8/32 writers) as the lab's receipt.
+- Name the effectful lambda you refactored this week and the before/after applications-vs-commits ratio.

@@ -1,125 +1,52 @@
-# CompletableFuture — Security
+# Security: CompletableFuture
 
-## Denial of Service via Hash Collisions
-The most significant security concern is hash collision attacks:
-- **Hash DoS**: Attacker crafts keys with identical hash codes
-- **Effect**: All keys map to same bucket -> O(n^2) operations
-- **Mitigation**: Treeification (Java 8+) converts long chains to red-black trees
-- **Defense**: Random hash seed (introduced in Java 8)
+## Common-pool exhaustion as DoS
 
-## Hash Collision Attack Prevention
-```java
-// Java 8+ HashMap uses TreeNode after TREEIFY_THRESHOLD (8)
-// String.hashCode() randomization is available via:
--Djdk.map.althashing.threshold=512
-```
+Attacker-triggered fan-out (`supplyAsync` per request on the default pool)
+with blocking bodies starves the shared pool — parallel streams and unrelated
+CF chains stall. Defenses: dedicated bounded I/O pools with queue limits;
+`orTimeout` on every external-facing future; reject (don't queue unboundedly)
+past the bound.
 
-## Serialization Security
-- Collections containing sensitive data require careful serialization
-- Override writeObject/readObject for custom serialization
-- Use transient modifier for sensitive internal data
-- Validate serialized data before deserialization
-- Be aware of deserialization gadget chains
+## Exception leakage
 
-## Thread Safety Guarantees
-- **Non-thread-safe variants**: External synchronization required
-- **Synchronized wrappers**: Per-method sync but compound ops not atomic
-- **Concurrent variants**: Thread-safe for individual operations
-- **Copy-on-write**: Safe iteration but memory-heavy
+`join()`/`get()` messages propagate upstream causes — including SQL text,
+paths, or internal hostnames wrapped in `CompletionException`. Sanitize at the
+`handle`/`exceptionally` boundary facing untrusted callers; log full chains
+server-side, return typed errors client-side.
 
-## Memory Exposure via Unmodifiable Views
-```java
-List<Integer> internal = new ArrayList<>();
-List<Integer> view = Collections.unmodifiableList(internal);
-// Internal list still accessible via original reference!
-```
-Use defensive copying for true immutability:
-```java
-public List<Integer> getData() {
-    return List.copyOf(internal); // Creates immutable copy
-}
-```
+## Cancellation is not containment
 
-## Security Checklist
-1. Validate all keys before insertion
-2. Do not expose internal arrays via reflection
-3. Use Collections.unmodifiableXxx for API returns
-4. Avoid using mutable objects as keys
-5. Consider ConcurrentHashMap for shared state
+`cancel()` never stops running work — a malicious or runaway `supplyAsync`
+body keeps consuming CPU/connections after "cancellation." Contain with
+executor shutdown (`shutdownNow` interrupts `FutureTask` runners), timeouts,
+and resource-scoped try-with-resources — not CF cancel.
 
+## Timeout ≠ revocation
 
-## Further Exploration
+`orTimeout` completes *this* exceptionally but the upstream keeps running and
+may still mutate shared state or exfiltrate after the caller gave up. Pair
+deadlines with explicit upstream cancel + idempotency guards where side
+effects matter.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## `getNow` default confusion
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Using `getNow(safeDefault)` on attacker-paced gates returns the default for
+incomplete futures — downstream code may authorize on a value that is not the
+real one. Treat `getNow` as untrusted-peek; use bounded `get(t, unit)` where
+correctness depends on the true outcome.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Unbounded `anyOf` hedging
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+Hedging multiplies backend load per request — attacker-amplified hedging is a
+self-DoS multiplier. Cap hedge fan-out, hedge only past p95 (not always), and
+cancel losers immediately.
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## Checklist
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- [ ] Blocking stages on bounded pools with queue limits
+- [ ] `orTimeout` on external-facing futures
+- [ ] Error boundaries sanitize causes for untrusted callers
+- [ ] Upstream cancel paired with every deadline on side-effecting work
+- [ ] No authorization on `getNow` defaults
+- [ ] Hedge fan-out capped, losers cancelled

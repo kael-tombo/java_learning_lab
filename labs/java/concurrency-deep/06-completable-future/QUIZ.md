@@ -1,120 +1,50 @@
-# CompletableFuture — Quiz
+# Quiz: CompletableFuture
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in CompletableFuture?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Questions (answers at end)
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+1. `completedFuture(1).thenApply(f)` — which thread runs `f`, and does any
+   pool get involved?
+2. Gate `g` is incomplete; thread F calls `g.complete("go")`. A `thenApply`
+   was attached earlier. Where does it run?
+3. `u.thenApply(x -> fetchAsync(x))` compiles. What is the result type, why is
+   it wrong, and what is the fix?
+4. After `allOf(a, b, c)`, how do you get `a`'s value? Why can't it block?
+5. `anyOf(primary, replica)` wins with the replica. What is the result type,
+   and what must you still do about the primary?
+6. A future fails. Contrast the three terminals: `exceptionally(ex -> fb)` vs
+   `handle((v, ex) -> ...)` vs `whenComplete((v, ex) -> ...)`.
+7. `f.cancel(true)` on a running `supplyAsync` body — does the body stop?
+   What do dependents observe?
+8. `CF<String> b = f.orTimeout(2, SECONDS)` — what is `b == f`? What completes
+   on expiry, and does the upstream stop?
+9. `join()` vs `get()` on a failed future — exception types?
+10. A stage on a 1-thread pool calls `inner.join()`, where `inner` needs the
+    same pool. What happens and what is the fix?
+11. On a 1-CPU container, default `supplyAsync` behaves differently. How, and
+    which source constant governs it?
+12. `allOf(a, b).join()` throws. Where are `b`'s failures if `a` failed first?
 
-## Question 3: Memory
-How much additional memory overhead does CompletableFuture have per element (approximately)?
+## Answers
 
-## Question 4: Concurrency
-Is CompletableFuture safe for concurrent access without external synchronization? Explain why or why not.
-
-## Question 5: Scalability
-How does CompletableFuture perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
-
-## Question 6: Design
-Why was CompletableFuture designed this way? What alternatives were considered during its development?
-
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
-
-## Question 8: Comparison
-Compare CompletableFuture with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
-
-## Question 9: Real-World
-Describe a real-world scenario where CompletableFuture is the optimal choice.
-Describe a scenario where it would be a poor choice.
-
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
-
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. The calling thread, synchronously — no pool touched.
+2. In F, the completing thread.
+3. `CF<CF<U>>` nesting — the inner future becomes the *value*. Fix:
+   `thenCompose` (flatMap).
+4. `a.join()` inside a continuation of the barrier — all inputs complete, so
+   no blocking; failure surfaces as `CompletionException`.
+5. `CF<Object>` — cast back. Explicitly cancel the primary; `anyOf` never
+   cancels stragglers.
+6. `exceptionally` recovers to `fb`; `handle` unifies both paths into one
+   value; `whenComplete` only observes — the failure still propagates.
+7. No — the flag is ignored (no owned thread). Body finishes; dependents see
+   `CancellationException` (if cancel won the race).
+8. `true` — in-place. *This* future completes with `TimeoutException`; the
+   upstream keeps running unless cancelled.
+9. `join` → unchecked `CompletionException(cause)`; `get` → checked
+   `ExecutionException(cause)` (+ `InterruptedException`).
+10. Self-deadlock: the thread waits for work needing itself. Fix: chain with
+    `thenCompose` instead of blocking-join.
+11. Thread-per-task (`new Thread` per submission) — governed by
+    `USE_COMMON_POOL = commonPoolParallelism > 1`.
+12. Attached as suppressed throwables on the surfaced exception — log the full
+    `CompletionException`, not just the message.

@@ -1,146 +1,37 @@
-# Volatile Semantics — History
+# History: Volatile Semantics
 
-## Origins
-Volatile Semantics has its roots in fundamental computer science research dating back to the 1950s and 1960s.
-The concept evolved through multiple iterations before becoming a standard part of the
-Java Collections Framework.
+## From broken DCL to a specified memory model
+- **Late 1990s:** double-checked locking idiom circulates; developers discover it is broken under the original Java memory model (publication before initialization becomes visible).
+- **2004, JSR-133 (Bill Pugh, Jeremy Manson, Brian Goetz and others) with Java 5:** memory-model rewrite; volatile write->read becomes a happens-before edge (JLS 17.4.5); DCL becomes correct *only* with a volatile field.
+- **2004, JSR-166 (Doug Lea):** `java.util.concurrent` documents an edge per action (submit->execute, etc.), extending the same happens-before vocabulary.
+- **2006, Brian Goetz et al., *Java Concurrency in Practice*:** codifies safe publication, piggybacking, and the volatile-array trap for working engineers.
+- **2014-2017, Java 8-9:** `LongAdder` (Java 8) relieves volatile-counter abuse; `VarHandle` (Java 9, JEP 193) exposes acquire/release/opaque modes beneath the volatile bundle.
 
-## Timeline
+## What changed and what did not
+- The *specification* of volatile (visibility + access atomicity, no compound atomicity) has been stable since 2004; hardware costs shifted (x86 TSO vs ARM barriers) without changing the contract.
 
-### Pre-Java (1960s-1990s)
-- 1960: Initial theoretical work on underlying data structures by researchers
-- 1970s: Widespread adoption in academic systems programming (UNIX, Pascal)
-- 1980s: Standardization in C++ STL influenced Java's design significantly
-- 1995: Java 1.0 released with java.util.Hashtable and java.util.Vector
+## Dates to remember (confident facts only)
+- JSR-133 memory-model rewrite: 2004 (Java 5). JSR-166 concurrency utilities: 2004 (Java 5).
+- `LongAdder`: Java 8. `VarHandle`: Java 9. Biased locking off by default: JDK 15 (JEP 374); removed: JDK 18.
+- Virtual threads: Java 21 (JEP 444). *Java Concurrency in Practice* (Goetz et al.): 2006.
 
-### Java Evolution
+## Sources
+- REFERENCES.md entries for JLS 17.4/17.5/17.7, JSR-133 FAQ (Pugh), JSR-166, OpenJDK source paths.
 
-#### Java 2 (1998) — Collections Framework
-- Java 1.2 introduced the Collections Framework as a unified architecture
-- HashMap, ArrayList, LinkedList, TreeMap added to java.util
-- Collections utility class with sorting, searching, wrapping methods
-- Load factor concept formalized in java.util.HashMap
+## Why the pre-2004 model broke DCL
+- The original Java memory model permitted publication-before-initialization visibility: `helper = new Helper()` could show the reference before the constructor's field stores became visible — no edge forbade the reorder.
+- Developers "fixed" it with more synchronization in the wrong place (synchronizing only the write side, or re-checking without a read edge), which narrowed the race without closing it — testing passed, production published half-built objects.
+- The failure was unreproducible on demand by construction: it needed a specific JIT/CPU reorder plus a racing reader, so bug reports read as hardware flakiness rather than model violations.
 
-#### Java 5 (2004) — Generics
-- JSR-14 added generics to the language
-- Collections gained type safety via generic type parameters
-- ConcurrentHashMap officially added in java.util.concurrent
-- java.util.concurrent.locks package introduced
-- EnumMap and EnumSet for enum-based keys
+## Mechanism depth on the dated entries
+- JSR-133 (2004, Pugh/Manson/Goetz and others): rewrote JLS 17.4 around happens-before; volatile write -> later read became an edge (17.4.5), and program-order plus transitivity turned one flag into a publication channel for whole object graphs.
+- JSR-166 (2004, Doug Lea): extended the same vocabulary with one documented edge per concurrent action (submit -> execute, unlock -> lock, countDown -> await return) — message-passing built from chained edges, as snippet 5 demonstrates.
+- JCIP (Goetz et al., 2006): translated the model into working rules — safe-publication catalog, piggybacking idiom, volatile-array trap — the bridge most engineers actually learned from.
+- Java 8 (2014): `LongAdder`/`LongAccumulator` removed the main excuse for volatile counters — RMW contention got its own striped tool instead of abusing a visibility keyword.
+- Java 9 (JEP 193): `VarHandle` unbundled volatile into modes (volatile/acquire-release/opaque/plain) plus CAS primitives — experts can now buy exactly the edge they need, while everyone else stays on `volatile`.
 
-#### Java 8 (2014) — Major Overhaul
-- HashMap treeification: linked list -> red-black tree at TREEIFY_THRESHOLD=8
-- ConcurrentHashMap rewritten using CAS (removed segment-based locking entirely)
-- Stream API and lambda expressions changed collection usage patterns
-- Map interface gained default methods: getOrDefault, putIfAbsent, computeIfAbsent
-
-#### Java 9-11 (2017-2018)
-- List.of(), Set.of(), Map.of() factory methods for immutable collections
-- Immutable collection internal optimizations (compact storage)
-- Optional improvements for stream integration
-
-#### Java 17+ (2021+) — Modern Enhancements
-- SequencedCollection and SequencedMap interfaces (Java 21+)
-- HashMap treeified bin improvements
-- ConcurrentHashMap performance optimizations
-- Enhanced garbage collection interaction
-
-## Key Design Decisions
-
-### Why Power-of-Two Sizing?
-Hash-based collections use power-of-two capacities because it enables fast bitwise
-index calculation (hash & (capacity-1)) instead of expensive modulo operations.
-
-### Why 0.75 Load Factor?
-The default load factor of 0.75 represents a trade-off between time and space costs.
-Lower values (0.5) reduce collisions but increase memory. Higher values (0.9) save
-memory but increase lookup times.
-
-### Why Treeify at 8?
-The threshold of 8 for treeification balances the cost of tree nodes (larger memory
-footprint) against the O(n) lookup penalty for long chains. With good hash distribution,
-buckets rarely exceed 8 entries.
-
-## Impact
-This data structure has influenced countless applications and frameworks:
-- Database indexing strategies
-- Cache implementations (Caffeine, Guava Cache)
-- Distributed systems key-value stores
-- In-memory data grids (Hazelcast, Ignite)
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## How to read old volatile advice
+- Pre-2004 writing about volatile ("flush", "main memory", DCL without the keyword) predates the edge vocabulary — translate or discard; never merge it with JLS 17.4 reasoning.
+- "Volatile is expensive, avoid it" benchmarks from the early 2000s measured un-fenced implementations on hardware the model later priced differently — re-measure per architecture (x86 TSO vs ARM fences) instead of inheriting the fear.
+- Any DCL sample without `volatile` (or holder/enum) is a bug exhibit regardless of its date — the keyword is the correctness condition, not a style choice.
+- Post-2004 "volatile means thread-safe" simplifications conflate visibility with atomicity — check every such claim against `volatile++` before quoting it.

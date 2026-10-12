@@ -1,134 +1,42 @@
-# Thread Lifecycle — Debugging
+# Debugging: Thread Lifecycle
 
-## Debugging Strategies
-
-### Print-Based Debugging
-```java
-System.out.println("State: " + collection);
-System.out.println("Size: " + collection.size());
-System.out.println("Contains key X: " + collection.containsKey("X"));
+## Capture
 ```
-
-### IDE Debugger Inspection
-Modern IDEs provide collection visualizers:
-- **IntelliJ IDEA**: Shows internal structure, hash codes, conflicts
-- **Eclipse**: Detail formatters for common collections
-- **VS Code**: Java Debug Extension with variable inspection
-
-### JFR Events
-Java Flight Recorder captures collection-related events:
-- **Allocation events**: When collections allocate new backing arrays
-- **GC events**: Collection overhead during GC pauses
-- **Lock events**: Contention on synchronized collections
-
-### Heap Dump Analysis
-```bash
-jmap -dump:live,format=b,file=heap.hprof <pid>
+jstack <pid> > dump.txt
+jcmd <pid> Thread.print > dump2.txt
 ```
-Use Eclipse MAT or JProfiler to analyze:
-- **Dominator tree**: Find largest collections
-- **GC root paths**: Why collections aren't collected
-- **OQL queries**: Filter specific collection types
+For live systems add `jcmd <pid> Thread.print -l` (lock owners) and JFR `jdk.JavaMonitorEnter` events.
 
-### Thread Dump Analysis
-```bash
-jstack <pid> > threaddump.txt
-```
-Look for threads stuck in collection code, infinite resize loops, deadlocks.
+## Decode tokens
+- `BLOCKED (on object monitor)` + `- waiting to lock <0xA>` -> find `- locked <0xA>` holder; that holder's stack is the fix location.
+- `WAITING (parking)` -> LockSupport path (locks, queues, futures); normal for pooled threads, suspicious when workers should be computing.
+- `WAITING (on object monitor)` -> `Object.wait()` with no timeout; demand the notify path or convert to timed wait.
+- `TIMED_WAITING (sleeping|parking|on object monitor)` -> parenthetical names the API; expiry wakes with no signal.
 
-## Debugging Tools
+## Triage recipe
+1. Count identical stacks: hundreds BLOCKED at one frame = contention; hundreds parked at queue-take = healthy idle.
+2. Check `Found one Java-level deadlock` footer first — the JVM already did the graph analysis.
+3. Correlate with CPU: high CPU + RUNNABLE loops = spin; low CPU + BLOCKED/WAITING = stuck or idle.
+4. For virtual threads (21+): thousands of WAITING is the normal backlog shape; BLOCKED thousands still cost carriers (pinning through JDK 23).
 
-### JOL (Java Object Layout)
-```java
-System.out.println(GraphLayout.parseInstance(map).toFootprint());
-```
+## Five-minute checklist
+- [ ] Deadlock footer present? [ ] Which monitor/address repeats? [ ] Who holds it and what are they waiting for? [ ] Parking or monitor? [ ] Timeout/expiry assumed as signal anywhere?
 
-### jhsdb
-```bash
-jhsdb jmap --heap --pid <pid>
-jhsdb jmap --histo --pid <pid>
-```
+## Sources
+- `java.base/java/lang/Thread.java` (State enum, start/join/sleep), HotSpot `thread.cpp`/`osthread`, `jstack`/`jcmd Thread.print` output. Keep THEORY.md open; every diagnosis ends by naming the violated invariant.
 
-## Debugging Checklist
-1. Check equals() and hashCode() implementations
-2. Verify collection is the correct type
-3. Confirm thread safety guarantees
-4. Check for ConcurrentModificationException patterns
-5. Verify initial capacity for expected data size
+## Interrupt triage
+- `sleep`/`wait`/`join` hang, log shows `InterruptedException`, status cleared -> normal wake path; find who interrupted (shutdown hook vs stray cancel) before touching the catch block.
+- Parked thread keeps interrupt status set yet stays parked after `interrupt()` -> park returned but the code re-parked without polling `Thread.interrupted()`; add the poll or switch to an interruptible API.
+- BLOCKED thread stays BLOCKED minutes after `interrupt()` -> expected behavior, not a missed signal: monitor entry is uninterruptible, so no interrupt volume frees it; replace entry with `ReentrantLock.lockInterruptibly()` on that path.
+- `WAITING (parking)` worker never wakes and no unpark appears in code search -> the permit was consumed before the park call or never sent; trace `unpark` ordering, not thread priority.
 
+## Daemon-shutdown diagnosis
+- Process lingers after `main` returns -> survivors in `jcmd <pid> Thread.print` are non-daemon by definition; daemonize them in the thread factory or add `shutdown()` plus `awaitTermination` with a timeout.
+- Daemon output lines vanish at exit with no `finally` trace -> frames are dropped at JVM halt, not skipped by logic; move must-finish writes (buffer flush, audit log) to non-daemon threads joined from a shutdown hook.
+- Exit-time flakiness across runs -> daemon-status inheritance: threads created by a daemon worker are daemon themselves; audit the factory chain, not just the leaf thread.
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Dump-diff technique
+- Capture two dumps 5s apart (`jstack <pid>` twice into separate files): identical stacks on the same `<0x...>` monitor in both = stuck; identical stacks on moved addresses = progressing contention.
+- Pair with CPU (`top -H -p <pid>` or OS equivalent): high CPU plus RUNNABLE spin frames = CPU burn; low CPU plus BLOCKED/WAITING = waiting, not working.
+- For virtual threads (21+): diff carrier-thread sections against virtual-thread sections; a BLOCKED virtual thread that never moves across diffs pins its carrier for the whole interval.

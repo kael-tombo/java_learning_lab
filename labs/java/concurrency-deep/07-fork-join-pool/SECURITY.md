@@ -1,125 +1,54 @@
-# Fork-Join Pool — Security
+# Security: Fork-Join Pool
 
-## Denial of Service via Hash Collisions
-The most significant security concern is hash collision attacks:
-- **Hash DoS**: Attacker crafts keys with identical hash codes
-- **Effect**: All keys map to same bucket -> O(n^2) operations
-- **Mitigation**: Treeification (Java 8+) converts long chains to red-black trees
-- **Defense**: Random hash seed (introduced in Java 8)
+## Common-pool contention as DoS
 
-## Hash Collision Attack Prevention
-```java
-// Java 8+ HashMap uses TreeNode after TREEIFY_THRESHOLD (8)
-// String.hashCode() randomization is available via:
--Djdk.map.althashing.threshold=512
-```
+Any tenant that runs blocking or explosive-fan-out work on the common pool
+degrades parallel streams and CF chains JVM-wide — a shared-resource DoS with
+no privilege required. Defenses: never run untrusted-lambda recursion on the
+common pool; give untrusted/IO work bounded private pools; `orTimeout` + queue
+limits on every external-facing fork.
 
-## Serialization Security
-- Collections containing sensitive data require careful serialization
-- Override writeObject/readObject for custom serialization
-- Use transient modifier for sensitive internal data
-- Validate serialized data before deserialization
-- Be aware of deserialization gadget chains
+## Task-explosion abuse
 
-## Thread Safety Guarantees
-- **Non-thread-safe variants**: External synchronization required
-- **Synchronized wrappers**: Per-method sync but compound ops not atomic
-- **Concurrent variants**: Thread-safe for individual operations
-- **Copy-on-write**: Safe iteration but memory-heavy
+Recursive tasks with attacker-influenced split depth (tiny threshold over
+attacker-sized input) allocate millions of task objects — heap exhaustion via
+`2n/t` arithmetic. Defenses: clamp input size before forking; floor the
+threshold (never below the ~1µs-leaf mapping); cap parallelism for untrusted
+shapes (`MAX_CAP` is 32767 — the real cap must be yours).
 
-## Memory Exposure via Unmodifiable Views
-```java
-List<Integer> internal = new ArrayList<>();
-List<Integer> view = Collections.unmodifiableList(internal);
-// Internal list still accessible via original reference!
-```
-Use defensive copying for true immutability:
-```java
-public List<Integer> getData() {
-    return List.copyOf(internal); // Creates immutable copy
-}
-```
+## Blocking without compensation as liveness attack
 
-## Security Checklist
-1. Validate all keys before insertion
-2. Do not expose internal arrays via reflection
-3. Use Collections.unmodifiableXxx for API returns
-4. Avoid using mutable objects as keys
-5. Consider ConcurrentHashMap for shared state
+Attacker-paced latches/sockets inside `compute()` park workers that read as
+busy — effective parallelism decays with no error. Require `ManagedBlocker`
+(or off-pool execution) for any block reachable by external timing; monitor
+`getPoolSize()` vs `getParallelism()` divergence as a health signal.
 
+## Exception exfiltration
 
-## Further Exploration
+`join()`/`invoke()` rethrow task exceptions to the joining thread — a failing
+task can surface internal paths or backend details to an untrusted joiner.
+Sanitize at task boundaries (`handle`-style wrapping into typed errors) the
+same way CF pipelines do.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Pool-leak persistence
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Leaked non-daemon FJ pools keep threads (and their context classloaders)
+alive past redeploy — a redeploy-leak DoS in containers. Mandate
+try-with-resources (19+) or `shutdown` + `awaitTermination` in finally for
+every non-common pool; never expose pool creation to untrusted callers.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Property-override integrity
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+`common.parallelism` / `common.threadFactory` are startup properties —
+attacker-controlled JVM flags resize the shared pool for every borrower.
+Treat launch flags as security-sensitive config; assert
+`commonPool().getParallelism()` at startup in hardened deployments.
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## Checklist
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- [ ] No untrusted/blocking work on the common pool
+- [ ] Input-size clamps + threshold floors on recursive tasks
+- [ ] `ManagedBlocker` on externally-paced blocks
+- [ ] Task exceptions sanitized at join boundaries
+- [ ] Every private pool try-with-resources or shutdown/finally
+- [ ] Startup assertion on common-pool parallelism

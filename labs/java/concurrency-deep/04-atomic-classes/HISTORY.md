@@ -1,146 +1,37 @@
-# Atomic Classes — History
+# History: Atomic Classes
 
-## Origins
-Atomic Classes has its roots in fundamental computer science research dating back to the 1950s and 1960s.
-The concept evolved through multiple iterations before becoming a standard part of the
-Java Collections Framework.
+## From compare-and-swap hardware to java.util.concurrent.atomic
+- **1970s-80s:** CAS/LL-SC instructions appear on mainframes and multiprocessors (IBM System/370 `CS`, later x86 `cmpxchg` with `lock` prefix) as the hardware primitive for lock-free algorithms.
+- **2004, JSR-166 (Doug Lea):** `java.util.concurrent.atomic` ships with Java 5 — AtomicInteger/Long/Reference/Arrays built on Unsafe CAS intrinsics.
+- **2012, Java 7:** `compareAndExchange` conceptual groundwork and fork-join época; weak-compare semantics clarified across platforms.
+- **2014, Java 8:** `LongAdder/LongAccumulator/DoubleAdder` (inspired by striped counting) relieve single-word CAS contention; `getAndUpdate/accumulateAndGet` add side-effect-free functional loops.
+- **2017, Java 9 (JEP 193):** `VarHandle` gives a supported specification vocabulary (`compareAndSet`, `getAndAdd`) above the Unsafe mechanics.
+- **Ongoing:** `Striped64` cell design (per class javadoc: `@Contended`-padded cells, demand growth) stays the standard answer to CAS-word contention.
 
-## Timeline
+## What changed and what did not
+- Mechanism migrated from raw Unsafe toward VarHandle-specified effects; the CAS-loop contract (single linearization point, retry on loss, ABA exposure) never changed.
 
-### Pre-Java (1960s-1990s)
-- 1960: Initial theoretical work on underlying data structures by researchers
-- 1970s: Widespread adoption in academic systems programming (UNIX, Pascal)
-- 1980s: Standardization in C++ STL influenced Java's design significantly
-- 1995: Java 1.0 released with java.util.Hashtable and java.util.Vector
+## Dates to remember (confident facts only)
+- JSR-133 memory-model rewrite: 2004 (Java 5). JSR-166 concurrency utilities: 2004 (Java 5).
+- `LongAdder`: Java 8. `VarHandle`: Java 9. Biased locking off by default: JDK 15 (JEP 374); removed: JDK 18.
+- Virtual threads: Java 21 (JEP 444). *Java Concurrency in Practice* (Goetz et al.): 2006.
 
-### Java Evolution
+## Sources
+- REFERENCES.md entries for JLS 17.4/17.5/17.7, JSR-133 FAQ (Pugh), JSR-166, OpenJDK source paths.
 
-#### Java 2 (1998) — Collections Framework
-- Java 1.2 introduced the Collections Framework as a unified architecture
-- HashMap, ArrayList, LinkedList, TreeMap added to java.util
-- Collections utility class with sorting, searching, wrapping methods
-- Load factor concept formalized in java.util.HashMap
+## Why hardware CAS won the primitive contest
+- Mainframe `CS` (IBM System/370) and later x86 `lock cmpxchg` gave one indivisible compare-and-swap: enough to build lock-free structures without OS mutexes, retries replacing parking as the contention strategy.
+- LL-SC (ARM/POWER load-linked/store-conditional) offered the same power with a different contract — reservations instead of comparison — which is why weak/spurious-failure semantics exist in the Java API at all.
+- The performance bet: uncontended CAS costs ~10-20ns (one instruction plus coherence) vs monitor inflation's mutex-plus-park microseconds — orders apart, so single-variable RMW migrated off locks wherever semantics allowed.
 
-#### Java 5 (2004) — Generics
-- JSR-14 added generics to the language
-- Collections gained type safety via generic type parameters
-- ConcurrentHashMap officially added in java.util.concurrent
-- java.util.concurrent.locks package introduced
-- EnumMap and EnumSet for enum-based keys
+## Mechanism depth on the dated entries
+- JSR-166 (2004, Doug Lea): shipped `AtomicInteger/Long/Reference/Arrays` on Unsafe CAS intrinsics — volatile memory effects with single-instruction commits, specified before VarHandle vocabulary existed.
+- Java 7-8 era: single-word CAS contention collapse under metrics workloads motivated striped counting (CHM `CounterCell` thinking applied to counters) — `LongAdder`/`LongAccumulator`/`DoubleAdder` landed in Java 8 with demand-grown `Cell[]`.
+- Java 8 functional loops (`getAndUpdate`/`accumulateAndGet`): pre-wrote the CAS loop with the function outside the CAS — the re-execution contract (side-effect-free only) follows directly from retry geometry, not from API taste.
+- Java 9 (JEP 193, `VarHandle`): gave the supported specification vocabulary (`compareAndSet`, `getAndAdd`, acquire/release modes) above the Unsafe mechanics — source now reads VarHandle, silicon still runs the intrinsic.
+- `Striped64` design (per class javadoc): `@Contended`-padded cells, thread-hash spreading, demand growth on contention — the standard answer to CAS-word saturation, documented where the code lives.
 
-#### Java 8 (2014) — Major Overhaul
-- HashMap treeification: linked list -> red-black tree at TREEIFY_THRESHOLD=8
-- ConcurrentHashMap rewritten using CAS (removed segment-based locking entirely)
-- Stream API and lambda expressions changed collection usage patterns
-- Map interface gained default methods: getOrDefault, putIfAbsent, computeIfAbsent
-
-#### Java 9-11 (2017-2018)
-- List.of(), Set.of(), Map.of() factory methods for immutable collections
-- Immutable collection internal optimizations (compact storage)
-- Optional improvements for stream integration
-
-#### Java 17+ (2021+) — Modern Enhancements
-- SequencedCollection and SequencedMap interfaces (Java 21+)
-- HashMap treeified bin improvements
-- ConcurrentHashMap performance optimizations
-- Enhanced garbage collection interaction
-
-## Key Design Decisions
-
-### Why Power-of-Two Sizing?
-Hash-based collections use power-of-two capacities because it enables fast bitwise
-index calculation (hash & (capacity-1)) instead of expensive modulo operations.
-
-### Why 0.75 Load Factor?
-The default load factor of 0.75 represents a trade-off between time and space costs.
-Lower values (0.5) reduce collisions but increase memory. Higher values (0.9) save
-memory but increase lookup times.
-
-### Why Treeify at 8?
-The threshold of 8 for treeification balances the cost of tree nodes (larger memory
-footprint) against the O(n) lookup penalty for long chains. With good hash distribution,
-buckets rarely exceed 8 entries.
-
-## Impact
-This data structure has influenced countless applications and frameworks:
-- Database indexing strategies
-- Cache implementations (Caffeine, Guava Cache)
-- Distributed systems key-value stores
-- In-memory data grids (Hazelcast, Ignite)
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## How to read old atomic advice
+- Pre-Java-8 "atomics don't scale" benchmarks measured single-word CAS under many writers — true then for that shape, superseded by striping for counters; sequence numbers still want `AtomicLong`.
+- Any ABA discussion predating stamped/markable references treats CAS equality as history — translate to stamp/mark/fresh-allocation terms before applying.
+- "Weak CAS is faster, prefer it" without the loops-only qualifier is a portability bug in waiting — ARM/LL-SC spurious failures make one-shot weak CAS incorrect, not merely slower.

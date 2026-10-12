@@ -1,161 +1,69 @@
-# CompletableFuture — Step-by-Step Implementation
+# Step by Step: Fetch → Parse → Combine
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab06/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab06/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Goal
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
+A three-stage CF pipeline with correct executors, error handling, and
+deadline — about 40 minutes.
 
-## Step 3: Create Main Implementation
+## Step 1 — Supplies on the right pools (10 min)
+
 ```java
-package com.javalab.lab06;
-
-import java.util.Objects;
-
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
-
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
-
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
+Executor ioPool = Executors.newFixedThreadPool(20);
+CF<String> profile = supplyAsync(() -> fetchProfile(42), ioPool);
+CF<String> orders = supplyAsync(() -> fetchOrders(42), ioPool);
 ```
 
-## Step 4: Implement Core Operations
+Blocking fetches never touch the common pool. Print thread names once to prove
+placement (expect `pool-N`, never `commonPool-worker`).
 
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
+## Step 2 — Transform with map (5 min)
 
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
-
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
-
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
-
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
-```bash
-mvn test
+```java
+CF<String> name = profile.thenApply(Json::parseName);  // sync: runs in completer
 ```
-All tests should pass. Check code coverage.
 
+Pure parse stays sync — no hop needed. Confirm: already-complete input means
+the attaching thread runs it.
 
-## Further Exploration
+## Step 3 — Sequence with flatMap (5 min)
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+```java
+CF<List<Item>> items = name.thenCompose(n -> fetchHistoryAsync(n, ioPool));
+```
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Lambda returns `CF` → `thenCompose`. Write the `thenApply` version once, read
+the `CF<CF<...>>` type, delete it — the nesting must be seen to be believed.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Step 4 — Merge + deadline (10 min)
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+```java
+CF<Page> page = profile.thenCombine(orders, Page::new)
+    .orTimeout(2, TimeUnit.SECONDS)
+    .exceptionally(ex -> Page.cached());
+```
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+`thenCombine` fires in the last completer; `orTimeout` returns `this`
+(assert `==`); `exceptionally` is the fallback. Fail one fetch on purpose and
+watch the cached page arrive.
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## Step 5 — Barrier variant (5 min)
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+```java
+CF<Void> barrier = allOf(profile, orders);
+CF<Page> page2 = barrier.thenApply(v -> new Page(profile.join(), orders.join()));
+```
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+`join()`s cannot block post-barrier. Fail one input and inspect the suppressed
+chain on the `CompletionException`.
+
+## Step 6 — Harden (5 min)
+
+Add `whenComplete((v, ex) -> metrics.record(ex))` (observation only), cancel
+the losers of any `anyOf` hedge, and replace one `join()` inside a pool stage
+with `thenCompose`. Shut down `ioPool` — leaked non-daemon pools hold the JVM.
+
+## Done when
+
+Thread names prove placement, nested-type bug demonstrated and fixed, barrier
+values extracted, timeout asserted in-place, fallback verified by fault
+injection.

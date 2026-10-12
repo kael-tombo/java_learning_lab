@@ -1,169 +1,41 @@
-# Volatile Semantics — Mathematical Foundation
+# Math Foundation: Volatile Semantics
 
-## 1. Asymptotic Complexity Analysis
+## Edge calculus (JLS 17.4)
+- Rules: (po) program order; (vol) write(V) -hb-> read(V) for later reads; (mon) unlock(M) -hb-> lock(M); (life) start()->
+  actions, actions ->join(). Closure: hb is transitive; po + hb compose. Correctness proof = exhibiting the chain.
+- Piggyback theorem: w(X) -po-> w(V) -hb-> r(V) -po-> r(X) ⟹ r(X) observes w(X) (or a later write). Any publication argument must match this shape with statement order as written.
 
-### Big-O Notation
-All complexity analysis uses standard asymptotic notation:
+## Why volatile++ must lose (counting)
+- Increment = 3 steps (r, +1, w) with no edge between threads: N threads x K increments admit interleavings where two threads read the same value and one update is lost per collision. Expected loss grows with overlap window; exact total requires CAS (AtomicLong) or striping (LongAdder) — no closed form needed, the race is structural.
 
-- **O(1)**: Constant time — independent of input size
-- **O(log n)**: Logarithmic — typical for balanced tree operations
-- **O(n)**: Linear — proportional to input size
-- **O(n log n)**: Log-linear — sorting, heap operations
-- **O(n^2)**: Quadratic — nested iterations
+## Fence-cost ordering (qualitative, defensible)
+- x86 TSO: cost(read-vol) ≈ cost(read-plain) < cost(write-vol) ≈ cost(uncontended-CAS) ≈ tens of ns. ARM: cost(read-vol) > plain, cost(write-vol) > x86 write-vol (explicit dmb ish both ways). Inequalities only — never cite portable constants.
 
-### Amortized Analysis
-Amortized analysis considers the average cost of an operation over a sequence:
+## DCL correctness condition
+- Correct ⟺ (field volatile ∧ check-then-lock-then-recheck shape) ∨ holder-idiom ∨ enum. Plain-field DCL has a legal JMM execution publishing the reference before field stores — one counterexample execution suffices to declare it broken.
 
-    T_amortized(n) = (1/n) * sum(t_i for i=1 to n)
+## Rule
+Every formula above is defended in plain words beside it. No formula here predicts wall-clock time — all bound orderings, counts, or scaling shapes.
 
-Where t_i is the cost of the i-th operation.
+## Piggyback proof, line by line
+- Program order (writer): w(config.timeout) -po-> w(config.url) -po-> w(config) -po-> w(ready=true) — all plain writes sequenced before the volatile write in source order.
+- Volatile edge: w(ready=true) -hb-> r(ready==true) for the reader's later read — JLS 17.4.5, the single cross-thread arrow.
+- Program order (reader): r(ready) -po-> r(config) -po-> r(config.timeout) — everything after the volatile read is ordered after it.
+- Transitivity composes all three: w(config.timeout) -hb-> r(config.timeout) — the reader's `timeout == 5000` assertion is a theorem, not an observation.
+- Order-swap counterexample: moving w(ready=true) before the payload writes breaks the leftmost -po- link — the chain no longer reaches the payload, and staleness becomes legal.
 
-#### Accounting Method
-Each operation pays a small additional cost into a bank account. Expensive operations draw from this account.
+## Loss counting for volatile++ (structural, with numbers)
+- Increment = r, +1, w with a collision window between r and w: with N threads × K increments, each overlap of two windows on equal values loses exactly one update.
+- Worked scale from snippet 2: 8 threads × 500,000 = 4,000,000 expected; measured shortfall is routinely six figures — the loss fraction grows with overlap, which grows with N and with window width.
+- No closed form is needed for the verdict: any schedule with ≥ 1 collision loses ≥ 1 update, and collisions are unavoidable without mutual exclusion — the race is structural, proved by exhibiting one colliding schedule.
+- Fix comparison: `AtomicLong` closes the window with one CAS (exact, ~10-20ns uncontended); `LongAdder` dissolves the window by striping (exact sum at rest, fuzzy mid-flight) — both remove collisions rather than outrunning them.
 
-#### Potential Method
-A potential function Phi(D_i) maps data structure state D_i to a real number. The amortized cost is:
+## Fence-cost inequalities (defensible, portable)
+- x86 TSO: cost(read-vol) ≈ cost(read-plain) < cost(write-vol) ≈ cost(uncontended-CAS) — one ordering of three quantities, qualitative.
+- ARM weak model: cost(read-vol) > cost(read-plain-x86-baseline) and cost(write-vol) > cost(write-vol-x86) — explicit `dmb ish` both ways; inequalities only, never constants.
+- Publication batching math: k payload fields + 1 volatile flag = k plain writes + 1 fence — amortized fence cost per field = 1/k of a fence; batching is division.
+- DCL fast-path math: local-variable read shape = 1 volatile read per call vs 2 without the local — halves fence cost on the hot path for free.
 
-    c_i + Phi(D_i) - Phi(D_{i-1})
-
-### Case Study: ArrayList Growth
-For ArrayList with 1.5x growth factor:
-- Insertions 1 to n cost: n (insertions) + sum of resize costs
-- Resize costs: 1 + 2 + 3 + ... + n * (2/3)^k which sums to approximately n
-- Amortized cost per insertion: O(1)
-
-## 2. Probability Fundamentals
-
-### Hash Functions and Collisions
-For a hash table with m buckets and n elements:
-
-- Probability of no collision when inserting k elements: prod((m-i)/m for i=0 to k-1)
-- Expected number of collisions: n - m + m((m-1)/m)^n
-- Load factor: alpha = n/m
-
-### Birthday Paradox
-With 23 people in a room, probability of shared birthday > 50%. For hash tables:
-
-    P(collision) approx 1 - exp(-n(n-1)/(2m))
-
-When n > sqrt(2m), collisions are likely.
-
-## 3. Graph Theory for Tree Structures
-
-### Tree Properties
-- A tree with n nodes has n-1 edges
-- Height of a perfect binary tree: floor(log_2 n)
-- Number of leaves in a perfect binary tree of height h: 2^h
-- Internal nodes in a full binary tree: n - 1
-
-### Red-Black Tree Height
-A red-black tree with n internal nodes has height at most 2*log_2(n+1).
-This guarantee comes from the red-black properties:
-1. Every node is either red or black
-2. The root is black
-3. All leaves (NIL) are black
-4. If a node is red, both its children are black
-5. Every path from a node to its descendant leaves has the same number of black nodes
-
-## 4. Number Theory
-
-### Prime Numbers for Hash Tables
-Using prime-sized hash tables reduces collision probability when hash function distribution is unknown.
-The multiplicative hash: h(k) = floor(m * (k * A mod 1)) where A is the golden ratio (sqrt(5)-1)/2.
-
-### Modulo Arithmetic for Index Calculation
-The index is calculated as: index = hash & (capacity - 1) when capacity is a power of two.
-This is equivalent to hash mod capacity, but much faster as it's a single bitwise operation.
-
-## 5. Probability for Bloom Filters
-
-### False Positive Rate
-For a Bloom filter with m bits, n elements, k hash functions:
-
-    P_FP = (1 - (1 - 1/m)^(kn))^k approx (1 - exp(-kn/m))^k
-
-### Optimal Hash Functions
-    k_optimal = (m/n) * ln(2)
-
-## Summary
-These mathematical foundations underpin the theoretical guarantees and practical performance
-characteristics of the Volatile Semantics. Understanding them enables informed design decisions and
-accurate performance predictions. The key takeaway is that data structure selection should be
-guided by mathematical analysis of the expected workload patterns.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Tearing probability vs guarantee
+- JLS 17.7 permits word tearing for plain long/double: the spec-legal execution set includes half-mixed values — P(observe tear) > 0 in the model even where HotSpot never tears in practice.
+- `volatile` (or AtomicLong/lock) shrinks the legal set to whole values only: P(tear) = 0 by specification on every JVM, every CPU — portability is a proof about the set, not a measurement on one machine.

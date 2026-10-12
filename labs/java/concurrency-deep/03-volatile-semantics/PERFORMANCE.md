@@ -1,135 +1,46 @@
-# Volatile Semantics — Performance
+# Performance: Volatile Semantics
 
-## Time Complexity
+## Cost model (qualitative by architecture)
+- x86 (TSO): volatile reads cost about the same as plain reads (compiler-ordering only); volatile writes need a StoreLoad fence (`xchg`+`lock`) — tens of nanoseconds, comparable to an uncontended CAS.
+- ARM/POWER (weak model): both reads and writes need explicit fences (`dmb ish` on ARMv8) — volatile costs more than on x86. Never port "volatile is free" numbers across architectures.
+- The expensive mistake is semantic, not nanoseconds: volatile++ retries nothing and loses updates — any counter benchmark "winning" on volatile is measuring a race.
 
-### Operation Costs
-| Operation | Average Case | Worst Case | Notes |
-|-----------|-------------|-----------|-------|
-| Insert    | O(1)        | O(n)      | Resizing or collisions |
-| Lookup    | O(1)        | O(n)      | Hash collisions |
-| Delete    | O(1)        | O(n)      | After locating element |
-| Contains  | O(1)        | O(n)      | Same as lookup |
-| Iteration | O(n)        | O(n)      | Traverses all elements |
-| Size      | O(1)        | O(1)      | Maintained as field |
+## Contention reasoning
+- Volatile scales for publish/subscribe (one writer flag, many readers) — no retries, no parking.
+- It does not scale for read-modify-write: N writers on volatile++ lose ~proportionally; AtomicLong/LongAdder exist for that shape (see lab 04).
 
-### Amortized Analysis
-Individual operations may be expensive (resize), but amortized cost over a sequence
-of operations is O(1) for most data structures.
+## How to measure (JMH sketch)
+```java
+volatile int flag;
+@Benchmark public int readFlag() { return flag; }
+@Benchmark public void writeFlag() { flag = 1; }
+```
+Run on each target architecture; report read vs write separately. Then benchmark the AtomicLong/LongAdder counter you should have used for RMW.
 
-## Memory Footprint
+## Tuning levers
+1. Keep volatile for flags/publication; move counters to LongAdder. 2. Batch payload writes before a single volatile publish. 3. Reach for VarHandle acquire/release only with a profiler-backed reason.
 
-### Object Overhead
-- **Base object header**: 12-16 bytes (depending on JVM flags)
-- **Reference**: 4 bytes (Compressed OOPs) or 8 bytes
-- **int fields**: 4 bytes each
-- **Padding**: Aligned to 8-byte boundaries
+## Rule
+No tuning without a JMH number on the target JVM and architecture. Orders above are orientation; your workload's contention decides.
 
-### Per-Element Storage
-| Structure | Per-Element Overhead | Cache Locality |
-|-----------|---------------------|----------------|
-| HashMap   | ~32 bytes + K + V   | Poor (chains) |
-| ArrayList | 4-8 bytes (ref)     | Excellent |
-| LinkedList| ~24 bytes (3 ptrs)  | Poor |
-| TreeMap   | ~40 bytes (4 ptrs)  | Poor |
+## Read/write asymmetry (x86 numbers, qualitative peers)
+- Publish-heavy shapes (config reload: many payload writes, one flag write, many flag reads) amortize the single StoreLoad fence over k fields — per-field fence cost ≈ 1/k of a fence, so batching is the entire optimization.
+- Flag-spin shapes (shutdown loops): volatile reads cost ≈ plain reads on x86, so spinning on a volatile flag is cheap per lap — but prefer `park`/latch notification to spinning wherever wake latency matters.
+- Write-heavy flag shapes (per-event volatile writes): each write pays the fence (~10-20ns scale, uncontended-CAS-like) — at millions of events/s consider batching events behind one publish or a striped counter.
 
-## Optimization Techniques
+## RMW mis-tooling costs
+- `volatile++` under contention: loses updates (correctness failure first) while *looking* fast — any benchmark crowning volatile for counters measures the race, not the speed; discard and re-run with `AtomicLong`/`LongAdder`.
+- DCL fast path with local read: 1 volatile read per call vs 2 — halves fence cost for free (Bloch-approved shape); the saving is per-call fences, measurable at millions of calls/s.
+- `AtomicIntegerArray` per-element volatile semantics: pays fence-grade cost per element access — correct for policy tables, overkill for bulk bulk-copy payloads better published by reference swap.
 
-### CPU Cache Behavior
-- **Sequential access**: Array-based structures have excellent cache locality
-- **Pointer chasing**: Linked structures have poor cache locality
-- **False sharing**: Concurrent writes to adjacent memory cause cache line bouncing
+## Measurement protocol
+- Separate read vs write benchmarks (`readFlag` vs `writeFlag` in the PERFORMANCE.md sketch): blended numbers hide the asymmetry that drives every volatile decision.
+- Run the identical harness on each target architecture: x86 TSO numbers do not port to ARM (`dmb ish` both ways) — report per-arch tables, never a single "volatile cost".
+- Stress publication harnesses (DCL, piggyback) with jittered thread starts across thousands of iterations; single-run passes are the absence of evidence, not evidence of safety.
+- Compare against the mechanism you should have used (AtomicLong/LongAdder for RMW, holder idiom for singletons) in the same report — volatile numbers alone never justify volatile.
 
-### JIT Compilation
-- **Inlining**: Small methods (get(), put()) are prime candidates for inlining
-- **Intrinsification**: System.arraycopy() is a hotspot intrinsic
-- **Branch Prediction**: Common-case fast paths benefit from predictable branching
-- **Loop Unrolling**: Iteration over arrays can be unrolled by JIT
-
-### GC Impact
-- **Young Gen**: Short-lived iterators, temporary collections collected in young gen
-- **Old Gen**: Long-lived maps and caches promoted to old gen
-- **Allocation Rate**: Frequent resize causes allocation spikes
-- **Card Table**: Large collections increase GC root scanning overhead
-
-## Profiling Tools
-- **JMH**: Java Microbenchmark Harness for accurate microbenchmarks
-- **async-profiler**: CPU/wall-clock/allocation profiling
-- **JFR**: Java Flight Recorder event collection
-- **JOL**: Java Object Layout for memory analysis
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Tuning levers (ordered by payoff)
+1. Batch payload writes before one volatile publish — divide fence cost by batch size.
+2. Move counters off volatile onto `LongAdder` (hot) or `AtomicLong` (cold) — correctness first, striping second.
+3. Use the DCL local-read shape to halve fast-path volatile reads.
+4. Descend to VarHandle acquire/release only with profiler evidence; opaque never for publication.

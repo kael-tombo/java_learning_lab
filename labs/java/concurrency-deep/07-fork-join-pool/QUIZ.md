@@ -1,120 +1,49 @@
-# Fork-Join Pool — Quiz
+# Quiz: Fork-Join Pool
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Fork-Join Pool?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Questions (answers at end)
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+1. A worker's deque holds [oldest A … newest Z]. The owner pops which end?
+   A thief steals which end? Why the asymmetry?
+2. Why does fork-left / compute-right / join-left use one fork instead of two?
+3. `n = 1M, t = 10K`: estimate leaves and total tasks. What breaks at `t =
+   100`? At `t = 1M` on 8 workers?
+4. State the work-span bound and what each term means.
+5. 8 CPUs: common-pool vs plain-constructor parallelism? Name the property,
+   the cap, and whether the common pool shuts down.
+6. A task calls `latch.await()` inside `compute()`. What happens to effective
+   parallelism, and what is the fix? What observable confirms the fix worked?
+7. `getPoolSize() == 3`, `getParallelism() == 2`. Leak or expected? Explain.
+8. `asyncMode=true` suits which workload, and which factory sets it by default?
+9. Fork-only event workload: `awaitTermination` or `awaitQuiescence`? Why?
+10. `join()` vs `Thread.join()` — what is the load-bearing difference?
+11. Parallel stream over blocking HTTP calls stalls unrelated CF chains. Why,
+    and what is the fix?
+12. Java 19+ scoped pool shape? What does `close()` do?
 
-## Question 3: Memory
-How much additional memory overhead does Fork-Join Pool have per element (approximately)?
+## Answers
 
-## Question 4: Concurrency
-Is Fork-Join Pool safe for concurrent access without external synchronization? Explain why or why not.
-
-## Question 5: Scalability
-How does Fork-Join Pool perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
-
-## Question 6: Design
-Why was Fork-Join Pool designed this way? What alternatives were considered during its development?
-
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
-
-## Question 8: Comparison
-Compare Fork-Join Pool with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
-
-## Question 9: Real-World
-Describe a real-world scenario where Fork-Join Pool is the optimal choice.
-Describe a scenario where it would be a poor choice.
-
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
-
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Owner pops newest end (LIFO: hot, cache-resident first). Thief takes oldest
+   (FIFO: coarsest chunk per steal, fewest steals). Locality vs load balance.
+2. The second half runs in the current worker — same parallelism, one fewer
+   task object + queue op per split.
+3. ~100 leaves, ~200 total. `t=100` → ~20K tasks of tiny leaves: churn
+   dominates. `t=1M` → 1–2 tasks: 7 cores idle.
+4. E[T_P] = O(T₁/P + T∞): total work over workers plus critical-path span —
+   near-optimal when parallel work dwarfs the span.
+5. Common 7 (CPUs−1) via `...ForkJoinPool.common.parallelism`; plain 8
+   (CPUs); `MAX_CAP = 0x7fff`; common pool never shuts down.
+6. Effective parallelism drops silently (parked reads as busy). Fix:
+   `ManagedBlocker`/`managedBlock`. Confirm: `getPoolSize()` exceeds
+   `getParallelism()` during blocks.
+7. Expected — one compensation thread for a blocked worker, not a leak.
+8. Independent never-joined submissions (event-style); `Executors
+   .newWorkStealingPool()` defaults it.
+9. `awaitQuiescence(t)` — waits for no *active* tasks; termination requires
+   `shutdown()` lifecycle, wrong tool for fork-only drains.
+10. FJ `join()` helps (executes pending tasks) before parking; `Thread.join()`
+    only parks.
+11. All three borrow the common pool — blocked stream workers shrink every
+    borrower's parallelism. Fix: dedicated pool / virtual threads for blocking
+    I/O; keep the common pool CPU-bound.
+12. `try (var pool = new ForkJoinPool(n)) { ... }` — `close()` = shutdown +
+    await termination.

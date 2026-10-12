@@ -1,123 +1,71 @@
-# Lock Framework (AQS) — Visual Guide
+# Visual Guide: AQS Queue
 
-## ASCII Architecture Diagrams
+## The steady state
 
-### Internal Array Structure
-```
-+-------------------------------------------------------+
-|                  Backing Array                          |
-+------+------+------+------+------+------+------+------+
-|  0   |  1   |  2   |  3   |  4   |  5   |  6   |  7   |
-+------+------+------+------+------+------+------+------+
-|  K8  | null |  K3  | null | K1-->| null |  K5  |  K9  |
-|  V8  |      |  V3  |      | V1   |      |  V5  |  V9  |
-+------+------+------+------+--+---+------+------+------+
-                                 |
-                           +-----+-----+
-                           | K1 | V1   |
-                           +-----+-----+
-                           | K7 | V7   |
-                           +-----+-----+
+```text
+head(dummy, served) <-> B(thread, WAITING) <-> C(thread, parked)
+tail -> C
+state = 1 (held by A)
 ```
 
-### Hash Function Flow
-```
-Key "hello" -> hashCode() = 99162322
-             -> XOR high 16: 99162322 ^ (99162322 >>> 16) = 99160825
-             -> Index: 99160825 & (16-1) = 9
-             -> Bucket[9]
-```
+A holds the lock (`state = 1`). B and C queued in arrival order. B's
+predecessor is head, so B retries first on every wakeup; C stays parked until
+B becomes head and unparks it.
 
-### Collision Chain
-```
-Bucket[4] ---> +---------+    +---------+    +---------+
-               | Key: A  |    | Key: M  |    | Key: Z  |
-               | Val: 1  |--> | Val: 13 |--> | Val: 26 |
-               | hash:65 |    | hash:77 |    | hash:90 |
-               +---------+    +---------+    +---------+
+## Acquire race (barging)
+
+```text
+unlock: state 1 -> 0, unpark B
+  ... gap ...
+D (newcomer): CAS(0 -> 1) SUCCEEDS -> owns lock
+B (woken):    tryAcquire FAILS (state = 1 again) -> re-parks
 ```
 
-### Resize Operation
+The gap between `unlock`'s unpark and B's retry is the barging window. Fair
+mode closes the *overt* version (D checks the queue first); the gap race
+itself never fully closes.
+
+## Cancellation healing
+
+```text
+before: head <-> B(CANCELLED) <-> C
+after:  head <-------------> C   (C.prev reset to head)
 ```
-Before (capacity=4): size=4, threshold=3 -> RESIZE
-After (capacity=8): keys redistributed by hash & (newCap-1)
+
+B's interrupt marks it `CANCELLED`; C's next retry walks back past B to head.
+No other node moves — a local repair, not a rebuild.
+
+## Condition migration
+
+```text
+sync queue:              head <-> B
+condition queue (notEmpty): W1 -> W2
+
+signal() moves W1:
+sync queue:              head <-> B <-> W1 (tail)
+condition queue (notEmpty): W2
 ```
 
-## See DIAGRAMS/ directory for full resolution diagrams.
+W1 must still win a `tryAcquire` race from the tail — drawn after B and any
+bargers. Ownership is never drawn as an arrow from `signal`; only queue
+membership moves.
 
+## RWLock packed state
 
-## Further Exploration
+```text
+state (32 bits): [ reader count: high 16 | writer holds: low 16 ]
+example: readers=2, writer=1 -> 0x00020001
+```
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+One CAS updates either half. Reader 65536 would spill into the writer half —
+hence the overflow throw instead of silent corruption.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Semaphore permits
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+```text
+permits=5: [o][o][o][o][o]  acquire(2) -> [o][o][o] + 2 held
+release() without acquire -> [o][o][o][o][o][o]  (6! uncapped)
+```
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Draw every release matched to an acquire arrow; unmatched releases are the
+drift bug made visible.

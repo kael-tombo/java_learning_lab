@@ -1,135 +1,41 @@
-# Thread Lifecycle — Performance
+# Performance: Thread Lifecycle
 
-## Time Complexity
+## Cost model (qualitative — measure per workload)
+- State transitions themselves are cheap; what costs is what the state implies: BLOCKED parks in the OS (context switches), parking/unparking crosses scheduler queues, spinning in RUNNABLE burns CPU for zero progress.
+- Virtual threads make parked WAITING/TIMED_WAITING cheap (no carrier consumed) except where `synchronized` pins the carrier (through JDK 23) — pinning turns a cheap park into a held OS thread.
+- Thread-per-task at platform scale exhausts stacks (~1MB default each) and scheduler capacity; pools or virtual threads bound the damage.
 
-### Operation Costs
-| Operation | Average Case | Worst Case | Notes |
-|-----------|-------------|-----------|-------|
-| Insert    | O(1)        | O(n)      | Resizing or collisions |
-| Lookup    | O(1)        | O(n)      | Hash collisions |
-| Delete    | O(1)        | O(n)      | After locating element |
-| Contains  | O(1)        | O(n)      | Same as lookup |
-| Iteration | O(n)        | O(n)      | Traverses all elements |
-| Size      | O(1)        | O(1)      | Maintained as field |
+## Contention reasoning
+- Identical BLOCKED stacks across many threads = serialized throughput: useful work per second caps at the critical-section rate regardless of thread count.
+- Identical parked-take stacks = healthy: idle workers cost little until tasks arrive.
+- No formula predicts your speedup; count runnable demand vs available cores and measure (next section).
 
-### Amortized Analysis
-Individual operations may be expensive (resize), but amortized cost over a sequence
-of operations is O(1) for most data structures.
+## How to measure (JMH sketch)
+```java
+@Benchmark @Threads(8)
+public void contended(Blackhole bh) { /* your guarded section */ bh.consume(work()); }
+```
+Compare 1 vs N threads, platform vs virtual (21+), synchronized vs ReentrantLock. Report ops/s + context-switch rate, not single-run timings.
 
-## Memory Footprint
+## Tuning levers
+1. Shrink critical sections and contested-monitor fan-in. 2. Replace blocking takes with bounded queues + backpressure. 3. Move `synchronized` off virtual-thread hot paths (pinning). 4. Prefer `lockInterruptibly/tryLock` where stuck-entry must stay cancellable.
 
-### Object Overhead
-- **Base object header**: 12-16 bytes (depending on JVM flags)
-- **Reference**: 4 bytes (Compressed OOPs) or 8 bytes
-- **int fields**: 4 bytes each
-- **Padding**: Aligned to 8-byte boundaries
+## Rule
+No tuning without a JMH number on the target JVM and architecture. Orders above are orientation; your workload's contention decides.
 
-### Per-Element Storage
-| Structure | Per-Element Overhead | Cache Locality |
-|-----------|---------------------|----------------|
-| HashMap   | ~32 bytes + K + V   | Poor (chains) |
-| ArrayList | 4-8 bytes (ref)     | Excellent |
-| LinkedList| ~24 bytes (3 ptrs)  | Poor |
-| TreeMap   | ~40 bytes (4 ptrs)  | Poor |
+## Virtual-thread pinning cost
+- Parked virtual threads cost no carrier — except inside `synchronized`, which pins the carrier through JDK 23; a hot `synchronized` block at virtual scale converts cheap WAITING into held OS threads.
+- Measure pinning with JFR `jdk.VirtualThreadPinned` events (21+): nonzero counts on the hot path mean the `synchronized` must move or narrow.
+- Replacement order: shrink the block first; only then swap the mechanism (`ReentrantLock` parks cleanly without pinning).
+- Dumps at virtual scale: thousands of WAITING lines are backlog to count, not contention to fix — filter for BLOCKED before optimizing.
 
-## Optimization Techniques
+## Measurement checklist
+- Record JDK version, CPU count, and `-Xss`/stack settings alongside every number — state behavior and footprint both shift with them.
+- Report BLOCKED-count histograms across runs, not single dumps; contention is a distribution.
+- Separate park time (scheduler queues, `LockSupport`) from monitor-hold time (critical-section length) — they tune differently.
+- Re-run on the second architecture before claiming portability; descheduling and unpark latency differ by OS and CPU.
 
-### CPU Cache Behavior
-- **Sequential access**: Array-based structures have excellent cache locality
-- **Pointer chasing**: Linked structures have poor cache locality
-- **False sharing**: Concurrent writes to adjacent memory cause cache line bouncing
-
-### JIT Compilation
-- **Inlining**: Small methods (get(), put()) are prime candidates for inlining
-- **Intrinsification**: System.arraycopy() is a hotspot intrinsic
-- **Branch Prediction**: Common-case fast paths benefit from predictable branching
-- **Loop Unrolling**: Iteration over arrays can be unrolled by JIT
-
-### GC Impact
-- **Young Gen**: Short-lived iterators, temporary collections collected in young gen
-- **Old Gen**: Long-lived maps and caches promoted to old gen
-- **Allocation Rate**: Frequent resize causes allocation spikes
-- **Card Table**: Large collections increase GC root scanning overhead
-
-## Profiling Tools
-- **JMH**: Java Microbenchmark Harness for accurate microbenchmarks
-- **async-profiler**: CPU/wall-clock/allocation profiling
-- **JFR**: Java Flight Recorder event collection
-- **JOL**: Java Object Layout for memory analysis
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Anti-patterns with numbers attached
+- Unbounded thread-per-request on platform threads: ~1MB stack each turns 10k concurrent requests into ~10GB of committed stack — pools or virtual threads, no third option.
+- `sleep`-based coordination loops: each poll interval adds up to one full interval of latency by construction; latches/futures remove the interval entirely.
+- `getState()` polling loops: burn CPU in RUNNABLE while learning nothing a latch would not deliver — sampling replaces signaling at full price and zero rigor.

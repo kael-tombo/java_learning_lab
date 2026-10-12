@@ -1,125 +1,44 @@
-# Atomic Classes — Security
+# Security: Atomic Classes
 
-## Denial of Service via Hash Collisions
-The most significant security concern is hash collision attacks:
-- **Hash DoS**: Attacker crafts keys with identical hash codes
-- **Effect**: All keys map to same bucket -> O(n^2) operations
-- **Mitigation**: Treeification (Java 8+) converts long chains to red-black trees
-- **Defense**: Random hash seed (introduced in Java 8)
+## Threat 1 — check-then-act on atomics mistaken for authorization
+`get()` then `compareAndSet()` with a policy decision between them admits TOCTOU: the value changes after the check. Fold authorization into the CAS witness loop or guard with a lock so check and commit are one step.
 
-## Hash Collision Attack Prevention
-```java
-// Java 8+ HashMap uses TreeNode after TREEIFY_THRESHOLD (8)
-// String.hashCode() randomization is available via:
--Djdk.map.althashing.threshold=512
-```
+## Threat 2 — ABA aliasing corrupting lock-free structures
+Node reuse lets A->B->A fool bare CAS, resurrecting revoked/freed entries in pools and stacks. Use fresh allocation, stamps, or marks anywhere identity history affects safety.
 
-## Serialization Security
-- Collections containing sensitive data require careful serialization
-- Override writeObject/readObject for custom serialization
-- Use transient modifier for sensitive internal data
-- Validate serialized data before deserialization
-- Be aware of deserialization gadget chains
+## Threat 3 — fuzzy sums driving enforcement
+`LongAdder.sum()` concurrent with updates is approximate; rate limits, quotas, or billing computed from it drift under load. Enforce from exact sources (AtomicLong/locked totals); use adder sums for dashboards only.
 
-## Thread Safety Guarantees
-- **Non-thread-safe variants**: External synchronization required
-- **Synchronized wrappers**: Per-method sync but compound ops not atomic
-- **Concurrent variants**: Thread-safe for individual operations
-- **Copy-on-write**: Safe iteration but memory-heavy
+## Threat 4 — retry-burn as amplification vector
+Attacker-paced contention on a single CAS word converts each request into many retries of CPU burn. Stripe hot atomics, bound retries, and shed load when CAS-failure rates spike.
 
-## Memory Exposure via Unmodifiable Views
-```java
-List<Integer> internal = new ArrayList<>();
-List<Integer> view = Collections.unmodifiableList(internal);
-// Internal list still accessible via original reference!
-```
-Use defensive copying for true immutability:
-```java
-public List<Integer> getData() {
-    return List.copyOf(internal); // Creates immutable copy
-}
-```
+## Checklist
+- [ ] No check-then-act across CAS gaps on auth paths. [ ] ABA handled where identity matters. [ ] Enforcement totals exact. [ ] CAS-failure metrics alerted.
 
-## Security Checklist
-1. Validate all keys before insertion
-2. Do not expose internal arrays via reflection
-3. Use Collections.unmodifiableXxx for API returns
-4. Avoid using mutable objects as keys
-5. Consider ConcurrentHashMap for shared state
+## Threat 5 — check-then-act across the CAS gap
+- `get()`-then-decide-then-`compareAndSet()` admits TOCTOU: the value changes after the check, so authorization/validation computed on the read does not cover the commit.
+- Fold the check into the CAS witness loop (re-validate per lap from the fresh read) or guard the span with a lock — check and commit must be one indivisible step on auth paths.
+- Log CAS-gap windows on security decisions: any measurable gap between read and commit is an exploitation window until closed.
 
+## Threat 6 — sequence/nonce reuse via torn or fuzzy reads
+- Nonce/sequence issuance from fuzzy `sum()` or torn multi-word reads can repeat values — replayable nonces defeat exactly the protection they were issued for.
+- Issue sequences from exact sources only (`AtomicLong.getAndIncrement`, locked counters); never derive issuance from metrics-grade striped sums.
+- Monitor issuance for duplicates as a security signal: a repeated nonce is either ABA-class aliasing or an exactness bug — both are findings, not noise.
 
-## Further Exploration
+## Threat 7 — retry-burn amplification on attacker-paced keys
+- Attackers that choose contended keys (hot accounts, single global counters) convert each request into E[A] ≈ N attempts of CPU burn — contention as a cost amplifier.
+- Stripe hot security counters, shard by key, bound retries with timeouts, and shed load when CAS-failure rates spike — failure-rate metrics are the early warning.
+- Rate-limit by post-commit outcomes, not by attempts: attempt-counted limits undercount real load by the retry multiplier.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Detection
+- Export CAS-failure rates per hot atomic (failure counters in hand loops or JFR-adjacent metrics): steps after deploys name the newly contended word.
+- Alert on `sum()`-vs-quiescent divergence for enforcement-adjacent totals: persistent divergence means something enforces from fuzz.
+- Review every `AtomicStampedReference` upgrade path for stamp overflow discipline and Pair-allocation pressure — stamps are monotonic assumptions with memory cost.
+- Fuzz lock-free structures with randomized thread starts and node-reuse stress; ABA manifests under jitter while passing serene CI.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Checklist additions
+- [ ] No check-then-act across CAS gaps on auth/policy paths.
+- [ ] Sequences/nonces issued from exact sources only.
+- [ ] ABA handled everywhere identity history affects safety.
+- [ ] Enforcement totals exact; adder sums dashboards-only.
+- [ ] CAS-failure rates metered, alerted, and load-shedding wired.

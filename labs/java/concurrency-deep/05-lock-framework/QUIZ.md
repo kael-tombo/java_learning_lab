@@ -1,120 +1,46 @@
-# Lock Framework (AQS) — Quiz
+# Quiz: Lock Framework
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Lock Framework (AQS)?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Questions (answers at end)
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+1. AQS splits synchronizers into policy and mechanism. Which methods belong to
+   the subclass, and which to the framework?
+2. Thread A holds a nonfair `ReentrantLock`. Threads B, C wait in the queue.
+   Thread D calls `lock()`. Can D acquire before B? Why?
+3. Same setup with a *fair* lock, but D calls `tryLock()`. Can D acquire
+   before B? Why?
+4. What is the queue head, and when does a thread become head?
+5. JDK 23 defines `WAITING = 1, COND = 2, CANCELLED = 0x80000000`. A blog says
+   "set SIGNAL on the predecessor." What is wrong with that advice?
+6. `await()` is called with reentrancy depth 3. What happens to `state`, and
+   what is restored on re-acquire?
+7. `signal()` wakes a condition waiter. Who owns the lock at the moment of
+   waking? What must the woken thread still do?
+8. `Semaphore(5)` shows `availablePermits() == 8`. What happened?
+9. `state = 0x00020001` in a `ReentrantReadWriteLock`. How many readers and
+   writer holds?
+10. Why does read→write upgrade deadlock while write→read downgrade is safe?
+11. A waiter times out in `tryLock(300ms)`. What happens to its queue node?
+12. Fair mode still permits one barging window. Where exactly?
 
-## Question 3: Memory
-How much additional memory overhead does Lock Framework (AQS) have per element (approximately)?
+## Answers
 
-## Question 4: Concurrency
-Is Lock Framework (AQS) safe for concurrent access without external synchronization? Explain why or why not.
-
-## Question 5: Scalability
-How does Lock Framework (AQS) perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
-
-## Question 6: Design
-Why was Lock Framework (AQS) designed this way? What alternatives were considered during its development?
-
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
-
-## Question 8: Comparison
-Compare Lock Framework (AQS) with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
-
-## Question 9: Real-World
-Describe a real-world scenario where Lock Framework (AQS) is the optimal choice.
-Describe a scenario where it would be a poor choice.
-
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
-
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Subclass: `tryAcquire`/`tryRelease`/`tryAcquireShared`/`tryReleaseShared`/
+   `isHeldExclusively`. Framework: `acquire`, `release`, queueing, parking,
+   `ConditionObject` mechanics.
+2. Yes — nonfair `lock()` CAS-barges before consulting the queue.
+3. Yes — `tryLock()` is unordered in both modes; fairness never applies to it.
+4. Head is a dummy position marker; a thread sets itself as head exactly when
+   its `tryAcquire` succeeds.
+5. `SIGNAL` belongs to the pre-rewrite encoding. JDK 23 uses bitwise
+   `WAITING`/`COND`/`CANCELLED`; the protocol is the same, the constants are not.
+6. `state` drops fully (3→0); on re-acquire the depth 3 is restored before return.
+7. Nobody transfers ownership — the signaller still holds it (or just
+   released it). The woken thread must re-acquire through the sync queue race.
+8. Three stray `release()` calls without matching acquires; permits are uncapped.
+9. Readers = `0x0002` = 2, writer holds = `0x0001` = 1.
+10. Upgrade: the write request queues behind the requester's own read hold,
+    which never releases while blocked — self-deadlock. Downgrade: the writer
+    already excludes everyone, so adding a read hold changes nothing.
+11. Marked `CANCELLED` and unlinked; successors re-link to a live predecessor.
+12. Between `unlock` and the successor's wakeup-retry: a newcomer can win the
+    CAS in that gap. Fair forbids *overt* barging, not the race itself.
