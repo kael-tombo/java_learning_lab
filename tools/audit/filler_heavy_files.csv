@@ -24,7 +24,6 @@ labs/java/concurrency-deep/08-stamped-lock/STEP_BY_STEP.md,65,65,100,0
 labs/java/concurrency-deep/08-stamped-lock/VISUAL_GUIDE.md,58,58,100,0
 labs/java/concurrency-deep/08-stamped-lock/WHY_IT_EXISTS.md,88,88,100,0
 labs/java/concurrency-deep/09-phaser/ARCHITECTURE.md,73,73,100,0
-labs/java/concurrency-deep/09-phaser/CODE_DEEP_DIVE.md,29,29,100,0
 labs/java/concurrency-deep/09-phaser/COMMON_MISTAKES.md,83,83,100,0
 labs/java/concurrency-deep/09-phaser/DEBUGGING.md,76,76,100,0
 labs/java/concurrency-deep/09-phaser/FLASHCARDS.md,77,77,100,0
@@ -531,7 +530,6 @@ labs/java/performance-deep/05-gc-log-analysis/MENTAL_MODELS.md,75,74,99,0
 labs/java/performance-deep/05-gc-log-analysis/WHY_IT_MATTERS.md,91,90,99,0
 labs/java/concurrency-deep/08-stamped-lock/README.md,72,70,97,0
 labs/java/concurrency-deep/09-phaser/README.md,72,70,97,0
-labs/java/concurrency-deep/09-phaser/THEORY.md,98,95,97,0
 labs/java/concurrency-deep/10-structured-concurrency/README.md,72,70,97,0
 labs/java/jvm-deep/01-class-file-format/README.md,72,70,97,0
 labs/java/jvm-deep/01-class-file-format/THEORY.md,98,95,97,0
