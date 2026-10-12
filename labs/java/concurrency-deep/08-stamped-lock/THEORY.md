@@ -1,165 +1,128 @@
 # StampedLock — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-ReadWriteLock vs StampedLock, optimistic read, tryConvertToWriteLock, validation pattern
+`StampedLock` (Java 8) is a lock that returns a **`long` stamp** instead of
+holding owner state — and that one design decision buys a third lock mode no
+`ReadWriteLock` has: **optimistic reading**. Try an optimistic read (nearly
+free: one volatile read, no CAS, no queue), do the work, then `validate()`:
+if no writer intervened, the data was consistent; if one did, fall back to a
+pessimistic read lock and retry. Read-heavy workloads with rare writes go
+from "readers serialize on a CAS" to "readers never touch shared state."
 
-### 2. Theoretical Foundation
-The StampedLock is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+The three modes, from the JDK 23 source:
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+```java
+tryOptimisticRead():  ((s = state) & WBIT) == 0 ? (s & SBITS) : 0
+validate(stamp):      loadFence; (stamp & SBITS) == (state & SBITS)
+```
 
-### 3. Algorithmic Details
+An optimistic "lock" that isn't held — just a version number sampled and
+re-checked. Writers bump the version; any mismatch fails validation.
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+## The Optimistic Pattern (and Its Obligations)
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+```java
+long stamp = lock.tryOptimisticRead();
+double x = point.x, y = point.y;      // plain reads, possibly torn vs writers
+if (!lock.validate(stamp)) {          // writer intervened?
+    stamp = lock.readLock();          // fall back: pessimistic
+    try { x = point.x; y = point.y; }
+    finally { lock.unlockRead(stamp); }
+}
+use(x, y);
+```
 
-### 4. Trade-offs
+The javadoc imposes three obligations most users miss:
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+1. **Optimistic sections must be side-effect-free.** The reads may observe an
+   inconsistent snapshot (x from before a write, y from after) — any action
+   taken on unvalidated data (I/O, mutation, branching into unsafe code)
+   can misfire before `validate` ever runs. Copy fields to locals, validate,
+   *then* act.
+2. **Unvalidated sections can't call inconsistency-intolerant methods.**
+   Anything that could throw/divide-by-zero/loop-forever on torn input
+   (e.g., using x as an array index or divisor) must wait for validation.
+3. **Stamps are finite and recyclable** — "may recycle after (no sooner
+   than) one year of continuous operation." A stamp held unvalidated for
+   absurd durations can validate spuriously. (Never happens in practice;
+   documented for completeness — and a reminder stamps aren't capabilities:
+   "not cryptographically secure... may be guessable.")
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+## tryConvertToWriteLock: Upgrade Without Dance
 
-### 5. Mathematical Basis
+Read→write upgrade deadlocks under `ReentrantReadWriteLock` (lab 05).
+`StampedLock` offers conditional conversion (source-verified branches):
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+- already writing → return stamp (no-op success);
+- sole reader → CAS to write (no release/reacquire window);
+- optimistic stamp + lock free → CAS to write;
+- otherwise → return 0 (caller falls back to explicit `writeLock()`).
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+```java
+long stamp = lock.readLock();
+try {
+    // ... inspect ...
+    long ws = lock.tryConvertToWriteLock(stamp);
+    if (ws == 0L) {                       // conversion failed: others reading
+        lock.unlockRead(stamp);
+        stamp = lock.writeLock();         // explicit acquire (may block)
+    } else stamp = ws;
+    // ... mutate ...
+} finally { lock.unlock(stamp); }
+```
 
-## Summary
-The StampedLock represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+Note `unlock(stamp)` (untyped) vs `unlockRead`/`unlockWrite`: the generic
+form dispatches on the stamp bits — convenient, marginally slower than the
+typed forms. And conversion can *fail spuriously-adjacent*: 0 means "not
+now," not "never" — always code the fallback path.
 
-## Key Theorems
+## NOT Reentrant (source-verified javadoc)
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+"They are not reentrant, so locked bodies should not call other unknown
+methods that may try to re-acquire locks." A write-locked thread calling
+`writeLock()` again **deadlocks against itself** (no owner tracking to
+recognize re-entry — that's precisely the state stamps eliminated). Passing
+the stamp *into* callees (which use/convert it) is the sanctioned pattern;
+re-acquiring inside is the forbidden one. This single property disqualifies
+StampedLock wherever alien/callback methods run under the lock — exactly the
+codebase shape where `ReentrantLock`'s forgiveness matters.
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+## StampedLock vs ReentrantReadWriteLock
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+| | StampedLock | RRWL |
+|---|---|---|
+| Optimistic reads | yes (no CAS, no queue) | no |
+| Reentrant | **no** (self-deadlock) | yes |
+| Conditions | none — `newCondition()` on both views throws `UnsupportedOperationException` (source-verified) | native `writeLock().newCondition()` |
+| Interruptible acquire | `readLockInterruptibly` etc. exist | yes |
+| Reader overflow | capped readers (spillover handling internal) | 65 535 (MAX_COUNT) |
+| Cases favoring it | read-mostly, short critical sections, no callbacks under lock | reentrancy needed, conditions, familiarity |
 
-## Key Insights
+`asReadLock()`/`asWriteLock()` adapt stamps to the `Lock` interface for
+interoperation (including `newCondition()` on the views) — with the
+performance caveat that adaptation reintroduces owner-ish bookkeeping the
+raw stamp API avoids.
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
+## When Optimism Loses
 
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
+- **Write-heavy data**: validation fails most attempts → every read pays
+  optimistic attempt + fallback pessimistic read. Past some writer fraction
+  (workload-dependent — measure, don't guess), plain read locks win outright.
+- **Long read sections**: the wider the window between sample and validate,
+  the likelier a writer lands inside it. Optimism favors *short*,
+  field-copy reads.
+- **Irreversible actions mid-read**: see obligations — optimism composes
+  only with pure reads.
 
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
+## Key Invariants
 
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. `validate(s)` ⟺ no write completed between stamp issuance and the fence.
+2. Stamp 0 is never valid (`tryOptimisticRead` returns 0 under write hold;
+   `validate` always false on 0).
+3. Every acquired stamp (read/write/converted) needs exactly one matching
+   unlock — stamps don't nest or auto-release.
+4. Lock bodies must be reentrancy-free and (for optimistic paths)
+   side-effect-free until validated.
+5. Conversion returns 0 on contention — the fallback path is mandatory, not
+   defensive.
