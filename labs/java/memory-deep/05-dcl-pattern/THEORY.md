@@ -1,165 +1,88 @@
 # DCL Pattern — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-DCL broken in JMM pre-5, volatile fix, static holder idiom, enum singleton, init-on-demand
+Double-checked locking publishes a lazily-initialized singleton with one
+volatile read on the fast path instead of a monitor acquisition:
 
-### 2. Theoretical Foundation
-The DCL Pattern is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+```java
+Helper helper;                       // MUST be volatile (see below)
+Helper get() {
+    Helper h = instance;             // (1) unsynchronized read
+    if (h == null) {
+        synchronized (this) {
+            if ((h = instance) == null)   // (2) checked again under lock
+                h = instance = new Helper();
+        }
+    }
+    return h;
+}
+```
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+Three elements, each load-bearing: the `volatile` field, the *first*
+(unsynchronized) check, and the *second* (locked) check. Remove any one
+and the idiom breaks a different way — this lab demonstrates all three
+failure modes by removing each in turn (one observably, two by proof).
 
-### 3. Algorithmic Details
+## Why Pre-2004 DCL Was Broken (the reorder)
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+`helper = new Helper()` is three steps: allocate → init fields → store
+reference. Without `volatile`, the JMM permits publishing the reference
+*before* the field stores complete (write-write reorder across the
+constructor/store boundary, plus visibility staleness for the reader).
+A second thread passes check (1), reads a non-null but half-constructed
+object. JSR-133 (Java 5) fixed the *model* — `volatile` write/read edges
+order construction before publication — but only if the keyword is
+present. `volatile` here is not "extra safety"; it is the *entire*
+correctness argument.
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+## The Second Check (snippet 5's lesson)
 
-### 4. Trade-offs
+Drop check (2) and two racing threads serialize on the monitor but *both*
+initialize: T1 inits and exits; T2 enters (its check-(1) read predates
+T1's write) and inits again — two instances, last publication wins,
+constructor side effects run twice. The second check re-reads *under the
+lock* (where T1's write is visible via the monitor edge), so exactly one
+thread initializes. Deterministically demonstrable — unlike the
+reorder itself, which needs adversarial timing to observe.
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+## The Local-Variable Read (Bloch's shape)
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+`Helper h = instance` reads the volatile *once* per call instead of twice
+(once in each check). Beyond saving a fence: if `instance` is reassigned
+between the checks (it can't be here — single assignment — but the shape
+generalizes), the method could return a different object than it checked.
+Effective Java's prescribed form; the snippets use it throughout.
 
-### 5. Mathematical Basis
+## The Three Alternatives (when DCL is the wrong answer)
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+| Idiom | Lazy? | Cost | Notes |
+|---|---|---|---|
+| `volatile` DCL | yes | 1 volatile read/call | correct; subtle (this lab) |
+| Static holder | yes | 0 (class-init lock, once) | simplest correct lazy singleton |
+| Enum (`INSTANCE`) | no (eager) | 0 | serialization-safe free (Bloch Item 3); no laziness |
+| `synchronized` accessor | yes | monitor/call | obviously correct; fine at low call rates |
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+The holder idiom deserves emphasis: the JVM's class-initialization lock
+(JLS §12.4.2 — recursive, thread-safe, exactly-once) does the
+synchronization *for you*, lazily on first access of the holder class.
+DCL is for the residual cases (parameterized singletons, framework
+constraints, non-static scope) — reach for the holder first.
 
-## Summary
-The DCL Pattern represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+## What `volatile` Costs Here (measured context)
 
-## Key Theorems
+One volatile read per `get()` call (~1 ns, lab 03 measurements) vs one
+monitor enter/exit pair (~20+ ns uncontended). DCL pays for itself above
+roughly millions of calls per second per thread — below that, the
+`synchronized` accessor's clarity wins. (No microbenchmark in this lab
+asserts the crossover; it moves with hardware. The shapes differ
+structurally: fence vs monitor.)
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+## Key Invariants
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
-
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
-
-## Key Insights
-
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
-
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
-
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Field `volatile` + check + recheck-under-lock: all three, always.
+2. Unsynchronized check without `volatile` publishes half-constructed
+   objects (pre-2004 bug, still reproducible by deleting the keyword).
+3. Locked recheck without the outer check is just locking (correct but pointless).
+4. Single volatile read into a local (Bloch shape) — never read twice.
+5. Prefer holder/enum unless laziness-with-parameters forces DCL.
