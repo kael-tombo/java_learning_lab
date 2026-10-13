@@ -1,165 +1,86 @@
 # Memory Barriers — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-LoadLoad/LoadStore/StoreLoad/StoreStore barriers, x86 MFENCE/LFENCE/SFENCE, ARM DMB/DSB, JVM barrier insertion
+A memory barrier (fence) forbids a *class* of reorderings across a point
+in the instruction stream. The JMM's edges (lab 01) *are* barrier
+requirements: every happens-before rule compiles to "emit this barrier
+here" (compiler + CPU). Four barrier types (Doug Lea's JSR-133 cookbook
+vocabulary) cover the four operation pairs:
 
-### 2. Theoretical Foundation
-The Memory Barriers is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+| Barrier | Forbids | JMM job |
+|---|---|---|
+| LoadLoad | load → later load reorder | volatile/acquire reads see ordered data |
+| LoadStore | load → later store reorder | reads complete before subsequent publishes |
+| StoreStore | store → later store reorder | publication order (data before flag) |
+| StoreLoad | store → later load reorder | the expensive one: full fence, Dekker safety |
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+Acquire (volatile read, monitor entry, `getAcquire`) = LoadLoad + LoadStore
+after the operation. Release (volatile write, monitor exit, `setRelease`) =
+LoadStore + StoreStore before it. Sequential consistency for volatiles adds
+StoreLoad *after* each volatile store — the single most expensive barrier,
+and the one Dekker needs on both sides.
 
-### 3. Algorithmic Details
+## Roach Motel Semantics (the one-paragraph version)
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+Plain operations drift *into* synchronization regions, never *out*:
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+- **Acquire** (`monitorenter`, volatile read, `getAcquire`): subsequent
+  operations cannot move *before* it — but preceding plain operations MAY
+  move *after* it, into the region from above.
+- **Release** (`monitorexit`, volatile write, `setRelease`): preceding
+  operations cannot move *after* it — but following plain operations MAY
+  move *before* it, into the region from below.
 
-### 4. Trade-offs
+Net: the motel (locked region, volatile op neighborhood) admits plain
+traffic from both sides and releases none early. "Check in, never check
+out" — which is why publication (`data` before `flag`) is safe but
+observation-after-the-fact is not ordered.
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+## x86 Mapping (measured in this lab)
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+- Volatile/plain **reads**: ~1 ns both (measured 1.0–1.4 vs 0.9–2.2) —
+  acquire on TSO is nearly free (no fence instruction; compiler barrier
+  only).
+- Plain **stores**: ~1 ns (measured 1.0–1.2, array slots).
+- Release (`lazySet`) stores: ~1.3–1.4 ns (measured, rock-stable) —
+  compiler barrier only on x86, no hardware fence.
+- Volatile **stores**: ~10–18 ns (measured 9.6–18.5) — `XCHG` (implicit
+  `lock` prefix = StoreLoad fence). The ~8x tax is one instruction's
+  pipeline flush, not a syscall.
+- The ladder plain ≤ release < volatile holds structurally on x86
+  (fence count 0/0/1); only the volatile step emits hardware ordering.
 
-### 5. Mathematical Basis
+ARM64 differs in degree, not kind: `STLR` (release store) is cheaper than
+a full `DMB`-fenced store, `LDAPR` (acquire load) cheap like x86 reads —
+same taxonomy, different price list (lab 02 THEORY).
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+## Why Release/Acquire Doesn't Fix Dekker (snippet 5's lesson)
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+Dekker needs a *total* order over the four operations (each side must see
+the other's store). Release/acquire gives *pairwise* chains (my release →
+your acquire), and chains don't compose into a total order across two
+independent pairs — the two release/acquire pairs each order locally while
+the cross pair still slips through the store buffers. Only StoreLoad on
+both sides (full `volatile`, or locks) restores the total order. Measured:
+61–90% anomaly rate under release/acquire — indistinguishable from plain.
 
-## Summary
-The Memory Barriers represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+## Opaque: Atomicity Without Ordering
 
-## Key Theorems
+`VarHandle.getOpaque/setOpaque`: atomic access, eventual visibility, *zero*
+ordering edges — weaker than release/acquire, stronger than plain (which
+additionally permits tearing on 64-bit and indefinite staleness). Use for
+progress counters and statistics where any value is fine and order is
+meaningless. Never for publication, never for flags guarding data.
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+## Key Invariants
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
-
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
-
-## Key Insights
-
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
-
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
-
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Acquire = LoadLoad+LoadStore after; Release = LoadStore+StoreStore
+   before; SC adds StoreLoad after volatile stores.
+2. Plain ops check into sync regions from both sides, never out (roach
+   motel).
+3. On x86: reads ~free, plain/release stores ~1 ns, volatile stores ~10 ns
+   (fence count decides).
+4. Release/acquire chains order pairs, not systems — Dekker still fires.
+5. Opaque = atomic + eventually visible + unordered; publication needs
+   release or stronger.
