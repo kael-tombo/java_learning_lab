@@ -1,161 +1,61 @@
-# Memory Barriers — Step-by-Step Implementation
+# Step by Step: Price, Accident, Compose
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab03/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab03/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Goal
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
+Five runs: three ratios (write fence, read parity, release saving) and
+two verdicts (accidental zero that means nothing; persistent nonzero
+that means chains). Under ninety minutes, quiet box, one JVM per
+comparison.
 
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab03;
+## Step 1: weigh the write fence (~1 vs ~10 ns)
 
-import java.util.Objects;
+1. Open `WriteFenceCost`: 1024 int slots, `AtomicIntegerArray` volatile
+   path, 2M warmup both paths, 20M measured back-to-back.
+2. Run three times; confirm `fence costs (volatile > 3x plain): true`
+   every run. Record plain/volatile ns and the ratio (~8-10x here).
+3. Halve the mask once and re-run: absolutes shift, ratio persists —
+   note why the ratio (fence count 0 vs 1) is the portable claim.
 
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
+## Step 2: weigh the read path (near parity)
 
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+1. Open `ReadCheap`: identical harness on reads with the `sink` escape
+   (`plain[0] = sink`) defeating elimination.
+2. Run three times; confirm `acquire nearly free (< 5x): true` every
+   run (~1.0 vs ~1.3 ns). State aloud: acquire on TSO is a compiler
+   barrier — same MOVs, noise-scale gap.
 
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
+## Step 3: weigh release (~1.3 ns rock-stable)
 
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
+1. Open `ReleaseCheaper`: `set` vs `lazySet` on one array, same
+   warmup/measurement discipline.
+2. Run three times; confirm `release avoids StoreLoad (>3x): true`
+   every run. Name the kept pair (LoadStore + StoreStore before) and
+   the skipped one (StoreLoad after) — the ~8x gap itemized.
 
-## Step 4: Implement Core Operations
+## Step 4: stage the accident (0/2000, still race)
 
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
+1. Open `AccidentalCorrect`: fresh thread pairs per round, plain
+   `data`/`flag`, 2000 rounds.
+2. Run; confirm all three lines: `0/2000`, x86 explanation `true`,
+   `STILL race: true`. Sit with the contradiction — that discomfort is
+   the lesson.
+3. Convert `flag` to volatile, re-run: same `0/2000`, converted
+   verdict. Write the three-link hb chain for the converted version.
 
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
+## Step 5: persist the chain failure (61-90%)
 
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
+1. Open `RaDekker`: `setRelease`/`getAcquire` Dekker, volatile
+   rendezvous, 20000 rounds.
+2. Run; confirm `anomalies persist: true` with a high count. Note the
+   x86 truth (bare MOVs both paths — same silicon as plain).
+3. Escalate to volatile-both-sides: 0/20000. Wrap plain in one lock:
+   0/20000 by exclusion. Label the three zeros-in-waiting (ordering,
+   timing-n/a, exclusion) — only two are synchronization.
 
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
+## Step 6: lock in the card
 
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+One card, five rows: write ratio / read parity / release saving /
+accident (0 + race) / chains (61-90%). Each row with its mechanism
+phrase (StoreLoad tax / compiler-only acquire / skipped fence /
+preserved StoreStore / uncomposed pairs). Carry it to labs 04-05,
+which spend exactly these prices.

@@ -1,146 +1,74 @@
-# Memory Barriers — How It Works
+# How It Works: Memory Barriers
 
-## Mechanical Explanation
+## The mechanism in one paragraph
 
-### The Core Mechanism
-Memory Barriers works by organizing data in a specific structure that enables efficient operations.
-The fundamental mechanism relies on a clever mapping between keys and storage locations.
+Each hb edge lowers to fences placed around the operation: acquire
+fences after reads/entries, release fences before writes/exits, and the
+SC StoreLoad fence after every volatile store. Snippets 1-3 weigh each
+placement (~1, ~1.3, ~10 ns on x86); snippets 4-5 show the two
+boundaries — order without fences holding by accident (plain MP
+0/2000), and fences without total order failing structurally
+(RaDekker 61-90%).
 
-### Step-by-Step Execution
+## Snippet 1: the StoreLoad tax, weighed
 
-#### Insertion
-When a new key-value pair is inserted:
-1. The key's hash code is computed using key.hashCode()
-2. A supplemental hash is applied to improve distribution across buckets
-3. The hash is mapped to an index in the backing array using bitwise AND
-4. If the bucket is empty, a new node is created and placed there
-5. If occupied, the chain is traversed:
-   - Key exists -> update value, return old value
-   - Key not found -> append new node at end of chain
-6. After insertion, if size exceeds threshold, the array is resized
+20M indexed stores to 1024 slots (distinct locations defeat
+elimination), both paths warmed 2M in-JVM, measured back-to-back:
+plain MOVs average ~1.0-1.2 ns; volatile `set` (XCHG, implicit lock
+prefix = StoreLoad fence) averages ~10-18 ns. Assertion `volNs >
+plainNs * 3` holds with ~3x margin at minimum — the pipeline flush
+priced per store, unconditionally, even uncontended. First-run JVMs
+show wider spreads until frequency settles; the in-JVM warmup absorbs
+it, which is why the comparison (not the absolute) is the claim.
 
-#### Lookup
-When a key is looked up:
-1. Hash code computed and mapped to index using same algorithm
-2. Bucket at that index is examined
-3. If empty -> key not found, return null
-4. If occupied, chain is traversed comparing keys using equals()
-5. Key found -> return associated value
-6. End of chain -> return null
+## Snippet 2: why reads are nearly free (x86 asymmetry)
 
-#### Resizing
-When resizing is triggered:
-1. New array of twice the capacity is allocated
-2. Each entry is rehashed (or reassigned) to the new array
-3. For hash-based structures, entries split into low/high buckets based on hash & oldCapacity
-4. Threshold is recalculated: newCapacity * loadFactor
-5. Old array becomes eligible for garbage collection
+Same harness on the read path: plain reads ~0.9-2.2 ns, volatile
+`get` ~1.0-1.4 ns, assertion `volNs < max(plainNs, 0.2) * 5`. Acquire
+on TSO is a compiler barrier only — no fence instruction, same MOVs —
+so the read ladder step vanishes into noise. The tax is directional:
+writes fence, reads do not. (ARM64 charges `LDAPR` modestly more than
+a bare load — same taxonomy, hotter price list.)
 
-### Concurrency Model
-For concurrent variants:
-- **Lock-Free**: CAS operations on head/tail pointers avoid blocking
-- **Lock-Based**: Segmented locks reduce contention compared to single lock
-- **Snapshot**: Copy-on-write semantics for safe iteration without locking
+## Snippet 3: release skips exactly one fence
 
-### Memory Model
-The Java Memory Model guarantees:
-- **Visibility**: volatile fields ensure cross-thread visibility of latest writes
-- **Atomicity**: Reference assignment is atomic for all types except long/double
-- **Ordering**: final fields guarantee initialization safety
-- **Happens-Before**: Monitor enter/exit, volatile read/write establish ordering
+`set` (volatile,StoreLoad included) vs `lazySet` (release, StoreLoad
+skipped) on the same `AtomicIntegerArray`: ~10 ns vs ~1.3 ns
+rock-stable, assertion `volNs > max(relNs, 0.2) * 3`. Both keep
+LoadStore + StoreStore *before* the store (publication order); only
+`set` pays the *after* fence (total order). The ~8x gap is the market
+price of system-wide vs pairwise ordering on x86 — pay it only for
+Dekker-shaped needs.
 
-### Interaction with Garbage Collection
-- **Short-lived objects**: Iterators, temporary nodes collected in young generation
-- **Tenured objects**: Long-lived collections promoted to old generation
-- **GC roots**: Static collections prevent GC of all referenced objects
-- **Reference types**: WeakHashMap uses weak references for automatic cleanup
+## Snippet 4: the accident, dissected
 
-### Performance Characteristics
+Plain `data = 42; flag = true` writer vs spinning reader, 2000 fresh
+thread pairs: `stale reads = 0/2000` because TSO preserves StoreStore
+(writer order kept) and coherence delivers values (reader sees them).
+Either conjunct fails elsewhere: the JIT may hoist `data` above the
+spin (compiler Barbara), ARM may reorder the stores (hardware escape),
+and the JMM promises nothing in all cases (verdict `race`). The three
+printed lines (count, x86 explanation, STILL-race verdict) are the
+whole lesson: output, mechanism, and verdict side by side, disagreeing
+on purpose.
 
-#### When It's Fast
-- Uniform hash distribution: most buckets have 0-1 elements
-- Sequential access patterns: good cache locality
-- Appropriate initial capacity: no resize overhead
+## Snippet 5: chains that do not compose
 
-#### When It's Slow
-- Poor hash distribution: long chains, O(n) lookup
-- Frequent resizing: repeated array allocation and rehashing
-- Concurrent contention: threads competing for locks
-- Cache misses: pointer chasing through linked list chains
+`X.setRelease(1); r1 = Y.getAcquire()` on both Dekker sides, 20000
+rendezvoused rounds: 61-90% (0,0) — on x86 both operations compile to
+bare MOVs, so the hardware sees snippet 1's plain shape wearing
+higher-level spelling. Each release->acquire pair chains correctly in
+isolation; the two chains share no constraint across the cross
+observations, and the buffers exploit exactly that gap. Full volatile
+adds StoreLoad *after* each store (fence count 0 -> 1 per side):
+61-90% falls to 0/20000. The lock alternative removes overlap instead:
+same zero, exclusion mechanism.
 
+## Opaque in one paragraph
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Below release sits opaque: atomic tearing-free access with eventual
+visibility and no barrier in either direction. It composes with nothing
+— safe for monotonic progress and lossy statistics (any value fine),
+structurally incapable of publication (no StoreStore) or guarding (no
+LoadLoad/LoadStore). The ladder's ground floor: cheaper than release,
+and ordered like plain (not at all).

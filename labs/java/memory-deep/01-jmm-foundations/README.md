@@ -1,147 +1,62 @@
-# JMM Foundations
+# JMM Foundations — README
 
-## Overview
-JSR-133, happens-before, sequential consistency, causality, observable behavior
+Welcome to the bedrock lab of the memory track. The Java Memory Model
+(JLS 17.4, rewritten by JSR-133 for Java 5) answers one question:
+**which writes can a read observe?** This lab builds the five
+happens-before edges and the two guarantees (DRF implies sequential
+consistency; causality bans out-of-thin-air values) that every later
+lab assumes.
 
-## Learning Objectives
-- Understand the internal mechanics of JMM Foundations
-- Implement working code that demonstrates core concepts
-- Analyze performance characteristics and trade-offs
-- Apply this knowledge in real-world Java applications
+## What you will learn
 
-## Prerequisites
-- Java 21+
-- Basic understanding of Java collections framework
-- Familiarity with data structures and algorithms
+- The six happens-before sources: program order, monitor rule,
+  volatile rule, thread start/join rules, final-field freeze, and the
+  documented `java.util.concurrent` library edges.
+- Why a data race (conflicting accesses unordered by happens-before)
+  forfeits every intuition, and why race-freedom buys back sequential
+  consistency (JLS 17.4.3-17.4.5).
+- What causality guarantees even for racy code: only staleness and
+  reordering, never invented values (JLS 17.4.8).
+- What "observable behavior" means and why it licenses optimization.
 
-## Lab Structure
-This micro-lab follows the standard 24-file pedagogical structure with 7 subdirectories for hands-on work.
+## The five runnable demos (all guaranteed, never races)
 
-## Quick Start
-1. Navigate to the source directory: `src/main/java/com/javalab/01/`
-2. Review the main implementation class
-3. Run tests using: `mvn test` or `gradle test`
-4. Complete the exercises in EXERCISES.md
-5. Build the MINI_PROJECT to cement understanding
+| # | Class | Edge shown | Exact expected output |
+|---|-------|-----------|----------------------|
+| 1 | `StartEdge` | `start()` hb thread body | `expected checksum = 1499500`, thread observes `1499500` |
+| 2 | `JoinEdge` | worker body hb `join()` return | `sum = 41541750 (expected 41541750)` |
+| 3 | `LockEdge` | `unlock` hb next `lock` | `count = 2000000 (expected 2000000)` over 8 x 250000 |
+| 4 | `LatchEdge` | `countDown()` hb `await()` return | `latch-published graph fully visible: true` |
+| 5 | `CausalityFloor` | none (racy on purpose) | `out-of-thin-air values: 0`, every value in `[0, 100000]` |
 
-## File Index
-| File | Description |
-|------|-------------|
-| README.md | Overview and navigation |
-| THEORY.md | Comprehensive theoretical foundation |
-| MATH_FOUNDATION.md | Mathematical prerequisites |
-| CODE_DEEP_DIVE.md | Detailed code walkthroughs |
-| EXERCISES.md | Practice problems with solutions |
-| QUIZ.md | Self-assessment questions |
-| ARCHITECTURE.md | Design and architectural considerations |
-| SECURITY.md | Security implications |
-| PERFORMANCE.md | Performance characteristics and optimization |
-| REFACTORING.md | Improving existing code |
-| DEBUGGING.md | Debugging strategies and tools |
-| COMMON_MISTAKES.md | Pitfalls and anti-patterns |
-| STEP_BY_STEP.md | Guided tutorial-style implementation |
-| VISUAL_GUIDE.md | Diagrams and visual explanations |
-| INTERNALS.md | Under-the-hood implementation details |
-| HOW_IT_WORKS.md | Step-by-step mechanical explanation |
-| MENTAL_MODELS.md | Analogies and mental frameworks |
-| HISTORY.md | Evolution across Java versions |
-| WHY_IT_MATTERS.md | Practical importance in real-world development |
-| WHY_IT_EXISTS.md | Historical context and motivation |
-| REFERENCES.md | Further reading and resources |
-| REFLECTION.md | Guided self-reflection prompts |
-| INTERVIEW.md | Common interview questions |
-| FLASHCARDS.md | Spaced-repetition learning cards |
+Demos 1-4 assert `true` on every run on any JDK 9+ (verified on JDK 23).
+Demo 5 is racy by design; its verdict (no invented values) is what is
+asserted, not any particular interleaving.
 
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| MINI_PROJECT/ | Small hands-on project |
-| REAL_WORLD_PROJECT/ | Production-scale project |
-| CHALLENGE/ | Advanced challenge problems |
-| TESTS/ | Unit and integration tests |
-| BENCHMARK/ | Performance benchmarks |
-| DIAGRAMS/ | Visual aids and architecture diagrams |
-| SOLUTION/ | Solutions to exercises and projects |
+## How to work this lab
 
-## Time Estimate
-- Reading: 30-45 minutes
-- Exercises: 45-60 minutes
-- Mini Project: 60-90 minutes
-- Total: 2-3 hours
+1. Read `THEORY.md` first (the DRF guarantee, the hb rules, causality,
+   observable behavior, one paragraph of JSR-133 history).
+2. Read `CODE_DEEP_DIVE.md` alongside the sources in `src/`; each
+   snippet names the JLS rule it exercises.
+3. Do `EXERCISES.md` in order: break an edge, restore it, swap one edge
+   for another, then explain why the verdict changed in hb terms.
+4. Use `QUIZ.md` and `FLASHCARDS.md` for recall; `DEBUGGING.md` when a
+   demo surprises you (it should not — that is the point).
+5. Finish with `REFLECTION.md` and the interview set in `INTERVIEW.md`.
 
+## Where this fits
 
-## Further Exploration
+- Previous: nothing in this track — this is the foundation.
+- Next: `02-reordering` shows what happens with *no* edges (the Dekker
+  anomaly, forbidden under sequential consistency, routine on hardware).
+- Later: `03-memory-barriers` compiles these edges to fences;
+  `04-final-semantics` deepens the freeze edge; `05-dcl-pattern`
+  applies volatile publication end to end.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Requirements
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- JDK 9 or later (demos verified on JDK 23); no dependencies.
+- Outputs must be pure ASCII on the console; prose files are UTF-8.
+- Run each demo repeatedly: guaranteed demos print the same verdict
+  every time. That repeatability *is* the lesson.

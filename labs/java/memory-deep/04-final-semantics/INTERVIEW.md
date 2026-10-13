@@ -1,51 +1,46 @@
-# Interview Questions: Final Field Semantics
+# Interview: Final Field Semantics
 
-## Company-Specific Focus
+## Q1: What guarantee do final fields have that plain fields lack?
+**A:** Initialization safety per JLS 17.5: finals of a properly
+constructed object (no `this` escape) are visible to any thread that
+obtains the reference, through any publication path including data
+races. No volatile or lock needed for the initial state.
 
-### Google
-- Final fields: JMM guarantees safe initialization of final fields
-- Constructor safety: final fields are visible to all threads after constructor completes
-- JMM rule: freeze action at end of constructor for each final field
+## Q2: State the freeze chain precisely.
+**A:** `w ->hb f ->hb a ->mc r1 ->dc r2`: final write, constructor-end
+freeze, publication action, reference read (memory chain), final read
+(dereference chain). When the chain holds, the reader observes the
+written value.
 
-### Microsoft
-- Final in Java vs readonly in C#: similar initialization guarantees
-- Immutability: final fields enable safe publication of immutable objects
+## Q3: What voids the guarantee? Give a concrete demo.
+**A:** `this` escape before the stores. Publishing `this` to a static,
+registering a listener, or starting a thread from the constructor, then
+storing the final, lets an early reader see the default value. The lab
+demo with a 300 ms construction window shows default 0 deterministically.
 
-### Amazon
-- Immutable objects: leveraging final fields for thread-safe value objects
-- Deserialization: preserving final field guarantees during deserialization
+## Q4: Does `final` make the referent immutable?
+**A:** No. `final` publishes the reference; a mutable referent (`final
+ArrayList`, record wrapping a mutable list) still races on its contents.
+Only genuinely immutable contents (freshly allocated and filled in the
+constructor, `List.of`) inherit safety transitively.
 
-### Meta
-- Escape in constructor: if the object escapes during construction, final field guarantee may not hold
-- Final array: the reference is final, but array elements are not
+## Q5: Why is String safe to share without synchronization?
+**A:** Its state is `final byte[] value` + `final byte coder`. Every
+unsynchronized handoff leans on 17.5, including array contents via the
+transitive rule. There are no read-path locks because none are needed.
 
-### Apple
-- Records: all fields are final — safe publication by design
-- Defensive copy: final reference to a mutable object does not make the object immutable
+## Q6: The mutable twin passes 3000 rounds on x86. Ship it?
+**A:** No. It passes by TSO/coherence accident with no specification
+behind it; a weaker CPU or reordering JIT may expose staleness. The
+final version's identical run is a theorem; the mutable one is weather.
 
-### Oracle
-- JLS 17.5: Final Field Semantics
-- Freeze action: at end of constructor for final fields
-- JMM guarantee: dereferencing the object after construction ensures final fields are initialized
-- Constructor visibility: happens-before between constructor freeze and subsequent dereferences
+## Q7: Do finals cover later mutation or reflective writes?
+**A:** Neither. Finals cover initialization only; post-construction
+mutation needs volatile/locks. Reflective or `Unsafe` writes to finals
+after construction are outside the model entirely — unspecified,
+version-dependent behavior.
 
-## LeetCode-Related Questions
-| LC Problem | Difficulty | Companies | Notes |
-|------------|------------|-----------|-------|
-| (No direct LC problems — final field semantics is a JMM aspect) |
-
-## Real Production Scenarios
-- **LinkedIn**: Immutable value objects with final fields solved a race condition in caching
-- **Uber**: Final field in service configuration ensured safe publication across threads
-
-## Interview Patterns & Tips
-- **Safe publication**: final fields are the easiest way to safely publish objects
-- **Constructor escape**: don't leak `this` reference in constructor
-- **Immutability**: final field + immutable class = thread safety
-
-## Deep Dive Questions
-- **Freeze**: What is the freeze action in the JMM?
-- **Constructor escape**: When does the final field guarantee fail?
-- **Final array**: Are array elements guaranteed to be visible?
-- **Deserialization**: How does deserialization preserve final field semantics?
-- **Reflection**: Can reflection change final fields at runtime?
+## Q8: How do records fit in?
+**A:** Record components are final fields, so a published record is a
+safe snapshot under races — with the same mutable-contents caveat for
+whatever the components point at.

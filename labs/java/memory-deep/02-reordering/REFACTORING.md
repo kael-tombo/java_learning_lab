@@ -1,148 +1,76 @@
-# Reordering — Refactoring
+# Refactoring: Reordering
 
-## Refactoring Patterns
+## Pattern 1: free-running litmus -> rendezvoused litmus
 
-### Pattern 1: Replace Array with Collection
-**Before**:
-```java
-String[] names = new String[100];
-names[0] = "Alice";
-int count = 1;
-```
-**After**:
-```java
-List<String> names = new ArrayList<>();
-names.add("Alice");
-```
+Before: two threads looping freely, anomaly counts near zero,
+engineer concludes "no reordering here."
 
-### Pattern 2: Replace Raw Type with Generics
-**Before**:
+After: the lab's volatile-flag handshake (`go`/`done1`/`done2`,
+`onSpinWait`, daemon racers, main driver resetting `x = y = 0` per
+round). Counts jump to tens of percent with no change to the measured
+bodies. Rule: modify harness tightness, never infer verdicts from
+loose-harness rates.
+
+## Pattern 2: drain-as-fix -> edge-as-fix
+
+Before (diagnostic only):
+
 ```java
-List list = new ArrayList();
-list.add("hello");
-String s = (String) list.get(0);
-```
-**After**:
-```java
-List<String> list = new ArrayList<>();
-list.add("hello");
-String s = list.get(0);
+x = 1;
+LockSupport.parkNanos(1); // hides the anomaly, guarantees nothing
+r1slot = y;
 ```
 
-### Pattern 3: Replace Legacy with Modern Variant
-**Before**: Hashtable, Vector, Stack (synchronized overhead)
-**After**: HashMap, ArrayList, ArrayDeque
+After (choose by shape):
 
-### Pattern 4: Fix LinkedList Random Access
-**Before**: list.get(i) in loop on LinkedList -> O(n^2)
-**After**: Enhanced for-loop or ArrayList
+```java
+volatile int x, y;  // ordering fix: 0/20000, portable
+// OR
+synchronized (LOCK) { x = 1; r1slot = y; } // exclusion fix: 0/20000
+```
 
-### Pattern 5: Introduce EnumMap for Enum Keys
-**Before**: Map<Color, String> map = new HashMap<>();
-**After**: Map<Color, String> map = new EnumMap<>(Color.class);
+Why: the drain pays delay per pair for a still-racy program; the edge
+pays a fence (or serialization) for a verdict. Delete every
+sleep-between-accesses "fix" on sight — lab 02's elimination argument
+is the citation.
 
-### Pattern 6: Use Empty Collection Constants
-**Before**: return new ArrayList<>(); // Allocates every call
-**After**: return Collections.emptyList(); // Reuses singleton
+## Pattern 3: barrier-per-iteration -> spin rendezvous (for litmus)
 
-## Step-by-Step Refactoring
+Before: `CyclicBarrier` aligning iteration starts — clean-looking,
+wide windows, suppressed rates, misleading greens.
 
-### Step 1: Identify the Problem
-- Profiling shows hotspot in collection code
-- Excessive allocations in GC logs
-- ConcurrentModificationException in logs
-- High memory usage from collections
+After: volatile `go`/`done` spins — tighter windows, honest rates.
+(Boundaries: production code should prefer barriers/phasers for real
+coordination; the spin rendezvous is test instrumentation for litmus,
+burning cores deliberately for nanosecond alignment. Do not ship the
+spin as coordination.)
 
-### Step 2: Choose the Right Alternative
-- ArrayList vs LinkedList: Random access? Use ArrayList
-- HashMap vs TreeMap: Need sorted order? Use TreeMap
-- HashMap vs ConcurrentHashMap: Concurrent access? Use ConcurrentHashMap
+## Pattern 4: release/acquire Dekker -> volatile Dekker
 
-### Step 3: Migrate Carefully
-1. Change declaration to interface (if not already)
-2. Update constructor to new implementation
-3. Run existing tests
-4. Profile to verify improvement
+Before: `X.setRelease(1); r1 = Y.getAcquire()` — modern-looking modes,
+61-90% anomalies, race intact.
 
-### Step 4: Measure Impact
-- Throughput: Operations/second
-- Latency: Average and P99
-- Memory: Heap usage
-- GC: Pause time and frequency
+After: plain `volatile` fields — 0/20000. Keep release/acquire where
+it belongs (snippet 4's message-passing chain: 50000 intact at a
+fraction of volatile cost) and escalate where Dekker's total order
+demands it. The refactor is one mode step, decided by shape analysis,
+not by "stronger sounds better."
 
+## Pattern 5: split or half-applied fixes -> complete the pair
 
-## Further Exploration
+- Volatile on one field only: still races (the plain side's StoreLoad
+  still escapes) — volatile *both*.
+- Lock around stores only: still races (loads overlap outside) — the
+  whole store;load *pair* inside one lock.
+- Rendezvous flags made plain "for speed": reopens spin hoisting —
+  handshake stays volatile while bodies stay plain.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Refactoring checklist
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Name the verdict before and after (nonzero vs zero), with 20000
+  fixed iterations and 3 runs each.
+- Change one variable per step (handshake, delay, mode, scope).
+- Assert verdicts in tests (`bad > iters/100`, `bad == 0`), never
+  exact counts.
+- Leave a comment naming the mechanism (buffer) and the guarantee
+  (ordering vs exclusion) so the next reader does not re-drain it.

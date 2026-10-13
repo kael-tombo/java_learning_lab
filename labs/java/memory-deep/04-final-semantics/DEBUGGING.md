@@ -1,134 +1,63 @@
-# Final Field Semantics — Debugging
+# Debugging: Final Field Semantics
 
-## Debugging Strategies
+## Symptom: a reader sees 0 or null in a final field
 
-### Print-Based Debugging
-```java
-System.out.println("State: " + collection);
-System.out.println("Size: " + collection.size());
-System.out.println("Contains key X: " + collection.containsKey("X"));
-```
+A `final int` observed as 0 (or a `final` reference as null) after
+construction almost always means one of two things: the reference was
+obtained through a pre-freeze window (`this` escape), or the write came
+from outside the constructor path (reflection, `Unsafe`, deserialization
+fill). Check constructor publication order first.
 
-### IDE Debugger Inspection
-Modern IDEs provide collection visualizers:
-- **IntelliJ IDEA**: Shows internal structure, hash codes, conflicts
-- **Eclipse**: Detail formatters for common collections
-- **VS Code**: Java Debug Extension with variable inspection
+## Step 1: audit the constructor for publication
 
-### JFR Events
-Java Flight Recorder captures collection-related events:
-- **Allocation events**: When collections allocate new backing arrays
-- **GC events**: Collection overhead during GC pauses
-- **Lock events**: Contention on synchronized collections
+Search the constructor (and anything it calls) for:
 
-### Heap Dump Analysis
-```bash
-jmap -dump:live,format=b,file=heap.hprof <pid>
-```
-Use Eclipse MAT or JProfiler to analyze:
-- **Dominator tree**: Find largest collections
-- **GC root paths**: Why collections aren't collected
-- **OQL queries**: Filter specific collection types
+- Assignments to statics (`published = this`, registry installs).
+- `this` passed to other objects (listeners, callbacks, executors).
+- `thread.start()` or executor submissions.
+- Calls to overridable methods.
 
-### Thread Dump Analysis
-```bash
-jstack <pid> > threaddump.txt
-```
-Look for threads stuck in collection code, infinite resize loops, deadlocks.
+Any of these before the final stores is the prime suspect. Move all of
+them after the stores, or out of the constructor entirely.
 
-## Debugging Tools
+## Step 2: reproduce with a wedged window
 
-### JOL (Java Object Layout)
-```java
-System.out.println(GraphLayout.parseInstance(map).toFootprint());
-```
+Make the suspect deterministic instead of timing-dependent: insert a
+sleep between the suspected escape and the final store (as the lab's
+`ThisEscape` does with 300 ms), publish a reader that spins on the
+reference, and read the final inside the window. If the reader sees the
+default value, the escape is confirmed, not hypothesized.
 
-### jhsdb
-```bash
-jhsdb jmap --heap --pid <pid>
-jhsdb jmap --histo --pid <pid>
-```
+## Step 3: distinguish escape from reflective writes
 
-## Debugging Checklist
-1. Check equals() and hashCode() implementations
-2. Verify collection is the correct type
-3. Confirm thread safety guarantees
-4. Check for ConcurrentModificationException patterns
-5. Verify initial capacity for expected data size
+If no constructor escape exists, look for post-construction writes:
 
+- `Field.set(...)` on final fields via `setAccessible(true)`.
+- `Unsafe.putXxx` / VarHandle writes to final storage.
+- Deserialization or cloning paths that fill fields without running the
+  constructor.
 
-## Further Exploration
+These produce stale-or-torn observations that no constructor fix cures;
+the fix is to stop writing finals after construction.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Step 4: distinguish guarantee from hardware luck
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+A passing stress run of a *mutable* twin proves nothing on x86: TSO
+hides missing ordering. To tell theorem from weather, compare against
+the final version under the identical harness. If the final version is
+exact for 3000 rounds *by rule* (JLS 17.5) and the mutable version is
+exact only *by observation*, the mutable one still ships as a data race.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Step 5: check transitivity, not just the field
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+When a final reference looks right but its contents look stale (array
+element wrong, list entry stale), the contents were likely mutated after
+publication or aliased from a caller-owned structure. Copy mutable
+inputs into freshly allocated final storage inside the constructor.
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## Logging tips
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Log the observed value plus construction state: print the final read,
+whether the reader obtained the reference before constructor end, and
+the publication path. `println` output must stay pure ASCII so the
+harness console decodes it; keep any non-ASCII notation in prose only.

@@ -1,126 +1,58 @@
-# Reordering — Why It Exists
+# Why It Exists: Reordering
 
-## The Problem
-Before this concept existed, Java developers had limited options. The original approaches
-had significant drawbacks:
+## The problem it demonstrates
 
-1. **Limited Options**: Early Java versions provided only Hashtable and Vector
-2. **No Standardization**: Each developer created their own ad-hoc solutions
-3. **Poor Performance**: Early implementations lacked modern optimizations
-4. **No Type Safety**: Pre-generics collections required casting from Object
+Lab 01's edges feel optional until you watch their absence: this lab
+removes every edge from the Dekker shape and measures what the machine
+does — the SC-forbidden (0,0) in a large fraction of rounds. The
+anomaly is not a malfunction (the chip is specified this way) and not a
+compiler bug (identical bytecode with a drain reads clean). It is the
+unadorned behavior of fast hardware: buffers and overlap are the
+performance; order is the opt-in.
 
-## Why Was It Created?
+## Why a lab purely about failure
 
-### Original Motivation
-This concept was created to solve specific requirements:
-- Provide a standard, well-tested implementation
-- Offer predictable performance characteristics
-- Support both ordered and unordered access patterns
-- Enable safe concurrent usage (for concurrent variants)
-- Maintain backward compatibility across Java versions
+No-edge programs have no verdicts to teach — only a void where
+intuition was. Filling that void with a counted, reproducible,
+mechanism-identified anomaly (~79% under rendezvous, 0 with a drain,
+0 with edges) converts "the JMM is pedantic" into "the JMM describes
+this counter." Every later fence price (lab 03) and idiom (labs 04-05)
+is justified by this counter: without it, fences look like tax; with
+it, they look like purchase.
 
-### Design Philosophy
-The Java platform designers followed specific principles:
-- **Correctness First**: All implementations must be provably correct
-- **Performance Matters**: Hotspot-optimized with JIT-friendly patterns
-- **API Consistency**: Uniform interfaces across the framework
-- **Backward Compatibility**: Old code must work with new implementations
+## Why Dekker specifically
 
-### Comparison with Alternatives
-Before the Java Collections Framework:
-- **Arrays**: Fixed size, no dynamic growth, no convenience methods
-- **Vector/Hashtable**: Synchronized overhead even in single-threaded use
-- **Custom implementations**: Inconsistent, bug-prone, unoptimized
-- **Third-party libraries**: No standard, portability issues
+Dekker is minimal (two stores, two loads, one forbidden cell) and
+diagnostic (it needs exactly the StoreLoad pair — the one x86 frees).
+Message-passing would teach the wrong lesson on x86 (passes by
+accident: StoreStore preserved); IRIW/WRC would need weak hardware to
+show anything. Dekker fails loudly on the strongest shipping platform,
+which makes it the portable exhibit: if it fires here, weaker hardware
+needs no visit to be feared.
 
-## What Problem Does It Solve Today?
+## Why the rendezvous obsession
 
-### Modern Usage
-This continues to be relevant because it solves:
-- **Dynamic storage**: Automatic resizing adapts to changing data sizes
-- **Fast access**: O(1) average lookup time for hash-based variants
-- **Predictable iteration**: Defined traversal order for ordered variants
-- **Memory efficiency**: Careful design minimizes overhead
+A litmus test is an instrument, and this lab calibrates it in public:
+free-running hides the phenomenon, barriers smear it, volatile spins
+reveal it — same program, rates from ~0% to ~79%. That spread is the
+curriculum's warning about all concurrency testing: collision rate is
+harness-controlled, and green runs from loose harnesses are the most
+dangerous artifact in the field. The lab teaches the instrument
+alongside the physics deliberately.
 
-### Alternative Approaches
-- **Java Stream API**: For functional-style data processing pipelines
-- **Database queries**: When data exceeds available memory
-- **External libraries**: Guava, Eclipse Collections, Apache Commons
-- **Custom implementations**: For specific performance requirements
+## Why three resolutions (volatile, drain, lock)
 
+One fix teaches a rule; three teach a taxonomy. Volatile (ordering)
+and lock (exclusion) are both synchronization with opposite mechanisms
+and identical zeros — the choice between them is the career skill.
+The drain (timing, 0/20000, still racy) teaches the anti-lesson both
+alternatives define themselves against. Release/acquire's failure
+(61-90% in lab 03) then teaches the boundary inside ordering itself:
+pairwise vs total. The five-way comparison is the whole JMM economy in
+one shape.
 
-## Further Exploration
+## The one-sentence version
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+This lab exists to make the invisible routine: watch (0,0) print
+thousands of times, convict the buffer by elimination, and never again
+mistake source order for execution order.

@@ -1,118 +1,67 @@
-# JMM Foundations — Flashcards
+# Flashcards: JMM Foundations
 
-## Card 1: Time Complexity
-**Q**: What is the average and worst-case time complexity of the primary operation?
-**A**: Average O(1), worst-case O(n) (when all elements hash to same bucket)
+Q: What single question does the JMM (JLS 17.4) answer?
+A: Which writes a read is allowed to observe.
 
-## Card 2: Load Factor
-**Q**: What is the default load factor and what does it mean?
-**A**: Default 0.75. Structure resizes when 75% full, balancing time and space.
+Q: State the DRF-implies-SC guarantee in one sentence.
+A: Correctly synchronized (data-race-free) programs exhibit only
+sequentially consistent behaviors.
 
-## Card 3: Resize Factor
-**Q**: By what factor does the backing array grow during resize?
-**A**: 2x for HashMap/HashSet, 1.5x for ArrayList
+Q: What is a data race, precisely?
+A: Two conflicting accesses (same variable, at least one write) not
+ordered by happens-before.
 
-## Card 4: Treeification
-**Q**: At what threshold does a linked list become a red-black tree?
-**A**: TREEIFY_THRESHOLD = 8 entries in a single bucket
+Q: List the six happens-before sources.
+A: Program order; monitor unlock->lock; volatile write->read; thread
+start/join (+ interruption aliveness); final-field freeze; documented
+java.util.concurrent library edges.
 
-## Card 5: Fail-Fast
-**Q**: What is fail-fast behavior and how is it implemented?
-**A**: Iterators throw ConcurrentModificationException if collection is structurally modified during iteration. Implemented via modCount field.
+Q: `t.start()` hb what, exactly?
+A: Everything the new thread does: start() happens-before the thread's
+first action (demo: 1000 writes, checksum 1499500, all visible).
 
-## Card 6: equals() vs hashCode()
-**Q**: What is the contract between equals() and hashCode()?
-**A**: If a.equals(b) then a.hashCode() == b.hashCode(). The reverse is not required.
+Q: `join()` hb what, exactly?
+A: The worker's last action happens-before the join() return (demo:
+500 squares, sum 41541750, all visible after join).
 
-## Card 7: Initial Capacity
-**Q**: What is the default initial capacity?
-**A**: 16 (for HashMap), 10 (for ArrayList)
+Q: Monitor rule in six words?
+A: Unlock happens-before later lock (same monitor); demo: 8 x 250000
+locked increments total exactly 2000000.
 
-## Card 8: Null Keys
-**Q**: Which collections allow null keys?
-**A**: HashMap, LinkedHashMap, WeakHashMap allow one null key. Hashtable, ConcurrentHashMap, TreeMap do not.
+Q: Library edge example with the rule?
+A: CountDownLatch.countDown() happens-before the return from await();
+demo publishes url/timeout/ports through one countDown.
 
-## Card 9: Synchronized Wrapper
-**Q**: How do you make a non-thread-safe collection thread-safe?
-**A**: Collections.synchronizedMap(map), Collections.synchronizedList(list), etc.
+Q: What does causality (JLS 17.4.8) forbid?
+A: Out-of-thin-air values: a read can only see a value someone wrote
+(demo: 100000 racy samples all in [0, 100000], weird == 0).
 
-## Card 10: ConcurrentHashMap Segments
-**Q**: How did ConcurrentHashMap handle concurrency before Java 8?
-**A**: Used segment-based locking — 16 independent locks, each protecting a portion of the map.
+Q: Does causality forbid stale or reordered reads?
+A: No — staleness, repeats, skips, and backward steps are all legal
+without edges; only invented values are banned.
 
+Q: What is "observable behavior" and why does it matter?
+A: Synchronization actions plus external effects; two executions with
+identical observables are indistinguishable, which licenses every
+optimization preserving them.
 
-## Further Exploration
+Q: What did JSR-133 (Java 5, 2004) fix?
+A: Rewrote 17.4 with happens-before; fixed volatile; made volatile-DCL
+correct; gave final fields publication safety; added causality rules.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+Q: Who led JSR-133?
+A: Bill Pugh and Jeremy Manson (spec work) with Doug Lea and the JCP
+concurrency group; Brian Goetz carried it into practice and books.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Q: Race-free but nondeterministic — contradiction?
+A: No: DRF promises SOME interleaving explains the output, never WHICH
+one. Final-state assertions (2000000) are correct; schedule assertions
+are not.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+Q: Which single change breaks LockEdge's exactness?
+A: Any access to `count` outside synchronized (same LOCK): it becomes
+an unordered conflicting access — a data race by definition.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Q: Sleeps fix visibility bugs — true or false?
+A: False: timing changes collision rates, never the verdict. Only an
+hb edge changes unordered to ordered.

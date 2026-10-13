@@ -1,154 +1,64 @@
-# JMM Foundations — Exercises
+# Exercises: JMM Foundations
 
-## Beginner Exercises
+All exercises run on JDK 9+ with no dependencies. Expected values are
+exact: `1499500` (start), `41541750` (join), `2000000` (lock).
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of JMM Foundations.
+## 1. Break the start edge (then restore it)
+
+Move one element write to *after* `t.start()` in `StartEdge`:
+
 ```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
+t.start();
+d.values[0] = -999; // unordered now: no hb covers it
 ```
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
-```
+Run 20 times. The checksum comparison may still pass (the write often
+lands visibly by luck) — explain in hb terms why green proves nothing
+and why the program is now racy regardless of output.
 
-## Intermediate Exercises
+## 2. Consume before join
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+In `JoinEdge`, read `result` and compute the sum *before*
+`worker.join()`, then compare with `41541750`. Repeat 20 times and
+record how often the sum is short. Then move the read after `join()`
+and confirm 20/20 exact. Write one sentence: which hb rule did the
+reordering restore?
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
-```
+## 3. Split the lock
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+In `LockEdge`, guard half the threads with a second lock object
+`LOCK2`. Run and record the count shortfall from `2000000`. Then
+revert to one lock and confirm exactness 3/3 runs. Explain why two
+lock chains cannot compose into one total order (preview of the
+release/acquire lesson in lab 02/03).
 
-## Advanced Exercises
+## 4. Latch vs flag
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+Replace the `CountDownLatch` in `LatchEdge` with a plain boolean
+`ready` spin (`while (!ready) Thread.onSpinWait();`). Run 10 times.
+Then restore the latch and confirm `true` 10/10. Deliverable: the hb
+chain for the latch version as three links
+(write-graph -> countDown -> await-return -> reads).
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 5. Causality probe
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
+Extend `CausalityFloor` to track the minimum and maximum observed
+values across 100000 reader samples. Assert `min >= 0` and
+`max <= 100000` and `weird == 0`. Run 5 times. Then answer: which
+orderings did you observe (repeats? skips? going backward?) and why
+does none of that violate JLS 17.4.8?
 
-## Challenge Exercises
+## 6. Edge-swap challenge
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+Publish the `StartEdge` 1000-element array using each of the four
+edges in turn: start, lock, volatile reference, latch. For each, write
+the 3-link hb chain and confirm checksum `1499500` 5/5 runs. Note
+which version needed the least code change and which you would ship —
+then defend the choice in two sentences (hint: match the edge to the
+thread-lifecycle shape, not to taste).
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+## Done when
 
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+You can draw any demo's hb chain from memory, predict which single-line
+move breaks it, and explain why a green run of the broken version is
+still a race.

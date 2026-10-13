@@ -1,126 +1,58 @@
-# JMM Foundations — Why It Exists
+# Why It Exists: JMM Foundations
 
-## The Problem
-Before this concept existed, Java developers had limited options. The original approaches
-had significant drawbacks:
+## The problem it solves
 
-1. **Limited Options**: Early Java versions provided only Hashtable and Vector
-2. **No Standardization**: Each developer created their own ad-hoc solutions
-3. **Poor Performance**: Early implementations lacked modern optimizations
-4. **No Type Safety**: Pre-generics collections required casting from Object
+Three optimizers — the JIT compiler, the out-of-order CPU, and the
+cache hierarchy — each reorder memory operations freely, and each is
+invisible to the others. Without a contract, "what value does this read
+see" has no answer: the compiler hoists it, the CPU buffers the write
+it should see, coherence delivers some prefix at some time. Portable
+multithreaded Java cannot exist on that basis — every program would be
+correct only on the machine it was tested on.
 
-## Why Was It Created?
+## Why a memory *model* rather than "just synchronize everything"
 
-### Original Motivation
-This concept was created to solve specific requirements:
-- Provide a standard, well-tested implementation
-- Offer predictable performance characteristics
-- Support both ordered and unordered access patterns
-- Enable safe concurrent usage (for concurrent variants)
-- Maintain backward compatibility across Java versions
+Total ordering of every access (sequential consistency everywhere)
+would answer the question at the cost of fencing every load and store —
+roughly an order of magnitude on write-heavy code (lab 03 measures the
+per-store fence at ~10x on x86). The JMM instead prices order per
+relationship: declare happens-before where threads communicate, run
+free everywhere else. The DRF theorem makes the bargain legible — order
+the races and the intuitive model holds — so programmers pay only for
+communication they actually need.
 
-### Design Philosophy
-The Java platform designers followed specific principles:
-- **Correctness First**: All implementations must be provably correct
-- **Performance Matters**: Hotspot-optimized with JIT-friendly patterns
-- **API Consistency**: Uniform interfaces across the framework
-- **Backward Compatibility**: Old code must work with new implementations
+## Why happens-before specifically
 
-### Comparison with Alternatives
-Before the Java Collections Framework:
-- **Arrays**: Fixed size, no dynamic growth, no convenience methods
-- **Vector/Hashtable**: Synchronized overhead even in single-threaded use
-- **Custom implementations**: Inconsistent, bug-prone, unoptimized
-- **Third-party libraries**: No standard, portability issues
+Program order already exists (single-threaded semantics). Each
+synchronization primitive already has a natural cross-thread moment
+(unlock, volatile write, thread start, latch release). Happens-before
+joins those moments into chains with transitivity doing the heavy
+lifting — no new primitive to learn, no hardware vocabulary in user
+code. The model meets programmers where they already synchronize and
+gives those actions portable meaning across x86, ARM, and whatever
+comes next.
 
-## What Problem Does It Solve Today?
+## Why causality had to be added (JSR-133)
 
-### Modern Usage
-This continues to be relevant because it solves:
-- **Dynamic storage**: Automatic resizing adapts to changing data sizes
-- **Fast access**: O(1) average lookup time for hash-based variants
-- **Predictable iteration**: Defined traversal order for ordered variants
-- **Memory efficiency**: Careful design minimizes overhead
+The 1996 model constrained order but left values under-specified:
+clever readings permitted reads to see constants no thread ever wrote
+(speculated writes justifying themselves). That breaks not just sanity
+but security (type-safety reasoning assumes values come from real
+writes). JLS 17.4.8 closes the hole: every value needs a causal chain
+from a write. The `CausalityFloor` probe (zero invented values in
+100000 racy samples) is the empirical shadow of that clause.
 
-### Alternative Approaches
-- **Java Stream API**: For functional-style data processing pipelines
-- **Database queries**: When data exceeds available memory
-- **External libraries**: Guava, Eclipse Collections, Apache Commons
-- **Custom implementations**: For specific performance requirements
+## Why library edges are first-class
 
+If only locks and volatiles ordered threads, every handoff pattern
+(queue, future, latch, executor) would re-litigate the samevolatile
+internals in user code — badly. Making documented library actions hb
+sources lets the JDK implement the fences once (inside AQS volatiles
+and CAS) and lets users compose specified behavior. `LatchEdge` is the
+proof of concept for the entire `java.util.concurrent` design.
 
-## Further Exploration
+## The one-sentence version
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+The JMM exists so that Java programs mean the same thing on every
+platform: order where you declare edges, freedom everywhere else, real
+values always — with the declaration vocabulary you already use.

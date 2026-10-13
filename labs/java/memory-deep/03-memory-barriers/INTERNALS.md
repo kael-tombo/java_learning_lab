@@ -1,150 +1,73 @@
-# Memory Barriers — Internal Implementation
+# Internals: What the JIT Emits per Mode
 
-## Internal Architecture
+## Mode to machine code (x86-64 measured; ARM64 qualitative)
 
-### Storage Layout
-The internal storage follows a specific memory layout designed for efficient access patterns
-and cache utilization. The primary structure uses an array-based backing store with specific
-growth and shrinkage policies.
-
-#### Array/Buffer Details
-- **Initial Capacity**: Default of 16 (HashMap) or 10 (ArrayList), configurable via constructor
-- **Growth Policy**: When capacity is exceeded, the internal array grows by a factor of 2x (HashMap) or 1.5x (ArrayList)
-- **Shrink Policy**: trimToSize() reduces capacity to match current size exactly
-
-### Sentinel/Nil Nodes
-Many linked structures use sentinel nodes to simplify boundary conditions:
-- **Head Sentinel**: Precedes first real element, simplifies insertion at beginning
-- **Tail Sentinel**: Follows last real element, simplifies appending
-- **Nil Leaf**: Red-black trees use sentinel nil leaf to fix insertion/deletion fixup
-
-### State Variables
-
-#### Modification Counter (modCount)
-Each mutating operation increments this counter. Iterators check modCount at the start of
-each iteration operation and throw ConcurrentModificationException if it changed since last check.
-
-#### Structural Fields
-- **size**: Current number of elements stored
-- **capacity**: Current backing array length
-- **threshold**: Capacity * load factor, triggers resize when exceeded
-- **loadFactor**: Configurable density control (default 0.75)
-
-### Internal Algorithms
-
-#### Hash Function
-The supplemental hash function spreads key hashes to reduce collisions:
-```java
-static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
-}
 ```
-This XORs the high 16 bits into the low 16 bits to improve bit distribution.
-
-#### Index Calculation
+plain read/write:      MOV / MOV            (no compiler fence effect on opt.)
+opaque:                MOV / MOV            (atomicity only; no ordering edges)
+acquire read:          MOV + compiler fence (no CPU fence on TSO)
+release write:         MOV + compiler fence (no CPU fence on TSO; ~1.3 ns)
+volatile read:         MOV + compiler fence (~1.3 ns; LDAPR on ARM64)
+volatile write:        XCHG (lock prefix)   (StoreLoad fence; ~10 ns)
+monitor enter/exit:    acquire / release around body + lock-word atomics
 ```
-index = (capacity - 1) & hash
+
+`PrintAssembly` (hsdis) shows the ladder's big step directly: the
+volatile store path alone contains the locked instruction. Everything
+else differs only in compiler-barrier annotations invisible in the
+disassembly — which is why microbenchmarks are the honest way to price
+the small steps and why verdict tests (not instruction-gazing) prove
+the ordering.
+
+## Compiler-side movement rules (roach motel, enforced in IR)
+
+- Plain memory operations may be hoisted, sunk, commoned, or eliminated
+  across each other freely within as-if-serial limits.
+- At an acquire (volatile read, monitor entry, `getAcquire`), later
+  memory ops cannot move above it; earlier plain ops MAY move below it
+  (drift in from above). At a release (volatile write, monitor exit,
+  `setRelease`), earlier ops cannot move below it; later plain ops MAY
+  move above it (drift in from below).
+- Opaque operations are atomic but movement-transparent: the JIT treats
+  them like plain accesses for ordering (no pin), unlike volatiles.
+  That single IR distinction is why opaque never publishes.
+- Snippet 4's hoisting hazard is one legal motion: the `data` load
+  drifting above the `flag` spin, with no acquire pin to stop it.
+  Adding volatile/latch/opaque-free acquire inserts the pin.
+
+## Why indexed 1024-slot traffic (harness internals)
+
+- Distinct slots per iteration (`i & 1023`) defeat store-coalescing,
+  load-commoning, and dead-store elimination: every iteration is honest
+  memory traffic, not a register increment the JIT deletes.
+- 1024 ints (4 KB) sit in L1: measurements price fences and L1 hits,
+  not DRAM — fence effects isolated from memory-wall noise.
+- 2M warmup both paths in the same JVM settles frequency scaling and
+  completes TieredCompilation before the 20M measured window; running
+  paths back-to-back cancels drift. First-run-wide spreads are the
+  documented reason, not an excuse to skip warmup.
+
+## VarHandle mode lattice (what each step buys)
+
 ```
-Bitwise AND replaces modulo when capacity is a power of two, which is much faster.
+plain < opaque < release/acquire < volatile < lock(exclusion+order)
+atomic?  N       Y        Y                 Y          Y
+visible? maybe   eventual pairwise-chained   SC-chain   mutual
+ordered? never   never    pairs              total      serialized
+x86 pay  ~1 ns   ~1 ns    ~1.3 ns            ~10 wr     tens of ns
+```
 
-#### Treeification
-When a bucket chain exceeds TREEIFY_THRESHOLD (8), the linked list is converted to a
-red-black tree. This prevents O(n) worst-case lookup for poorly-distributed hash codes.
-The UNTREEIFY_THRESHOLD (6) is lower to prevent oscillation between list and tree.
+Each step adds exactly one guarantee class for its price; skipping a
+step (opaque for publication, release for Dekker) fails structurally,
+not probabilistically. The snippets are placed to exhibit three of the
+four boundaries: plain-vs-volatile (1), release-vs-volatile (3),
+accident-vs-verdict (4), pairwise-vs-total (5).
 
-### Memory Barriers (Concurrent Variants)
-Concurrent variants use specific memory ordering guarantees:
-- **Volatile reads**: volatile fields establish happens-before relationships
-- **CAS operations**: Atomic compare-and-swap for lock-free updates
-- **VarHandle**: Opaque, acquire, release access modes
+## Where fences live in the JDK (library internals)
 
-### Debugging Internals
-- **-XX:+PrintFieldLayout**: Shows object field layout in memory
-- **JHSDB**: HotSpot debugger for inspecting runtime structures
-- **JOL (Java Object Layout)**: Tool for measuring object memory footprint
-
-### Source Code Navigation
-Key internal methods to study in the JDK source:
-- HashMap: putVal(), getNode(), resize(), treeifyBin()
-- ConcurrentHashMap: putVal(), transfer(), addCount()
-- ArrayList: grow(), add(), remove(), subList()
-- LinkedList: linkFirst(), linkLast(), unlink(), node()
-- TreeMap: put(), getEntry(), fixAfterInsertion(), rotateLeft/Right()
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+AQS state volatiles, `StampedLock` validation fences, and atomic-class
+`Unsafe.fullFence` usage are the JDK's own applications of this
+taxonomy — specified edges built from the same cookbook rows user code
+gets via volatile/latch/VarHandle. Application code must not call the
+fence intrinsics directly: same silicon effect, no JMM verdict, no
+portability when ARM needs different placement.

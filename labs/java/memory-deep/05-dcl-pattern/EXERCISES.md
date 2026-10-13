@@ -1,154 +1,72 @@
-# DCL Pattern — Exercises
+# Exercises: DCL Pattern
 
-## Beginner Exercises
+All snippets run on JDK 9+ with no dependencies. Stress shape
+throughout: 16 threads x 10k gets, `CountDownLatch` start gate, assert
+single instance plus `value == 42`. Keep `println` output pure ASCII.
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of DCL Pattern.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
+## 1. Volatile DCL under race (baseline)
+
+Run `VolatileDcl` as given. Expect:
+
+```
+distinct instances: 1
+single instance: true
+fully constructed (value==42): true
 ```
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
+Vary thread count (4, 16, 32) and confirm the assertions hold at each
+level. The guarantee is structural (volatile + monitor edges), never
+timing luck.
+
+## 2. Delete `volatile` (reasoning exercise)
+
+Remove `volatile` from the field and re-run several times. Note that it
+will likely still print 1 instance here — the reorder needs adversarial
+timing you cannot summon on demand. Write the paragraph the run cannot:
+which edge disappeared (volatile write hb later volatile read), and why
+the green output is evidence of nothing. Restore the keyword.
+
+## 3. Drop the recheck (deterministic break)
+
+Run `NoSecondCheck` as given (50 ms constructor sleep, two threads
+behind one gate). Expect:
+
+```
+constructions = 2
+double initialization without recheck: true
+surviving instance constructed: true
 ```
 
-## Intermediate Exercises
+Then restore the locked recheck and show `constructions == 1`. State
+which edge the recheck uses (monitor: first thread's write visible to
+the second thread's locked re-read).
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+## 4. Bloch local-variable shape
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
-```
+Rewrite the getter to read `instance` twice (once per check, no local)
+and confirm identical assertions — then explain what the local buys:
+one fence instead of two, and no check-then-act skew if the field were
+ever reassigned. Keep the local shape in all later exercises.
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+## 5. Holder comparison
 
-## Advanced Exercises
+Run `HolderIdiom` and confirm `constructions == 1` with no volatile and
+no synchronized in user code. Then answer: which lock did the work (JLS
+12.4.2 class-initialization lock, first active use of `LazyHolder`)?
+Name one scenario where you would still need DCL (parameterized
+construction).
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+## 6. Enum comparison
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+Run `EnumSingleton`: confirm 1 instance, `lookup works: true`, and
+`deserialization returns same instance: true`. Then serialize a DCL
+singleton without `readResolve` and show identity forking — the second
+classic singleton killer the enum gets for free (first: reflection,
+where `Constructor.newInstance` on enums throws).
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
+## 7. Synchronized baseline framing
 
-## Challenge Exercises
-
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
-
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
-
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Run `SyncBaseline` and confirm identical assertions. Time both getters
+roughly (framework: ~1 ns volatile read vs ~20 ns uncontended monitor —
+no asserted crossover). Write the shipping rule: below millions of
+calls/second/thread, take the obviously correct accessor.

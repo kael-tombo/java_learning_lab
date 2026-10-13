@@ -1,118 +1,42 @@
-# Reordering — References
+# References: Reordering
 
-## Official Documentation
-- [Java Collections Framework Overview](https://docs.oracle.com/javase/tutorial/collections/)
-- [HashMap JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html)
-- [Java Language Specification, Chapter 17](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)
-- [JEP Index](https://openjdk.org/jeps/0)
+## Normative and architectural sources
 
-## Books
-- **Effective Java, 4th Edition** — Joshua Bloch
-- **Java Concurrency in Practice** — Brian Goetz
-- **Modern Java in Action** — Raoul-Gabriel Urma
-- **Core Java, 12th Edition** — Cay S. Horstmann
-- **Algorithm Design Manual** — Steven Skiena
-- **Introduction to Algorithms (CLRS)** — Cormen, Leiserson, Rivest, Stein
+- JLS 17.4 (Memory Model): the hb rules and DRF guarantee that define
+  which litmus outcomes are *forbidden* (Dekker (0,0) under SC) vs
+  *allowed* (anything unordered) — the verdict side of every snippet.
+- Doug Lea, *JSR-133 Cookbook for Compiler Writers*: barrier placement
+  per hb edge per platform — why volatile closes Dekker and
+  release/acquire does not (lab 03's taxonomy in full).
+- Sewell, Sarkar, Owens, Nardelli, Myreen, "x86-TSO: A Rigorous and
+  Usable Programmer's Model for x86 Multiprocessors" (CACM 2010): the
+  three-pairs-preserved, StoreLoad-free formalization; SPARC TSO
+  heritage discussed therein.
+- Tomasulo, "An Efficient Algorithm for Exploiting Multiple Arithmetic
+  Units" (IBM JRD 1967): reservation stations and in-order commit for
+  the 360/91 — the OoO execution layer.
 
-## Research Papers
-- "The Java Memory Model" — Manson, Pugh, Adve (POPL 2005)
-- "Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms" — Michael, Scott (1996)
-- "A Scalable Lock-Free Hash Table" — Triplett, McKenney, Walpole, Wienand (2010)
+## ARM / POWER architecture (qualitative references)
 
-## Blog Posts and Articles
-- [Baeldung: Java Collections Guide](https://www.baeldung.com/java-collections)
-- Inside Java: Collections Framework
-- [Shipilev: Java Memory Model Pragmatics](https://shipilev.net/blog/2016/close-encounters-of-jmm-kind/)
-- [Mechanical Sympathy](https://mechanical-sympathy.blogspot.com/)
+- ARM Architecture Reference Manual (ARMv8): `LDAPR`/`STLR` acquire/
+  release semantics, `DMB` full barrier, multi-copy-atomicity of ARMv8.
+- POWER ISA: `lwsync` vs `sync` (lightweight vs full cumulative) —
+  the weakest-shipping-model exhibit (IRIW/WRC litmus in the research
+  literature, e.g., Sarkar et al. on POWER semantics).
+- Preshing, "Memory Ordering at Compile Time" and "Acquire and Release
+  Semantics": practitioner-grade treatment of compiler/CPU reorderings
+  with litmus examples matching this lab's shapes.
 
-## Tools
-- [JMH (Java Microbenchmark Harness)](https://github.com/openjdk/jmh)
-- [JOL (Java Object Layout)](https://openjdk.org/projects/code-tools/jol/)
-- [async-profiler](https://github.com/async-profiler/async-profiler)
-- [VisualVM](https://visualvm.github.io/)
-- [Eclipse MAT](https://eclipse.dev/mat/)
-- [GCeasy](https://gceasy.io/)
+## JVM and testing
 
-## Related Labs
-- Previous lab in module
-- Next lab in module
-- Performance Deep Dive labs
-- Concurrency Deep Dive labs
-- JVM Deep Dive labs
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Aleksey Shipilev, "Java Memory Model Pragmatics" (talk + notes):
+  rendezvous design for litmus tests and why barriers phase badly —
+  the methodology behind snippets 1-3 and 5.
+- OpenJDK jcstress (`github.com/openjdk/jcstress`): the standard
+  harness for promoting hand-rolled Dekker drivers to histograms.
+- `src/java.base/share/classes/java/lang/invoke/VarHandle.java`
+  (OpenJDK): `getAcquire`/`setRelease`/`getOpaque` specifications used
+  in snippet 4 and lab 03's snippet 5.
+- `src/java.base/share/classes/java/util/concurrent/locks/LockSupport.java`
+  (OpenJDK): `parkNanos`/`onSpinWait` mechanics behind the drain test
+  and the rendezvous spins.

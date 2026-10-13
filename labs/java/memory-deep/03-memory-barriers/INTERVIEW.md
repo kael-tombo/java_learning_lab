@@ -1,50 +1,65 @@
-# Interview Questions: Memory Barriers
+# Interview: Memory Barriers
 
-## Company-Specific Focus
+## Q: Name the four barriers and assemble the three orderings.
 
-### Google
-- Memory barrier: CPU instruction that enforces ordering constraints
-- Barrier types: LoadLoad, StoreStore, LoadStore, StoreLoad
-- Volatile barrier: how volatile inserts memory barriers
+A: LoadLoad, LoadStore, StoreStore, StoreLoad (JSR-133 cookbook).
+Acquire = LoadLoad + LoadStore after the op; release = LoadStore +
+StoreStore before it; SC adds StoreLoad after each volatile store —
+the Dekker fence, the expensive one (~10 ns on x86).
 
-### Microsoft
-- Memory barriers in Java vs .NET: Thread.MemoryBarrier()
-- x86 vs ARM: different barrier requirements
+## Q: State the roach-motel rule and its publication consequence.
 
-### Amazon
-- StoreLoad barrier: most expensive, required for volatile writes
-- LoadLoad barrier: prevents loads from being reordered with earlier loads
+A: Plain ops check in, never out: acquire pins successors (predecessors
+may drift in from above); release pins predecessors (successors may
+drift in from below). Consequence: `data`-before-`flag` publication is
+safe (release keeps the prefix ordered), but observation-after-the-fact
+is unordered — the motel admits traffic, it does not dispatch it.
 
-### Meta
-- JMM mapping to barriers: how volatile read/write maps to barrier instructions
-- Barrier elimination: JIT can remove redundant barriers
+## Q: Price the x86 ladder from this lab's measurements.
 
-### Apple
-- ARM barriers: DMB (Data Memory Barrier), DSB (Data Synchronization Barrier)
-- x86 barriers: MFENCE, LFENCE, SFENCE
+A: Plain stores ~1 ns; release (`lazySet`) ~1.3-1.4 ns rock-stable;
+volatile stores ~10-18 ns (XCHG StoreLoad fence); volatile reads ~1.3
+ns vs plain ~1 ns (acquire nearly free on TSO). Quote ratios (>3x
+write fence, <5x read parity, >3x release saving) and fence counts
+(0/0/1) — never absolutes — because nanoseconds are platform-relative.
 
-### Oracle
-- JMM memory models: mapping to hardware memory barriers
-- Volatile barrier insertion: compiler inserts barriers before/after volatile operations
-- Final field semantics: barrier in constructor to prevent reordering of final field stores
+## Q: lazySet vs set — when is each correct?
 
-## LeetCode-Related Questions
-| LC Problem | Difficulty | Companies | Notes |
-|------------|------------|-----------|-------|
-| (No direct LC problems — barriers are a hardware/JVM concept) |
+A: `lazySet` (release) where a one-directional chain suffices
+(sequencing, pipelines — lab 02's 50000-intact chain) at ~1.3 ns;
+`set` (volatile) where a total order is needed (Dekker, flags guarding
+data) at ~10 ns. Same eventual visibility, different ordering
+contract, ~8x gap — match the mode to the shape.
 
-## Real Production Scenarios
-- **Netflix**: Missing barrier on ARM processor caused stale reads in a concurrent counter
-- **LinkedIn**: Overuse of volatile caused unnecessary StoreLoad barriers hurting performance
+## Q: Plain message-passing passes 0/2000. Ship it?
 
-## Interview Patterns & Tips
-- **StoreLoad**: most expensive barrier, needed for volatile writes on x86
-- **LoadLoad/LoadStore**: cheaper, part of volatile read
-- **Barrier coarsening**: JIT merges adjacent barriers
+A: No: verdict still `race`. TSO preserves StoreStore (accident), the
+compiler may hoist the data read above the spin, ARM may reorder the
+stores. Output identical to the volatile version, guarantee absent —
+convert the flag (volatile/latch) and change the verdict while the
+output stays put.
 
-## Deep Dive Questions
-- **Barrier types**: Explain LoadLoad, StoreStore, LoadStore, StoreLoad
-- **x86 barriers**: What is the default x86 memory ordering model? (TSO)
-- **ARM barriers**: What is the ARM memory model?
-- **Volatile barrier**: What barriers does volatile read/write insert on x86?
-- **Barrier elimination**: When can the JIT remove memory barriers?
+## Q: Release/acquire Dekker races at 61-90%. Why, structurally?
+
+A: Pairwise chains do not compose into a total order: each
+release->acquire pair orders locally while the cross observations slip
+through the store buffers (on x86 both compile to bare MOVs). Only
+StoreLoad fences on both sides (volatile, 0/20000) or exclusion (lock,
+0/20000) close Dekker. Ordering modes are not a strength ladder where
+"better sounding" suffices.
+
+## Q: What is opaque, and where does it belong?
+
+A: Atomic + eventually visible + unordered (Java 9 VarHandle): no
+barrier in either direction. Progress counters and lossy statistics
+only — never publication (no StoreStore), never guarding flags (no
+LoadLoad/LoadStore). Below release, above plain (which additionally
+tears and stales indefinitely).
+
+## Q: How do you test barrier code?
+
+A: Timing paths warmed 2M in-JVM, measured 20M back-to-back over
+indexed 1024-slot traffic, asserting ratios (>3x, <5x) — never
+absolutes, never cold, never single-location loops. Verdict paths
+(2000/20000 rounds) asserting zero vs nonzero. Print pure ASCII;
+`String.format("%.2f", ...)` exactly as the snippets do.

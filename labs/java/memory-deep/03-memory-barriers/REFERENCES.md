@@ -1,118 +1,51 @@
-# Memory Barriers — References
+# References: Memory Barriers
 
-## Official Documentation
-- [Java Collections Framework Overview](https://docs.oracle.com/javase/tutorial/collections/)
-- [HashMap JavaDoc](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html)
-- [Java Language Specification, Chapter 17](https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html)
-- [JEP Index](https://openjdk.org/jeps/0)
+## Normative sources
 
-## Books
-- **Effective Java, 4th Edition** — Joshua Bloch
-- **Java Concurrency in Practice** — Brian Goetz
-- **Modern Java in Action** — Raoul-Gabriel Urma
-- **Core Java, 12th Edition** — Cay S. Horstmann
-- **Algorithm Design Manual** — Steven Skiena
-- **Introduction to Algorithms (CLRS)** — Cormen, Leiserson, Rivest, Stein
+- JLS 17.4 (Memory Model): hb rules, DRF guarantee (17.4.3-17.4.5),
+  causality (17.4.8) — the verdicts every snippet asserts.
+- JLS 17.5 and 17.7 (final fields; non-atomic treatment): the adjacent
+  edges (freeze) and the tearing rules that place opaque above plain —
+  full treatment in lab 04.
+- Doug Lea, *JSR-133 Cookbook for Compiler Writers* (2004): the
+  LoadLoad/LoadStore/StoreStore/StoreLoad taxonomy, acquire/release/SC
+  assembly, and roach-motel movement — the primary source for this
+  lab's THEORY and ARCHITECTURE.
+- JSR-133 / Manson-Pugh-Adve, "The Java Memory Model" (POPL 2005):
+  the specification behind the cookbook's lowering targets.
 
-## Research Papers
-- "The Java Memory Model" — Manson, Pugh, Adve (POPL 2005)
-- "Simple, Fast, and Practical Non-Blocking and Blocking Concurrent Queue Algorithms" — Michael, Scott (1996)
-- "A Scalable Lock-Free Hash Table" — Triplett, McKenney, Walpole, Wienand (2010)
+## Books and guides
 
-## Blog Posts and Articles
-- [Baeldung: Java Collections Guide](https://www.baeldung.com/java-collections)
-- Inside Java: Collections Framework
-- [Shipilev: Java Memory Model Pragmatics](https://shipilev.net/blog/2016/close-encounters-of-jmm-kind/)
-- [Mechanical Sympathy](https://mechanical-sympathy.blogspot.com/)
+- Brian Goetz et al., *Java Concurrency in Practice* (2006): chapter
+  16 (JMM) and chapter 3 (visibility/publication) — the practitioner
+  companion; safe-publication patterns priced by this lab's ladder.
+- Nitsan Wakart, "The volatile read/write cost" and related
+  mechanical-sympathy notes: independent x86 measurements in the same
+  ladder shape (plain ~1 ns, fenced stores an order up, reads cheap).
+- Jeff Preshing, "Acquire and Release Semantics" / "Memory Ordering at
+  Compile Time": cookbook-equivalent treatment with C++ litmus that
+  maps directly onto VarHandle modes.
 
-## Tools
-- [JMH (Java Microbenchmark Harness)](https://github.com/openjdk/jmh)
-- [JOL (Java Object Layout)](https://openjdk.org/projects/code-tools/jol/)
-- [async-profiler](https://github.com/async-profiler/async-profiler)
-- [VisualVM](https://visualvm.github.io/)
-- [Eclipse MAT](https://eclipse.dev/mat/)
-- [GCeasy](https://gceasy.io/)
+## OpenJDK sources (JDK 9+ layout, stable paths)
 
-## Related Labs
-- Previous lab in module
-- Next lab in module
-- Performance Deep Dive labs
-- Concurrency Deep Dive labs
-- JVM Deep Dive labs
+- `src/java.base/share/classes/java/lang/invoke/VarHandle.java`:
+  `getOpaque`/`setOpaque`/`getAcquire`/`setRelease`/volatile
+  specifications — the mode lattice used in snippets 3 and 5.
+- `src/java.base/share/classes/java/util/concurrent/atomic/AtomicIntegerArray.java`:
+  `set` (volatile) vs `lazySet` (release) — snippet 1-3's comparison
+  surface.
+- `src/java.base/share/classes/java/util/concurrent/locks/StampedLock.java`:
+  documented optimistic/acquire-Fence validation — JDK-internal fence
+  application of the same taxonomy.
+- `src/java.base/share/classes/java/util/concurrent/ConcurrentHashMap.java`
+  (table volatiles) and `.../locks/AbstractQueuedSynchronizer.java`
+  (state volatiles/CAS): production release/acquire chains of the lab
+  02 snippet-4 shape, at scale.
 
+## Testing and tooling
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- OpenJDK jcstress (`github.com/openjdk/jcstress`): verdict
+  histograms for snippets 4-5 shapes; the correct promotion path for
+  hand-rolled 2000/20000-round drivers.
+- `-XX:+PrintAssembly` with hsdis: visual confirmation of the ladder's
+  big step (locked op on the volatile-store path, bare MOVs elsewhere).

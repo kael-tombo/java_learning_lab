@@ -1,147 +1,66 @@
-# Memory Barriers
+# Memory Barriers — README
 
-## Overview
-LoadLoad/LoadStore/StoreLoad/StoreStore barriers, x86 MFENCE/LFENCE/SFENCE, ARM DMB/DSB, JVM barrier insertion
+Happens-before edges (lab 01) *are* barrier requirements: every rule
+compiles to "emit this fence here" (compiler plus CPU). This lab opens
+that lowering: the four barrier types, the acquire/release/SC assembly
+from them, the roach-motel movement rule, the measured x86 price
+ladder, and the two boundary exhibits — plain message-passing that
+passes by accident (0/2000, still a race) and release/acquire Dekker
+that races at 61-90%.
 
-## Learning Objectives
-- Understand the internal mechanics of Memory Barriers
-- Implement working code that demonstrates core concepts
-- Analyze performance characteristics and trade-offs
-- Apply this knowledge in real-world Java applications
+## What you will learn
 
-## Prerequisites
-- Java 21+
-- Basic understanding of Java collections framework
-- Familiarity with data structures and algorithms
+- The JSR-133 cookbook taxonomy: LoadLoad, LoadStore, StoreStore,
+  StoreLoad — which pair each forbids and which JMM job it serves.
+- Acquire = LoadLoad + LoadStore *after*; release = LoadStore +
+  StoreStore *before*; sequential consistency adds StoreLoad *after*
+  each volatile store (the expensive one, the Dekker fence).
+- Roach-motel movement: plain operations drift *into* sync regions,
+  never *out* — publication safe, after-the-fact observation unordered.
+- The measured x86 ladder: plain ~1 ns, release ~1.3-1.9 ns, volatile
+  write ~10 ns, volatile read ~1.3 ns (ratios within one JVM; absolutes
+  vary, fence counts do not).
+- `lazySet` (release) vs `set` (volatile): same eventual visibility
+  class, ~8x price gap, different ordering contract.
+- Opaque: atomic plus eventually visible plus *unordered* — counters
+  and statistics only, never publication, never flags.
+- Why release/acquire chains order pairs but not systems (Dekker still
+  fires), and why accidental green (plain MP 0/2000) means nothing.
 
-## Lab Structure
-This micro-lab follows the standard 24-file pedagogical structure with 7 subdirectories for hands-on work.
+## The five runnable demos (JDK 9+, verified on JDK 23, x86-64)
 
-## Quick Start
-1. Navigate to the source directory: `src/main/java/com/javalab/03/`
-2. Review the main implementation class
-3. Run tests using: `mvn test` or `gradle test`
-4. Complete the exercises in EXERCISES.md
-5. Build the MINI_PROJECT to cement understanding
+| # | Class | Comparison | Verdict |
+|---|-------|-----------|---------|
+| 1 | `WriteFenceCost` | plain vs volatile stores, 20M | `volatile > 3x plain: true` (~1 ns vs ~10 ns) |
+| 2 | `ReadCheap` | plain vs volatile reads, 20M | `volatile < 5x plain: true` (~1.0 vs ~1.3 ns) |
+| 3 | `ReleaseCheaper` | `set` vs `lazySet`, 20M | `>3x cheaper: true` (~10 ns vs ~1.3 ns) |
+| 4 | `AccidentalCorrect` | plain message-passing, 2000 rounds | `0/2000`, AND verdict still `race` |
+| 5 | `RaDekker` | release/acquire Dekker, 20000 | anomalies persist (`bad > iters/100: true`, 61-90%) |
 
-## File Index
-| File | Description |
-|------|-------------|
-| README.md | Overview and navigation |
-| THEORY.md | Comprehensive theoretical foundation |
-| MATH_FOUNDATION.md | Mathematical prerequisites |
-| CODE_DEEP_DIVE.md | Detailed code walkthroughs |
-| EXERCISES.md | Practice problems with solutions |
-| QUIZ.md | Self-assessment questions |
-| ARCHITECTURE.md | Design and architectural considerations |
-| SECURITY.md | Security implications |
-| PERFORMANCE.md | Performance characteristics and optimization |
-| REFACTORING.md | Improving existing code |
-| DEBUGGING.md | Debugging strategies and tools |
-| COMMON_MISTAKES.md | Pitfalls and anti-patterns |
-| STEP_BY_STEP.md | Guided tutorial-style implementation |
-| VISUAL_GUIDE.md | Diagrams and visual explanations |
-| INTERNALS.md | Under-the-hood implementation details |
-| HOW_IT_WORKS.md | Step-by-step mechanical explanation |
-| MENTAL_MODELS.md | Analogies and mental frameworks |
-| HISTORY.md | Evolution across Java versions |
-| WHY_IT_MATTERS.md | Practical importance in real-world development |
-| WHY_IT_EXISTS.md | Historical context and motivation |
-| REFERENCES.md | Further reading and resources |
-| REFLECTION.md | Guided self-reflection prompts |
-| INTERVIEW.md | Common interview questions |
-| FLASHCARDS.md | Spaced-repetition learning cards |
+Timing snippets compare within one JVM (warm both paths, then measure)
+with indexed traffic defeating JIT elimination — machine drift cannot
+confound the ordering, and ratios port while nanoseconds do not.
 
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| MINI_PROJECT/ | Small hands-on project |
-| REAL_WORLD_PROJECT/ | Production-scale project |
-| CHALLENGE/ | Advanced challenge problems |
-| TESTS/ | Unit and integration tests |
-| BENCHMARK/ | Performance benchmarks |
-| DIAGRAMS/ | Visual aids and architecture diagrams |
-| SOLUTION/ | Solutions to exercises and projects |
+## How to work this lab
 
-## Time Estimate
-- Reading: 30-45 minutes
-- Exercises: 45-60 minutes
-- Mini Project: 60-90 minutes
-- Total: 2-3 hours
+1. Read `THEORY.md` (taxonomy table, roach motel, x86 mapping with the
+   ladder, why release/acquire fails Dekker, opaque).
+2. Read `CODE_DEEP_DIVE.md` with sources; note the harness pattern
+   (warmup, indexed slots, in-JVM comparison, ratio assertions).
+3. Run 1-3 and record your machine's three ratios; run 4-5 and record
+   the two verdicts (accidental zero, persistent nonzero).
+4. Do `EXERCISES.md`: rebuild the ladder yourself, convert snippet 4
+   to volatile/latch and feel nothing change in output while everything
+   changes in verdict, convert snippet 5 to volatile/lock and watch
+   61-90% fall to zero.
+5. Finish with `QUIZ.md`, `INTERVIEW.md`, `REFLECTION.md`.
 
+## Where this fits
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Previous: `01-jmm-foundations` (edges as contract), `02-reordering`
+  (StoreLoad anomaly as motive).
+- Next: `04-final-semantics` (freeze edge as barrier case study),
+  `05-dcl-pattern` (volatile publication as the idiom this ladder
+  prices).
+- Carry forward: the taxonomy table, the ladder, and the sentence
+  "chains order pairs, not systems."

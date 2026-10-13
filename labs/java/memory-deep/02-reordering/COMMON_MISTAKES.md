@@ -1,123 +1,64 @@
-# Reordering — Common Mistakes
+# Common Mistakes: Reordering
 
-## Mistake 1: Incorrect equals/hashCode
-**Problem**: Custom objects used without properly overriding equals() and hashCode().
-**Effect**: Keys not found, duplicates occur, behavior unpredictable.
-**Fix**: Always override both methods. Use Objects.hash().
+## 1. Testing races without rendezvous
 
-## Mistake 2: Assuming Insertion Order
-**Problem**: Depending on specific iteration order without checking contract.
-**Effect**: Works in testing, fails in production with different implementation.
-**Fix**: Use LinkedHashMap/LinkedHashSet when order matters.
+Free-running racers phase-lock or never collide: both threads loop at
+their own pace and the overlap window rarely aligns. Barrier phasing
+(`CyclicBarrier` per iteration) aligns *starts* but spreads execution
+through the barrier's own synchronization. The lab's volatile-flag
+rendezvous (`go`/`done1`/`done2` spins with `onSpinWait`) aligns the
+store;load windows tightly enough for ~79% anomaly rates. Copy the
+rendezvous design; do not improvise it.
 
-## Mistake 3: Concurrent Modification
-**Problem**: Modifying non-thread-safe collection while iterating.
-**Effect**: ConcurrentModificationException at runtime.
-**Fix**: Use concurrent collections or synchronize externally.
+## 2. Calling timing a fix
 
-## Mistake 4: Using Mutable Keys
-**Problem**: Modifying key object after insertion into hash-based collection.
-**Effect**: Object in wrong bucket, cannot be found, memory leaks.
-**Fix**: Use immutable keys (String, Integer, records).
+`DelayDrains` (1 ns `parkNanos` between store and load) prints 0/20000
+— and fixes nothing. The program is still racy (no hb edge), and on
+ARM the anomaly can survive the delay via compiler/CPU reorderings.
+Timing changes *rates*; only edges (volatile, monitor) change the
+*verdict*. Ship snippet 2 or 5, never snippet 3.
 
-## Mistake 5: Ignoring Initial Capacity
-**Problem**: Default capacity for large expected dataset.
-**Effect**: Multiple resizing operations degrade performance.
-**Fix**: Use constructor with initial capacity: new HashMap<>(expectedSize).
+## 3. Assuming x86 does not reorder
 
-## Mistake 6: LinkedList Random Access
-**Problem**: Using LinkedList.get(index) in a loop.
-**Effect**: O(n^2) time complexity instead of O(n).
-**Fix**: Use iterator or ArrayList for random access.
+It does exactly one pair: StoreLoad. Dekker *is* that pair, which is
+why snippet 1 fires at tens of percent on the "strong" platform. Any
+argument of the form "x86 is TSO so plain code is fine" confuses three
+preserved pairs with four — the missing one is the one Dekker needs.
 
-## Mistake 7: Stream Overuse
-**Problem**: Complex stream pipelines on large collections.
-**Effect**: Poor performance, high memory usage.
-**Fix**: Use simple loops for critical paths.
+## 4. Assuming ARM behaves like x86, only slower
 
-## Mistake 8: Not Trimming After Bulk Load
-**Problem**: Keeping oversized internal array after bulk loading.
-**Effect**: Wasted memory.
-**Fix**: Call trimToSize() after bulk loading.
+ARM frees in principle every pair and charges differently for fences
+(`STLR` release vs `DMB`-fenced store; `LDAPR` acquire loads). Code
+that is accidentally green on x86 (plain message-passing, snippet
+analogue in lab 03: 0/2000) can fail on ARM where StoreStore is not
+preserved. The volatile fix is portable; the accident is not.
 
-## Mistake 9: Assuming Thread Safety
-**Problem**: Using HashMap in multi-threaded context.
-**Effect**: Data corruption, infinite loops (pre-Java 8), lost updates.
-**Fix**: Use ConcurrentHashMap for concurrent access.
+## 5. Release/acquire as a volatile substitute for Dekker
 
+`setRelease`/`getAcquire` compose one-directional chains (lab 02
+snippet 4's 50000-intact message-passing) but do not build the total
+order Dekker demands. Lab 03's snippet 5 measures it: 61-90% anomalies
+under release/acquire — race intact. Use release/acquire for
+pairwise handoff chains, volatile/locks where a total order is needed.
 
-## Further Exploration
+## 6. Locking the wrong granularity
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+`MonitorFix` puts each side's store;load pair inside one
+`synchronized (LOCK)` block. Locking only the stores (or using two
+different locks) leaves the cross pair overlapping — anomaly intact.
+Exclusion covers the critical section only; the *pair* must be inside.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 7. Reading anomaly counts as benchmarks
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+~79% vs ~36% across runs reflects rendezvous tightness, core count,
+frequency scaling, and power state — not code quality. The portable
+signal is the verdict: nonzero (racy) vs zero (ordered). Assert
+`bad > iters / 100` for the anomaly and `bad == 0` for the fixes, as
+the snippets do; never assert an exact count.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 8. Hoisting paranoia: blaming the JIT for a buffer phenomenon
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+On this platform the compiler is provably innocent (snippet 3's
+elimination argument). Blaming hoisting leads to fixes aimed at the
+wrong layer (disabling JIT, `-Xint` validation) that "work" by slowing
+everything until buffers drain — the most expensive non-fix available.

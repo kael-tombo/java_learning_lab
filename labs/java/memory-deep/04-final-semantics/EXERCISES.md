@@ -1,154 +1,75 @@
-# Final Field Semantics — Exercises
+# Exercises: Final Field Semantics
 
-## Beginner Exercises
+All snippets run on JDK 9+ with no dependencies. Keep `println` output
+pure ASCII.
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of Final Field Semantics.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
+## 1. Freeze through a race (baseline)
+
+Run `FinalViaRace` as given: 3000 rounds, plain racy static, assert
+`a`, `s`, `arr[0]`, `arr[1]` exact every round. Confirm output:
+
+```
+rounds = 3000
+all finals (incl. transitive array) exact, every round: true
 ```
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
+Then raise to 10000 rounds and confirm it stays exact. This is the
+guarantee; more rounds should not shake it.
+
+## 2. Break the transitivity deliberately
+
+Modify `Holder` to alias a caller-owned array instead of allocating:
+
 ```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
+Holder(int a, String s, int[] ext) {
+    this.a = a;
+    this.s = s;
+    this.arr = ext;  // no defensive copy
+}
 ```
 
-## Intermediate Exercises
+Mutate `ext[0]` after publication from the writer thread and observe
+the reader seeing the mutation. Restore the defensive copy and confirm
+exactness returns. Write down which version the freeze protects.
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+## 3. Wedge the escape window
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
+Run `ThisEscape` as given and confirm the deterministic read:
+
+```
+observed during construction window = 0
+default value observed (freeze not yet run): true
+final value after construction = 42
 ```
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+Then move `published = this` to the last constructor line (after the
+store and sleep) and show the early reader now blocks until 42 is
+stored. No timing luck should remain in either direction.
 
-## Advanced Exercises
+## 4. Mutable twin comparison
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+Run `MutableControl` and confirm `stale rounds = 0/3000` on this
+machine. Then write a short paragraph: why does this identical-looking
+green run carry zero guarantee while exercise 1 carries a JLS guarantee?
+Name the hardware property (TSO + coherence) doing the hiding.
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 5. Record with mutable contents
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
+Build a record holding an `ArrayList`, publish it through the same racy
+static, mutate the list after publication, and show the reader observing
+the mutation. Swap the `ArrayList` for `List.of(...)` and show the
+observation going exact. State the rule: finals publish the reference;
+immutability of the referent is a separate requirement.
 
-## Challenge Exercises
+## 6. String handoff stress
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+Run `StringSharing` for 3000 rounds, then change the payload length
+(short string vs 100-char repeat) and confirm intactness is independent
+of length. Identify the two final fields (`value`, `coder`) responsible.
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+## 7. Reflection is outside the model (read-only)
 
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Using a scratch program, reflectively set a final `int` after
+construction and read it from a second thread. Record whatever you
+observe, then delete the program: the point is that the outcome is
+unspecified and version-dependent, so no assertion may rely on it.

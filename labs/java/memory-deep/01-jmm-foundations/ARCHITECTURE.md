@@ -1,144 +1,76 @@
-# JMM Foundations — Architecture
+# Architecture: Where the JMM Sits in the Stack
 
-## Design Goals
-1. **Performance**: Optimized for average-case O(1) operations
-2. **Memory Efficiency**: Minimal per-element overhead
-3. **API Consistency**: Follows Java Collections Framework interfaces
-4. **Fail-Fast Safety**: Detects concurrent modification during iteration
-5. **Serialization**: Supports standard Java serialization mechanism
+## The five-layer picture
 
-## Component Diagram
 ```
-+--------------------------------------------------+
-|                   Interface                        |
-|         Map<K,V> / Collection<E>                   |
-+------------------------+-------------------------+
-                         | implements
-+------------------------v-------------------------+
-|              Abstract Class                        |
-|        AbstractMap<K,V> / AbstractCollection<E>    |
-+------------------------+-------------------------+
-                         | extends
-+------------------------v-------------------------+
-|              Concrete Class                        |
-|           MainImplementation<K,V>                  |
-+--------------------------------------------------+
-| - table: Node<K,V>[]                              |
-| - size: int                                       |
-| - modCount: int                                   |
-| - threshold: int                                  |
-| - loadFactor: float                               |
-+--------------------------------------------------+
-| + put(K,V): V                                     |
-| + get(K): V                                       |
-| + remove(K): V                                    |
-| + containsKey(K): boolean                         |
-| + keySet(): Set<K>                                |
-| + values(): Collection<V>                         |
-| + entrySet(): Set<Map.Entry<K,V>>                 |
-+--------------------------------------------------+
+Java source (your code: locks, volatiles, starts, joins, latches)
+  v  javac (bytecode; preserves synchronization actions as such)
+JIT compilers C1/C2 (reorder freely EXCEPT across hb actions)
+  v  hardware (out-of-order issue, store buffers, invalidate queues)
+Cache coherence MESI (eventual delivery; ordering NOT guaranteed)
+  ==> observed behavior, constrained ONLY by happens-before edges
 ```
 
-## Package Structure
-```
-com.javalab.lab01
-+-- MainImplementation.java
-+-- MainImplementationTest.java
-```
+The JMM is the contract between the top layer and everything below:
+the implementation may do anything invisible, and must honor every hb
+edge. There is no other constraint. That asymmetry is the whole design.
 
-## Extension Points
-- Subclassing for specialized behavior
-- Custom equals/hashCode on key objects
-- Comparator injection for sorted variants
-- Serialization proxy pattern for custom serialization
+## What each layer may and may not move
 
-## Architectural Decisions
+- **javac**: mostly faithful; emits `monitorenter/exit`,
+  `getfield/putfield` with volatile flags, `invoke Thread.start`.
+  It does not reorder across synchronization actions.
+- **C1/C2 JIT**: aggressive within a thread (inlining, hoisting,
+  elimination) under as-if-serial semantics; pinned at synchronization
+  actions. A volatile access or monitor op is a compiler barrier: the
+  JIT will not hoist a load above an acquire or sink a store below a
+  release, and it emits the CPU fence the platform needs.
+- **CPU**: executes out of order around stalls, buffers stores in a
+  per-core FIFO, forwards a core's own pending store to its own loads.
+  Single-threaded code never notices (commit stays in order); other
+  cores notice constantly unless fences drain the buffers.
+- **Coherence (MESI)**: guarantees every write eventually reaches every
+  core and that a single location has a total write order. It does NOT
+  order *different* locations relative to each other. Cross-location
+  order comes only from program fences derived from hb edges.
 
-### Decision 1: Array-Based Backing Store
-Using arrays provides contiguous memory allocation for cache-friendly access,
-O(1) index-based bucket lookup, and simple resize via array copy.
+## Where each hb edge becomes a fence
 
-### Decision 2: Chain-Based Collision Resolution
-Chaining was chosen over open addressing because it provides better cache
-performance under high load, simpler deletion, and more predictable performance.
+- `start()`: the spawning thread's prior writes are flushed to a point
+  the new thread must observe; the JIT emits a release before the
+  native thread creation and the child begins with an acquire.
+- `join()`: symmetric — the worker's writes are released at exit and
+  the joiner acquires on successful join return.
+- Monitor `unlock -> lock`: unlock emits a release (prior critical
+  section stores drain before the lock word releases); lock emits an
+  acquire (later reads cannot move above it). The lock word itself is
+  the rendezvous point both sides agree on.
+- Volatile write -> volatile read: release store plus acquire load,
+  with sequential-consistency fencing after the store on platforms that
+  need it (lab 03 measures the x86 price: the store fence).
+- `CountDownLatch`: implemented on AQS volatiles internally, so
+  `countDown()` chains a volatile write to the `await()` volatile read
+  path — a library edge with the same release/acquire skeleton, no user
+  fences required.
 
-### Decision 3: Power-of-Two Sizing
-Capacities are powers of two enabling fast bitwise index calculation (hash & (capacity-1))
-and simplifying resize rehashing (entries split on hash & oldCapacity).
+## Why this layering matters for the demos
 
+- `StartEdge` (checksum 1499500) works because the start edge crosses
+  all four lower layers at once: nothing below may hide the 1000
+  element writes from the child.
+- `LockEdge` (2M exact increments) works because every unlock/lock pair
+  re-rendezvouses the two sides through the same lock word; the chain
+  of 2M edges is one total order regardless of core count.
+- `CausalityFloor` shows the layer below the contract: with no edge at
+  all, coherence still delivers only real written values (0..100000),
+  in arbitrary staleness and order. Coherence gives *values*;
+  happens-before gives *order*. The lab separates the two deliberately.
 
-## Further Exploration
+## Design consequences
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Order is opt-in per relationship, not global: you pay (in fences)
+  exactly for the edges you declare, nowhere else.
+- Library edges reuse the same skeleton: queues, futures, executors
+  all reduce to volatile/cas chains inside `java.util.concurrent`.
+- Portability is structural: the same hb edge compiles to `XCHG` on
+  x86, `STLR/LDAPR` plus fences on ARM64 — your source does not change.

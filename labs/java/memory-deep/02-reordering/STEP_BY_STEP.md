@@ -1,161 +1,60 @@
-# Reordering — Step-by-Step Implementation
+# Step by Step: Measure, Eliminate, Fix
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab02/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab02/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Goal
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
+Five runs, five verdicts: nonzero (anomaly), zero (volatile), zero
+(drain — diagnostic), intact chain (release/acquire), zero (monitor).
+Under an hour on any x86-64; verdicts portable beyond it.
 
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab02;
+## Step 1: run the anomaly (nonzero)
 
-import java.util.Objects;
+1. Open `DekkerAnomaly`: two daemon racers, volatile `go`/`done`
+   handshake, plain `x`/`y`, main driver over 20000 rounds.
+2. Compile and run with warmed JVM (one throwaway run first).
+3. Confirm `forbidden (0,0) outcomes = bad/20000` with large `bad` and
+   `reordering observed on real hardware: true`.
+4. Record your count: this machine's signature. Do not compare it with
+   anyone else's — compare only later verdicts on this machine.
 
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
+## Step 2: volatile fix (zero by ordering)
 
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+1. Open `VolatileFix`: identical except `static volatile int x, y`.
+2. Run three times; confirm `0/20000` and `volatile ordering holds:
+   true` every time.
+3. Note what did *not* change: threads, handshake, iteration count.
+   The delta is two keywords — ordering semantics, nothing else.
 
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
+## Step 3: drain test (zero by timing — diagnostic only)
 
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
+1. Open `DelayDrains`: snippet 1 plus `parkNanos(1)` between each
+   store and load.
+2. Run; confirm `0/20000` and `drain delay eliminates: true`.
+3. Write the elimination sentence: same bytecode, only timing changed,
+   so the buffer (not compiler/CPU) is the x86 mechanism. Then swear
+   the oath: never ship this variant.
 
-## Step 4: Implement Core Operations
+## Step 4: release/acquire chain (intact — sufficient, not universal)
 
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
+1. Open `ReleaseAcquire`: plain `data` plus `FLAG.setRelease` /
+   `FLAG.getAcquire` over 50000 sequence steps.
+2. Run; confirm `release->acquire chain intact over 50000: true`.
+3. State the scope aloud: one-directional chains hold — this is the
+   shape release/acquire is *for*. Dekker is not that shape (lab 03
+   snippet 5: 61-90% under the same modes).
 
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
+## Step 5: monitor fix (zero by exclusion)
 
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
+1. Open `MonitorFix`: each store;load pair inside
+   `synchronized (LOCK)`.
+2. Run three times; confirm `0/20000` and `mutual exclusion forbids
+   the anomaly: true`.
+3. Compare with step 2: same zero, different mechanism (no overlap vs
+   fenced overlap). Choose per shape: flags want volatile, shared
+   updates want the lock.
 
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
+## Step 6: lock in the ladder
 
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Fill one card: anomaly nonzero / volatile 0 / drain 0 (not a fix) /
+chain intact / lock 0 — each with its mechanism word (buffer,
+ordering, timing, chaining, exclusion). Carry it to lab 03, which
+prices every row.

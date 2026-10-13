@@ -1,123 +1,61 @@
-# Final Field Semantics — Common Mistakes
+# Common Mistakes: Final Field Semantics
 
-## Mistake 1: Incorrect equals/hashCode
-**Problem**: Custom objects used without properly overriding equals() and hashCode().
-**Effect**: Keys not found, duplicates occur, behavior unpredictable.
-**Fix**: Always override both methods. Use Objects.hash().
+## 1. Publishing `this` from the constructor
 
-## Mistake 2: Assuming Insertion Order
-**Problem**: Depending on specific iteration order without checking contract.
-**Effect**: Works in testing, fails in production with different implementation.
-**Fix**: Use LinkedHashMap/LinkedHashSet when order matters.
+```java
+Leaky() {
+    published = this;  // escape BEFORE the store
+    x = 42;            // freeze comes too late
+}
+```
 
-## Mistake 3: Concurrent Modification
-**Problem**: Modifying non-thread-safe collection while iterating.
-**Effect**: ConcurrentModificationException at runtime.
-**Fix**: Use concurrent collections or synchronize externally.
+Any static install, listener registration, thread start, or callback
+before the final stores lets a reader in through the pre-freeze window.
+The lab demo wedges that window open 300 ms so the early read
+deterministically sees default 0. Fix: store first, publish last.
 
-## Mistake 4: Using Mutable Keys
-**Problem**: Modifying key object after insertion into hash-based collection.
-**Effect**: Object in wrong bucket, cannot be found, memory leaks.
-**Fix**: Use immutable keys (String, Integer, records).
+## 2. Reading "final" as "immutable"
 
-## Mistake 5: Ignoring Initial Capacity
-**Problem**: Default capacity for large expected dataset.
-**Effect**: Multiple resizing operations degrade performance.
-**Fix**: Use constructor with initial capacity: new HashMap<>(expectedSize).
+`final` on a reference publishes the pointer, not the referent. A
+`final ArrayList` shared safely still races on `add`/`get`. The record
+caveat in this lab is the same point: record components are safe, but a
+record wrapping a mutable list leaves the list contents under ordinary
+race rules. Only `List.of`-style genuinely immutable contents inherit
+the transitive guarantee.
 
-## Mistake 6: LinkedList Random Access
-**Problem**: Using LinkedList.get(index) in a loop.
-**Effect**: O(n^2) time complexity instead of O(n).
-**Fix**: Use iterator or ArrayList for random access.
+## 3. Trusting the mutable twin
 
-## Mistake 7: Stream Overuse
-**Problem**: Complex stream pipelines on large collections.
-**Effect**: Poor performance, high memory usage.
-**Fix**: Use simple loops for critical paths.
+The `MutableControl` snippet passes 3000 rounds on x86 and proves
+nothing: TSO plus cache coherence hides the missing guarantee on this
+hardware, on this JVM, today. A reordering JIT or weaker CPU may show
+stale fields any day. Identical green runs, opposite meanings: snippet 1
+is a theorem (JLS 17.5), snippet 4 is weather.
 
-## Mistake 8: Not Trimming After Bulk Load
-**Problem**: Keeping oversized internal array after bulk loading.
-**Effect**: Wasted memory.
-**Fix**: Call trimToSize() after bulk loading.
+## 4. Calling overridable methods from constructors
 
-## Mistake 9: Assuming Thread Safety
-**Problem**: Using HashMap in multi-threaded context.
-**Effect**: Data corruption, infinite loops (pre-Java 8), lost updates.
-**Fix**: Use ConcurrentHashMap for concurrent access.
+An overridden method invoked from a superclass constructor observes the
+subclass finals before they are stored (and can leak `this` to other
+threads even earlier). Keep constructors private-or-final in behavior:
+assign fields directly, call only private/static helpers.
 
+## 5. Reflective post-construction writes to finals
 
-## Further Exploration
+`Field.setAccessible` mutation or `Unsafe` writes to a final after
+construction sit outside the memory model. Observed behavior (other
+threads seeing old, new, or mixed values; JIT constant-folding keeping
+the old value forever) is version-dependent accident. Never use this as
+a publication or update mechanism.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 6. Assuming deserialization gets the freeze
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Custom `readObject` or allocate-then-fill paths do not run the
+constructor freeze. Assuming final-like safety there confuses the
+constructor path with the framework path. Frameworks add their own
+fences; hand-written `readObject` must handle publication explicitly.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 7. Forgetting the transitive requirement
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Finals-of-finals are safe only through a safely constructed chain. A
+final array allocated and filled inside the constructor is covered; a
+final array assigned from a caller-owned, still-mutated array is not.
+Copy mutable inputs during construction.

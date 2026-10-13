@@ -1,144 +1,74 @@
-# Reordering — Architecture
+# Architecture: The Three Reordering Layers
 
-## Design Goals
-1. **Performance**: Optimized for average-case O(1) operations
-2. **Memory Efficiency**: Minimal per-element overhead
-3. **API Consistency**: Follows Java Collections Framework interfaces
-4. **Fail-Fast Safety**: Detects concurrent modification during iteration
-5. **Serialization**: Supports standard Java serialization mechanism
+## Layer map
 
-## Component Diagram
 ```
-+--------------------------------------------------+
-|                   Interface                        |
-|         Map<K,V> / Collection<E>                   |
-+------------------------+-------------------------+
-                         | implements
-+------------------------v-------------------------+
-|              Abstract Class                        |
-|        AbstractMap<K,V> / AbstractCollection<E>    |
-+------------------------+-------------------------+
-                         | extends
-+------------------------v-------------------------+
-|              Concrete Class                        |
-|           MainImplementation<K,V>                  |
-+--------------------------------------------------+
-| - table: Node<K,V>[]                              |
-| - size: int                                       |
-| - modCount: int                                   |
-| - threshold: int                                  |
-| - loadFactor: float                               |
-+--------------------------------------------------+
-| + put(K,V): V                                     |
-| + get(K): V                                       |
-| + remove(K): V                                    |
-| + containsKey(K): boolean                         |
-| + keySet(): Set<K>                                |
-| + values(): Collection<V>                         |
-| + entrySet(): Set<Map.Entry<K,V>>                 |
-+--------------------------------------------------+
+Java source: x = 1; r1 = y   ||   y = 1; r2 = x     (Dekker shape)
+  v  LAYER 1: javac + JIT (hoisting, sinking, elimination; pinned by sync actions)
+  v  LAYER 2: CPU execution (Tomasulo 1967: issue when ready, commit in order)
+  v  LAYER 3: memory subsystem (store buffers, forwarding, invalidate queues)
+Cache coherence: single-location order only  ==>  (0,0) observed
 ```
 
-## Package Structure
+Snippet 3 proves by elimination that on x86 the anomaly lives in layer
+3: identical bytecode, 1 ns of drain time, anomaly gone. Layers 1-2 are
+exonerated on this platform for this shape — not absent in general.
+
+## Layer 1: compiler (javac + JIT)
+
+- Legal moves: loop-invariant hoisting (`while (!flag)` reads lifted —
+  lab 03's volatility exhibit), common-subexpression elimination,
+  dead-store removal, lock coarsening. Constraint: single-thread
+  as-if-serial semantics plus hb edges at synchronization actions.
+- Why it is innocent here: nothing can hoist across the volatile-flag
+  rendezvous spins (opaque spinning calls pin order), and the racer
+  bodies (`x = 1; r1 = y`) offer no intra-thread optimization anyway.
+  The store;load pair survives compilation exactly as written.
+
+## Layer 2: CPU out-of-order execution (Tomasulo, IBM 360/91, 1967)
+
+- Reservation stations issue each operation when its operands are
+  ready; the reorder buffer commits in program order, so single threads
+  never observe the reshuffling. Independent loads/stores to different
+  addresses freely overlap while a stall resolves.
+- Why it is innocent here: the store and load touch different
+  addresses with no dependency — OoO *could* overlap them, but overlap
+  alone does not make the store invisible; the buffer does. On ARM,
+  CPU-level reorderings join the mix (more pairs escape), which is why
+  the same verdict needs real fences there.
+
+## Layer 3: memory subsystem (the culprit on x86)
+
 ```
-com.javalab.lab02
-+-- MainImplementation.java
-+-- MainImplementationTest.java
+T1: x = 1 ──store buffer (FIFO, invisible)──> ... ──drain──> coherent cache
+T1: r1 = y ──executes NOW──> reads 0 (T2's store still buffered)
+(symmetric on T2)  ==>  r1 == r2 == 0, forbidden under SC
 ```
 
-## Extension Points
-- Subclassing for specialized behavior
-- Custom equals/hashCode on key objects
-- Comparator injection for sorted variants
-- Serialization proxy pattern for custom serialization
+- Stores retire to a per-core FIFO before reaching coherent cache; the
+  core's own later load to a *different* address executes immediately
+  against stale cache. Both loads beat both stores out of the buffers.
+- `parkNanos(1)` between store and load lets the FIFO drain: same
+  instructions, zero anomalies. No compiler theory survives that
+  experiment — only the buffer explains it.
 
-## Architectural Decisions
+## x86-TSO framing (Sewell et al., 2010; SPARC heritage)
 
-### Decision 1: Array-Based Backing Store
-Using arrays provides contiguous memory allocation for cache-friendly access,
-O(1) index-based bucket lookup, and simple resize via array copy.
+Of the four pairs, x86 preserves LoadLoad, LoadStore, StoreStore and
+frees exactly StoreLoad — the Dekker pair. Practical corollary used in
+lab 03's snippet 4: plain message-passing (`data` then `flag`, both
+plain) usually *passes* on x86 by accident (StoreStore preserved) while
+Dekker on the same machine fails loudly. One preserved pair is the
+whole difference between "works" and "fires."
 
-### Decision 2: Chain-Based Collision Resolution
-Chaining was chosen over open addressing because it provides better cache
-performance under high load, simpler deletion, and more predictable performance.
+## ARM/POWER framing (qualitative)
 
-### Decision 3: Power-of-Two Sizing
-Capacities are powers of two enabling fast bitwise index calculation (hash & (capacity-1))
-and simplifying resize rehashing (entries split on hash & oldCapacity).
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- AArch64: any pair may reorder; order comes from `LDAPR` (acquire),
+  `STLR` (release), `DMB` (full). ARMv8 is multi-copy-atomic (a write
+  visible to one core is visible to all) — unlike POWER.
+- POWER: `sync` (full, cumulative) vs `lwsync` (lightweight); permits
+  non-MCA propagation (IRIW observable in research litmus).
+- Java mapping: volatile read/write lower to acquire/release plus full
+  fences where JMM SC-for-volatiles demands; on x86 a volatile read is
+  nearly free and a volatile write is an `XCHG`. Same verdicts,
+  different machine code — lab 03 prices them.

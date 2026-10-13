@@ -1,123 +1,76 @@
-# JMM Foundations — Common Mistakes
+# Common Mistakes: JMM Foundations
 
-## Mistake 1: Incorrect equals/hashCode
-**Problem**: Custom objects used without properly overriding equals() and hashCode().
-**Effect**: Keys not found, duplicates occur, behavior unpredictable.
-**Fix**: Always override both methods. Use Objects.hash().
+## 1. Spinning on a plain flag
 
-## Mistake 2: Assuming Insertion Order
-**Problem**: Depending on specific iteration order without checking contract.
-**Effect**: Works in testing, fails in production with different implementation.
-**Fix**: Use LinkedHashMap/LinkedHashSet when order matters.
+```java
+// BROKEN: no happens-before edge at all
+static boolean ready; static int data;
+...
+while (!ready) Thread.onSpinWait(); // may never observe the write
+use(data);
+```
 
-## Mistake 3: Concurrent Modification
-**Problem**: Modifying non-thread-safe collection while iterating.
-**Effect**: ConcurrentModificationException at runtime.
-**Fix**: Use concurrent collections or synchronize externally.
+The writer's `data = 42; ready = true` has no edge to the reader, so
+the JIT may hoist `data` above the spin and the CPU may serve stale
+`ready` indefinitely. Fix with `volatile`, a lock, or a latch — any one
+edge orders the whole publication.
 
-## Mistake 4: Using Mutable Keys
-**Problem**: Modifying key object after insertion into hash-based collection.
-**Effect**: Object in wrong bucket, cannot be found, memory leaks.
-**Fix**: Use immutable keys (String, Integer, records).
+## 2. Publishing an object through a plain reference
 
-## Mistake 5: Ignoring Initial Capacity
-**Problem**: Default capacity for large expected dataset.
-**Effect**: Multiple resizing operations degrade performance.
-**Fix**: Use constructor with initial capacity: new HashMap<>(expectedSize).
+```java
+// BROKEN: reader may see a half-constructed object
+config = new Config(url, timeout, ports); // plain static field
+```
 
-## Mistake 6: LinkedList Random Access
-**Problem**: Using LinkedList.get(index) in a loop.
-**Effect**: O(n^2) time complexity instead of O(n).
-**Fix**: Use iterator or ArrayList for random access.
+Object construction writes (program-ordered before the publish) reach
+the reader only through an edge on the publish itself. A volatile
+reference, a final-field freeze plus safe publication, a lock, or a
+`countDown/await` handoff all work; a plain store guarantees nothing.
 
-## Mistake 7: Stream Overuse
-**Problem**: Complex stream pipelines on large collections.
-**Effect**: Poor performance, high memory usage.
-**Fix**: Use simple loops for critical paths.
+## 3. Assuming `volatile++` is atomic
 
-## Mistake 8: Not Trimming After Bulk Load
-**Problem**: Keeping oversized internal array after bulk loading.
-**Effect**: Wasted memory.
-**Fix**: Call trimToSize() after bulk loading.
+```java
+static volatile long count;
+// 8 threads x 250000 increments -> nearly always short of 2000000
+```
 
-## Mistake 9: Assuming Thread Safety
-**Problem**: Using HashMap in multi-threaded context.
-**Effect**: Data corruption, infinite loops (pre-Java 8), lost updates.
-**Fix**: Use ConcurrentHashMap for concurrent access.
+Volatile gives visibility and ordering, not atomicity: read-modify-write
+is still three steps with a race between them. `LockEdge` gets exactly
+2000000 because the monitor adds mutual exclusion *plus* the edge. For
+counters use `AtomicLong` or a lock, never a volatile increment loop.
 
+## 4. Confusing race-freedom with determinism
 
-## Further Exploration
+DRF guarantees *some* sequentially consistent interleaving explains the
+output — not a *particular* one. Two correct runs of `LockEdge` both
+print 2000000, but the interleaving differs every time. Asserting exact
+thread order (which worker incremented when) is testing the scheduler,
+not the program. Assert final state, never schedules.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 5. Treating causality as ordering
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+`CausalityFloor` promises values in `[0, 100000]` and zero invented
+values — while the *order* is arbitrary (stale, repeated, skipped).
+Seeing only real values does not mean the code is correct; any consumer
+that needs order still needs an edge. Causality is a floor, not a fix.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 6. Hand-rolling flag protocols instead of library edges
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+A `CountDownLatch`, `Future.get`, queue `take`, or executor task edge is
+specified, tested, and cheap. A hand-rolled `ready` flag plus `sleep`
+retries is unspecified, flaky, and usually slower (spurious wakeups,
+missed signals, no hb). `LatchEdge` exists to make the canonical
+replacement concrete: write the graph, `countDown`, `await`, read.
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+## 7. Locking for visibility but mutating outside the lock
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+```java
+synchronized (LOCK) { count++; }
+// elsewhere, without the lock:
+count = 0; // re-opens the race: this write has no edge to anyone
+```
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+The monitor edge orders what happens *inside* critical sections on the
+same monitor. Any access outside reintroduces an unordered conflicting
+access — a data race by definition. Guard *every* access or none of the
+edges apply.

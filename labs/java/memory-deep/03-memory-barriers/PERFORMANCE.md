@@ -1,135 +1,70 @@
-# Memory Barriers — Performance
+# Performance: Memory Barriers
 
-## Time Complexity
+## The ladder (measured x86-64, ratios portable, absolutes not)
 
-### Operation Costs
-| Operation | Average Case | Worst Case | Notes |
-|-----------|-------------|-----------|-------|
-| Insert    | O(1)        | O(n)      | Resizing or collisions |
-| Lookup    | O(1)        | O(n)      | Hash collisions |
-| Delete    | O(1)        | O(n)      | After locating element |
-| Contains  | O(1)        | O(n)      | Same as lookup |
-| Iteration | O(n)        | O(n)      | Traverses all elements |
-| Size      | O(1)        | O(1)      | Maintained as field |
+```
+plain store:      ~1.0-1.2 ns   (0 hardware fences; snippet 1)
+release store:    ~1.3-1.4 ns   (compiler barrier only; snippet 3, rock-stable)
+volatile store:   ~10-18 ns     (XCHG StoreLoad fence; snippet 1, >3x plain)
+plain read:       ~0.9-2.2 ns   (snippet 2)
+volatile read:    ~1.0-1.4 ns   (acquire nearly free on TSO; snippet 2, <5x)
+ladder shape:     plain <= release < volatile (writes); reads ~= parity
+```
 
-### Amortized Analysis
-Individual operations may be expensive (resize), but amortized cost over a sequence
-of operations is O(1) for most data structures.
+Fence counts (0/0/1) predict the shape on every x86; ARM64 keeps the
+ordering with a hotter price list (STLR vs DMB). Quote the shape and
+the ratios — never the nanoseconds — outside this machine.
 
-## Memory Footprint
+## What each row purchases (price vs verdict)
 
-### Object Overhead
-- **Base object header**: 12-16 bytes (depending on JVM flags)
-- **Reference**: 4 bytes (Compressed OOPs) or 8 bytes
-- **int fields**: 4 bytes each
-- **Padding**: Aligned to 8-byte boundaries
+- ~1 ns plain: no verdict (Dekker 61-90%-class races; MP accident
+  0/2000 signifying nothing). The control row: speed of unsoundness.
+- ~+0.3-0.9 ns release over plain: pairwise chains (lab 02 snippet 4:
+  50000 intact) — sequencing, pipelines, Disruptor-style handoff at
+  near-plain cost. Insufficient for Dekker (snippet 5: 61-90%).
+- ~+9 ns volatile-store over plain: total order over the volatile
+  chain (Dekker 0/20000 everywhere) — mutual observation, guarding
+  flags, DCL publication (lab 05's idiom). Paid per store,
+  unconditionally, contended or not.
+- ~+0.3 ns volatile-read over plain: ordered observation (LoadLoad +
+  LoadStore after) at noise cost — read freely, publish rarely is the
+  rational response on TSO.
 
-### Per-Element Storage
-| Structure | Per-Element Overhead | Cache Locality |
-|-----------|---------------------|----------------|
-| HashMap   | ~32 bytes + K + V   | Poor (chains) |
-| ArrayList | 4-8 bytes (ref)     | Excellent |
-| LinkedList| ~24 bytes (3 ptrs)  | Poor |
-| TreeMap   | ~40 bytes (4 ptrs)  | Poor |
+## Measurement discipline (the harness contract)
 
-## Optimization Techniques
+- Warm both paths 2M ops in the same JVM, measure 20M back-to-back —
+  frequency scaling and TieredCompilation settle inside the warmup, and
+  drift cancels across adjacent windows.
+- Indexed 1024-slot traffic (4 KB, L1-resident): defeats
+  store-coalescing, load-commoning, and dead-store elimination; prices
+  fences plus L1 hits, not DRAM or registers.
+- Ratio assertions (`>3x`, `<5x`) with `max(..., 0.2)` floors: robust
+  to coarse timers and turbo variance; absolute assertions would be
+  machine fiction.
+- Quiet box, fixed iterations, all counts reported (3 runs each):
+  the snippets' numbers are reproducible *shapes*, not constants.
 
-### CPU Cache Behavior
-- **Sequential access**: Array-based structures have excellent cache locality
-- **Pointer chasing**: Linked structures have poor cache locality
-- **False sharing**: Concurrent writes to adjacent memory cause cache line bouncing
+## Cost-avoidance rules that survive review
 
-### JIT Compilation
-- **Inlining**: Small methods (get(), put()) are prime candidates for inlining
-- **Intrinsification**: System.arraycopy() is a hotspot intrinsic
-- **Branch Prediction**: Common-case fast paths benefit from predictable branching
-- **Loop Unrolling**: Iteration over arrays can be unrolled by JIT
+- Publish bulk state through one release/volatile reference, not per
+  element: one fence per graph instead of one per field (the latch and
+  volatile-reference patterns from lab 01, priced here).
+- Prefer `lazySet`/`setRelease` for sequence advancement (chains
+  suffice — ~8x saving per store); escalate to `set`/volatile only
+  where the consumer observes mutually with another producer.
+- Never spin on plain flags to "save" a fence: a burned core at full
+  power dwarfs any fence saving within microseconds, and the spin
+  itself may never observe the write (lab 01 mistake 1, priced in
+  watts here).
+- Read-heavy guard patterns (DCL, memoization) are the best trade in
+  the building: fence paid once per publish, free ordered reads
+  forever after — lab 05 quantifies the amortization.
 
-### GC Impact
-- **Young Gen**: Short-lived iterators, temporary collections collected in young gen
-- **Old Gen**: Long-lived maps and caches promoted to old gen
-- **Allocation Rate**: Frequent resize causes allocation spikes
-- **Card Table**: Large collections increase GC root scanning overhead
+## Scaling notes
 
-## Profiling Tools
-- **JMH**: Java Microbenchmark Harness for accurate microbenchmarks
-- **async-profiler**: CPU/wall-clock/allocation profiling
-- **JFR**: Java Flight Recorder event collection
-- **JOL**: Java Object Layout for memory analysis
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Uncontended fences scale linearly (per-op tax, no interaction);
+contended volatile stores serialize at the cache line (coherence
+traffic multiplies the single-thread ladder); contended locks leave
+the ladder entirely (scheduling dominates). Choose striped/atomics
+where the ladder's per-op tax is fine but the lock's serialization is
+not — the hb story unchanged, the coherence bill split.

@@ -1,144 +1,69 @@
-# Memory Barriers — Architecture
+# Architecture: From HB Edges to Fences to Silicon
 
-## Design Goals
-1. **Performance**: Optimized for average-case O(1) operations
-2. **Memory Efficiency**: Minimal per-element overhead
-3. **API Consistency**: Follows Java Collections Framework interfaces
-4. **Fail-Fast Safety**: Detects concurrent modification during iteration
-5. **Serialization**: Supports standard Java serialization mechanism
+## The lowering pipeline
 
-## Component Diagram
 ```
-+--------------------------------------------------+
-|                   Interface                        |
-|         Map<K,V> / Collection<E>                   |
-+------------------------+-------------------------+
-                         | implements
-+------------------------v-------------------------+
-|              Abstract Class                        |
-|        AbstractMap<K,V> / AbstractCollection<E>    |
-+------------------------+-------------------------+
-                         | extends
-+------------------------v-------------------------+
-|              Concrete Class                        |
-|           MainImplementation<K,V>                  |
-+--------------------------------------------------+
-| - table: Node<K,V>[]                              |
-| - size: int                                       |
-| - modCount: int                                   |
-| - threshold: int                                  |
-| - loadFactor: float                               |
-+--------------------------------------------------+
-| + put(K,V): V                                     |
-| + get(K): V                                       |
-| + remove(K): V                                    |
-| + containsKey(K): boolean                         |
-| + keySet(): Set<K>                                |
-| + values(): Collection<V>                         |
-| + entrySet(): Set<Map.Entry<K,V>>                 |
-+--------------------------------------------------+
+JMM edge (hb rule: volatile, monitor, latch...)
+  v  barrier plan (cookbook: which of LL/LS/SS/SL, which side)
+  v  JIT emission (compiler barrier + platform fence instruction selection)
+  v  silicon (x86 XCHG/MOV / ARM64 LDAPR/STLR/DMB / POWER lwsync/sync)
+  ==> verdict (ordered) at the ladder price
 ```
 
-## Package Structure
-```
-com.javalab.lab03
-+-- MainImplementation.java
-+-- MainImplementationTest.java
-```
+Same edge, different machine code per platform; same verdicts
+everywhere. The taxonomy is the portable layer — prices are local.
 
-## Extension Points
-- Subclassing for specialized behavior
-- Custom equals/hashCode on key objects
-- Comparator injection for sorted variants
-- Serialization proxy pattern for custom serialization
+## The taxonomy (Doug Lea's JSR-133 cookbook vocabulary)
 
-## Architectural Decisions
+| Barrier | Forbids | JMM job in this lab |
+|---|---|---|
+| LoadLoad | load passing an earlier load | volatile/acquire reads see ordered data (snippet 2's reads) |
+| LoadStore | store passing an earlier load | reads complete before subsequent publishes |
+| StoreStore | store passing an earlier store | publication order: `data` before `flag` (snippet 4's accident) |
+| StoreLoad | load passing an earlier store | full fence: Dekker safety (snippets 1/5's expensive row) |
 
-### Decision 1: Array-Based Backing Store
-Using arrays provides contiguous memory allocation for cache-friendly access,
-O(1) index-based bucket lookup, and simple resize via array copy.
+Acquire (volatile read, monitor entry, `getAcquire`) = LoadLoad +
+LoadStore *after* the operation. Release (volatile write, monitor
+exit, `setRelease`) = LoadStore + StoreStore *before* it. Sequential
+consistency for volatiles adds StoreLoad *after* each volatile store —
+the single most expensive barrier and the one Dekker needs on both
+sides. Fence counts across plain/release/volatile: 0/0/1 on x86 — the
+structural reason the ladder has exactly one big step.
 
-### Decision 2: Chain-Based Collision Resolution
-Chaining was chosen over open addressing because it provides better cache
-performance under high load, simpler deletion, and more predictable performance.
+## x86 lowering (what the demos measure)
 
-### Decision 3: Power-of-Two Sizing
-Capacities are powers of two enabling fast bitwise index calculation (hash & (capacity-1))
-and simplifying resize rehashing (entries split on hash & oldCapacity).
+- Plain/read paths: plain MOVs both sides — acquire on TSO needs no
+  fence instruction (compiler barrier only), so volatile reads land at
+  ~1.3 ns vs plain ~1.0 ns (snippet 2: within 5x, effectively noise).
+- Release stores (`lazySet`): compiler-barrier-only stores, ~1.3-1.4 ns
+  rock-stable (snippet 3) — publication order without the system fence.
+- Volatile stores (`set`): `XCHG` with implicit `lock` prefix =
+  StoreLoad fence, ~10-18 ns measured (snippet 1: >3x plain, ~8-10x in
+  practice) — the pipeline flush priced per store, unconditionally.
+- The ladder plain <= release < volatile holds structurally (fence
+  count 0/0/1); only the volatile step emits hardware ordering, which
+  is why only it closes Dekker.
 
+## ARM64 / POWER lowering (same taxonomy, different price list)
 
-## Further Exploration
+- ARM64: `STLR` (release store) cheaper than a `DMB`-fenced store,
+  `LDAPR` (acquire load) cheap like x86 reads — release/acquire chains
+  (lab 02 snippet 4) stay economical; SC-for-volatiles still pays full
+  fencing where Dekker demands it.
+- POWER: `lwsync` (lightweight, pairwise) vs `sync` (full, cumulative)
+  — the same pair-vs-system distinction snippet 5 exhibits, cast in
+  hardware instructions at the weakest setting.
+- Java's mapping choice (acquire/release primitives plus fenced
+  volatiles) is precisely the decision to expose both price points
+  instead of fencing everything.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Roach-motel placement (where fences sit)
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Acquire fences sit *after* the operation (subsequent ops cannot move
+before it; preceding plain ops may drift in from above). Release fences
+sit *before* it (preceding ops cannot move after it; following plain
+ops may drift in from below). The motel admits plain traffic from both
+sides and releases none early — publication (`data` before `flag`)
+safe, post-hoc observation unordered. Snippet 4's plain pair has no
+motel at all: both operations wander, and x86's preserved StoreStore
+happens to walk them in order — this time.

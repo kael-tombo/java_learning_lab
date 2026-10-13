@@ -1,123 +1,43 @@
-# Final Field Semantics — Reflection
+# Reflection: Final Field Semantics
 
-## Guided Reflection Prompts
+## What the freeze changed in your mental model
 
-### Understanding
-1. Before studying this micro-lab, what was your understanding of Final Field Semantics?
-2. What was the most surprising aspect of the internal implementation?
-3. How has your mental model of this concept changed after the deep dive?
+Before this lab, how did you assume an object became visible to other
+threads — and did that picture distinguish the reference race from the
+field visibility? State in one paragraph what JLS 17.5 adds: which reads
+are guaranteed, and through which chains.
 
-### Application
-4. In your current projects, where would Final Field Semantics be the right choice?
-5. Where have you seen Final Field Semantics used incorrectly in codebases you've worked with?
-6. Can you think of a system that would fail without the correct choice?
+## Your constructors under audit
 
-### Design Trade-offs
-7. What design trade-offs does Final Field Semantics make and why?
-8. If you were redesigning it, what would you do differently?
-9. How do the performance characteristics affect your programming style?
+Pick a constructor you have written that registers, publishes, or starts
+something. Walk it line by line: does every publication happen after
+every final store? If not, sketch the reordered version (store first,
+publish last or in a factory) and name the early reader that the old
+order exposed.
 
-### Deeper Questions
-10. How does Final Field Semantics interact with the Java Memory Model?
-11. What role does Final Field Semantics play in concurrent systems?
-12. How does garbage collection behavior affect the choice?
-13. What are the limits? When should you use a database instead?
+## Theorem vs weather in your test suite
 
-### Teaching Others
-14. How would you explain Final Field Semantics to a junior developer?
-15. What analogy works best for conveying its core concepts?
-16. What common mistakes would you warn them about?
+Recall a concurrency test that "passes green" on your machine. After the
+mutable-twin lesson, what would it take to promote that green run from
+weather to theorem — which specification clause, which chain of links?
+If none exists, what does the green run actually license?
 
-### Connection to Broader Topics
-17. How does Final Field Semantics relate to operating system data structures?
-18. What database concepts are similar?
-19. How do distributed systems use similar structures?
-20. What other programming languages implement this differently and why?
+## The transitive trap you almost set
 
-## Self-Assessment
-- [ ] I can explain the time complexity of all operations
-- [ ] I can implement a simplified version from memory
-- [ ] I can identify when this is the wrong choice
-- [ ] I can debug common issues related to this concept
-- [ ] I can optimize code using this concept
-- [ ] I can teach the concept to others
+Describe a case where you shared (or nearly shared) a `final` reference
+to mutable contents — a record wrapping a list, an array stored without
+copying. Which side of the reference/contents boundary did your
+reasoning stop at, and what copy or immutable snapshot fixes it?
 
-## Learning Summary
-Write a brief summary (2-3 paragraphs) of what you learned and how you plan to apply it.
+## String as evidence
 
+`String` crosses threads unsynchronized in every Java program via
+`final value` + `final coder`. How does that everyday fact reshape your
+sense of where "synchronization" lives — must every shared object pay
+per-read ordering, or can construction alone carry it?
 
-## Further Exploration
+## What you will enforce
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Name one constructor discipline you will now treat as non-negotiable
+(no `this` escape, no overridable call, defensive copy, final-ify
+snapshots) and the code review check that enforces it.

@@ -1,120 +1,61 @@
-# Memory Barriers — Quiz
+# Quiz: Memory Barriers
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Memory Barriers?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1: Assemble acquire, release, and SC from the four barriers.
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+**Answer:** Acquire = LoadLoad + LoadStore *after* the op (volatile
+read, monitor entry, `getAcquire`). Release = LoadStore + StoreStore
+*before* it (volatile write, monitor exit, `setRelease`). SC adds
+StoreLoad *after* each volatile store — the Dekker fence, the ~10 ns
+step on x86.
 
-## Question 3: Memory
-How much additional memory overhead does Memory Barriers have per element (approximately)?
+## Q2: Snippet 1 asserts `volatile > 3x plain` for stores. What pays?
 
-## Question 4: Concurrency
-Is Memory Barriers safe for concurrent access without external synchronization? Explain why or why not.
+**Answer:** The StoreLoad fence: volatile `set` compiles to `XCHG`
+(implicit lock prefix, pipeline flush) at ~10-18 ns vs plain MOVs at
+~1 ns. Paid per store unconditionally — fence count 0 vs 1 is the
+structural fact, the ratio its shadow on this machine.
 
-## Question 5: Scalability
-How does Memory Barriers perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q3: Snippet 2 asserts `volatile < 5x plain` for reads. Why nearly free?
 
-## Question 6: Design
-Why was Memory Barriers designed this way? What alternatives were considered during its development?
+**Answer:** Acquire on TSO needs no fence instruction — compiler
+barrier only, same MOVs as plain (~1.3 vs ~1.0 ns warmed). The barrier
+tax is directional: writes fence, reads (nearly) do not (ARM64 charges
+`LDAPR` modestly more — same taxonomy, hotter list).
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## Q4: Snippet 3 asserts release `>3x cheaper` than volatile. Skipped what?
 
-## Question 8: Comparison
-Compare Memory Barriers with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+**Answer:** `lazySet` skips exactly the StoreLoad *after*-fence while
+keeping LoadStore + StoreStore *before* (~1.3 ns vs ~10 ns). Same
+eventual visibility, pairwise-only ordering: sufficient for chains
+(lab 02's 50000 intact), insufficient for Dekker.
 
-## Question 9: Real-World
-Describe a real-world scenario where Memory Barriers is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Q5: Snippet 4 prints `0/2000` and `STILL race`. Reconcile the lines.
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+**Answer:** Output (0 stale) reflects x86's preserved StoreStore plus
+coherence on this run; verdict (race) reflects the JMM (no edge) on
+every run. The compiler may hoist the data read, ARM may reorder the
+stores — green output, absent guarantee. Convert the flag and the
+verdict flips while the output stays put.
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## Q6: Snippet 5 (release/acquire Dekker) persists at 61-90%. Explain.
 
+**Answer:** Pairwise chains do not compose: each release->acquire
+orders locally; the cross observations share no constraint and slip
+through the buffers (bare MOVs on x86). Only StoreLoad both sides
+(volatile, 0/20000) or exclusion (lock, 0/20000) closes the total
+order. Same modes as snippet 4's intact chain — opposite shape,
+opposite verdict.
 
-## Further Exploration
+## Q7: Where does opaque fit, and what never uses it?
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+**Answer:** Atomic + eventually visible + unordered — below release,
+above plain. Progress counters and statistics (any value fine) may use
+it; publication flags and data guards never (no StoreStore, no
+LoadLoad/LoadStore). Zero barriers in either direction.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Q8: State the roach-motel rule and name its two drift directions.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**Answer:** Plain ops drift in, never out: predecessors may move *after*
+an acquire (in from above); successors may move *before* a release (in
+from below). Successors never escape above acquire; predecessors never
+sink below release — publication ordered, post-hoc observation not.

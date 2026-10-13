@@ -1,148 +1,73 @@
-# Memory Barriers — Refactoring
+# Refactoring: Memory Barriers
 
-## Refactoring Patterns
+## Pattern 1: plain flag publication -> edged publication
 
-### Pattern 1: Replace Array with Collection
-**Before**:
+Before (accident, snippet 4):
+
 ```java
-String[] names = new String[100];
-names[0] = "Alice";
-int count = 1;
-```
-**After**:
-```java
-List<String> names = new ArrayList<>();
-names.add("Alice");
+static int data; static boolean flag;
+// writer: data = 42; flag = true;
+// reader: while (!flag) Thread.onSpinWait(); use(data);
 ```
 
-### Pattern 2: Replace Raw Type with Generics
-**Before**:
+After (verdict — pick one, cheapest sufficient first):
+
 ```java
-List list = new ArrayList();
-list.add("hello");
-String s = (String) list.get(0);
-```
-**After**:
-```java
-List<String> list = new ArrayList<>();
-list.add("hello");
-String s = list.get(0);
+static int data; static volatile boolean flag; // release/acquire pair
+// or: READY.await() latch handoff (lab 01 shape)
 ```
 
-### Pattern 3: Replace Legacy with Modern Variant
-**Before**: Hashtable, Vector, Stack (synchronized overhead)
-**After**: HashMap, ArrayList, ArrayDeque
+Why: output unchanged (0/2000 before and after on x86), verdict
+converted (race -> guaranteed). The motel now holds the prefix: release
+keeps `data` before the flag, acquire keeps the use after it.
 
-### Pattern 4: Fix LinkedList Random Access
-**Before**: list.get(i) in loop on LinkedList -> O(n^2)
-**After**: Enhanced for-loop or ArrayList
+## Pattern 2: volatile-everywhere sequencing -> release chains
 
-### Pattern 5: Introduce EnumMap for Enum Keys
-**Before**: Map<Color, String> map = new HashMap<>();
-**After**: Map<Color, String> map = new EnumMap<>(Color.class);
+Before: sequence advancement through volatile `set` (~10 ns/store) for
+a single-consumer pipeline — total order paid, pairwise consumed.
 
-### Pattern 6: Use Empty Collection Constants
-**Before**: return new ArrayList<>(); // Allocates every call
-**After**: return Collections.emptyList(); // Reuses singleton
+After: `lazySet` / `setRelease` (~1.3 ns/store), consumer-side
+`getAcquire` spin (lab 02 snippet 4: 50000 intact). Saving ~8x per
+store with the verdict the shape needs. Escalate to volatile only the
+steps where producers mutually observe (Dekker-shaped joins).
 
-## Step-by-Step Refactoring
+## Pattern 3: release/acquire Dekker -> volatile or lock
 
-### Step 1: Identify the Problem
-- Profiling shows hotspot in collection code
-- Excessive allocations in GC logs
-- ConcurrentModificationException in logs
-- High memory usage from collections
+Before: `X.setRelease(1); r1 = Y.getAcquire()` both sides — 61-90%
+anomalies, modern spelling on a total-order problem.
 
-### Step 2: Choose the Right Alternative
-- ArrayList vs LinkedList: Random access? Use ArrayList
-- HashMap vs TreeMap: Need sorted order? Use TreeMap
-- HashMap vs ConcurrentHashMap: Concurrent access? Use ConcurrentHashMap
+After (ordering): plain `volatile` fields — 0/20000 everywhere. After
+(exclusion): whole pair in one `synchronized` — 0/20000 by no overlap.
+The refactor decision is shape analysis (mutual observation needs
+systems, not chains), applied in one mode step.
 
-### Step 3: Migrate Carefully
-1. Change declaration to interface (if not already)
-2. Update constructor to new implementation
-3. Run existing tests
-4. Profile to verify improvement
+## Pattern 4: per-element fenced publishes -> single-reference publish
 
-### Step 4: Measure Impact
-- Throughput: Operations/second
-- Latency: Average and P99
-- Memory: Heap usage
-- GC: Pause time and frequency
+Before: N volatile stores publishing N fields (N StoreLoad fences per
+graph) — correct, N times overpriced.
 
+After: N plain field writes + one volatile reference/latch release
+(one fence per graph). Same hb coverage (release carries the prefix),
+1/Nth the fence bill. Applicable everywhere bulk state crosses threads
+(config graphs, snapshots, buffers) — lab 01's latch shape, priced by
+this lab's ladder.
 
-## Further Exploration
+## Pattern 5: opaque/volatile misuse -> correct rung
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+- Opaque guarding data -> release/acquire minimum (opaque orders
+  nothing; guards need LoadLoad/LoadStore).
+- Plain 64-bit counter -> opaque minimum (plain tears; opaque is
+  atomic and eventually visible) or `LongAdder` where contention rules.
+- Hand-placed `Unsafe` fences -> VarHandle modes (same silicon, real
+  JMM verdicts, portable placement). Delete the import, keep the
+  ordering.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Refactoring checklist
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Name the shape (handoff chain, mutual observation, bulk publish,
+  statistics) before touching the mode.
+- Count fences before/after (0/0/1 per side on x86) and predict the
+  ladder move; confirm with one warmed in-JVM ratio run.
+- Assert the verdict change (race -> guaranteed; 61-90% -> 0) with
+  fixed rounds (2000/20000), never with absolutes or single runs.
+- Keep println ASCII (`String.format("%.2f", ...)`); prose stays UTF-8.

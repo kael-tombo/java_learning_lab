@@ -1,120 +1,60 @@
-# JMM Foundations — Quiz
+# Quiz: JMM Foundations
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in JMM Foundations?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1: Which accesses form a data race?
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+A program has two threads sharing `int x`. Thread A writes `x = 1`,
+thread B reads `x`, with no synchronization between them.
 
-## Question 3: Memory
-How much additional memory overhead does JMM Foundations have per element (approximately)?
+**Answer:** This is a data race: two conflicting accesses (same
+variable, one a write) unordered by happens-before. Sequential
+consistency is forfeited — the read may see 0, 1, or any stale value,
+and no reasoning about "order" applies.
 
-## Question 4: Concurrency
-Is JMM Foundations safe for concurrent access without external synchronization? Explain why or why not.
+## Q2: What must `StartEdge` print, and which rule forces it?
 
-## Question 5: Scalability
-How does JMM Foundations perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+**Answer:** `expected checksum = 1499500` and `thread observed =
+1499500` with `true`. The thread-start rule: `t.start()` hb the child's
+first action, and transitivity extends the edge to all 1000
+program-ordered prior writes.
 
-## Question 6: Design
-Why was JMM Foundations designed this way? What alternatives were considered during its development?
+## Q3: Main reads worker output before `join()`. Verdict?
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+**Answer:** Data race — the worker's writes are hb only the `join()`
+return, and a pre-join read has no chain to it. Moving the identical
+read after `join()` converts the verdict to guaranteed (sum
+41541750), with zero code change besides position.
 
-## Question 8: Comparison
-Compare JMM Foundations with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## Q4: 8 threads x 250000 locked increments print 1999999. Possible?
 
-## Question 9: Real-World
-Describe a real-world scenario where JMM Foundations is the optimal choice.
-Describe a scenario where it would be a poor choice.
+**Answer:** No — if every increment is inside `synchronized (LOCK)` on
+one monitor, 2000000 is forced by the unlock->lock chain. Observing
+1999999 proves some access escaped the lock (different monitor,
+unlocked fast path, or non-atomic reset). The count is an oracle.
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+## Q5: What does `countDown()` hb, exactly?
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+**Answer:** The return from `await()` (on the same latch): everything
+program-ordered before `countDown()` is visible to everything
+program-ordered after the `await()` that observes it. The demo's four
+field checks (`url`, `timeout`, two ports) assert the whole graph.
 
+## Q6: Racy reader sees values 7, 7, 3, 99999, 5. Violation?
 
-## Further Exploration
+**Answer:** No causality violation: every value was written (range
+0..100000), and repeats, skips, and backward steps are legal without
+edges. A value of −1 or 100001 in the same trace *would* violate JLS
+17.4.8. Order chaos is allowed; invention is not.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Q7: Which JSR rewrote the JMM, when, and what changed for DCL?
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+**Answer:** JSR-133, shipped in Java 5 (2004; Manson/Pugh with Lea's
+group, Goetz documenting). It gave volatile real acquire/release-plus-SC
+semantics, which made double-checked locking correct *with* a volatile
+field (broken without it, before and since).
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Q8: Two threads use *different* locks to guard one counter. Verdict?
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**Answer:** Still a race: the monitor rule chains unlock->lock only on
+the *same* monitor. Two lock chains never compose into one total order
+— the counter loses updates exactly as if unlocked. One shared lock, or
+an atomic, or a striped accumulator.

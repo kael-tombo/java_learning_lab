@@ -1,154 +1,61 @@
-# Memory Barriers — Exercises
+# Exercises: Memory Barriers
 
-## Beginner Exercises
+All exercises run on JDK 9+, no dependencies. Timing claims are ratios
+within one JVM ( absolutes vary; fence counts do not).
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of Memory Barriers.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
-```
+## 1. Rebuild the write ladder (snippet 1)
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
-```
+Run `WriteFenceCost` three times on a quiet box. Record plain ns,
+volatile ns, and the ratio each run. Confirm `volatile > 3x plain:
+true` every run (expect ~8-10x: ~1 ns vs ~10 ns here). Then halve the
+slot mask (1024 -> 512) and re-run once: the ratio should persist
+while absolutes shift — write one sentence on why the ratio (fence
+count) ports and the absolute (nanoseconds) does not.
 
-## Intermediate Exercises
+## 2. Confirm reads are nearly free (snippet 2)
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+Run `ReadCheap` three times. Confirm `volatile < 5x plain: true` every
+run (expect near-parity: ~1.0 vs ~1.3 ns warmed). Explain in cookbook
+terms: acquire on TSO needs no fence instruction (compiler barrier
+only), so the read path emits the same MOVs as plain. Note the ARM
+caveat (LDAPR still cheap, but less free than x86's nothing).
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
-```
+## 3. Price release (snippet 3)
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+Run `ReleaseCheaper` three times. Confirm `>3x cheaper: true` every run
+(expect volatile ~10 ns vs release ~1.3 ns rock-stable). Then answer:
+which barrier does `lazySet` skip that `set` pays (StoreLoad after the
+store), and which two barriers does it keep (LoadStore + StoreStore
+before)? That triple is the economic argument for release chains.
 
-## Advanced Exercises
+## 4. Convert the accident (snippet 4)
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+Run `AccidentalCorrect` once: confirm `stale reads = 0/2000` AND
+`verdict is STILL 'data race': true`. Then convert `flag` to volatile
+(or the handoff to a latch) and re-run: output identical (0/2000),
+verdict converted (race -> guaranteed). Deliverable: the hb chain for
+the converted version, three links, naming the release and acquire.
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 5. Close RaDekker (snippet 5)
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
+Run `RaDekker` (release/acquire Dekker) for the full 20000: confirm
+`anomalies persist: true` (expect 61-90% bad). Then escalate to full
+volatile on both fields and re-run: confirm 0/20000. Then wrap the
+plain pair in one lock and re-run: confirm 0/20000 by exclusion.
+Deliverable: one paragraph — pairwise chains do not compose into total
+order; only the StoreLoad step (or no overlap at all) closes Dekker.
 
-## Challenge Exercises
+## 6. Opaque boundary probe
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+Using `VarHandle.getOpaque`/`setOpaque` for the snippet-4 flag, run
+2000 rounds and record the outcome. Then state the contract from
+memory: atomic + eventually visible + *unordered* — and name two uses
+where it suffices (progress counters, statistics) plus two where it
+never does (publication flags, data-guarding checks). Convert the flag
+to release/acquire and show the verdict change for publication.
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+## Done when
 
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+You can price any handoff before running (fence count -> ladder row),
+predict snippet 4/5 verdicts from the pair table, and recite the
+acquire/release/SC assembly without looking.

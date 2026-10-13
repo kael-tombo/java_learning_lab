@@ -1,134 +1,60 @@
-# DCL Pattern — Debugging
+# Debugging: DCL Pattern
 
-## Debugging Strategies
+## Symptom: two instances where one was promised
 
-### Print-Based Debugging
-```java
-System.out.println("State: " + collection);
-System.out.println("Size: " + collection.size());
-System.out.println("Contains key X: " + collection.containsKey("X"));
-```
+Collect identities across threads (`ConcurrentHashMap.newKeySet`,
+16 threads x 10k gets as in this lab). `seen.size() == 2` with a DCL
+getter means exactly one thing: the locked recheck is missing or reads
+a different field/monitor than the write path. Confirm with a
+construction counter (`AtomicInteger constructions`): recheck-less DCL
+shows `constructions == 2` deterministically once the race window is
+wedged (50 ms constructor sleep).
 
-### IDE Debugger Inspection
-Modern IDEs provide collection visualizers:
-- **IntelliJ IDEA**: Shows internal structure, hash codes, conflicts
-- **Eclipse**: Detail formatters for common collections
-- **VS Code**: Java Debug Extension with variable inspection
+## Symptom: partially constructed object (`value != 42`)
 
-### JFR Events
-Java Flight Recorder captures collection-related events:
-- **Allocation events**: When collections allocate new backing arrays
-- **GC events**: Collection overhead during GC pauses
-- **Lock events**: Contention on synchronized collections
+A reader obtaining a non-null instance whose `final int value` is 0 (or
+whose fields are default) points at a missing or mismatched `volatile`:
+the publication edge that should order construction before the check-(1)
+read is absent. Verify the field declaration first — `static Helper`
+without `volatile` reproduces the pre-2004 bug regardless of how correct
+the locking looks.
 
-### Heap Dump Analysis
-```bash
-jmap -dump:live,format=b,file=heap.hprof <pid>
-```
-Use Eclipse MAT or JProfiler to analyze:
-- **Dominator tree**: Find largest collections
-- **GC root paths**: Why collections aren't collected
-- **OQL queries**: Filter specific collection types
+## Step 1: check the three elements mechanically
 
-### Thread Dump Analysis
-```bash
-jstack <pid> > threaddump.txt
-```
-Look for threads stuck in collection code, infinite resize loops, deadlocks.
+For the getter under suspicion, confirm literally:
 
-## Debugging Tools
+1. Field declared `static volatile Helper instance`.
+2. First check outside any lock, reading a local (`Helper h =
+   instance; if (h == null)`).
+3. Second check inside `synchronized` on the canonical monitor,
+   re-reading into the same local (`if ((h = instance) == null)`).
 
-### JOL (Java Object Layout)
-```java
-System.out.println(GraphLayout.parseInstance(map).toFootprint());
-```
+Any deviation is the diagnosis; DCL has no harmless variations.
 
-### jhsdb
-```bash
-jhsdb jmap --heap --pid <pid>
-jhsdb jmap --histo --pid <pid>
-```
+## Step 2: confirm the monitor is canonical
 
-## Debugging Checklist
-1. Check equals() and hashCode() implementations
-2. Verify collection is the correct type
-3. Confirm thread safety guarantees
-4. Check for ConcurrentModificationException patterns
-5. Verify initial capacity for expected data size
+All writers and the recheck must synchronize on the same object (here
+`VolatileDcl.class`). Mixed monitors (`this` vs class, or an instance
+field lock) break the monitor edge that makes the first thread's write
+visible to the recheck. Grep every `synchronized` touching the field.
 
+## Step 3: wedge the window, don't chase timing
 
-## Further Exploration
+Race hypotheses need deterministic windows: a `CountDownLatch` start
+gate for all racers plus a constructor sleep (50 ms, as in
+`NoSecondCheck`) so both threads provably pass check (1) on null before
+either publishes. If `constructions == 2` appears only with the sleep,
+the recheck is still missing — the sleep proved it, timing didn't hide it.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Step 4: separate DCL bugs from serialization forks
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+If singletons duplicate across serialization (not across threads), the
+DCL itself may be fine: default deserialization builds a second
+instance. Round-trip through `ObjectOutputStream`/`ObjectInputStream`
+and compare identity; add `readResolve` or switch to enum if it forks.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Logging tips
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Print `distinct instances`, the construction count, and `value == 42`
+on the shared instance — the same three lines every snippet in this lab
+emits. Keep `println` output pure ASCII for harness decoding.

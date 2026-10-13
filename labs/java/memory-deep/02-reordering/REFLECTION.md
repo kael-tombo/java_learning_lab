@@ -1,123 +1,49 @@
-# Reordering — Reflection
+# Reflection: Reordering
 
-## Guided Reflection Prompts
+## Prompt 1: your machine's signature
 
-### Understanding
-1. Before studying this micro-lab, what was your understanding of Reordering?
-2. What was the most surprising aspect of the internal implementation?
-3. How has your mental model of this concept changed after the deep dive?
+Record your three snippet-1 counts (bad/20000) here. How wide is the
+spread, and what does the width tell you about scheduling and power
+state rather than about your code? What would you need to believe to
+treat the *lowest* of the three as "the" number — and why is that
+belief wrong?
 
-### Application
-4. In your current projects, where would Reordering be the right choice?
-5. Where have you seen Reordering used incorrectly in codebases you've worked with?
-6. Can you think of a system that would fail without the correct choice?
+## Prompt 2: a green run you distrust now
 
-### Design Trade-offs
-7. What design trade-offs does Reordering make and why?
-8. If you were redesigning it, what would you do differently?
-9. How do the performance characteristics affect your programming style?
+Recall production code that "works" without edges (a flag protocol, an
+unsynchronized handoff, a startup publish). Which TSO table row has
+been protecting it, and on which platform (ARM server? low-core
+container?) does that row stop applying? What is the cheapest edge that
+converts its accident into a verdict?
 
-### Deeper Questions
-10. How does Reordering interact with the Java Memory Model?
-11. What role does Reordering play in concurrent systems?
-12. How does garbage collection behavior affect the choice?
-13. What are the limits? When should you use a database instead?
+## Prompt 3: mechanism vs verdict
 
-### Teaching Others
-14. How would you explain Reordering to a junior developer?
-15. What analogy works best for conveying its core concepts?
-16. What common mistakes would you warn them about?
+State the elimination argument for the store buffer in your own words
+(same bytecode, 1 ns drain, ~79% to zero). Then distinguish the two
+sentences: "the buffer caused this anomaly" (mechanism, x86) from
+"the program is racy" (verdict, everywhere). Which sentence licenses a
+fitness-for-shipping claim, and which merely explains the symptom?
 
-### Connection to Broader Topics
-17. How does Reordering relate to operating system data structures?
-18. What database concepts are similar?
-19. How do distributed systems use similar structures?
-20. What other programming languages implement this differently and why?
+## Prompt 4: the fix you would ship
 
-## Self-Assessment
-- [ ] I can explain the time complexity of all operations
-- [ ] I can implement a simplified version from memory
-- [ ] I can identify when this is the wrong choice
-- [ ] I can debug common issues related to this concept
-- [ ] I can optimize code using this concept
-- [ ] I can teach the concept to others
+Volatile (ordering) vs monitor (exclusion) both read 0/20000. For a
+two-flag protocol in *your* codebase, which do you choose — and what
+fact about contention, readability, or platform cost decides it? Write
+the decision rule you will reuse (e.g., "flags: volatile; shared
+updates: lock/atomic; chains: release/acquire").
 
-## Learning Summary
-Write a brief summary (2-3 paragraphs) of what you learned and how you plan to apply it.
+## Prompt 5: chains that hold vs chains that do not
 
+Snippet 4's release/acquire chain holds over 50000 while snippet 5's
+cousin (lab 03) races at 61-90% with the same modes. Draw both shapes
+(message-passing arrow vs Dekker cross) and mark where the missing
+constraint is. What new code will you now check for "pairwise reasoning
+about a total-order problem"?
 
-## Further Exploration
+## Prompt 6: teaching the pistol
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Explain to a teammate why the volatile-flag rendezvous is not
+"test scaffolding" but the instrument: pistol vs marathon, window width
+vs jitter, rates vs verdicts. If they propose replacing it with a
+barrier "for cleanliness," what two-sentence reply preserves both the
+cleanliness instinct and the measurement?

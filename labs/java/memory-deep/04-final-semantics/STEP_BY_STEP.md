@@ -1,161 +1,60 @@
-# Final Field Semantics — Step-by-Step Implementation
+# Step by Step: Final Field Semantics
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab04/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab04/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Goal
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
+Prove to yourself that finals publish safely through a race, that
+escape voids the proof, and that the mutable twin's identical green run
+means nothing — in about 30 minutes on JDK 9+.
+
+## Step 1: run the freeze baseline (10 min)
+
+Compile and run `FinalViaRace`. Expect:
+
+```
+rounds = 3000
+all finals (incl. transitive array) exact, every round: true
 ```
 
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab04;
+Note the publication: a plain racy static, no volatile, no lock. The
+exactness comes from the freeze chain, not the reference. Bump to 10000
+rounds; exactness should not waver.
 
-import java.util.Objects;
+## Step 2: confirm transitivity (5 min)
 
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
+Inspect the assertion: `arr[0] == v && arr[1] == v + 1`. The array was
+allocated and filled inside the constructor behind a final reference —
+finals of finals. Now alias a caller-owned array instead (no copy),
+mutate it post-publication, and watch exactness break. Revert.
 
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+## Step 3: wedge the escape window (5 min)
 
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
+Run `ThisEscape`. Expect:
 
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
+```
+observed during construction window = 0
+default value observed (freeze not yet run): true
+final value after construction = 42
 ```
 
-## Step 4: Implement Core Operations
+The 300 ms sleep holds the pre-freeze window open so the early read
+lands inside it deterministically. Move `published = this` after the
+store and re-run: the early default disappears.
 
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
+## Step 4: run the mutable twin (5 min)
 
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
+Run `MutableControl`. Expect `stale rounds = 0/3000` — green, on x86.
+Write the verdict explicitly: still a data race, guaranteed nowhere.
+Contrast with step 1's theorem in one sentence.
 
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
+## Step 5: share Strings (5 min)
 
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
+Run `StringSharing` for 3000 rounds; confirm always-intact output.
+Locate `final byte[] value` and `final byte coder` in the JDK sources:
+every check in the reader assertion leans on those two finals.
 
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
+## Done when
 
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+You can state the chain (`w ->hb f ->hb a ->mc r1 ->dc r2`), name what
+breaks each link (escape breaks link 2, reflective writes are outside
+link 1), and explain why two identical green runs carry opposite
+meanings.

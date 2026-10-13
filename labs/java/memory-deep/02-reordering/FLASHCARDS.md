@@ -1,118 +1,71 @@
-# Reordering — Flashcards
+# Flashcards: Reordering
 
-## Card 1: Time Complexity
-**Q**: What is the average and worst-case time complexity of the primary operation?
-**A**: Average O(1), worst-case O(n) (when all elements hash to same bucket)
+Q: What is the Dekker litmus shape?
+A: T1: x = 1; r1 = y || T2: y = 1; r2 = x; outcome r1 == r2 == 0 is
+forbidden under sequential consistency.
 
-## Card 2: Load Factor
-**Q**: What is the default load factor and what does it mean?
-**A**: Default 0.75. Structure resizes when 75% full, balancing time and space.
+Q: What does this lab measure for plain Dekker on x86?
+A: The forbidden (0,0) outcome in a large fraction of rendezvoused
+iterations (tens of percent; up to ~79% measured) — routine, not rare.
 
-## Card 3: Resize Factor
-**Q**: By what factor does the backing array grow during resize?
-**A**: 2x for HashMap/HashSet, 1.5x for ArrayList
+Q: Name the three reordering layers.
+A: Compiler (javac + JIT hoisting/sinking/elimination); CPU execution
+(out-of-order issue, in-order commit); memory subsystem (store buffers,
+forwarding, invalidate queues).
 
-## Card 4: Treeification
-**Q**: At what threshold does a linked list become a red-black tree?
-**A**: TREEIFY_THRESHOLD = 8 entries in a single bucket
+Q: Which layer causes the x86 Dekker anomaly, and how was it proven?
+A: The store buffer (layer 3): identical bytecode plus 1 ns parkNanos
+drain yields 0/20000 — timing changed, verdict flipped, so compiler
+and OoO layers are exonerated here.
 
-## Card 5: Fail-Fast
-**Q**: What is fail-fast behavior and how is it implemented?
-**A**: Iterators throw ConcurrentModificationException if collection is structurally modified during iteration. Implemented via modCount field.
+Q: State x86-TSO's pair table (Sewell et al., 2010).
+A: LoadLoad, LoadStore, StoreStore preserved; exactly StoreLoad may
+reorder (store sits buffered while a later load to another address
+executes).
 
-## Card 6: equals() vs hashCode()
-**Q**: What is the contract between equals() and hashCode()?
-**A**: If a.equals(b) then a.hashCode() == b.hashCode(). The reverse is not required.
+Q: Why does plain message-passing usually pass on x86 while Dekker fails?
+A: Message-passing needs StoreStore (preserved on TSO); Dekker needs
+StoreLoad ordered (the one freed pair). One table row is the whole
+difference — accident, not guarantee.
 
-## Card 7: Initial Capacity
-**Q**: What is the default initial capacity?
-**A**: 16 (for HashMap), 10 (for ArrayList)
+Q: What rendezvous does the anomaly demonstration require?
+A: Per-iteration volatile-flag spins (go/done1/done2 with onSpinWait),
+daemon racers, main-thread driver resetting x = y = 0 each round.
 
-## Card 8: Null Keys
-**Q**: Which collections allow null keys?
-**A**: HashMap, LinkedHashMap, WeakHashMap allow one null key. Hashtable, ConcurrentHashMap, TreeMap do not.
+Q: Why do free-running threads hide the anomaly?
+A: They phase-lock or never collide: overlap windows rarely align, so
+collision rate collapses while the race (verdict) is unchanged.
 
-## Card 9: Synchronized Wrapper
-**Q**: How do you make a non-thread-safe collection thread-safe?
-**A**: Collections.synchronizedMap(map), Collections.synchronizedList(list), etc.
+Q: Why does barrier phasing hide it?
+A: Barriers align iteration starts but their own synchronization trip
+spreads execution — windows smear instead of coinciding.
 
-## Card 10: ConcurrentHashMap Segments
-**Q**: How did ConcurrentHashMap handle concurrency before Java 8?
-**A**: Used segment-based locking — 16 independent locks, each protecting a portion of the map.
+Q: Volatile Dekker result?
+A: 0/20000, every run: volatile store/load edges forbid exactly the
+exhibited pair, portably.
 
+Q: Monitor Dekker result, and by which mechanism?
+A: 0/20000 by mutual exclusion (pairs serialized under one lock), not
+by ordering — no overlap, no anomaly.
 
-## Further Exploration
+Q: Release/acquire Dekker result?
+A: Still races: 61-90% anomalies measured. Pairwise chains do not
+compose into the total order Dekker needs.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+Q: Release/acquire message-passing result (snippet 4)?
+A: Chain intact over 50000 (true): one-directional edges suffice for
+pairwise handoff — sufficient, not universal.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Q: Tomasulo 1967 in one line?
+A: Reservation stations issue when operands are ready, reorder buffer
+commits in order (IBM 360/91) — OoO execution invisible to one thread,
+visible across threads via shared memory.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+Q: ARM vs POWER ordering primitives (qualitative)?
+A: ARM64: LDAPR (acquire) / STLR (release) / DMB (full); multi-copy
+atomic. POWER: lwsync (lightweight) / sync (full, cumulative);
+non-MCA propagation possible.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Q: Rates vs verdicts?
+A: Rates (36-90%) vary by machine/cores/power; verdicts (nonzero =
+race, zero = ordered) are the portable signal. Assert verdicts.

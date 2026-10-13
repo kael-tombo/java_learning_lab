@@ -1,120 +1,56 @@
-# Reordering — Quiz
+# Quiz: Reordering
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Reordering?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1: What outcome does SC forbid for Dekker, and why?
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+**Answer:** r1 == r2 == 0. In any total order respecting both threads'
+program orders, at least one load follows the opposite store, so at
+least one read sees 1. The (0,0) cell has probability exactly 0 under
+SC — one observation refutes SC for the platform.
 
-## Question 3: Memory
-How much additional memory overhead does Reordering have per element (approximately)?
+## Q2: Snippet 1 prints forbidden (0,0) in ~79% of 20000 rounds. Verdict?
 
-## Question 4: Concurrency
-Is Reordering safe for concurrent access without external synchronization? Explain why or why not.
+**Answer:** Racy, as designed: nonzero anomalies prove StoreLoad
+reordering is routine on this x86. The 1% bar (`bad > iters / 100`)
+holds at ~79x margin; the exact count is machine-specific, the nonzero
+verdict is portable.
 
-## Question 5: Scalability
-How does Reordering perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q3: Same bytecode + 1 ns parkNanos drain prints 0/20000. What is proven?
 
-## Question 6: Design
-Why was Reordering designed this way? What alternatives were considered during its development?
+**Answer:** The store buffer is the mechanism on x86. Compiler and OoO
+theories predict no change from timing alone (identical instructions);
+the buffer theory predicts exactly this (FIFO drains before the load).
+Diagnostic, not a fix — the program is still racy (no hb edge).
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## Q4: Free-running variant shows ~0% anomalies. Fixed?
 
-## Question 8: Comparison
-Compare Reordering with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+**Answer:** No: collision rate collapsed (phase-lock/misses), verdict
+unchanged (still no edge). Rate is a harness property; race is a
+program property. Restore the volatile-flag rendezvous and the
+anomalies return.
 
-## Question 9: Real-World
-Describe a real-world scenario where Reordering is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Q5: Volatile-both-fields prints 0/20000. Mechanism?
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+**Answer:** Ordering: volatile stores emit the StoreLoad fence
+(`XCHG` on x86) and the JMM SC-for-volatiles rule forbids exactly the
+exhibited pair — portably, on every platform, same source.
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## Q6: Monitor variant prints 0/20000. Same mechanism as Q5?
 
+**Answer:** No: exclusion, not ordering. Each store;load pair runs
+inside one `synchronized (LOCK)`, so the pairs never overlap — no
+simultaneity for the buffers to exploit. Same zero, different reason.
 
-## Further Exploration
+## Q7: Release/acquire Dekker still shows 61-90% anomalies. Explain.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+**Answer:** Pairwise chains do not compose into a total order: each
+release->acquire pair orders locally while the cross observations slip
+through the buffers. Sufficient for message-passing (snippet 4: 50000
+intact), insufficient for mutual observation. Only full volatile (both
+sides) or exclusion closes Dekker.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Q8: Which TSO pair escapes on x86, and what passes by accident?
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+**Answer:** Only StoreLoad escapes (Sewell et al., 2010). Plain
+message-passing (`data` then `flag`) passes on x86 because StoreStore
+is preserved — accident of the table, fail on ARM where it is not.
+Dekker needs the one freed pair and fails loudly on the same machine.

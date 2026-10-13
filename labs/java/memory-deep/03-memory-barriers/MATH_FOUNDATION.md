@@ -1,169 +1,73 @@
-# Memory Barriers — Mathematical Foundation
+# Math Foundation: Barrier Taxonomy and Price Ratios
 
-## 1. Asymptotic Complexity Analysis
+## The taxonomy as a 2x2 matrix (defensible, complete)
 
-### Big-O Notation
-All complexity analysis uses standard asymptotic notation:
+Operations are loads (L) and stores (S); a barrier forbids one ordered
+pair from appearing swapped across a point. Four pairs, four barriers:
 
-- **O(1)**: Constant time — independent of input size
-- **O(log n)**: Logarithmic — typical for balanced tree operations
-- **O(n)**: Linear — proportional to input size
-- **O(n log n)**: Log-linear — sorting, heap operations
-- **O(n^2)**: Quadratic — nested iterations
+```
+          later L      later S
+earlier L  LoadLoad    LoadStore
+earlier S  StoreLoad   StoreStore
+```
 
-### Amortized Analysis
-Amortized analysis considers the average cost of an operation over a sequence:
+Acquire = second row of the L-half (LoadLoad + LoadStore) placed
+*after*; release = first column of the S-half (LoadStore + StoreStore)
+placed *before*; SC = release + acquire + StoreLoad *after* the store.
+No fifth barrier exists in the cookbook: the matrix is exhaustive, and
+every JMM edge is a cell selection plus a side. Dekker needs the
+StoreLoad cell on both sides — the only cell TSO hardwares charge full
+price for.
 
-    T_amortized(n) = (1/n) * sum(t_i for i=1 to n)
+## Fence counts predict the ladder shape (not its heights)
 
-Where t_i is the cost of the i-th operation.
+On x86: plain 0 fences, release 0 hardware fences (compiler barriers
+only), volatile store 1 (XCHG/lock prefix). Hence the structural
+prediction: plain ~= release << volatile for stores; plain ~= volatile
+for reads (0 vs 0). Measurements confirm the shape (~1 vs ~1.3 vs ~10
+ns; ~1.0 vs ~1.3 ns) without any fitted parameter — the count is the
+theory, the nanoseconds merely its shadow on one machine. ARM64 keeps
+the counts' ordering with different absolute prices (STLR vs DMB).
 
-#### Accounting Method
-Each operation pays a small additional cost into a bank account. Expensive operations draw from this account.
+## Ratio assertions as hypothesis tests (why >3x and <5x)
 
-#### Potential Method
-A potential function Phi(D_i) maps data structure state D_i to a real number. The amortized cost is:
+Each timing snippet tests a one-sided inequality over 20M samples:
+`volNs > 3 * plainNs` (writes), `volNs < 5 * max(plainNs, 0.2)` (reads),
+`volNs > 3 * max(relNs, 0.2)` (release gap). With per-op noise
+averaged over 20M indexed iterations, standard error of the mean is
+orders below the asserted gaps (~8-10x, ~1.3x, ~8x measured) — the
+bars sit at large margins, so a single warmed run decides correctly on
+any sane x86. The `max(..., 0.2)` floors guard degenerate near-zero
+timers (coarse clocks) against division artifacts — arithmetic hygiene,
+not statistics.
 
-    c_i + Phi(D_i) - Phi(D_{i-1})
+## Anomaly-rate reasoning for snippets 4-5 (rates as verdicts)
 
-### Case Study: ArrayList Growth
-For ArrayList with 1.5x growth factor:
-- Insertions 1 to n cost: n (insertions) + sum of resize costs
-- Resize costs: 1 + 2 + 3 + ... + n * (2/3)^k which sums to approximately n
-- Amortized cost per insertion: O(1)
+Snippet 4's 0/2000 under a race is P(stale observed | TSO + coherence)
+estimated at 0 with 2000 samples — an upper confidence bound near
+0.2%, routinely misread as "correct." The verdict line (`STILL race`)
+overrules the estimate by authority of the model: rates estimate
+platforms, verdicts state programs. Snippet 5's 61-90% over 20000
+estimates P(cross-slip | rendezvous) with sub-percent error — the
+nonzero verdict (race) is over-determined; the percentage locates this
+machine inside the predicted "indistinguishable from plain" band.
 
-## 2. Probability Fundamentals
+## Chains vs total order (order-theoretic minimum)
 
-### Hash Functions and Collisions
-For a hash table with m buckets and n elements:
+Two release/acquire pairs give a poset of two disjoint chains; its
+linear extensions include the (0,0) observation (no constraint between
+the cross reads). Adding StoreLoad fences on both sides adds the two
+cross constraints, and the resulting poset's extensions exclude (0,0).
+That is the whole of snippet 5's mathematics: constraints added (0+0
+vs 1+1 hardware fences), extensions removed (all vs all-but-one cell),
+rate moved (61-90% vs 0%). No invented formulas — counting linear
+extensions of a four-element poset.
 
-- Probability of no collision when inserting k elements: prod((m-i)/m for i=0 to k-1)
-- Expected number of collisions: n - m + m((m-1)/m)^n
-- Load factor: alpha = n/m
+## What not to quantify
 
-### Birthday Paradox
-With 23 people in a room, probability of shared birthday > 50%. For hash tables:
-
-    P(collision) approx 1 - exp(-n(n-1)/(2m))
-
-When n > sqrt(2m), collisions are likely.
-
-## 3. Graph Theory for Tree Structures
-
-### Tree Properties
-- A tree with n nodes has n-1 edges
-- Height of a perfect binary tree: floor(log_2 n)
-- Number of leaves in a perfect binary tree of height h: 2^h
-- Internal nodes in a full binary tree: n - 1
-
-### Red-Black Tree Height
-A red-black tree with n internal nodes has height at most 2*log_2(n+1).
-This guarantee comes from the red-black properties:
-1. Every node is either red or black
-2. The root is black
-3. All leaves (NIL) are black
-4. If a node is red, both its children are black
-5. Every path from a node to its descendant leaves has the same number of black nodes
-
-## 4. Number Theory
-
-### Prime Numbers for Hash Tables
-Using prime-sized hash tables reduces collision probability when hash function distribution is unknown.
-The multiplicative hash: h(k) = floor(m * (k * A mod 1)) where A is the golden ratio (sqrt(5)-1)/2.
-
-### Modulo Arithmetic for Index Calculation
-The index is calculated as: index = hash & (capacity - 1) when capacity is a power of two.
-This is equivalent to hash mod capacity, but much faster as it's a single bitwise operation.
-
-## 5. Probability for Bloom Filters
-
-### False Positive Rate
-For a Bloom filter with m bits, n elements, k hash functions:
-
-    P_FP = (1 - (1 - 1/m)^(kn))^k approx (1 - exp(-kn/m))^k
-
-### Optimal Hash Functions
-    k_optimal = (m/n) * ln(2)
-
-## Summary
-These mathematical foundations underpin the theoretical guarantees and practical performance
-characteristics of the Memory Barriers. Understanding them enables informed design decisions and
-accurate performance predictions. The key takeaway is that data structure selection should be
-guided by mathematical analysis of the expected workload patterns.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Absolute nanoseconds across machines, anomaly percentages across
+platforms, and "fence cost in cycles" from these snippets (frequency
+scaling and turbo make cycle arithmetic fictional here). Portable
+numbers from this lab: fence counts (0/0/1), inequality directions
+(plain <= release < volatile-write; reads ~= parity), verdicts
+(zero/nonzero), and the 2000/20000 sample sizes behind them.

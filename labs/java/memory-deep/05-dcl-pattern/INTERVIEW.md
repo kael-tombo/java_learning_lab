@@ -1,51 +1,47 @@
-# Interview Questions: Double-Checked Locking
+# Interview: DCL Pattern
 
-## Company-Specific Focus
+## Q1: Write correct lazy DCL and name each element's job.
+**A:** `volatile` field (orders construction before publication), outer
+unsynchronized check (fast path: skip the monitor when initialized),
+locked recheck (exactly-once: re-read under the monitor edge so only
+one thread initializes). Plus Bloch's local (`Helper h = instance`,
+single volatile read).
 
-### Google
-- Double-checked locking pattern: lazy initialization with reduced synchronization
-- Classic bug: DCL without volatile allows publication of partially constructed object
-- Fix: volatile ensures visibility of the fully constructed object
+## Q2: Why was pre-2004 DCL broken?
+**A:** Allocate, init, publish could reorder: the reference published
+before field stores completed, and readers passing the outer check saw
+half-constructed objects. JSR-133 (Java 5) gave volatile the
+write/read edges that order construction first — only if the keyword is
+present.
 
-### Microsoft
-- DCL in Java vs C#: C# also requires volatile for correct DCL
-- Lazy initialization: Lazy<T> in C# provides thread-safe lazy init
+## Q3: What happens without the second check? How do you prove it?
+**A:** Double initialization: two racers reading null serialize and both
+construct; side effects double, last publication wins. Proven
+deterministically with a start gate plus 50 ms constructor sleep:
+`constructions == 2`.
 
-### Amazon
-- Singleton with DCL: thread-safe, lazy initialization
-- Holder idiom: static inner class uses class loading guarantee for thread safety
+## Q4: Why read the volatile into a local instead of twice?
+**A:** One fence instead of two, and the method returns the object it
+checked — no skew if the field changed between reads. Effective Java's
+prescribed shape.
 
-### Meta
-- JVM memory model: DCL bug was discovered when JMM was formalized in JSR 133
-- Volatile fix: ensures happens-before between constructor and read
+## Q5: When would you not use DCL at all?
+**A:** Almost always: holder idiom for lazy (JLS 12.4.2 class-init lock,
+exactly once, nothing to get wrong), enum for eager plus
+serialization/reflection safety, synchronized accessor for low call
+rates. DCL only for parameterized laziness or scope constraints.
 
-### Apple
-- Enum singleton: simplest thread-safe singleton
-- Holder pattern: Initialization-on-demand holder idiom
+## Q6: How do holder and enum differ on laziness and safety?
+**A:** Holder is lazy (init on first holder-class use) but needs
+`readResolve` for serialization identity. Enum is eager but immune to
+both killers: reflection throws, deserialization preserves identity by
+JVM rule.
 
-### Oracle
-- JSR 133 (JMM) fixed DCL: volatile was needed before JSR 133 but was not sufficient
-- Freeze: volatile ensures that the freeze action of the constructor is visible
-- DCL alternatives: holder pattern, enum singleton, eager initialization
+## Q7: Deleting `volatile` still passes tests. Ship it?
+**A:** No. The half-constructed read needs adversarial timing; green
+runs are luck, not argument. The missing write/read edge is the finding,
+independent of observation.
 
-## LeetCode-Related Questions
-| LC Problem | Difficulty | Companies | Notes |
-|------------|------------|-----------|-------|
-| (No direct LC problems — DCL is a concurrency pattern) |
-| 146 LRU Cache | Medium | Google, Amazon, Apple | Singleton cache manager |
-
-## Real Production Scenarios
-- **Amazon**: DCL without volatile caused intermittent NPE in product metadata cache
-- **Uber**: Migrating from DCL volatile singleton to holder pattern for better performance
-
-## Interview Patterns & Tips
-- **volatile required**: DCL without volatile is broken
-- **Holder pattern**: Initialization-on-demand holder idiom is simpler
-- **Enum singleton**: best singleton pattern (serialization safe, thread safe)
-
-## Deep Dive Questions
-- **DCL without volatile**: What exactly goes wrong?
-- **JSR 133**: How did the JMM fix DCL?
-- **Holder pattern**: How does the holder pattern achieve thread safety?
-- **Enum singleton**: Why is the enum singleton thread-safe and serialization-safe?
-- **Performance**: Is DCL with volatile faster than synchronized?
+## Q8: What does `value == 42` assert in the stress tests?
+**A:** Initialization safety through DCL publication: all 16 racers see
+the fully constructed singleton, not merely a single reference.

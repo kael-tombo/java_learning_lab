@@ -1,120 +1,43 @@
-# DCL Pattern — Quiz
+# Quiz: DCL Pattern
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in DCL Pattern?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1: Write the three elements of correct DCL. What breaks if each is
+## removed?
+**A:** `volatile` field + outer check + locked recheck. No `volatile`:
+half-constructed publication (pre-2004 reorder). No recheck: double
+initialization (`constructions == 2`, deterministic). No outer check:
+merely a locked accessor — correct but pointless.
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## Q2: Two threads race through recheck-less DCL with a 50 ms
+## constructor sleep. What is `constructions`, and why deterministic?
+**A:** 2. The sleep wedges the window so both threads provably read
+null at check (1) before either publishes, then each serializes through
+the monitor and initializes. Side effects double; last write wins.
 
-## Question 3: Memory
-How much additional memory overhead does DCL Pattern have per element (approximately)?
+## Q3: Why does the lab use `Helper h = instance` instead of reading
+## the field twice?
+**A:** Bloch's shape: one volatile read (one fence) instead of two, and
+the checked object is provably the returned object — no check-then-act
+skew between two distinct reads.
 
-## Question 4: Concurrency
-Is DCL Pattern safe for concurrent access without external synchronization? Explain why or why not.
+## Q4: The holder version prints `constructions == 1` with no volatile
+## and no synchronized in user code. Which lock did the work?
+**A:** The JVM's class-initialization lock (JLS 12.4.2): `LazyHolder`
+initializes exactly once, lazily on first active use, under the JVM's
+own recursive lock.
 
-## Question 5: Scalability
-How does DCL Pattern perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q5: The enum version survives serialization round-trip with identity
+## intact. Why? What must DCL/holder singletons add for the same?
+**A:** The JVM guarantees enum deserialization identity (plus
+reflection immunity: `newInstance` on enums throws). DCL and holder
+singletons need an explicit `readResolve` returning the canonical
+instance.
 
-## Question 6: Design
-Why was DCL Pattern designed this way? What alternatives were considered during its development?
+## Q6: Deleting `volatile` still prints 1 instance in casual runs. Verdict?
+**A:** Still broken. The reorder needs adversarial timing; green runs
+are luck. The finding is the missing write/read edge (JSR-133 argument),
+not an observation — restore the keyword.
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
-
-## Question 8: Comparison
-Compare DCL Pattern with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
-
-## Question 9: Real-World
-Describe a real-world scenario where DCL Pattern is the optimal choice.
-Describe a scenario where it would be a poor choice.
-
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
-
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Q7: When should the synchronized accessor ship instead of DCL?
+**A:** Below high call rates: identical assertions (single instance,
+`value == 42`) at ~20 ns/call vs ~1 ns, with obvious correctness. DCL's
+subtlety must earn its keep; no lab benchmark fixes the crossover.

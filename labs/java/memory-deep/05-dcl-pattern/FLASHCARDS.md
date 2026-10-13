@@ -1,118 +1,51 @@
-# DCL Pattern — Flashcards
+# Flashcards: DCL Pattern
 
-## Card 1: Time Complexity
-**Q**: What is the average and worst-case time complexity of the primary operation?
-**A**: Average O(1), worst-case O(n) (when all elements hash to same bucket)
+## Q1: Name the three load-bearing elements of DCL.
+**A:** The `volatile` field, the outer (unsynchronized) check, and the
+locked recheck. Each prevents a distinct failure; all three are required.
 
-## Card 2: Load Factor
-**Q**: What is the default load factor and what does it mean?
-**A**: Default 0.75. Structure resizes when 75% full, balancing time and space.
+## Q2: Why must the field be volatile?
+**A:** `new Helper()` is allocate, init, publish — without `volatile`
+the reference may publish before field stores complete (pre-2004
+reorder). The volatile write/read edge orders construction before every
+later check-(1) read. JSR-133 fixed the model; the keyword invokes it.
 
-## Card 3: Resize Factor
-**Q**: By what factor does the backing array grow during resize?
-**A**: 2x for HashMap/HashSet, 1.5x for ArrayList
+## Q3: What breaks when the recheck is dropped?
+**A:** Double initialization: two racers both reading null serialize on
+the monitor and each construct (`constructions == 2` deterministically
+with a 50 ms wedged window). Side effects run twice; last write wins.
 
-## Card 4: Treeification
-**Q**: At what threshold does a linked list become a red-black tree?
-**A**: TREEIFY_THRESHOLD = 8 entries in a single bucket
+## Q4: What is Bloch's local-variable shape, and why?
+**A:** `Helper h = instance` once, then test/return `h`. One volatile
+read (one fence) instead of two, and no skew between the checked object
+and the returned object.
 
-## Card 5: Fail-Fast
-**Q**: What is fail-fast behavior and how is it implemented?
-**A**: Iterators throw ConcurrentModificationException if collection is structurally modified during iteration. Implemented via modCount field.
+## Q5: How does the holder idiom work?
+**A:** `static class LazyHolder { static final Helper INSTANCE = new
+Helper(); }` — the JVM's class-initialization lock (JLS 12.4.2) runs
+exactly once, lazily on first active use. No volatile, no synchronized.
 
-## Card 6: equals() vs hashCode()
-**Q**: What is the contract between equals() and hashCode()?
-**A**: If a.equals(b) then a.hashCode() == b.hashCode(). The reverse is not required.
+## Q6: What does the enum singleton buy?
+**A:** Reflection immunity (`newInstance` on enums throws) plus
+serialization identity (deserialize returns the canonical instance) —
+at the price of eagerness (no laziness).
 
-## Card 7: Initial Capacity
-**Q**: What is the default initial capacity?
-**A**: 16 (for HashMap), 10 (for ArrayList)
+## Q7: What does the synchronized baseline cost?
+**A:** One monitor pair per call (~20 ns framing) vs one volatile read
+(~1 ns). Obviously correct; preferable below high call rates. No lab
+benchmark asserts the crossover — it moves with hardware.
 
-## Card 8: Null Keys
-**Q**: Which collections allow null keys?
-**A**: HashMap, LinkedHashMap, WeakHashMap allow one null key. Hashtable, ConcurrentHashMap, TreeMap do not.
+## Q8: What does `value == 42` assert in every snippet?
+**A:** Initialization safety of the shared instance: not just single
+identity but fully constructed state visible to all 16 racers (lab 04's
+freeze, delivered through DCL's publication edge).
 
-## Card 9: Synchronized Wrapper
-**Q**: How do you make a non-thread-safe collection thread-safe?
-**A**: Collections.synchronizedMap(map), Collections.synchronizedList(list), etc.
+## Q9: Why doesn't deleting `volatile` usually fail visibly?
+**A:** The half-constructed read needs adversarial timing; ordinary runs
+pass by luck. Correctness is argued from the missing edge, not from
+observed breakage — green output after deletion proves nothing.
 
-## Card 10: ConcurrentHashMap Segments
-**Q**: How did ConcurrentHashMap handle concurrency before Java 8?
-**A**: Used segment-based locking — 16 independent locks, each protecting a portion of the map.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Q10: When is DCL the right answer?
+**A:** Laziness with constructor parameters, non-static scope, or
+framework constraints blocking the holder. Otherwise holder (lazy) or
+enum (eager, serialization-safe) first.

@@ -1,146 +1,70 @@
-# Reordering — How It Works
+# How It Works: Reordering
 
-## Mechanical Explanation
+## The mechanism in one paragraph
 
-### The Core Mechanism
-Reordering works by organizing data in a specific structure that enables efficient operations.
-The fundamental mechanism relies on a clever mapping between keys and storage locations.
+Each Dekker side executes store-then-load to different addresses. The
+store retires into the core's private FIFO (store buffer) instead of
+reaching coherent cache; the load issues immediately against cache that
+still holds the other side's pre-store value. Both sides do this
+simultaneously, both loads read 0, and the forbidden-under-SC outcome
+prints — at ~79% of tight rendezvous rounds, because the windows
+coincide by construction.
 
-### Step-by-Step Execution
+## Why sequential consistency forbids (0,0) absolutely
 
-#### Insertion
-When a new key-value pair is inserted:
-1. The key's hash code is computed using key.hashCode()
-2. A supplemental hash is applied to improve distribution across buckets
-3. The hash is mapped to an index in the backing array using bitwise AND
-4. If the bucket is empty, a new node is created and placed there
-5. If occupied, the chain is traversed:
-   - Key exists -> update value, return old value
-   - Key not found -> append new node at end of chain
-6. After insertion, if size exceeds threshold, the array is resized
+SC requires one total order over all four operations respecting each
+thread's program order, with each read seeing the latest prior write.
+Case analysis: if `x = 1` is first, T2's `r2 = x` must see 1; if
+`y = 1` is first, T1's `r1 = y` must see 1; simultaneous stores still
+order one first. No total order yields (0,0) — the outcome is not rare
+under SC, it is *impossible*. Observing it even once refutes SC for the
+platform (which is the point: hardware is not SC).
 
-#### Lookup
-When a key is looked up:
-1. Hash code computed and mapped to index using same algorithm
-2. Bucket at that index is examined
-3. If empty -> key not found, return null
-4. If occupied, chain is traversed comparing keys using equals()
-5. Key found -> return associated value
-6. End of chain -> return null
+## The rendezvous: manufacturing simultaneity
 
-#### Resizing
-When resizing is triggered:
-1. New array of twice the capacity is allocated
-2. Each entry is rehashed (or reassigned) to the new array
-3. For hash-based structures, entries split into low/high buckets based on hash & oldCapacity
-4. Threshold is recalculated: newCapacity * loadFactor
-5. Old array becomes eligible for garbage collection
+Daemon racers spin on volatile `go` (`while (!go) onSpinWait()`),
+execute exactly one store;load pair, signal volatile `done`, then spin
+on `go` clearing. The main thread resets `x = y = 0` and the done
+flags, sets `go = true`, spins until both done, samples `r1slot`/`r2slot`,
+then clears `go`. Volatile flags make the window edges themselves
+ordered (spins cannot hoist, signals are visible), so the two
+store;load pairs fire within nanoseconds of each other, thousands of
+rounds in a row. Free-running or barrier-phased variants smear the same
+windows — same verdict, collapsed rate.
 
-### Concurrency Model
-For concurrent variants:
-- **Lock-Free**: CAS operations on head/tail pointers avoid blocking
-- **Lock-Based**: Segmented locks reduce contention compared to single lock
-- **Snapshot**: Copy-on-write semantics for safe iteration without locking
+## Elimination: the 1 ns drain that convicts the buffer
 
-### Memory Model
-The Java Memory Model guarantees:
-- **Visibility**: volatile fields ensure cross-thread visibility of latest writes
-- **Atomicity**: Reference assignment is atomic for all types except long/double
-- **Ordering**: final fields guarantee initialization safety
-- **Happens-Before**: Monitor enter/exit, volatile read/write establish ordering
+`DelayDrains` changes one thing: `parkNanos(1)` between each store and
+load. Bytecode identical (nothing new to hoist; nothing was hoisted —
+the opaque park call pins order even harder), CPU dependencies
+identical, yet anomalies fall from ~79% to 0/20000. The only changed
+quantity is *time for the FIFO to drain*. Compiler and OoO theories
+predict no change; the buffer theory predicts exactly this. The buffer
+is convicted by difference, not by authority.
 
-### Interaction with Garbage Collection
-- **Short-lived objects**: Iterators, temporary nodes collected in young generation
-- **Tenured objects**: Long-lived collections promoted to old generation
-- **GC roots**: Static collections prevent GC of all referenced objects
-- **Reference types**: WeakHashMap uses weak references for automatic cleanup
+## Why volatile zeroes it (both sides)
 
-### Performance Characteristics
+Volatile stores emit the platform's StoreLoad fence (`XCHG` on x86;
+fenced release on ARM64) and volatile loads acquire; the JMM's SC
+guarantee for the volatile chain forbids precisely the exhibited pair
+on every platform. Same threads, same rendezvous, same 20000 rounds —
+two keywords, ~15000 anomalies deleted. The delta is ordering
+semantics, visible in no other variable.
 
-#### When It's Fast
-- Uniform hash distribution: most buckets have 0-1 elements
-- Sequential access patterns: good cache locality
-- Appropriate initial capacity: no resize overhead
+## Why the monitor zeroes it (differently)
 
-#### When It's Slow
-- Poor hash distribution: long chains, O(n) lookup
-- Frequent resizing: repeated array allocation and rehashing
-- Concurrent contention: threads competing for locks
-- Cache misses: pointer chasing through linked list chains
+`MonitorFix` wraps each pair in `synchronized (LOCK)`: the two bodies
+never overlap, so there is no simultaneity for the buffers to exploit.
+Ordering is irrelevant when there is no concurrency to order — the fix
+works by *exclusion*. Three resolutions, three mechanisms: volatile
+(ordering), drain (timing — diagnostic only), lock (exclusion). Only
+the first and third are synchronization.
 
+## Why release/acquire does not (preview of lab 03)
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+`setRelease`/`getAcquire` build pairwise chains (my release to your
+acquire), and Dekker has two independent pairs with no chain between
+the cross observations. Each pair orders locally while the cross pair
+slips through the buffers: 61-90% anomalies, indistinguishable from
+plain. Chains compose for message-passing (snippet 4: 50000 intact);
+they do not compose into the total order Dekker demands.

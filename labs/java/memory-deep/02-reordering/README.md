@@ -1,147 +1,65 @@
-# Reordering
+# Reordering — README
 
-## Overview
-Compiler reordering, CPU out-of-order (Tomasulo), store buffer, invalidate queue, memory ordering (TSO/ARM/Power)
+Source order is a suggestion. The JIT reorders within as-if-serial
+freedom, the CPU issues out of order around stalls, and store buffers
+hold writes invisibly before coherent cache. This lab *measures* the
+consequence: the Dekker litmus (`x = 1; r1 = y` vs `y = 1; r2 = x`),
+whose `(0,0)` outcome sequential consistency forbids absolutely —
+observed on real x86 hardware in a large fraction of rendezvoused
+iterations.
 
-## Learning Objectives
-- Understand the internal mechanics of Reordering
-- Implement working code that demonstrates core concepts
-- Analyze performance characteristics and trade-offs
-- Apply this knowledge in real-world Java applications
+## What you will learn
 
-## Prerequisites
-- Java 21+
-- Basic understanding of Java collections framework
-- Familiarity with data structures and algorithms
+- The three reordering layers (compiler, CPU execution, memory
+  subsystem) and which one causes this lab's anomaly (the store
+  buffer — proven by elimination in snippet 3).
+- x86-TSO: LoadLoad, LoadStore, and StoreStore preserved; only
+  StoreLoad escapes (Sewell et al., 2010). Dekker is StoreLoad's
+  signature.
+- Why ARM/POWER reorder more (any pair in principle; order from
+  `LDAPR`/`STLR`/`DMB` and `lwsync`/`sync`), and why `volatile` fixes
+  the litmus portably on all of them.
+- Why demonstrating the anomaly needs a volatile-flag rendezvous per
+  iteration — and why free-running threads or barrier phasing hide it.
+- Which "fixes" are real (volatile: 0/20000; monitor: 0/20000) and
+  which are diagnostic only (1 ns `parkNanos` drain) or insufficient
+  (release/acquire still races).
 
-## Lab Structure
-This micro-lab follows the standard 24-file pedagogical structure with 7 subdirectories for hands-on work.
+## The five runnable demos (JDK 9+, verified on JDK 23)
 
-## Quick Start
-1. Navigate to the source directory: `src/main/java/com/javalab/02/`
-2. Review the main implementation class
-3. Run tests using: `mvn test` or `gradle test`
-4. Complete the exercises in EXERCISES.md
-5. Build the MINI_PROJECT to cement understanding
+| # | Class | Shape | Verdict on x86 |
+|---|-------|-------|----------------|
+| 1 | `DekkerAnomaly` | plain Dekker, rendezvoused | forbidden `(0,0)` routine (measured up to ~79%) |
+| 2 | `VolatileFix` | identical, `volatile int` fields | `0/20000`, ordering holds |
+| 3 | `DelayDrains` | snippet 1 + 1 ns `parkNanos` drain | `0/20000`, anomaly gone (timing, NOT a fix) |
+| 4 | `ReleaseAcquire` | `setRelease`/`getAcquire` chain, 50000 | chain intact: `true` (sufficient here, not universal) |
+| 5 | `MonitorFix` | Dekker pair under one lock | `0/20000`, exclusion forbids the anomaly |
 
-## File Index
-| File | Description |
-|------|-------------|
-| README.md | Overview and navigation |
-| THEORY.md | Comprehensive theoretical foundation |
-| MATH_FOUNDATION.md | Mathematical prerequisites |
-| CODE_DEEP_DIVE.md | Detailed code walkthroughs |
-| EXERCISES.md | Practice problems with solutions |
-| QUIZ.md | Self-assessment questions |
-| ARCHITECTURE.md | Design and architectural considerations |
-| SECURITY.md | Security implications |
-| PERFORMANCE.md | Performance characteristics and optimization |
-| REFACTORING.md | Improving existing code |
-| DEBUGGING.md | Debugging strategies and tools |
-| COMMON_MISTAKES.md | Pitfalls and anti-patterns |
-| STEP_BY_STEP.md | Guided tutorial-style implementation |
-| VISUAL_GUIDE.md | Diagrams and visual explanations |
-| INTERNALS.md | Under-the-hood implementation details |
-| HOW_IT_WORKS.md | Step-by-step mechanical explanation |
-| MENTAL_MODELS.md | Analogies and mental frameworks |
-| HISTORY.md | Evolution across Java versions |
-| WHY_IT_MATTERS.md | Practical importance in real-world development |
-| WHY_IT_EXISTS.md | Historical context and motivation |
-| REFERENCES.md | Further reading and resources |
-| REFLECTION.md | Guided self-reflection prompts |
-| INTERVIEW.md | Common interview questions |
-| FLASHCARDS.md | Spaced-repetition learning cards |
+Rates vary by machine, cores, and power state; verdicts (nonzero vs
+zero) are the portable signal. The 1% assertion bar in snippets 1 and
+5's cousins holds at large margins, not near them.
 
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| MINI_PROJECT/ | Small hands-on project |
-| REAL_WORLD_PROJECT/ | Production-scale project |
-| CHALLENGE/ | Advanced challenge problems |
-| TESTS/ | Unit and integration tests |
-| BENCHMARK/ | Performance benchmarks |
-| DIAGRAMS/ | Visual aids and architecture diagrams |
-| SOLUTION/ | Solutions to exercises and projects |
+## How to work this lab
 
-## Time Estimate
-- Reading: 30-45 minutes
-- Exercises: 45-60 minutes
-- Mini Project: 60-90 minutes
-- Total: 2-3 hours
+1. Read `THEORY.md` (three layers, x86-TSO, ARM/POWER qualitative,
+   what the JVM emits, Dekker explained by elimination).
+2. Read `CODE_DEEP_DIVE.md` with the sources: note the rendezvous
+   design (volatile `go`/`done` flags, daemon racers, main-thread
+   driver) shared by snippets 1-3 and 5.
+3. Run snippet 1 first and confirm `reordering observed: true`; then 2,
+   3, 5 and confirm each zero-claim. Read snippet 4 as the contrast
+   (chains that hold for message-passing but do not order Dekker).
+4. Do `EXERCISES.md`: convert rendezvous to free-running and watch the
+   anomaly vanish without changing the verdict; swap barrier phasing
+   in; apply the release/acquire Dekker variant from lab 03's snippet 5
+   (61-90% anomalies) to feel pairwise-vs-total ordering.
+5. Finish with `QUIZ.md`, `INTERVIEW.md`, `REFLECTION.md`.
 
+## Where this fits
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Previous: `01-jmm-foundations` (the edges this lab deliberately
+  omits in snippet 1 and restores in snippets 2/5).
+- Next: `03-memory-barriers` (the fence taxonomy that explains *why*
+  volatile costs ~10 ns and release/acquire still races Dekker).
+- Requires: comfort with hb chains; this lab is the no-edge control
+  group for the whole track.

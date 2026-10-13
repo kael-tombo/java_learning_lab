@@ -1,147 +1,61 @@
-# DCL Pattern
+# Double-Checked Locking Pattern
 
-## Overview
-DCL broken in JMM pre-5, volatile fix, static holder idiom, enum singleton, init-on-demand
+## What this lab covers
 
-## Learning Objectives
-- Understand the internal mechanics of DCL Pattern
-- Implement working code that demonstrates core concepts
-- Analyze performance characteristics and trade-offs
-- Apply this knowledge in real-world Java applications
+Lazy singleton publication with one `volatile` read on the fast path
+instead of a monitor acquisition per call. Three elements, each
+load-bearing: the `volatile` field, the outer (unsynchronized) check,
+and the locked recheck. Remove any one and the idiom breaks a different
+way.
 
-## Prerequisites
-- Java 21+
-- Basic understanding of Java collections framework
-- Familiarity with data structures and algorithms
+## The idiom (Bloch's shape)
 
-## Lab Structure
-This micro-lab follows the standard 24-file pedagogical structure with 7 subdirectories for hands-on work.
+```java
+static Helper get() {
+    Helper h = instance;                 // (1) one volatile read
+    if (h == null) {
+        synchronized (VolatileDcl.class) {
+            if ((h = instance) == null)  // (2) recheck under lock
+                h = instance = new Helper();
+        }
+    }
+    return h;
+}
+```
 
-## Quick Start
-1. Navigate to the source directory: `src/main/java/com/javalab/05/`
-2. Review the main implementation class
-3. Run tests using: `mvn test` or `gradle test`
-4. Complete the exercises in EXERCISES.md
-5. Build the MINI_PROJECT to cement understanding
+The local `h` reads the volatile once per call instead of twice: one
+fence, and no check-then-act skew between the two tests.
 
-## File Index
-| File | Description |
-|------|-------------|
-| README.md | Overview and navigation |
-| THEORY.md | Comprehensive theoretical foundation |
-| MATH_FOUNDATION.md | Mathematical prerequisites |
-| CODE_DEEP_DIVE.md | Detailed code walkthroughs |
-| EXERCISES.md | Practice problems with solutions |
-| QUIZ.md | Self-assessment questions |
-| ARCHITECTURE.md | Design and architectural considerations |
-| SECURITY.md | Security implications |
-| PERFORMANCE.md | Performance characteristics and optimization |
-| REFACTORING.md | Improving existing code |
-| DEBUGGING.md | Debugging strategies and tools |
-| COMMON_MISTAKES.md | Pitfalls and anti-patterns |
-| STEP_BY_STEP.md | Guided tutorial-style implementation |
-| VISUAL_GUIDE.md | Diagrams and visual explanations |
-| INTERNALS.md | Under-the-hood implementation details |
-| HOW_IT_WORKS.md | Step-by-step mechanical explanation |
-| MENTAL_MODELS.md | Analogies and mental frameworks |
-| HISTORY.md | Evolution across Java versions |
-| WHY_IT_MATTERS.md | Practical importance in real-world development |
-| WHY_IT_EXISTS.md | Historical context and motivation |
-| REFERENCES.md | Further reading and resources |
-| REFLECTION.md | Guided self-reflection prompts |
-| INTERVIEW.md | Common interview questions |
-| FLASHCARDS.md | Spaced-repetition learning cards |
+## What you will run
 
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| MINI_PROJECT/ | Small hands-on project |
-| REAL_WORLD_PROJECT/ | Production-scale project |
-| CHALLENGE/ | Advanced challenge problems |
-| TESTS/ | Unit and integration tests |
-| BENCHMARK/ | Performance benchmarks |
-| DIAGRAMS/ | Visual aids and architecture diagrams |
-| SOLUTION/ | Solutions to exercises and projects |
+All snippets need only JDK 9+ (verified on JDK 23). Every stress uses
+16 threads x 10k gets and asserts single instance plus `value == 42`:
 
-## Time Estimate
-- Reading: 30-45 minutes
-- Exercises: 45-60 minutes
-- Mini Project: 60-90 minutes
-- Total: 2-3 hours
+1. `VolatileDcl` — the real idiom under race: 1 instance, fully
+   constructed. The volatile write inside the lock orders construction
+   before every later volatile read at check (1).
+2. `HolderIdiom` — laziness via JLS 12.4.2 class-init lock:
+   `constructions == 1`, no volatile, no synchronized, nothing to get
+   wrong. Prefer this unless parameters force DCL.
+3. `EnumSingleton` — eager, but reflection-proof (`newInstance` throws)
+   and serialization-identical (identity preserved across deserialize).
+4. `SyncBaseline` — `synchronized` accessor: obviously correct at one
+   monitor pair per call (~20 ns vs ~1 ns volatile read framing).
+5. `NoSecondCheck` — dropped recheck double-initializes
+   deterministically: `constructions == 2` via the 50 ms wedged window.
 
+## Failure modes by removed element
 
-## Further Exploration
+- No `volatile`: pre-2004 reorder — reference published before field
+  stores complete; readers see half-constructed objects (JSR-133 fix).
+- No recheck: double initialization — two racers serialize on the
+  monitor and both construct; last publication wins, side effects double.
+- No outer check: merely locking (correct but pointless — the fast path
+  is gone).
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## How to use this lab
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Read THEORY.md for the three-element argument, CODE_DEEP_DIVE.md for
+the five runnable demos, then work EXERCISES.md (keyword removal,
+recheck removal, holder/enum comparisons). Reach for the holder first in
+real code; reserve DCL for laziness with parameters or scope.
