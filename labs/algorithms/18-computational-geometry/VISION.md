@@ -1,48 +1,33 @@
-# VISION — Computational Geometry
-> Mastery path. Lab `18-computational-geometry`.
+# Vision: Computational Geometry
+> Exact integer predicates: orientation, intersection, hulls - no floating point required.
 
-## Where this sits
-- Computational Geometry is one tool in the algorithms arsenal: sweeps, orientation predicates, convex hulls.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; Graham O(n log n), line-sweep intersections O((n+k) log n) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (GIS, graphics, collision detection).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain sweep-line order + event queue correctness without notes; derive Graham O(n log n), line-sweep intersections O((n+k) log n) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Hull computation, segment intersection, and point-in-polygon tests.
+- Robustness thinking: exact predicates instead of epsilon comparisons.
+- Sweep-line ideas that build on the ordering used in hull algorithms.
+## What mastering it unlocks
+- Evaluate the cross-product orientation test and interpret its sign.
+- Test proper segment intersection from four orientation signs.
+- Run Andrew's monotone chain and justify the pop condition.
+- Explain why integer arithmetic with long products is exact here.
+- Handle collinear and degenerate inputs without crashing or looping.
+## What it does not cover
+- 3D geometry, rotations, and spatial transforms.
+- Robust geometric libraries and exact arithmetic beyond 64-bit products.
+- Graphics pipelines, triangulation, and mesh processing.
+## Core questions you will answer
+- Why does the sign of the cross product decide clockwise vs counter-clockwise?
+- Why do both straddle conditions matter for proper intersection?
+- Why pop on non-clockwise turns, and what do collinear edge points do?
+- At what coordinate magnitude do int products overflow, and what is the fix?
+## How to judge progress
+- Hand-evaluate orientations and intersections on new point sets.
+- Implement monotone chain that handles collinear points deliberately.
+- Name the overflow bound and the cast that prevents it.
+## Common misuse
+- Using doubles and epsilon for predicates that integers decide exactly.
+- Ignoring collinear cases, which then fail on axis-aligned test data.
+## After this lab
+- 33-matrix-algorithms for the linear-algebra side of coordinates.
+- 09-divide-and-conquer for closest-pair style divide-and-conquer geometry.
+One-line self-test: Explain the pop rule of monotone chain using the orientation sign.

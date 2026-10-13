@@ -1,83 +1,33 @@
-# MINI_PROJECT — Cryptographic Algorithms
-> Implement + benchmark + visualize. Lab `15-cryptographic-algorithms`.
+# Mini Project: Hash Manifest Lite
+> SHA-256 integrity checks for a folder, using only the platform provider.
 
+## Background
+- A manifest maps each file to its SHA-256 hex digest; verify recomputes and compares.
+- Streaming keeps memory flat no matter the file size.
+- This project covers integrity only - no secrecy, no signatures.
 ## Goal
-- Build a runnable Java CLI that solves one-way functions, modular exponentiation, Merkle-Damgard / sponge, benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
-
-## Spec
-1. `lab.15_cryptographic_algorithms.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving correctness of encrypt/decrypt inverses; avalanche invariant.
-
-## Starter code
-```java
-package lab.15_cryptographic_algorithms;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
-
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
-
-## Visualization
-- For n<=16 print DP row / window [l,r) / decision path.
-- Example (ASCII): `l=2 r=7 window=[4 1 5] best=3 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
-
+Write manifest-create and manifest-verify for a directory tree.
+Demonstrate tamper detection on a fixture with one flipped byte.
+## Tasks
+1. Walk a directory in sorted order and stream each file through SHA-256.
+2. Write manifest lines as hex digest, byte size, relative path.
+3. Verify by re-hashing and reporting OK, MODIFIED, MISSING, or EXTRA per file.
+4. Build a tamper fixture (copy a clean tree, flip one byte) and show the report.
+5. Time hashing of a 100 MB generated file and record MB/s.
+6. Document the integrity-only guarantee and two things it does not provide.
+## Acceptance criteria
+- Clean tree verifies all-OK with exit code 0.
+- Tamper fixture reports exactly one MODIFIED path.
+- Deleted and added files report MISSING and EXTRA respectively.
+- 100 MB file hashes without memory growth (streaming confirmed).
+- README states the two non-guarantees explicitly.
+## Pitfalls
+- Reading whole files into memory instead of streaming.
+- Comparing digests with early-exit equals in a security context.
+- Hashing the manifest file itself and chasing a moving target.
+- Assuming matching digests prove authorship (they prove integrity only).
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for RSA O(k^3), AES rounds O(blocks), SHA-256 O(n).
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches RSA O(k^3), AES rounds O(blocks), SHA-256 O(n).
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Tamper-timing table: detection latency vs file count.
+- HMAC sketch (conceptual): which line changes if a key is introduced.
+## Timebox
+One evening session, roughly 2 hours with fixtures.

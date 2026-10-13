@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — Greedy Algorithms
-> Recurrences / Master theorem / amortized. Lab `16-greedy`.
+# Math Foundation: Exchange Proofs and Density Swaps
+> Formal greedy-choice proofs: activity exchange, fractional swap, Huffman merge counting.
 
-## 1. Why math matters here
-- Greedy Algorithms claims usually O(n log n) dominated by sort; O(n) after — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- Greedy-choice property: some optimal solution contains the greedy first pick.
+- Optimal substructure: after the pick, the remainder is a smaller instance.
+- Density d = value/weight for fractional items; finish time f for activities.
+- Exchange: transform an arbitrary optimum into one using the greedy pick without loss.
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for Greedy Algorithms, instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- Activity scan: one sort O(n log n) plus one linear pass: Theta(n log n) total.
+- Fractional knapsack: same sort-dominated bound; the fill pass is linear.
+- Huffman: n-1 merges, each two extract-mins plus one insert: Theta(n log n) with a heap.
+- Canonical coins: O(coins) scan after the divisibility structure is assumed.
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- Activity remainder: OPT(S) = 1 + OPT({later compatible}) given the exchange lemma.
+- Fractional fill: value accumulates density x taken; the loop ends at capacity or items.
+- Huffman total cost = sum of merged weights (each merge prices one tree level).
+- Coin count: quotient per denomination summed; divisibility makes quotients safe.
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in Greedy Algorithms.
+## Derivation of the bound
+- Exchange lemma (activities): earliest finish leaves the largest remainder set.
+- Swap lemma (fractions): replacing epsilon of lower density by higher gains value.
+- Both lemmas convert existence of an optimum into existence of a greedy-using optimum.
+- Induction on instance size then proves full optimality from the one-step lemma.
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For greedy-choice property + optimal substructure: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: usually O(n log n) dominated by sort; O(n) after derived by this product.
+## Worked mini-proofs
+- Proof 1: activity exchange in 4 lines (swap first activity, feasibility kept, count kept).
+- Proof 2: density swap gains (d_high - d_low) x epsilon >= 0. (3 lines)
+- Proof 3: Huffman merge cost equals weighted path length contribution. (4 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to Greedy Algorithms: each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. Greedy coins for 63 with {25,10,5,1}. Answer: 6 coins (2+1+0+3).
+- 2. Greedy fails for 6 with {1,3,4}. Answer: greedy 3 (4+1+1) vs optimal 2 (3+3).
+- 3. Fractional value for cap 50, items (10,60),(20,100),(30,120). Answer: 240.0.
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- Stating the exchange without proving the swapped set stays feasible.
+- Applying density order to 0/1 items where the swap proof needs fractions.
+- Proving optimality from test results instead of the exchange lemma.
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive usually O(n log n) dominated by sort; O(n) after.
+## Checklist
+- Write the activity exchange lemma with feasibility and count steps.
+- Produce the {1,3,4} counterexample with both totals computed.

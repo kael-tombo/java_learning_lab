@@ -1,48 +1,33 @@
-# VISION — Sliding Window Technique
-> Mastery path. Lab `18-sliding-window`.
+# Vision: Sliding Window
+> O(n) subarray and substring scans with amortized pointer moves.
 
-## Where this sits
-- Sliding Window Technique is one tool in the algorithms arsenal: variable / fixed windows with monotonic aggregates.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(n) each index visited <= twice; O(k) aux memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (rate limiting, longest-substring-k-distinct, min-subarray).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain window invariant: [l,r) is longest/shortest valid ending at r without notes; derive O(n) each index visited <= twice; O(k) aux on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Longest/shortest substring with constraints, fixed-size maximums, rate limiting.
+- Frequency-map maintenance: add right, shrink left, track validity incrementally.
+- Amortized analysis in miniature: each index enters and leaves once.
+## What mastering it unlocks
+- Solve fixed-size maximum-sum with prefix-style window slides.
+- Maintain a valid variable window for longest-substring-without-repeats.
+- Argue O(n) from each pointer moving at most n steps.
+- Decide fixed vs variable window from the problem statement.
+- Maintain counts incrementally instead of rescanning the window.
+## What it does not cover
+- Two-pointer problems without window content (sorted two-sum lives next door).
+- Deque-based sliding maximum in full generality (covered as extension only).
+- Streaming algorithms with sublinear memory guarantees.
+## Core questions you will answer
+- Why does the left pointer never need to move backward in these problems?
+- What makes a constraint shrinkable, and which constraints break the pattern?
+- How does the frequency map stay consistent during shrinks?
+- When is brute-force O(n^2) actually fine, and when must the window be used?
+## How to judge progress
+- Classify a substring problem as fixed or variable window on sight.
+- Prove linearity by counting pointer moves, not by feeling.
+- Handle empty input, single character, and all-identical inputs correctly.
+## Common misuse
+- Shrinking without restoring the invariant the shrink loop promises.
+- Recomputing window contents from scratch each step, silently returning to O(n^2).
+## After this lab
+- 17-two-pointers for the pointer mechanics underneath windows.
+- 05-dynamic-programming for subarray problems that need more than a window.
+One-line self-test: Explain why the total pointer movement across the whole run is at most 2n.

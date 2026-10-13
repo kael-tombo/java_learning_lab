@@ -1,171 +1,97 @@
-# Mock Interview: Advanced Trees — AVL, Red-Black and B-Trees
+# Mock Interview: Advanced Trees (AVL, Red-Black, B-Trees)
 
-## Interview Details
-- **Topic**: Advanced Trees
-- **Difficulty Range**: Medium to Medium
-- **Total Time**: 45 minutes
-- **Interviewer**: Staff Software Engineer at Google
-- **Candidate**: Software Engineer (5 years experience)
+## Q1 — AVL Rotation
 
----
+**Problem.** Insert keys 1..7 in order into a plain BST, then explain how AVL fixes the result.
 
-## Question 1: Serialize and Deserialize BST (LC 449)
+**Key insight.** Unbalanced insertion degenerates to a chain (height 7). AVL restores O(log n) height with single/double rotations whenever a balance factor reaches +/-2. A sorted insert of 1..7 balances to height 3.
 
-**Difficulty**: Medium
-**Time Allotted**: 15 minutes
+**Complexity.** Rotations O(1); insert/delete O(log n); height bounded by ~1.44 log n.
 
-**Interviewer**: "Let us start with Serialize and Deserialize BST (LC 449). Please walk me through your approach and explain your thought process."
+```java
+public class AdvTreesQ1 {
+    static class Node {
+        int v, h = 1; Node left, right;
+        Node(int v) { this.v = v; }
+    }
 
-**Candidate**: "I will begin with the brute force solution to ensure I understand the problem correctly. The naive approach involves checking all possibilities which would be O(n^2) time complexity. However, I believe we can optimize this significantly."
+    static int h(Node n) { return n == null ? 0 : n.h; }
 
-**Interviewer**: "What makes you think we can do better? What patterns do you recognize?"
+    static Node rotR(Node y) {
+        Node x = y.left;
+        y.left = x.right; x.right = y;
+        y.h = 1 + Math.max(h(y.left), h(y.right));
+        x.h = 1 + Math.max(h(x.left), h(x.right));
+        return x;
+    }
 
-**Candidate**: "The problem requires efficient lookups, which suggests a HashMap or HashSet would be appropriate. By trading space for time, we can achieve O(n) time complexity. The key insight is that we only need to check if a specific complement or condition exists as we traverse the input once."
+    public static void main(String[] args) {
+        Node y = new Node(3); y.left = new Node(2); y.left.left = new Node(1);
+        y.h = 3; y.left.h = 2;
+        System.out.println(rotR(y).v);
+        System.out.println(h(new Node(9)));
+    }
+}
+```
 
-**Interviewer**: "Walk me through the optimized approach."
+Output:
 
-**Candidate**: "I will initialize an empty HashMap. Then I iterate through the input. For each element, I compute what I need (the complement) and check if it exists in the map. If it does, I return the result. Otherwise, I store the current element for future lookups. This gives us O(n) time and O(n) space."
+```
+2
+1
+```
 
-**Interviewer**: "What about edge cases? How does your solution handle them?"
+## Q2 — Red-Black Tree Invariants
 
-**Candidate**: "I need to consider: empty input returning a default value, single element where no pair exists, duplicate values that might cause incorrect matches, and integer overflow for large values. My solution handles empty input by returning a sentinel value early. For duplicates, I ensure I do not use the same element twice by checking carefully."
+**Problem.** State the red-black invariants and why they guarantee logarithmic height.
 
-**Interviewer**: "Good. Now, what if the input is sorted? Can we improve space complexity?"
+**Key insight.** Root black, red nodes have black children, and every root-to-leaf path holds equal black depth. A path can have at most twice the black depth, so height is O(log n) with a small constant.
 
-**Candidate**: "Yes, if the input is sorted we can use the two-pointer technique. Place one pointer at the start and one at the end. If the sum is too large, move the right pointer left. If too small, move the left pointer right. This gives O(n) time and O(1) space, which is optimal when sorting is allowed."
+**Complexity.** All ops O(log n); at most O(1) rotations per insert fix-up amortized reasoning aside.
 
-**Time Taken**: 12 minutes
-**What Went Well**: 
-- Clearly articulated brute force before optimization
-- Discussed multiple approaches with trade-offs
-- Identified edge cases proactively
-**Could Improve**: 
-- Could have written code slightly faster once approach was confirmed
-- Should ask about input constraints before starting
+```java
+public class AdvTreesQ2 {
+    public static void main(String[] args) {
+        int n = 1000000;
+        double blackHeight = Math.log(n + 1) / Math.log(2);
+        System.out.println("maxHeight<=" + (int) (2 * blackHeight));
+        System.out.println("avlBound~=" + (int) (1.44 * blackHeight));
+    }
+}
+```
 
----
+Output:
 
-## Question 2: BST to Greater Sum Tree (LC 1038)
+```
+maxHeight<=39
+avlBound~=28
+```
 
-**Difficulty**: Medium
-**Time Allotted**: 15 minutes
+## Q3 — B-Tree Fanout and Height
 
-**Interviewer**: "Next question: BST to Greater Sum Tree (LC 1038). This is a classic problem. I want to see how you approach it."
+**Problem.** A database index stores 10 million keys in a B-tree with minimum degree t = 100. Bound the height.
 
-**Candidate**: "Let me restate the problem to confirm my understanding. We are asked to... The key observation here is that we need to maintain some state as we traverse the input. This resembles a pattern where we track running values."
+**Key insight.** Each node holds up to 2t - 1 keys and 2t children, so height is O(log_t n): a handful of levels even for millions of keys, meaning a handful of disk reads.
 
-**Interviewer**: "What is your initial approach?"
+**Complexity.** Search/insert/delete O(t log_t n); height O(log_t n).
 
-**Candidate**: "The brute force would check every possible combination or subarray, leading to O(n^2) time. But I recognize this as a single-pass problem. We can maintain certain variables that capture the best result seen so far and update them as we iterate."
+```java
+public class AdvTreesQ3 {
+    public static void main(String[] args) {
+        long n = 10_000_000L;
+        int t = 100;
+        int height = 0;
+        long capacity = 1;
+        while (capacity < n) { capacity *= (2 * t); height++; }
+        System.out.println("height<=" + height);
+        System.out.println("maxKeysPerNode=" + (2 * t - 1));
+    }
+}
+```
 
-**Interviewer**: "Explain the optimal solution step by step."
+Output:
 
-**Candidate**: "We initialize tracking variables. Then for each element in the input, we decide whether to start fresh or extend the existing sequence. This decision is based on comparing the current element alone versus combining it with what we have already built. We maintain a running state and a global best. At the end, we return the global best."
-
-**Interviewer**: "What is the complexity analysis?"
-
-**Candidate**: "O(n) time because we process each element exactly once. O(1) space because we only use a constant number of variables regardless of input size. This is optimal because we must at least look at each element once, giving a lower bound of omega(n)."
-
-**Interviewer**: "What specific edge cases should your code handle?"
-
-**Candidate**: "Empty array returning zero or a default, single element array, all positive values, all negative values, mixed values, and very large values that could overflow an integer. For the all-negative case, our tracking logic must correctly pick the largest negative as the answer."
-
-**Time Taken**: 13 minutes
-**What Went Well**: 
-- Excellent problem restatement
-- Understood the pattern immediately
-- Good complexity lower bound justification
-**Could Improve**: 
-- Should mention specific Java implementation details
-- Could discuss alternative approaches more briefly
-
----
-
-## Question 3: Recover Binary Search Tree (LC 99)
-
-**Difficulty**: Medium
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Final question: Recover Binary Search Tree (LC 99). This one is more challenging, so take your time with the design."
-
-**Candidate**: "This is a harder variation. Let me think about the structure. The brute force approach would be too slow for large inputs. I need to consider what data structures can help achieve efficient operations."
-
-**Interviewer**: "What is your strategy?"
-
-**Candidate**: "I will use a multi-phase approach. First, I gather some information in a preprocessing pass. Then I use that information to compute the final result efficiently. The key insight is that we can avoid redundant work by storing intermediate results."
-
-**Interviewer**: "What data structures are you considering?"
-
-**Candidate**: "I think a combination of arrays and hash maps would work well. The array gives us fast indexed access, and the hash map provides O(1) amortized lookups. If we need ordered traversal, we might consider a tree-based structure instead."
-
-**Interviewer**: "Can you optimize space usage?"
-
-**Candidate**: "We can reuse the input array for storing intermediate values if in-place modification is allowed. This reduces auxiliary space from O(n) to O(1). However, we must be careful not to lose original data needed for subsequent computations. A common trick is to encode two values in one element using mathematical transformations or bit manipulation."
-
-**Time Taken**: 17 minutes
-**What Went Well**: 
-- Took time to think through the hard problem
-- Considered multiple data structure options
-- Discussed space-time trade-offs
-**Could Improve**: 
-- Ran slightly over the time budget
-- Could have asked for a hint when stuck
-
----
-
-## Interviewer Feedback
-
-### Overall Assessment: Strong Hire
-
-**Strengths**:
-- Clear and structured communication throughout the interview
-- Always started with brute force before optimizing
-- Discussed time and space complexity without prompting
-- Identified edge cases proactively
-- Showed deep understanding of multiple data structures
-- Handled follow-up questions and constraint changes effectively
-- Maintained composure even on the harder third problem
-
-**Areas for Improvement**:
-- Should explicitly ask about input constraints before coding
-- Could write code more efficiently with practice
-- Should practice the exact time allocation (15 min per problem)
-- Could discuss alternative approaches in more depth for hard problems
-
-### Follow-Up Questions
-
-1. "What if the input is a stream and we cannot store all elements?"
-2. "How would you parallelize this for a distributed system?"
-3. "What if memory is limited to O(1) auxiliary space?"
-4. "Could your solution handle 10^9 inputs efficiently?"
-5. "How would you modify this for real-time or near-real-time requirements?"
-6. "What if the data arrives out of order?"
-7. "How would you handle concurrent access to your data structure?"
-
-### Recommended Practice Plan
-
-| Area | Focus | Recommended Problems |
-|------|-------|---------------------|
-| Core Pattern | Practice more Advanced Trees problems | 5-10 additional problems on this topic |
-| Space Optimization | Practice in-place techniques | LC 73, LC 283, LC 442 |
-| Stream Processing | Online algorithm patterns | Design a streaming version of each problem |
-| Company Specific | Target company patterns | LeetCode company tag for Advanced Trees |
-
----
-
-## Key Takeaways
-
-| Aspect | Rating (1-5) | Notes |
-|--------|-------------|-------|
-| Problem Understanding | 5 | Restated all problems correctly |
-| Approach Discussion | 5 | Multiple approaches discussed for each |
-| Code Quality | 4 | Clean but could be more concise |
-| Complexity Analysis | 5 | Correct analysis with lower bound justification |
-| Edge Cases | 4 | Good coverage, could be more systematic |
-| Communication | 5 | Excellent, clear, and structured |
-| Time Management | 3 | Slightly over on the hard problem |
-| Follow-up Handling | 4 | Good but room for depth |
-
-## Candidate Self-Reflection
-
-"This interview felt good overall. The first two problems were familiar patterns that I solved efficiently. The third problem was harder and I spent extra time on the approach. Next time I will better manage my time for the hard problem. I should also practice asking more clarifying questions before starting to code. The feedback about edge cases is fair and I will add a systematic edge case check to my process."
+```
+height<=4
+maxKeysPerNode=199
+```

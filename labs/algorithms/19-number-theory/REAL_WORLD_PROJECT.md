@@ -1,85 +1,33 @@
-# REAL_WORLD_PROJECT — Number Theory Algorithms
-> Production use-case with metrics + prevention. Lab `19-number-theory`.
+# Real-World Project: Integer Toolkit
+> GCD with Bezout coefficients, prime sieve, factoring, and modular powers.
 
-## Use-case: cryptography, hashing, scheduling cycles
-- System: backend service handling large inputs where Number Theory Algorithms is on the hot path.
-- Why this algorithm: gcd, sieve, modular arithmetic, primality gives Euclid O(log min), sieve O(n log log n), fast-pow O(log e) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
-
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Number Theory Algorithms) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
-
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
-
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
-
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-
-## Cost note
-- Optimized variant (Euclid O(log min), sieve O(n log log n), fast-pow O(log e)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+## Problem
+One CLI for the integer routines every algorithms course needs: gcd, primes, factors, modpow.
+Each routine ships with fixtures whose answers are independently checkable.
+## Inputs
+- Subcommand plus operands: egcd a b, primes n, factor n, modpow x e m.
+- Bounds: n up to 1M for sieve, operands within 64-bit signed range.
+- Fixture table with 12 cases and expected outputs.
+## Steps
+1. egcd returns (g, x, y) and asserts a*x + b*y equals g before printing.
+2. primes sieves to n starting crossings at p*p and prints the list.
+3. factor uses trial division to sqrt(n) and verifies the product of factors.
+4. modpow uses square-and-multiply with per-step reduction.
+5. Every command self-checks (product, identity, or known value) and exits nonzero on failure.
+6. Batch mode runs all 12 fixtures and reports pass/fail per case.
+## Acceptance criteria
+- egcd(30, 20) prints g = 10 with coefficients satisfying the check equation.
+- primes(30) prints exactly 2 3 5 7 11 13 17 19 23 29.
+- factor(1001) prints 7 11 13 with product verified.
+- modpow(2, 16, 17) prints 1 and modpow(2, 560, 561) prints 1 with the Carmichael note.
+- All 12 batch fixtures pass with zero failures.
+## Failure modes
+- Zero and negative inputs are rejected per-command with usage hints.
+- modpow with modulus 1 returns 0 with a note instead of dividing by zero.
+- Sieve above the cap refuses with the memory reason, suggesting segmented sieving.
+## Extensions
+- Miller-Rabin probable-prime mode (conceptual note: bases and limits documented).
+- Carmichael demo command listing base-2 passes under 1000.
+## How to demo
+- Show the batch run with all 12 fixtures passing.
+- Show the Carmichael note output and explain what it does not prove.

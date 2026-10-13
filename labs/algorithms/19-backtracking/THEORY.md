@@ -1,88 +1,54 @@
-# THEORY — Backtracking Search
-> Mechanics + invariants + complexity proof. Lab `19-backtracking`.
+# Theory: Backtracking Search and Pruning
+> Choose-recurse-unchoose over decision trees with sound prune tests.
 
-## 1. Problem statement (5)
-- Input, output, constraints stated formally.
-- For Backtracking Search: choose-explore-unchoose; constraint propagation.
-- Context: DFS over decision tree with pruning.
-- Success = correct output on all edge cases + proven bounds.
+## Problem statement
+- Enumerate combinatorial objects (subsets, permutations, placements) subject to constraints.
+- State: partial solution plus the undo stack; moves extend, recursion explores, undo retracts.
+- Pruning abandons subtrees provably free of solutions; unsound pruning loses answers.
+- Tree size (2^n, n!, Catalan-class) sets the budget before any optimization claim.
 
-## 2. Intuition in one paragraph (8)
-- Backtracking Search exploits structure: partial assignment never violates constraints (pruned otherwise).
-- Think of it as maintaining a promise while scanning/building the answer.
-- If the promise ever breaks, the algorithm has a repair step.
-- Example domain: N-queens, Sudoku, permutations, subsets.
+## Skeleton
+- choose: apply one decision to the shared state (take element, place queen, fix digit).
+- recurse: solve the smaller instance with updated constraints.
+- unchoose: revert exactly the choose step so siblings see clean state.
+- Base case records or counts; constraint test fires before recursing, not after.
 
-## 3. Formal model (10)
-- State: defines current partial solution.
-- Decision: choice at each step derived from DFS over decision tree with pruning.
-- Transition: how state evolves (see recurrence below).
-- Objective: minimize/maximize cost or decide feasibility.
-- Model instance: `choose-explore-unchoose; constraint propagation`.
+## N-queens model
+- Place one queen per row; track used columns and both diagonal families.
+- Conflict test for (r, c): column used, or |c - c'| == r - r' for any placed row r'.
+- Dead row (no column fits) backtracks; row n reached counts one solution.
+- Counts n = 1..8: 1, 0, 0, 2, 10, 4, 40, 92 - the built-in correctness oracle.
 
-## 4. Mechanics step-by-step (15)
-1. Initialize structures (arrays, heaps, hash maps as needed).
-2. Establish base case / empty-structure invariant.
-3. Iterate / recurse over input in defined order.
-4. Apply local rule (greedy choice, DP transition, pointer move).
-5. Maintain auxiliary data (prefix sums, pi table, residual graph).
-6. Prune / skip provably useless branches.
-7. Record best answer seen so far.
-8. Terminate when input exhausted or target reached.
-9. Reconstruct solution via parent pointers if needed.
-10. Validate output with checker.
+## Counting arguments
+- Subsets of n: 2^n leaves (take/skip per element); enumeration costs Omega(2^n) inherently.
+- Permutations of n: n! leaves; swap-to-front with swap-back visits each exactly once.
+- N-queens raw space n^n pruned to factorial-class by the one-per-row-and-column structure.
+- Node counters separate search shape (fixed) from prune savings (measured).
 
-## 5. Worked trace (12)
-- Small input example tailored to Backtracking Search.
-- Table-driven trace (step | state | decision | invariant holds?).
-- Step 1: init — invariant holds vacuously.
-- Step 2: first decision — show why alternatives are dominated.
-- Step 3: middle — show auxiliary structure update.
-- Step 4: last — show answer extraction.
-- Key lesson: trace exposes off-by-one and order bugs early.
+## Pruning soundness
+- A prune test may cut a subtree only if no completion inside can be valid.
+- Forward checks (column/diagonal occupancy) are sound because they test necessary conditions.
+- Bound-based cuts (branch and bound) need optimistic estimates - see the companion lab.
+- Test soundness by asserting pruned runs return the same counts as unpruned runs.
 
-## 6. Invariants (precise) (10)
-- I1: partial assignment never violates constraints (pruned otherwise).
-- I2: Every discarded candidate cannot belong to an optimal solution.
-- I3: Auxiliary structure always reflects processed prefix.
-- Initialization: I holds before loop (empty prefix).
-- Maintenance: each iteration re-establishes I (case split).
-- Termination: I + exit condition => correctness.
+## Complexity derivation
+- Time is proportional to visited nodes times O(1)-ish per-node work: worst case stays exponential.
+- Space is the recursion depth plus shared state: O(n) for queens, subsets, permutations.
+- Pruning improves constants and sometimes effective branching, not the complexity class.
+- Symmetry arguments (first-row halving) divide counts but need mirror-correctness proof.
 
-## 7. Correctness proof sketch (10)
-- Lemma 1 (safety): maintained invariant holds each iteration.
-- Lemma 2 (progress): measure strictly decreases/increases toward goal.
-- Theorem: on termination output is optimal/correct.
-- Proof by induction on steps using I1–I3.
-- Counterexample if invariant dropped: construct small failing input.
+## Variants
+- Combination sum with start-index ordering to prevent duplicate sets.
+- Sudoku-style filling with row/column/box constraint propagation.
+- Branch and bound: same trees with bound-driven cuts (lab 11).
 
-## 8. Complexity analysis with proof (12)
-- Count primitive ops per step; sum over steps.
-- Recurrence where applicable: T(n) = a·T(n/b) + f(n) (see MATH_FOUNDATION.md).
-- Apply Master theorem / Akra-Bazzi / accounting method.
-- Typical bound for this lab: worst O(b^d); pruning + memo can collapse to DP.
-- Space: auxiliary tables + recursion stack + output.
-- Lower bound argument: comparison / information-theoretic where relevant.
-- Tightness: exhibit worst-case family achieving the bound.
+## Pitfalls
+- Forgetting the undo so state leaks across sibling branches.
+- Pruning on sufficient-but-unnecessary conditions, dropping valid solutions.
+- Counting placements instead of completions (base case at the wrong depth).
+- Duplicate enumeration from unordered choices without a canonical order rule.
 
-## 9. Variants and connections (8)
-- Iterative vs recursive formulations.
-- Top-down memo vs bottom-up tabulation (for DP-flavored Backtracking Search).
-- Randomized / parallel / streaming variants.
-- Reduces to / from neighboring lab topics.
-- When NOT to use: input too small, constraints violated, simpler method wins.
-
-## 10. Common misconceptions (5)
-- Confusing average with worst case.
-- Forgetting reconstruction vs value-only DP.
-- Off-by-one in indices / hash modulus.
-- Assuming sorted input when it is not.
-- Ignoring integer overflow in cost accumulation.
-
-## 11. Interview signal (3)
-- State invariant first, then code.
-- Derive complexity without hand-waving.
-- Name one pitfall and its test.
-
-## 12. Checklist (2)
-- [ ] Can replay trace without notes. [ ] Can prove bound. [ ] Can code in 20 min.
+## Interview signal
+- Explain what exactly is undone per step and what corruption follows without it.
+- Derive the diagonal test from row/column differences.
+- Quote tree-size class before discussing any optimization.

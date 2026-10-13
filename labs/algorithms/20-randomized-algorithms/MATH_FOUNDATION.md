@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — Randomized Algorithms
-> Recurrences / Master theorem / amortized. Lab `20-randomized-algorithms`.
+# Math Foundation: Expectation, Indicators, Amplification
+> Linearity of expectation, quicksort indicators, Monte Carlo error shape and repetition.
 
-## 1. Why math matters here
-- Randomized Algorithms claims QuickSort expected O(n log n); Kargerpoly; Freivalds O(n^2) — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- Indicator I_A: 1 if event A occurs else 0; E[I_A] = Pr(A).
+- Linearity: E[X + Y] = E[X] + E[Y] with no independence needed.
+- Las Vegas: random runtime, always correct. Monte Carlo: fixed time, error chance.
+- Fixed seed: reproducible pseudorandom stream; analysis unchanged, testing deterministic.
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for Randomized Algorithms, instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- Quicksort comparisons: pairs (i, j) compared iff one is first pivot between them.
+- Probability 2/(j-i+1) for ranks i < j; sum over pairs gives Theta(n log n).
+- Harmonic sum H_n ~ ln n appears: total ~ 2n ln n expected comparisons.
+- Monte Carlo darts: n trials, hits binomial; standard error shape 1/sqrt(n).
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- Expected quicksort: E[T(n)] = (n-1) + average of E[T(k)] + E[T(n-1-k)] over pivots k.
+- Solves to Theta(n log n) (standard substitution with harmonic numbers).
+- Reservoir size-k: element i kept with probability k/i by induction on the stream.
+- Amplification: majority over r runs; error decays exponentially (Chernoff-class).
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in Randomized Algorithms.
+## Derivation of the bound
+- Indicator sum: E[total] = sum_{i<j} 2/(j-i+1) = 2 sum_{d} (n-d)/(d+1) ~ 2n ln n.
+- Group by distance d: harmonic series per distance class gives the log factor.
+- Monte Carlo: variance sigma^2/n gives 1/sqrt(n) deviations (Chebyshev-class).
+- Repetition: error 1/3 per run becomes exponentially small in r via majority vote.
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For expected runtime; error amplification by repetition: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: QuickSort expected O(n log n); Kargerpoly; Freivalds O(n^2) derived by this product.
+## Worked mini-proofs
+- Proof 1: comparison probability 2/(j-i+1) from first-pivot-in-range argument. (4 lines)
+- Proof 2: harmonic sum evaluation to 2n ln n order. (4 lines)
+- Proof 3: seed fixing preserves the distribution argument while fixing the test. (2 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to Randomized Algorithms: each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. Expected comparisons order for n = 10^5. Answer: Theta(n log n), about 2n ln n.
+- 2. Halving Monte Carlo error needs what sample multiple? Answer: 4x (1/sqrt shape).
+- 3. Las Vegas or Monte Carlo: Fermat test? Answer: Monte Carlo (wrong answers possible).
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- Needing independence for linearity (it holds regardless).
+- Reporting one lucky run as the error rate.
+- More Fermat bases as a fix for Carmichael numbers (coprime bases all pass).
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive QuickSort expected O(n log n); Kargerpoly; Freivalds O(n^2).
+## Checklist
+- Derive quicksort expectation via indicators cold.
+- Explain amplification math from a per-run error rate.

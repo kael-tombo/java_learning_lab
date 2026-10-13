@@ -1,50 +1,48 @@
-# REAL_WORLD_PROJECT — Graphs (Intro) (`05-graphs`)
-> Ship a production-flavored use-case of graphs with metrics. ~6–10 hours.
+# REAL_WORLD_PROJECT — Graphs
 
-## Problem statement
-Build a small but honest service/CLI around `Graph` for: social networks, routing, dependency graphs, recommendations.
-Examples: autocomplete API (trie), priority scheduler (heap), ordered index with range scan (BST/balanced tree),
-deduplicating ingest cache (hash), graph route planner (graphs), disk-pre-check layer (bloom), ring buffer pipeline (queue/stack).
+Production use-case: **route planner over a transit network**. Secondary: build-dependency graph with cycle reporting.
 
-## Functional requirements
-1. CLI or HTTP endpoint: `put/get/delete` (or domain equivalent: `schedule/pop`, `insert/suggest`, `add/mightContain`).
-2. Persistence or snapshot: load/save to file (JSON/CSV/serialized); reload preserves correctness.
-3. Config: capacity / threshold / k,m / comparator / seed exposed via flags or properties file.
-4. Observability: log operation latencies (avg/p50/p99), hit/miss or FPR estimate, resize/rotation counts, memory.
-5. Correctness: oracle cross-check on a sample workload (vs `HashMap`/`TreeMap`/`PriorityQueue` as appropriate).
+## 1. Problem statement
+Serve shortest-path and traversal queries at scale with a latency SLO and a memory budget.
+Define SLOs up front: p50/p99 query latency, throughput (ops/s), max heap, correctness bar (exact vs reference BFS/Dijkstra).
 
-## Non-functional targets (measure and report)
-| Metric | Target (toy-prod) | How to measure |
+## 2. Architecture
+- Ingest: edge feeds (transit timetables / dependency manifests).
+- Core: adjacency-list graph with BFS/Dijkstra behind a narrow interface.
+- Serve: route API + metrics + health.
+- Persist: edge snapshot where durability matters.
+
+## 3. Implementation plan (2 weeks)
+W1: core + invariant checker + unit/property tests.
+W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+
+## 4. Metrics to report
+
+| Metric | Target | How measured |
 |---|---|---|
-| Throughput | ≥10k ops/s single-thread on 100k dataset | benchmark harness, warmup, 5 runs median |
-| p99 latency | <1 ms point op on laptop | HDR-ish histogram or sorted samples |
-| Memory | report bytes/elem (Runtime/JOL) | before/after load snapshot |
-| Correctness | 0 mismatches vs oracle on 10k random ops | oracle test log |
-| Resilience | graceful empty/full/degraded (incl. bloom FPR) behavior | chaos script: empty, dup flood, adversarial order |
+| p50 query latency | define SLO | JMH / load test |
+| p99 query latency | define SLO | hdrhistogram |
+| Throughput | ops/s | load generator |
+| Memory | MB at V+E scale | JOL / heap dump |
+| Correctness | exact vs reference impl | property tests |
+| Availability | restart recovery time | chaos/restart drill |
 
-## Architecture sketch
-```
-client -> Service (Graph + policy) -> snapshot file
-              |-> metrics log (CSV: op, nanos, size, aux)
-              |-> oracle checker (sampled, off-path)
-```
-Keep it single-module; no frameworks required (`com.sun.net.httpserver` or plain CLI is fine).
+## 5. Risks & mitigations
+- Disconnected input -> component census + degraded answers.
+- Negative weights -> validation + Bellman-Ford fallback.
+- Memory blowup -> adjacency compression + caps.
+- Silent corruption -> checksums + invariant audits.
 
-## Milestones
-1. Slice 1 (2h): domain model + `Graph` wired, CLI works on tiny fixture.
-2. Slice 2 (2–3h): persistence + config + edge handling (empty/dup/null/adversarial).
-3. Slice 3 (2–3h): metrics + benchmark script + chart.
-4. Hardening (1–2h): oracle test, chaos script, 1-page ops note (deploy, monitor, rollback).
+## 6. Field notes
+Sourced field notes (fetched Oct 2026 — verify before citing)
+- https://en.wikipedia.org/wiki/Graph_traversal
+- https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+Confirm API/limit numbers against the live docs before quoting them in reviews.
 
-## Deliverables
-- `src/` implementation + `README` run instructions (java version, commands).
-- `metrics.csv` + chart + 1-page report (targets vs actuals, bottleneck, next scaling step).
-- Postmortem: one real bug found via oracle/chaos, invariant violated, fix.
+## 7. Deliverables
+- Repo with tests + JMH bench + dashboard screenshot.
+- One-page ops runbook: SLOs, alerts, rollback.
+- Demo script with seeded load.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Oracle Java docs — `Graph` counterpart guarantees: https://docs.oracle.com/javase/8/docs/api/java/util/Map.html
-- Reference survey / encyclopedia entry for graphs: https://en.wikipedia.org/wiki/Graph_(abstract_data_type)
-Verify version-specific behavior against your JDK (run `java -version`) before citing numbers.
-
-## Evaluation
-- Works end-to-end from cold start (3 pts) · Metrics honest + reproducible (3) · Edge/chaos handled (2) · Report + postmortem depth (2). Ship ≥7/10.
+## 8. Grading
+- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.

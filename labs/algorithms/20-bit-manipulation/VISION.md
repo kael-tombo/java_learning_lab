@@ -1,48 +1,33 @@
-# VISION — Bit Manipulation
-> Mastery path. Lab `20-bit-manipulation`.
+# Vision: Bit Manipulation
+> Masks, shifts, and XOR reasoning: exact control over individual bits.
 
-## Where this sits
-- Bit Manipulation is one tool in the algorithms arsenal: masks, shifts, popcount, XOR tricks.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(1) per op / O(words) for big ints memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (flags, compression, Bloom filters).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain mask invariant: untouched bits preserved without notes; derive O(1) per op / O(words) for big ints on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Flag packing, permission sets, parity checks, and compact state encodings.
+- Low-level idioms (lowbit, clear-lowest, power-of-two tests) used with proof.
+- Reading hex dumps and masks without reaching for a calculator.
+## What mastering it unlocks
+- Isolate, clear, and test individual bits with shifts and masks.
+- Use n & (n-1) to clear the lowest set bit and count bits in O(popcount).
+- Test powers of two in one expression and prove why it works.
+- Find the single unpaired element with XOR and argue the cancellation.
+- Avoid sign-extension and shift-distance pitfalls in Java specifically.
+## What it does not cover
+- SIMD and vector-intrinsic programming.
+- Constant-time cryptographic coding discipline.
+- Arbitrary-precision bit algorithms beyond single words.
+## Core questions you will answer
+- Why does x & -x isolate the lowest set bit in two's complement?
+- Why does n & (n-1) drop exactly the lowest set bit?
+- Why does XOR find the loner among pairs, and what breaks with triples?
+- What does >>> do that >> does not, and when does it matter?
+## How to judge progress
+- Evaluate mask expressions by hand on hex inputs.
+- Prove each one-line idiom from two's complement, not from memory.
+- Spot sign-extension bugs in Java shifts on sight.
+## Common misuse
+- Shifting int by 32+ bits and expecting zero (Java masks the distance).
+- Using >> on negative masks where >>> was required.
+## After this lab
+- 19-number-theory for modular arithmetic on the same integers.
+- 15-cryptographic-algorithms for what XOR can and cannot protect.
+One-line self-test: Prove the n & (n-1) lowest-bit fact in one line of binary reasoning.

@@ -1,50 +1,48 @@
-# REAL_WORLD_PROJECT — Hash Tables (Deep) (`06-hash-tables`)
-> Ship a production-flavored use-case of hash tables with metrics. ~6–10 hours.
+# REAL_WORLD_PROJECT — Hash Tables
 
-## Problem statement
-Build a small but honest service/CLI around `HashTablePro` for: high-throughput caches, DB indexes, sharding, dedup pipelines.
-Examples: autocomplete API (trie), priority scheduler (heap), ordered index with range scan (BST/balanced tree),
-deduplicating ingest cache (hash), graph route planner (graphs), disk-pre-check layer (bloom), ring buffer pipeline (queue/stack).
+Production use-case: **session store / dedup ingest cache**. Secondary: frequency-counter sidecar for hot keys.
 
-## Functional requirements
-1. CLI or HTTP endpoint: `put/get/delete` (or domain equivalent: `schedule/pop`, `insert/suggest`, `add/mightContain`).
-2. Persistence or snapshot: load/save to file (JSON/CSV/serialized); reload preserves correctness.
-3. Config: capacity / threshold / k,m / comparator / seed exposed via flags or properties file.
-4. Observability: log operation latencies (avg/p50/p99), hit/miss or FPR estimate, resize/rotation counts, memory.
-5. Correctness: oracle cross-check on a sample workload (vs `HashMap`/`TreeMap`/`PriorityQueue` as appropriate).
+## 1. Problem statement
+Serve O(1) put/get/delete with a latency SLO and a memory budget.
+Define SLOs up front: p50/p99 op latency, throughput (ops/s), max heap, correctness bar (exact vs HashMap oracle).
 
-## Non-functional targets (measure and report)
-| Metric | Target (toy-prod) | How to measure |
+## 2. Architecture
+- Ingest: session events / dedup keys feeding the table.
+- Core: chained/open-addressed table behind a narrow interface.
+- Serve: lookup API + hit-rate metrics + health.
+- Persist: snapshot/WAL where durability matters.
+
+## 3. Implementation plan (2 weeks)
+W1: core + invariant checker + unit/property tests.
+W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+
+## 4. Metrics to report
+
+| Metric | Target | How measured |
 |---|---|---|
-| Throughput | ≥10k ops/s single-thread on 100k dataset | benchmark harness, warmup, 5 runs median |
-| p99 latency | <1 ms point op on laptop | HDR-ish histogram or sorted samples |
-| Memory | report bytes/elem (Runtime/JOL) | before/after load snapshot |
-| Correctness | 0 mismatches vs oracle on 10k random ops | oracle test log |
-| Resilience | graceful empty/full/degraded (incl. bloom FPR) behavior | chaos script: empty, dup flood, adversarial order |
+| p50 op latency | define SLO | JMH / load test |
+| p99 op latency | define SLO | hdrhistogram |
+| Throughput | ops/s | load generator |
+| Memory | MB at N entries | JOL / heap dump |
+| Correctness | exact vs HashMap oracle | property tests |
+| Availability | restart recovery time | chaos/restart drill |
 
-## Architecture sketch
-```
-client -> Service (HashTablePro + policy) -> snapshot file
-              |-> metrics log (CSV: op, nanos, size, aux)
-              |-> oracle checker (sampled, off-path)
-```
-Keep it single-module; no frameworks required (`com.sun.net.httpserver` or plain CLI is fine).
+## 5. Risks & mitigations
+- Hash flooding -> salted hashing / SipHash-style defense.
+- Resize pauses -> incremental rehash or pre-sizing.
+- Memory blowup -> load-factor caps + eviction.
+- Concurrency bugs -> striped locks + stress tests.
 
-## Milestones
-1. Slice 1 (2h): domain model + `HashTablePro` wired, CLI works on tiny fixture.
-2. Slice 2 (2–3h): persistence + config + edge handling (empty/dup/null/adversarial).
-3. Slice 3 (2–3h): metrics + benchmark script + chart.
-4. Hardening (1–2h): oracle test, chaos script, 1-page ops note (deploy, monitor, rollback).
+## 6. Field notes
+Sourced field notes (fetched Oct 2026 — verify before citing)
+- https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html
+- https://en.wikipedia.org/wiki/Hash_table
+Confirm API/limit numbers against the live docs before quoting them in reviews.
 
-## Deliverables
-- `src/` implementation + `README` run instructions (java version, commands).
-- `metrics.csv` + chart + 1-page report (targets vs actuals, bottleneck, next scaling step).
-- Postmortem: one real bug found via oracle/chaos, invariant violated, fix.
+## 7. Deliverables
+- Repo with tests + JMH bench + dashboard screenshot.
+- One-page ops runbook: SLOs, alerts, rollback.
+- Demo script with seeded load.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Oracle Java docs — `HashTablePro` counterpart guarantees: https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html
-- Reference survey / encyclopedia entry for hash tables: https://en.wikipedia.org/wiki/Hash_table
-Verify version-specific behavior against your JDK (run `java -version`) before citing numbers.
-
-## Evaluation
-- Works end-to-end from cold start (3 pts) · Metrics honest + reproducible (3) · Edge/chaos handled (2) · Report + postmortem depth (2). Ship ≥7/10.
+## 8. Grading
+- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.

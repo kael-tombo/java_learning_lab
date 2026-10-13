@@ -1,48 +1,33 @@
-# VISION — Matrix DP (Matrix-Chain & Grid DP)
-> Mastery path. Lab `15-dp-matrix`.
+# Vision: Matrix Chain Multiplication
+> Interval DP: optimal parenthesization through recurrence over split points.
 
-## Where this sits
-- Matrix DP (Matrix-Chain & Grid DP) is one tool in the algorithms arsenal: DP over intervals and 2D grids.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; MCM O(n^3) (Hu-Tucker / Knuth where quadrangle holds), grid O(mn) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (multiplication ordering, path counting, edit distance).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain quadrangle / monotonicity where applicable; DAG order invariant without notes; derive MCM O(n^3) (Hu-Tucker / Knuth where quadrangle holds), grid O(mn) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Optimal binary-tree-over-interval structure used by parsers and triangulations.
+- The O(n^3) interval-DP template: length-increasing fill order plus split loop.
+- Cost-model thinking: counting scalar multiplications instead of waving at complexity.
+## What mastering it unlocks
+- Write m[i][j] = min over k of m[i][k] + m[k+1][j] + p[i-1]*p[k]*p[j] with correct indices.
+- Explain why intervals must be filled by increasing length, not by row order.
+- Reconstruct the optimal parenthesization with a split table.
+- Count the cost of a given parenthesization by hand on 4 matrices.
+- Derive O(n^3) time and O(n^2) space from the state count and split loop.
+## What it does not cover
+- Faster matrix multiplication algorithms (Strassen-style sub-cubic methods).
+- Numerical linear algebra: stability, pivoting, and floating-point behavior.
+- General context-free grammar parsing beyond the interval-DP connection.
+## Core questions you will answer
+- Why does the split have to range over every k between i and j-1?
+- What goes wrong if the table is filled row by row instead of by chain length?
+- How does the split table turn a cost table into a parenthesization?
+- Why is the scalar-multiplication count the right cost model here?
+## How to judge progress
+- Fill the 4-matrix table by hand with correct indices throughout.
+- Reconstruct parenthesizations from split tables on two different fixtures.
+- Derive the cubic bound from states times splits without prompting.
+## Common misuse
+- Indexing dimensions p[i]*p[i+1] style, which shifts every product by one.
+- Memoizing without the length order and recursing into unfilled states.
+## After this lab
+- 13-dp-lcs for DP over two prefixes before DP over intervals.
+- 33-matrix-algorithms for the operational side of matrix computation.
+One-line self-test: Write the matrix-chain recurrence with exact indices and base case.

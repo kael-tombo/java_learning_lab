@@ -1,85 +1,33 @@
-# REAL_WORLD_PROJECT — Longest Common Subsequence (LCS)
-> Production use-case with metrics + prevention. Lab `13-dp-lcs`.
+# Real-World Project: Line Diff for Config Files
+> Build a small diff tool: LCS over lines, then unified hunks a reviewer can read.
 
-## Use-case: diff tools, bioinformatics alignment, version control
-- System: backend service handling large inputs where Longest Common Subsequence (LCS) is on the hot path.
-- Why this algorithm: classic 2D DP over two strings gives O(m*n) time, O(min(m,n)) space optimized which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
-
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Longest Common Subsequence (LCS)) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
-
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
-
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
-
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-
-## Cost note
-- Optimized variant (O(m*n) time, O(min(m,n)) space optimized) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+## Problem
+Two revisions of a config file differ in a few lines; reviewers need the exact added, removed, and kept lines.
+Naive line-by-line comparison misaligns everything after one insertion; LCS alignment fixes that.
+## Inputs
+- old.txt and new.txt, UTF-8 text, one entry per line, up to 2000 lines each.
+- Optional flag to ignore leading/trailing whitespace when comparing lines.
+- Golden directory with 4 fixture pairs and their expected hunk outputs.
+## Steps
+1. Read both files into line lists A (m lines) and B (n lines), normalizing line endings.
+2. Fill the LCS length table dp over prefixes of A and B, row by row.
+3. Backtrack from dp[m][n] with parent decisions to recover one LCS.
+4. Walk both files with the LCS to emit added, removed, and context lines.
+5. Group changes into hunks with 3 context lines, in unified-diff style.
+6. Print LCS length, hunk count, and per-hunk headers to stdout.
+## Acceptance criteria
+- Identical 200-line files produce an empty diff and report LCS length 200.
+- Empty old file vs 100-line new file reports exactly 100 additions.
+- Fixture pair with 10 changed lines yields byte-identical expected hunks.
+- 1000-by-1000 line inputs finish in under 5 seconds on the lab machine.
+- Whitespace flag flips the known whitespace-only fixture from changed to unchanged.
+## Failure modes
+- Inputs over the line cap are rejected with a clear error instead of exhausting memory.
+- Mixed CRLF/LF endings are normalized before comparison so endings never fake a change.
+- Non-UTF-8 bytes fail fast with the offending filename, not a stack trace.
+## Extensions
+- Word-level diff inside changed lines using the same LCS core.
+- Length-only mode with a rolling row for inputs where hunks are not needed.
+## How to demo
+- Run the tool on the sample pair and paste the hunk output next to the expected file.
+- Time the 1000-by-1000 case and record table-fill vs backtrack milliseconds.

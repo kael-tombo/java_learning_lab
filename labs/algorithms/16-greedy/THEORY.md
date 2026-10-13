@@ -1,88 +1,53 @@
-# THEORY — Greedy Algorithms
-> Mechanics + invariants + complexity proof. Lab `16-greedy`.
+# Theory: Greedy Choice and Exchange Arguments
+> When local optima compose into global optima - activity selection, fractions, Huffman.
 
-## 1. Problem statement (5)
-- Input, output, constraints stated formally.
-- For Greedy Algorithms: greedy-choice property + optimal substructure.
-- Context: locally optimal choices with global proof.
-- Success = correct output on all edge cases + proven bounds.
+## Problem statement
+- Greedy builds a solution by repeated locally-best choices, never revisiting.
+- It works only with two properties: greedy-choice (a safe first pick exists) and optimal substructure.
+- This lab covers three canonical wins plus the counterexample that bounds the method.
 
-## 2. Intuition in one paragraph (8)
-- Greedy Algorithms exploits structure: matroid / exchange argument; stays-ahead invariant.
-- Think of it as maintaining a promise while scanning/building the answer.
-- If the promise ever breaks, the algorithm has a repair step.
-- Example domain: activity selection, Huffman, fractional knapsack.
+## Activity selection
+- Input: activities with start/finish; output: largest compatible subset.
+- Rule: sort by finish time, keep each activity starting at or after the last kept end.
+- Exchange: some optimum can swap its first activity for the earliest-finishing one without harm.
+- Remainder is the same problem on later activities: induction completes the proof.
 
-## 3. Formal model (10)
-- State: defines current partial solution.
-- Decision: choice at each step derived from locally optimal choices with global proof.
-- Transition: how state evolves (see recurrence below).
-- Objective: minimize/maximize cost or decide feasibility.
-- Model instance: `greedy-choice property + optimal substructure`.
+## Fractional knapsack
+- Items divisible; take highest value-density first, fraction of the last as needed.
+- Swap proof: replacing lower-density content with higher-density content never loses value.
+- Indivisibility breaks it: 0/1 knapsack needs DP, shown by small counterexamples.
+- Sorting dominates: O(n log n) time, O(1) extra space.
 
-## 4. Mechanics step-by-step (15)
-1. Initialize structures (arrays, heaps, hash maps as needed).
-2. Establish base case / empty-structure invariant.
-3. Iterate / recurse over input in defined order.
-4. Apply local rule (greedy choice, DP transition, pointer move).
-5. Maintain auxiliary data (prefix sums, pi table, residual graph).
-6. Prune / skip provably useless branches.
-7. Record best answer seen so far.
-8. Terminate when input exhausted or target reached.
-9. Reconstruct solution via parent pointers if needed.
-10. Validate output with checker.
+## Huffman coding
+- Repeatedly merge the two lightest weights; merged weight returns to the pool.
+- Prefix-free codes from merge order; frequent symbols get short codes.
+- Optimality via exchange on the two lightest symbols plus induction on the merge.
+- Priority queue implementation: O(n log n) for n symbols.
 
-## 5. Worked trace (12)
-- Small input example tailored to Greedy Algorithms.
-- Table-driven trace (step | state | decision | invariant holds?).
-- Step 1: init — invariant holds vacuously.
-- Step 2: first decision — show why alternatives are dominated.
-- Step 3: middle — show auxiliary structure update.
-- Step 4: last — show answer extraction.
-- Key lesson: trace exposes off-by-one and order bugs early.
+## Correctness pattern
+- Name the greedy-choice property: which first pick is provably safe and why.
+- Name the optimal substructure: how the remainder is a smaller instance.
+- Exchange arguments convert an arbitrary optimum into one using the greedy pick.
+- Counterexample duty: every greedy claim ships with the instance shape that would break it.
 
-## 6. Invariants (precise) (10)
-- I1: matroid / exchange argument; stays-ahead invariant.
-- I2: Every discarded candidate cannot belong to an optimal solution.
-- I3: Auxiliary structure always reflects processed prefix.
-- Initialization: I holds before loop (empty prefix).
-- Maintenance: each iteration re-establishes I (case split).
-- Termination: I + exit condition => correctness.
+## Complexity derivation
+- Activity selection: sort O(n log n) plus linear scan; space O(1) extra.
+- Fractional knapsack: same sort-dominated bound.
+- Huffman: n merges times O(log n) queue ops = O(n log n).
+- Canonical coin change: O(coins) after the divisibility structure is established.
 
-## 7. Correctness proof sketch (10)
-- Lemma 1 (safety): maintained invariant holds each iteration.
-- Lemma 2 (progress): measure strictly decreases/increases toward goal.
-- Theorem: on termination output is optimal/correct.
-- Proof by induction on steps using I1–I3.
-- Counterexample if invariant dropped: construct small failing input.
+## Variants
+- Canonical coins {25,10,5,1}: greedy optimal by divisibility; {1,3,4} at total 6 needs DP (2 beats 3).
+- Interval partitioning (minimum rooms) as the companion greedy with a different rule.
+- Scheduling with deadlines and profits as the next-step greedy with union-find.
 
-## 8. Complexity analysis with proof (12)
-- Count primitive ops per step; sum over steps.
-- Recurrence where applicable: T(n) = a·T(n/b) + f(n) (see MATH_FOUNDATION.md).
-- Apply Master theorem / Akra-Bazzi / accounting method.
-- Typical bound for this lab: usually O(n log n) dominated by sort; O(n) after.
-- Space: auxiliary tables + recursion stack + output.
-- Lower bound argument: comparison / information-theoretic where relevant.
-- Tightness: exhibit worst-case family achieving the bound.
+## Pitfalls
+- Sorting by start time or raw value and asserting optimality without proof.
+- Believing coin greedy works for every denomination set.
+- Skipping tie-breaking rules, making outputs nondeterministic.
+- Confusing greedy with DP when the choice needs future information.
 
-## 9. Variants and connections (8)
-- Iterative vs recursive formulations.
-- Top-down memo vs bottom-up tabulation (for DP-flavored Greedy Algorithms).
-- Randomized / parallel / streaming variants.
-- Reduces to / from neighboring lab topics.
-- When NOT to use: input too small, constraints violated, simpler method wins.
-
-## 10. Common misconceptions (5)
-- Confusing average with worst case.
-- Forgetting reconstruction vs value-only DP.
-- Off-by-one in indices / hash modulus.
-- Assuming sorted input when it is not.
-- Ignoring integer overflow in cost accumulation.
-
-## 11. Interview signal (3)
-- State invariant first, then code.
-- Derive complexity without hand-waving.
-- Name one pitfall and its test.
-
-## 12. Checklist (2)
-- [ ] Can replay trace without notes. [ ] Can prove bound. [ ] Can code in 20 min.
+## Interview signal
+- Deliver the activity-selection exchange in three clean steps.
+- Break coin greedy with {1,3,4} at total 6 on demand.
+- State both greedy properties for each algorithm covered.

@@ -1,48 +1,33 @@
-# VISION — Number Theory Algorithms
-> Mastery path. Lab `19-number-theory`.
+# Vision: Number Theory for Algorithms
+> GCD, sieves, and modular arithmetic: the integers as an algorithmic playground.
 
-## Where this sits
-- Number Theory Algorithms is one tool in the algorithms arsenal: gcd, sieve, modular arithmetic, primality.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; Euclid O(log min), sieve O(n log log n), fast-pow O(log e) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (cryptography, hashing, scheduling cycles).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain loop invariants of Euclid (gcd preserved); sieve marks multiples once without notes; derive Euclid O(log min), sieve O(n log log n), fast-pow O(log e) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Primality utilities, factoring helpers, and modular exponentiation.
+- RSA-literacy: understanding what the key operations are without deploying toy RSA.
+- Divisibility reasoning used in hashing, RNGs, and calendar-style problems.
+## What mastering it unlocks
+- Run extended Euclid and produce Bezout coefficients with the check value.
+- Sieve to n in O(n log log n) and justify starting crossings at p^2.
+- Compute modular powers with square-and-multiply in O(log e) multiplies.
+- Reduce a modular inverse to extended Euclid correctly.
+- Distinguish prime, pseudoprime, and Carmichael behavior under Fermat tests.
+## What it does not cover
+- Analytic number theory: distributions, zeta connections, deep prime gaps.
+- Primality proving (ACR-style certificates) beyond probable-prime tests.
+- Algebraic structures (groups, rings, fields) as theory rather than tools.
+## Core questions you will answer
+- Why does a mod b shrink fast enough for logarithmic Euclid?
+- Why is the sieve bound a double log, and where does each log come from?
+- Why must every multiply reduce mod m in square-and-multiply?
+- What does a Fermat pass on a composite actually prove?
+## How to judge progress
+- Derive Bezout coefficients by unwinding Euclid on new pairs.
+- Analyze the sieve sum over primes without skipping steps.
+- Predict Fermat-test outcomes for given bases on small composites.
+## Common misuse
+- Using Fermat passes as proof of primality.
+- Writing modpow without per-step reduction and overflowing silently.
+## After this lab
+- 15-cryptographic-algorithms for what this arithmetic protects.
+- 20-bit-manipulation for the bit-level view of the same integers.
+One-line self-test: Explain the p^2 sieve start and the double-log bound in two sentences.

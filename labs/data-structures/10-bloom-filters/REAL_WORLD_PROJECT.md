@@ -1,94 +1,48 @@
-# REAL_WORLD_PROJECT — Bloom Filters (Probabilistic) (`10-bloom-filters`)
-> Ship a production-flavored use-case of bloom filters with metrics. ~6–10 hours.
+# REAL_WORLD_PROJECT — Bloom Filters
 
-## Problem statement
-Build a small but honest service/CLI around `BloomFilter` for: cache pre-check, DB SSTables (LSM), ad-tech dedup, crawlers.
-Examples: autocomplete API (trie), priority scheduler (heap), ordered index with range scan (BST/balanced tree),
-deduplicating ingest cache (hash), graph route planner (graphs), disk-pre-check layer (bloom), ring buffer pipeline (queue/stack).
+Production use-case: **disk-pre-check layer in front of an LSM store**. Secondary: crawler URL dedup front-filter.
 
-## Functional requirements
-1. CLI or HTTP endpoint: `put/get/delete` (or domain equivalent: `schedule/pop`, `insert/suggest`, `add/mightContain`).
-2. Persistence or snapshot: load/save to file (JSON/CSV/serialized); reload preserves correctness.
-3. Config: capacity / threshold / k,m / comparator / seed exposed via flags or properties file.
-4. Observability: log operation latencies (avg/p50/p99), hit/miss or FPR estimate, resize/rotation counts, memory.
-5. Correctness: oracle cross-check on a sample workload (vs `HashMap`/`TreeMap`/`PriorityQueue` as appropriate).
+## 1. Problem statement
+Serve add/mightContain with a measured false-positive rate with a latency SLO and a memory budget.
+Define SLOs up front: p50/p99 query latency, throughput (ops/s), m/k sizing, correctness bar (zero false negatives + FPR vs theory).
 
-## Non-functional targets (measure and report)
-| Metric | Target (toy-prod) | How to measure |
+## 2. Architecture
+- Ingest: key stream (SSTable keys / crawled URLs).
+- Core: BitSet with k hashes behind a narrow interface.
+- Serve: pre-check API + FPR metrics + health.
+- Persist: bit-array snapshot where durability matters.
+
+## 3. Implementation plan (2 weeks)
+W1: core + invariant checker + unit/property tests.
+W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+
+## 4. Metrics to report
+
+| Metric | Target | How measured |
 |---|---|---|
-| Throughput | ≥10k ops/s single-thread on 100k dataset | benchmark harness, warmup, 5 runs median |
-| p99 latency | <1 ms point op on laptop | HDR-ish histogram or sorted samples |
-| Memory | report bytes/elem (Runtime/JOL) | before/after load snapshot |
-| Correctness | 0 mismatches vs oracle on 10k random ops | oracle test log |
-| Resilience | graceful empty/full/degraded (incl. bloom FPR) behavior | chaos script: empty, dup flood, adversarial order |
+| p50 query latency | define SLO | JMH / load test |
+| p99 query latency | define SLO | hdrhistogram |
+| Throughput | ops/s | load generator |
+| Memory | bits per key | JOL / heap dump |
+| Correctness | FPR vs (1-e^(-kn/m))^k | property tests |
+| Availability | restart recovery time | chaos/restart drill |
 
-## Architecture sketch
-```
-client -> Service (BloomFilter + policy) -> snapshot file
-              |-> metrics log (CSV: op, nanos, size, aux)
-              |-> oracle checker (sampled, off-path)
-```
-Keep it single-module; no frameworks required (`com.sun.net.httpserver` or plain CLI is fine).
+## 5. Risks & mitigations
+- FPR drift as n grows -> capacity sizing + rebuild policy.
+- Hash correlation -> double-hashing audit.
+- No deletes -> counting variant or rebuild.
+- Silent saturation -> fill-ratio alert.
 
-## Milestones
-1. Slice 1 (2h): domain model + `BloomFilter` wired, CLI works on tiny fixture.
-2. Slice 2 (2–3h): persistence + config + edge handling (empty/dup/null/adversarial).
-3. Slice 3 (2–3h): metrics + benchmark script + chart.
-4. Hardening (1–2h): oracle test, chaos script, 1-page ops note (deploy, monitor, rollback).
+## 6. Field notes
+Sourced field notes (fetched Oct 2026 — verify before citing)
+- https://en.wikipedia.org/wiki/Bloom_filter
+- https://docs.oracle.com/javase/8/docs/api/java/util/BitSet.html
+Confirm API/limit numbers against the live docs before quoting them in reviews.
 
-## Deliverables
-- `src/` implementation + `README` run instructions (java version, commands).
-- `metrics.csv` + chart + 1-page report (targets vs actuals, bottleneck, next scaling step).
-- Postmortem: one real bug found via oracle/chaos, invariant violated, fix.
+## 7. Deliverables
+- Repo with tests + JMH bench + dashboard screenshot.
+- One-page ops runbook: SLOs, alerts, rollback.
+- Demo script with seeded load.
 
-## Load & chaos scripts (concrete)
-```bash
-# load: 100k mixed ops, 80% read / 15% write / 5% delete, seeded for replay
-java -cp out Load --n 100000 --seed 42 --mix 80/15/5 --csv metrics.csv
-# chaos: empty pops, duplicate floods, sorted/adversarial order, snapshot-kill-reload
-java -cp out Chaos --scenario empty,duplicates,adversarial,crash-reload
-```
-Acceptance: 0 oracle mismatches, p99 within target, reload preserves all readable state.
-
-## Operations note (write this before calling it done)
-1. Deploy: single jar + properties file; log rotation for metrics.csv; JVM flags recorded.
-2. Monitor: alert on p99 breach, resize-storm (resizes/min), FPR drift (bloom), height growth (trees).
-3. Rollback: previous snapshot file versioned (`snap-YYYYMMDD-HHmm`); reload is idempotent.
-4. Capacity: state the dataset size where this design stops working and what replaces it
-   (e.g., hash → sharded/Redis; tree → B-tree/DB index; heap → partitioned scheduler;
-   trie → FST/Dawg; bloom → scaled stacked filters; queue → durable broker).
-
-## Cost & scaling sketch
-- Estimate bytes/elem from your measurement; extrapolate to 10× and 100× data.
-- Name the first bottleneck (GC pauses, resize stalls, probe chains, tree height, bit density)
-  and the cheapest fix that moves it 10× (batching, pre-sizing, better hash, balance, larger m, ring→broker).
-- One paragraph: build-vs-buy — when you would replace `BloomFilter` with managed infra and why.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Oracle Java docs — `BloomFilter` counterpart guarantees: https://www.javadoc.io/doc/com.google.guava/guava/latest/com/google/common/hash/BloomFilter.html
-- Reference survey / encyclopedia entry for bloom filters: https://en.wikipedia.org/wiki/Bloom_filter
-Verify version-specific behavior against your JDK (run `java -version`) before citing numbers.
-
-## Evaluation
-- Works end-to-end from cold start (3 pts) · Metrics honest + reproducible (3) · Edge/chaos handled (2) · Report + postmortem depth (2). Ship ≥7/10.
-
-## Appendix A — test matrix (all must pass)
-| # | Case | Oracle / check |
-|---|---|---|
-| T1 | empty get/pop/peek | throws documented exception, state unchanged |
-| T2 | single-element round trip | size 0→1→0, invariant holds at each step |
-| T3 | duplicate + null policy | matches documented policy, no silent corruption |
-| T4 | resize/rebalance boundary | all elements reachable after threshold crossing |
-| T5 | 10k random ops vs oracle | 0 mismatches on size/contains/iteration |
-| T6 | snapshot-kill-reload | reloaded state equals pre-kill readable state |
-| T7 | adversarial order | degrades gracefully, recovers with documented fix |
-| T8 | iterator under mutation | fail-fast fires, no silent wrong iteration |
-
-## Appendix B — example 1-page report skeleton
-```
-Dataset: 100k keys, mix 80/15/5 | JDK 17, laptop, 5-run median, warmed up
-Throughput: 42k ops/s | p50 8µs p99 310µs | bytes/elem 48 | resizes 4 | aux (max-chain 3 / height 18 / FPR 0.8%)
-Target check: throughput PASS, p99 PASS, memory noted, oracle 0 mismatches, chaos 4/4 graceful.
-Bottleneck: resize pauses at 2^N boundaries dominate p99 → pre-size to 2× expected n.
-Next step: shard by hash prefix when n > 10M or move index to LSM/B-tree.
-```
+## 8. Grading
+- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.

@@ -1,85 +1,33 @@
-# REAL_WORLD_PROJECT — Cryptographic Algorithms
-> Production use-case with metrics + prevention. Lab `15-cryptographic-algorithms`.
+# Real-World Project: File Integrity Manifest
+> SHA-256 manifest creation and verification that detects any tampering - concepts, standard library only.
 
-## Use-case: TLS, password storage, blockchains
-- System: backend service handling large inputs where Cryptographic Algorithms is on the hot path.
-- Why this algorithm: hashing, symmetric/asymmetric crypto, signatures gives RSA O(k^3), AES rounds O(blocks), SHA-256 O(n) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
-
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Cryptographic Algorithms) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
-
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
-
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
-
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-
-## Cost note
-- Optimized variant (RSA O(k^3), AES rounds O(blocks), SHA-256 O(n)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+## Problem
+A directory of reference files needs tamper evidence: any changed byte must be reported.
+This project practices hash-based integrity without inventing any cryptography.
+## Inputs
+- Target directory tree (up to 1000 files) and a manifest path.
+- Manifest format: one line per file with hex digest, byte size, and relative path.
+- Tamper fixture: a copy of a clean tree with exactly one flipped byte in one file.
+## Steps
+1. Walk the tree in sorted order, streaming each file through SHA-256 from the platform provider.
+2. Write the manifest with digest, size, and relative path per line.
+3. Verify mode re-hashes every file and compares against the manifest entry.
+4. Report OK, MISSING, MODIFIED, or EXTRA per file with a nonzero exit code on any mismatch.
+5. Demonstrate detection on the tamper fixture and show the single MODIFIED line.
+6. Document that this gives integrity only, not secrecy or authenticity.
+## Acceptance criteria
+- Clean tree verifies with all-OK and exit code 0.
+- Tamper fixture reports exactly one MODIFIED file with the right path.
+- Deleted file reports MISSING and added file reports EXTRA.
+- 1000-file tree verifies in under 120 seconds on the lab machine.
+- Manifest diff of two identical trees is byte-identical (sorted order is deterministic).
+## Failure modes
+- Unreadable files are reported as errors with paths, not silent skips.
+- Symlinks are listed and skipped with a note instead of followed blindly.
+- Manifest itself is excluded from the tree it describes to avoid self-reference.
+## Extensions
+- HMAC mode sketch (conceptual): what changes if a secret key authenticates the manifest.
+- Watch mode that re-verifies on a timer and appends to a log.
+## How to demo
+- Show the tamper-fixture run with the single MODIFIED line highlighted.
+- Explain in the README why hashing detects change but does not hide content.

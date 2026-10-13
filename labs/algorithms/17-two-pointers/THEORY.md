@@ -1,88 +1,53 @@
-# THEORY — Two Pointers Technique
-> Mechanics + invariants + complexity proof. Lab `17-two-pointers`.
+# Theory: Two-Pointer Scans and Their Invariants
+> Linear scans where the invariant between two positions does all the work.
 
-## 1. Problem statement (5)
-- Input, output, constraints stated formally.
-- For Two Pointers Technique: left/right move by predicate; monotonicity of feasibility.
-- Context: converging / sliding pointer pairs on ordered data.
-- Success = correct output on all edge cases + proven bounds.
+## Problem statement
+- Two pointers traverse a structure (array ends, read/write slots, fast/slow runners).
+- Each pattern rests on an invariant relating the pointers; the code is the invariant made executable.
+- Sortedness, partition regions, or cycle structure supplies the invariant's premise.
 
-## 2. Intuition in one paragraph (8)
-- Two Pointers Technique exploits structure: loop invariant: all discarded positions cannot be in solution.
-- Think of it as maintaining a promise while scanning/building the answer.
-- If the promise ever breaks, the algorithm has a repair step.
-- Example domain: pair-sum, dedup, container-with-most-water.
+## Sorted two-sum
+- Pointers lo = 0, hi = n-1 on ascending a; target T.
+- If a[lo] + a[hi] == T done; if smaller, lo++ (no solution uses a[lo] with any index <= hi).
+- If larger, hi-- symmetrically. Each step discards one index forever: O(n) time, O(1) space.
+- Correctness is the discard argument: the moved pointer's current value cannot pair with anything left.
 
-## 3. Formal model (10)
-- State: defines current partial solution.
-- Decision: choice at each step derived from converging / sliding pointer pairs on ordered data.
-- Transition: how state evolves (see recurrence below).
-- Objective: minimize/maximize cost or decide feasibility.
-- Model instance: `left/right move by predicate; monotonicity of feasibility`.
+## In-place dedup
+- Read pointer r scans; write pointer w marks the unique prefix a[0..w].
+- Invariant: a[0..w] holds distinct values in order from a[0..r-1].
+- On a[r] != a[w]: w++, copy. Sortedness makes adjacent comparison sufficient.
+- O(n) time, O(1) extra space; returns w+1 as the new length.
 
-## 4. Mechanics step-by-step (15)
-1. Initialize structures (arrays, heaps, hash maps as needed).
-2. Establish base case / empty-structure invariant.
-3. Iterate / recurse over input in defined order.
-4. Apply local rule (greedy choice, DP transition, pointer move).
-5. Maintain auxiliary data (prefix sums, pi table, residual graph).
-6. Prune / skip provably useless branches.
-7. Record best answer seen so far.
-8. Terminate when input exhausted or target reached.
-9. Reconstruct solution via parent pointers if needed.
-10. Validate output with checker.
+## Dutch national flag
+- Three regions: [0..lo) zeros, [lo..mid) ones, (hi..end] twos; [mid..hi] unknown.
+- On 0 at mid: swap to lo, both advance. On 1: mid advances. On 2: swap to hi, hi retreats.
+- Each step shrinks the unknown region: O(n) time, O(1) space, one pass.
+- Invariant check at exit: unknown region empty means fully partitioned.
 
-## 5. Worked trace (12)
-- Small input example tailored to Two Pointers Technique.
-- Table-driven trace (step | state | decision | invariant holds?).
-- Step 1: init — invariant holds vacuously.
-- Step 2: first decision — show why alternatives are dominated.
-- Step 3: middle — show auxiliary structure update.
-- Step 4: last — show answer extraction.
-- Key lesson: trace exposes off-by-one and order bugs early.
+## Cycle detection (tortoise and hare)
+- Phase 1: fast (2x) meets slow (1x) iff a cycle exists; meeting is guaranteed by relative speed 1.
+- Phase 2: restart one at head, advance both 1x; they meet at the cycle start.
+- Proof uses the cycle-length modularity: distance claims reduce to multiples of the cycle length.
+- O(n) time, O(1) space; also yields cycle length by one more lap.
 
-## 6. Invariants (precise) (10)
-- I1: loop invariant: all discarded positions cannot be in solution.
-- I2: Every discarded candidate cannot belong to an optimal solution.
-- I3: Auxiliary structure always reflects processed prefix.
-- Initialization: I holds before loop (empty prefix).
-- Maintenance: each iteration re-establishes I (case split).
-- Termination: I + exit condition => correctness.
+## Complexity derivation
+- Every pattern moves pointers monotonically across n positions: at most 2n visits total.
+- Per-step work O(1) gives Theta(n) time; extra space O(1) in all four patterns.
+- Sorted two-sum needs sorted input: add O(n log n) sort if it is not.
+- Counters on visits turn the bound into a measured check (see the mini project).
 
-## 7. Correctness proof sketch (10)
-- Lemma 1 (safety): maintained invariant holds each iteration.
-- Lemma 2 (progress): measure strictly decreases/increases toward goal.
-- Theorem: on termination output is optimal/correct.
-- Proof by induction on steps using I1–I3.
-- Counterexample if invariant dropped: construct small failing input.
+## Variants
+- Closest-to-target pair with the same scan and a best-tracking variable.
+- Middle-finding and kth-from-end with gap-maintained pointer pairs.
+- Partition variants (odd/even, negative/positive) on the Dutch-flag skeleton.
 
-## 8. Complexity analysis with proof (12)
-- Count primitive ops per step; sum over steps.
-- Recurrence where applicable: T(n) = a·T(n/b) + f(n) (see MATH_FOUNDATION.md).
-- Apply Master theorem / Akra-Bazzi / accounting method.
-- Typical bound for this lab: O(n) time after sort, O(1) extra space.
-- Space: auxiliary tables + recursion stack + output.
-- Lower bound argument: comparison / information-theoretic where relevant.
-- Tightness: exhibit worst-case family achieving the bound.
+## Pitfalls
+- Applying two-sum pointers to unsorted arrays.
+- Moving only one pointer after a pair hit, double-counting pairs.
+- Letting the write pointer overtake the read pointer in dedup variants.
+- Off-by-one on the unknown-region bounds in three-way partition.
 
-## 9. Variants and connections (8)
-- Iterative vs recursive formulations.
-- Top-down memo vs bottom-up tabulation (for DP-flavored Two Pointers Technique).
-- Randomized / parallel / streaming variants.
-- Reduces to / from neighboring lab topics.
-- When NOT to use: input too small, constraints violated, simpler method wins.
-
-## 10. Common misconceptions (5)
-- Confusing average with worst case.
-- Forgetting reconstruction vs value-only DP.
-- Off-by-one in indices / hash modulus.
-- Assuming sorted input when it is not.
-- Ignoring integer overflow in cost accumulation.
-
-## 11. Interview signal (3)
-- State invariant first, then code.
-- Derive complexity without hand-waving.
-- Name one pitfall and its test.
-
-## 12. Checklist (2)
-- [ ] Can replay trace without notes. [ ] Can prove bound. [ ] Can code in 20 min.
+## Interview signal
+- State the discard argument for sorted two-sum before coding.
+- Write the three-region invariant for Dutch flag from memory.
+- Explain phase 2 of cycle detection with the modular-distance reason.

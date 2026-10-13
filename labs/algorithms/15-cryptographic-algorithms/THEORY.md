@@ -1,88 +1,55 @@
-# THEORY — Cryptographic Algorithms
-> Mechanics + invariants + complexity proof. Lab `15-cryptographic-algorithms`.
+# Theory: Hashes and Modular Arithmetic
+> Conceptual foundations: what hashes guarantee, how modular powers stay cheap, why key reuse fails.
 
-## 1. Problem statement (5)
-- Input, output, constraints stated formally.
-- For Cryptographic Algorithms: one-way functions, modular exponentiation, Merkle-Damgard / sponge.
-- Context: hashing, symmetric/asymmetric crypto, signatures.
-- Success = correct output on all edge cases + proven bounds.
+## Problem statement
+- A hash maps arbitrary input to a fixed-size digest; SHA-256 outputs 256 bits.
+- Required properties: preimage resistance, second-preimage resistance, collision resistance.
+- Modular exponentiation computes x^e mod m for exponents far too large to expand.
+- XOR keystream demo shows the mechanism of stream secrecy, not a deployable cipher.
 
-## 2. Intuition in one paragraph (8)
-- Cryptographic Algorithms exploits structure: correctness of encrypt/decrypt inverses; avalanche invariant.
-- Think of it as maintaining a promise while scanning/building the answer.
-- If the promise ever breaks, the algorithm has a repair step.
-- Example domain: TLS, password storage, blockchains.
+## Hash properties
+- Deterministic: same input always gives the same digest; verification recomputes and compares.
+- Preimage resistance: given a digest, finding any input that yields it is infeasible.
+- Collision resistance: finding two distinct inputs with one digest is infeasible.
+- Birthday bound: collisions need about 2^(n/2) trials for n-bit digests - definitional, not measured here.
+- One flipped input bit changes about half the output bits (avalanche), which is why tampering shows.
 
-## 3. Formal model (10)
-- State: defines current partial solution.
-- Decision: choice at each step derived from hashing, symmetric/asymmetric crypto, signatures.
-- Transition: how state evolves (see recurrence below).
-- Objective: minimize/maximize cost or decide feasibility.
-- Model instance: `one-way functions, modular exponentiation, Merkle-Damgard / sponge`.
+## Square-and-multiply
+- Invariant: result times base^exp always equals x^e_original mod m.
+- Even exp: square the base, halve exp. Odd exp: shift one factor into result, decrement.
+- Every multiply reduces mod m immediately, so values never exceed (m-1)^2.
+- Cost O(log e) multiplications; memory O(1). Example: 4^13 mod 497 = 445.
 
-## 4. Mechanics step-by-step (15)
-1. Initialize structures (arrays, heaps, hash maps as needed).
-2. Establish base case / empty-structure invariant.
-3. Iterate / recurse over input in defined order.
-4. Apply local rule (greedy choice, DP transition, pointer move).
-5. Maintain auxiliary data (prefix sums, pi table, residual graph).
-6. Prune / skip provably useless branches.
-7. Record best answer seen so far.
-8. Terminate when input exhausted or target reached.
-9. Reconstruct solution via parent pointers if needed.
-10. Validate output with checker.
+## XOR keystream mechanism
+- Ciphertext byte = plaintext byte XOR key byte; decryption applies the same XOR again.
+- Correct by involution: (p XOR k) XOR k = p for every byte independently.
+- Reuse failure: C1 XOR C2 = P1 XOR P2, the key cancels and plaintext relations leak.
+- Lesson: the mechanism is sound, the key management decides secrecy; demos use fixed keys only.
 
-## 5. Worked trace (12)
-- Small input example tailored to Cryptographic Algorithms.
-- Table-driven trace (step | state | decision | invariant holds?).
-- Step 1: init — invariant holds vacuously.
-- Step 2: first decision — show why alternatives are dominated.
-- Step 3: middle — show auxiliary structure update.
-- Step 4: last — show answer extraction.
-- Key lesson: trace exposes off-by-one and order bugs early.
+## Correctness arguments
+- Hash verification is equality of deterministic recomputation - no probability involved.
+- Square-and-multiply follows from the loop invariant by induction on exp steps.
+- XOR roundtrip is bitwise involution applied per position.
+- None of these argue real-world security; they argue the mechanism is implemented right.
 
-## 6. Invariants (precise) (10)
-- I1: correctness of encrypt/decrypt inverses; avalanche invariant.
-- I2: Every discarded candidate cannot belong to an optimal solution.
-- I3: Auxiliary structure always reflects processed prefix.
-- Initialization: I holds before loop (empty prefix).
-- Maintenance: each iteration re-establishes I (case split).
-- Termination: I + exit condition => correctness.
+## Complexity derivation
+- Hashing streams input once: time O(n) in message bytes, O(1) digest state.
+- Modular power: one loop iteration per exponent bit, O(1) work each: O(log e).
+- XOR demo: one pass over n bytes: O(n) time, O(n) output.
+- Verification costs exactly one extra hash of the same input.
 
-## 7. Correctness proof sketch (10)
-- Lemma 1 (safety): maintained invariant holds each iteration.
-- Lemma 2 (progress): measure strictly decreases/increases toward goal.
-- Theorem: on termination output is optimal/correct.
-- Proof by induction on steps using I1–I3.
-- Counterexample if invariant dropped: construct small failing input.
+## Variants
+- MAC (keyed hash): same machinery plus a secret key gives authenticity - concept only here.
+- Digital signatures: private-key operation verifiable with a public key - concept only here.
+- Password storage: salt plus slow hash is a separate specialty, named but not built here.
 
-## 8. Complexity analysis with proof (12)
-- Count primitive ops per step; sum over steps.
-- Recurrence where applicable: T(n) = a·T(n/b) + f(n) (see MATH_FOUNDATION.md).
-- Apply Master theorem / Akra-Bazzi / accounting method.
-- Typical bound for this lab: RSA O(k^3), AES rounds O(blocks), SHA-256 O(n).
-- Space: auxiliary tables + recursion stack + output.
-- Lower bound argument: comparison / information-theoretic where relevant.
-- Tightness: exhibit worst-case family achieving the bound.
+## Pitfalls
+- Treating any demo in this lab as deployable cryptography.
+- Comparing digests with early-exit equality where timing matters.
+- Skipping per-step modular reduction and overflowing silently.
+- Reading a Fermat pass as primality proof (see the randomized lab's Carmichael note).
 
-## 9. Variants and connections (8)
-- Iterative vs recursive formulations.
-- Top-down memo vs bottom-up tabulation (for DP-flavored Cryptographic Algorithms).
-- Randomized / parallel / streaming variants.
-- Reduces to / from neighboring lab topics.
-- When NOT to use: input too small, constraints violated, simpler method wins.
-
-## 10. Common misconceptions (5)
-- Confusing average with worst case.
-- Forgetting reconstruction vs value-only DP.
-- Off-by-one in indices / hash modulus.
-- Assuming sorted input when it is not.
-- Ignoring integer overflow in cost accumulation.
-
-## 11. Interview signal (3)
-- State invariant first, then code.
-- Derive complexity without hand-waving.
-- Name one pitfall and its test.
-
-## 12. Checklist (2)
-- [ ] Can replay trace without notes. [ ] Can prove bound. [ ] Can code in 20 min.
+## Interview signal
+- State the three hash properties and what breaks when each fails.
+- Derive square-and-multiply cost from the exponent-bit loop.
+- Show the key-cancellation equation for XOR reuse from memory.

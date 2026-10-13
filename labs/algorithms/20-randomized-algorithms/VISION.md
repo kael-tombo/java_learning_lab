@@ -1,48 +1,33 @@
-# VISION — Randomized Algorithms
-> Mastery path. Lab `20-randomized-algorithms`.
+# Vision: Randomized Algorithms
+> Randomness as a tool: expectation, fixed seeds, and honest error bounds.
 
-## Where this sits
-- Randomized Algorithms is one tool in the algorithms arsenal: Monte Carlo / Las Vegas, fingerprinting, sampling.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; QuickSort expected O(n log n); Kargerpoly; Freivalds O(n^2) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (load balancing, primality testing, sketching).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain correctness in expectation / with high probability without notes; derive QuickSort expected O(n log n); Kargerpoly; Freivalds O(n^2) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Random pivots, sampling, sketching introductions, and Monte Carlo estimation.
+- Las Vegas vs Monte Carlo thinking applied to every randomized proposal.
+- Seed discipline: reproducible tests for irreproducible-looking methods.
+## What mastering it unlocks
+- Separate Las Vegas (random time, exact answer) from Monte Carlo (fixed time, error chance).
+- Analyze randomized quicksort expectation via comparison indicators.
+- Estimate by sampling with the 1/sqrt(n) error shape stated and used.
+- Amplify a Monte Carlo success rate by repetition with the math shown.
+- Catch pseudoprime blind spots and explain why repetition alone cannot fix Carmichael cases.
+## What it does not cover
+- Derandomization theory and pseudorandom generator constructions.
+- Measure-theoretic probability and martingale machinery.
+- Cryptographic randomness requirements and entropy sourcing.
+## Core questions you will answer
+- Why does a fixed seed keep testing deterministic while analysis stays randomized?
+- How does linearity of expectation simplify the quicksort analysis?
+- How many repetitions drive error below a stated bound, and by which inequality?
+- Why do Carmichael numbers survive Fermat repetition at coprime bases?
+## How to judge progress
+- Classify any randomized algorithm as Las Vegas or Monte Carlo with reasons.
+- Compute an expectation via indicators on a new example.
+- Size a repetition count from an error target without guessing.
+## Common misuse
+- Reporting one lucky Monte Carlo run as the method's accuracy.
+- Believing more Fermat bases always suffice against Carmichael numbers.
+## After this lab
+- 19-number-theory for the modular arithmetic underneath primality tests.
+- 14-approximation-algorithms for the other way to cope with hard problems.
+One-line self-test: Explain the Las Vegas vs Monte Carlo split using quicksort and pi estimation.

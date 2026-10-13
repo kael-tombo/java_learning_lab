@@ -1,83 +1,33 @@
-# MINI_PROJECT — Network Flow (Max-Flow / Min-Cut)
-> Implement + benchmark + visualize. Lab `17-network-flow`.
+# Mini Project: Tiny Max Flow
+> Edmonds-Karp on a 4-node network with a cut certificate.
 
+## Background
+- Residual BFS finds augmenting paths; forward/backward edges update each round.
+- The unreachable set at termination is the minimum cut - print it.
+- Small graphs allow full hand verification of every number.
 ## Goal
-- Build a runnable Java CLI that solves residual capacity cf = c - f; max-flow == min-cut value, benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
-
-## Spec
-1. `lab.17_network_flow.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving flow conservation + skew symmetry preserved each augmentation.
-
-## Starter code
-```java
-package lab.17_network_flow;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
-
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
-
-## Visualization
-- For n<=16 print DP row / window [l,r) / decision path.
-- Example (ASCII): `l=2 r=7 window=[4 1 5] best=3 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
-
+Implement Edmonds-Karp and certify the answer with the cut.
+Hand-augment the fixture graph and match the program's flow of 5.
+## Tasks
+1. Hardcode capacities for the 4-node fixture (3,2 / 1,2 / 3 edges).
+2. Loop BFS-augment-update until the sink is unreachable.
+3. Print flow value and per-edge final flows.
+4. Compute the source-reachable set and print it as the minimum cut.
+5. Hand-trace augmentations on paper and reconcile path by path.
+6. Brute-force all s-t cuts of the fixture and confirm min equals 5.
+## Acceptance criteria
+- Program reports maxflow 5 with valid per-edge flows.
+- Hand trace matches the program augmentation by augmentation.
+- Cut enumeration confirms minimum 5 with the printed reachable set.
+- Per-edge flows conserve at middle nodes (inflow equals outflow).
+- A disconnected second fixture reports 0 with the empty-side cut.
+## Pitfalls
+- Missing backward edges, capping flow below optimum.
+- DFS instead of BFS while claiming the Edmonds-Karp bound.
+- Printing the cut from the original graph instead of the residual.
+- Integer types too small for the flow sums on bigger tests.
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3).
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3).
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Bipartite-matching mode on a workers/jobs fixture.
+- Bottleneck-edge report: which capacity increase would raise the flow.
+## Timebox
+One evening session, roughly 2 hours with hand tracing.

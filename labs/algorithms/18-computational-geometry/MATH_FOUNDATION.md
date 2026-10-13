@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — Computational Geometry
-> Recurrences / Master theorem / amortized. Lab `18-computational-geometry`.
+# Math Foundation: Cross Products and Hull Cost
+> Orientation determinant, straddle logic, monotone-chain O(n log n) derivation.
 
-## 1. Why math matters here
-- Computational Geometry claims Graham O(n log n), line-sweep intersections O((n+k) log n) — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- cross(o, a, b) = (a-o) x (b-o) = (ax-ox)(by-oy) - (ay-oy)(bx-ox).
+- Sign: positive = counter-clockwise turn, negative = clockwise, zero = collinear.
+- Proper intersection: strict straddling both ways (no touching cases).
+- Hull: smallest convex set containing the points; output in boundary order.
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for Computational Geometry, instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- Orientation: O(1) integer ops per test; exact with 64-bit products.
+- Segment test: 4 orientations = O(1); collinear overlap adds bounding-box O(1).
+- Monotone chain: sort O(n log n) dominates; the scan is O(n) (each point pushed/popped once).
+- Total O(n log n) time, O(n) space for points plus hull.
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- No divide step in Andrew's version: sort once, then two linear passes.
+- Stack invariant per chain: last two plus candidate always make a clockwise turn.
+- Pop condition cross <= 0 maintains the invariant (strict < keeps collinear points).
+- Join drops the doubled endpoints: total vertices plus at most 2 overlap.
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in Computational Geometry.
+## Derivation of the bound
+- Sorting lower bound Omega(n log n) applies (hull solves sorting via parabola lifting).
+- Scan linearity: 2n pushes max, each pop charged to its push: O(n).
+- Exactness: integer cross products decide signs with no rounding error.
+- Overflow guard: coordinates bounded so products fit in long (documented cap).
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For orientation = sign of cross product; CCW invariant: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: Graham O(n log n), line-sweep intersections O((n+k) log n) derived by this product.
+## Worked mini-proofs
+- Proof 1: scan linearity by push/pop charging. (3 lines)
+- Proof 2: straddle-both-ways equivalent to proper intersection. (4 lines)
+- Proof 3: pop rule preserves the clockwise-chain invariant inductively. (4 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to Computational Geometry: each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. cross((0,0),(1,0),(1,1)). Answer: 1 (CCW).
+- 2. Hull of square plus center. Answer: the 4 corners.
+- 3. Sort cost share for n = 10000. Answer: dominates; scan is ~2n pushes.
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- int products overflowing before the long cast (cast operands first).
+- Epsilon comparisons on predicates integers decide exactly.
+- Collinear inputs handled by accident instead of by the pop-rule choice.
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive Graham O(n log n), line-sweep intersections O((n+k) log n).
+## Checklist
+- Derive the chain bound (sort + linear scan) cold.
+- Prove scan linearity by push/pop charging.

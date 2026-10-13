@@ -1,48 +1,33 @@
-# VISION — Cryptographic Algorithms
-> Mastery path. Lab `15-cryptographic-algorithms`.
+# Vision: Cryptographic Algorithms
+> Hashes, modular arithmetic, and protocol literacy - concepts first, never home-grown primitives.
 
-## Where this sits
-- Cryptographic Algorithms is one tool in the algorithms arsenal: hashing, symmetric/asymmetric crypto, signatures.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; RSA O(k^3), AES rounds O(blocks), SHA-256 O(n) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (TLS, password storage, blockchains).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain correctness of encrypt/decrypt inverses; avalanche invariant without notes; derive RSA O(k^3), AES rounds O(blocks), SHA-256 O(n) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Evaluating security claims: what a hash, MAC, or signature actually guarantees.
+- Password storage, integrity manifests, and randomness hygiene in real systems.
+- The number theory behind public-key ideas, prepared properly in 19-number-theory.
+## What mastering it unlocks
+- State the three hash properties (preimage, second-preimage, collision resistance) precisely.
+- Compute SHA-256 with the platform provider and verify a digest against a known value.
+- Implement square-and-multiply and explain why it makes huge exponents feasible.
+- Explain why XOR-key reuse leaks, using the cancellation of the keystream.
+- Refuse to invent ciphers or hash functions, and say which standard piece fits instead.
+## What it does not cover
+- Designing or auditing real cryptosystems, which needs years of specialized study.
+- Side-channel, padding-oracle, and implementation-attack details.
+- Parameter selection for production keys and protocols.
+## Core questions you will answer
+- What breaks, concretely, if two inputs share a SHA-256 digest?
+- Why does reducing mod m at every multiply keep square-and-multiply correct?
+- What does XORing two ciphertexts under one key reveal, exactly?
+- Why is a fixed demo key fine for learning and disqualifying for deployment?
+## How to judge progress
+- Explain each primitive's guarantee and its failure mode without notes.
+- Write the integrity-check script (hash manifest, verify, report tampering).
+- Name the standard tool for every ad-hoc crypto idea encountered.
+## Common misuse
+- Treating a toy XOR demo as encryption suitable for real data.
+- Comparing digests with early-exit string equality in security-sensitive code.
+## After this lab
+- 19-number-theory for the gcd, sieve, and modular arithmetic foundations.
+- 20-bit-manipulation for the bit-level operations hashes are built on.
+One-line self-test: Explain why key reuse breaks XOR secrecy in two sentences with the key equation.

@@ -1,85 +1,33 @@
-# REAL_WORLD_PROJECT — Backtracking Search
-> Production use-case with metrics + prevention. Lab `19-backtracking`.
+# Real-World Project: Queens Census
+> Count N-queens solutions with pruning statistics and board printing.
 
-## Use-case: N-queens, Sudoku, permutations, subsets
-- System: backend service handling large inputs where Backtracking Search is on the hot path.
-- Why this algorithm: DFS over decision tree with pruning gives worst O(b^d); pruning + memo can collapse to DP which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
-
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Backtracking Search) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
-
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
-
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
-
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-
-## Cost note
-- Optimized variant (worst O(b^d); pruning + memo can collapse to DP) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+## Problem
+Exhaustive search must be instrumented: solutions found plus nodes visited.
+Known solution counts give an exact oracle for correctness.
+## Inputs
+- Board size n (1 to 10) and a flag to print the first solution board.
+- Expected counts for n = 1..8: 1, 0, 0, 2, 10, 4, 40, 92.
+- Output: solution count, nodes visited, pruned rows, elapsed milliseconds.
+## Steps
+1. Place queens row by row with column/diagonal conflict tests.
+2. Count a solution at row n; count a prune each time no column fits a row.
+3. Record nodes visited (calls) and report the prune-to-node ratio.
+4. Assert counts for n = 1..8 against the expected sequence before printing tables.
+5. Print the first n = 8 solution as an ASCII board.
+6. Refuse n above 10 with the factorial-growth reason in the message.
+## Acceptance criteria
+- Counts for n = 1..8 match 1, 0, 0, 2, 10, 4, 40, 92 exactly.
+- n = 8 finishes in under 30 seconds on the lab machine.
+- Printed n = 8 board verifies conflict-free under an independent checker.
+- Node counts are deterministic across runs (fixed move order).
+- n = 11 is refused with the growth reason, not attempted.
+## Failure modes
+- n = 0 and negative n are rejected at parse time.
+- Boards print with row/column indices so solutions can be checked by eye.
+- Timing excludes JVM warmup by averaging 3 runs (documented in output).
+## Extensions
+- Symmetry-reduced counting (first-row half + mirror doubling) as an extension.
+- Sudoku filler reusing the choose-recurse-unchoose skeleton.
+## How to demo
+- Show the count table with node statistics for n = 1..8.
+- Show the ASCII board of the first n = 8 solution.

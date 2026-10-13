@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — String Matching (KMP / Rabin-Karp / Z)
-> Recurrences / Master theorem / amortized. Lab `16-string-matching`.
+# Math Foundation: KMP Linearity and Hash Arithmetic
+> Potential-method linearity for KMP, rolling-hash mod math, naive worst-case count.
 
-## 1. Why math matters here
-- String Matching (KMP / Rabin-Karp / Z) claims KMP/Z O(n+m), Rabin-Karp avg O(n+m), naive O(nm) — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- pi[i]: longest proper prefix of p[0..i] that is also a suffix (0 if none).
+- Fallback: on mismatch at length j, resume at pi[j-1] without moving the text pointer.
+- Rolling hash: window value updated by dropping the lead digit and shifting.
+- Comparison count: the measured work unit for naive vs KMP contrasts.
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for String Matching (KMP / Rabin-Karp / Z), instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- Naive worst case: (n-m+1) alignments times m compares = Theta(n*m).
+- Attained on text a^n with pattern a^(m-1)b: every alignment fails at the last char.
+- KMP: text pointer advances n times; pattern pointer j rises at most n times total.
+- Fallbacks only lower j, so total fallback steps are O(n): linear overall.
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- pi construction mirrors search: same fallback loop over the pattern itself.
+- Total pi fallbacks O(m) by the same potential argument (j bounded by i).
+- Rolling update: th = (B*(th - lead*h) + next) mod q in O(1) per slide.
+- h = B^(m-1) mod q precomputed once in O(m).
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in String Matching (KMP / Rabin-Karp / Z).
+## Derivation of the bound
+- Potential Phi = j (current match length): increments <= n across the run.
+- Each fallback strictly decreases Phi, so fallbacks <= increments <= n.
+- Total character touches O(n); plus O(m) preprocessing: O(n + m).
+- Hash collisions only add verified rescans; correctness never depends on luck.
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For prefix function pi; rolling hash H = sum c*b^k mod M: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: KMP/Z O(n+m), Rabin-Karp avg O(n+m), naive O(nm) derived by this product.
+## Worked mini-proofs
+- Proof 1: Phi argument bounding total fallbacks by total increments. (4 lines)
+- Proof 2: pi[i] correctness from the prefix-suffix maximality at each step. (4 lines)
+- Proof 3: rolling update preserves the window value by Horner expansion. (4 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to String Matching (KMP / Rabin-Karp / Z): each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. pi for ababaca. Answer: [0,0,1,2,3,0,1].
+- 2. Naive compares for t = aaaaab, p = aaab. Answer: 12 with 1 hit.
+- 3. Why resume at pi[m-1] after a match? Answer: longest prefix still matched.
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- Claiming O(n) while resetting j to 0 instead of falling back (misses overlaps).
+- Negative residues from Java remainder kept unadjusted.
+- Equating hash match with string match without verification.
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive KMP/Z O(n+m), Rabin-Karp avg O(n+m), naive O(nm).
+## Checklist
+- Reproduce the Phi argument for KMP linearity cold.
+- Derive the naive Theta(n*m) family with exact counts.

@@ -1,88 +1,53 @@
-# THEORY — Longest Increasing Subsequence (LIS)
-> Mechanics + invariants + complexity proof. Lab `14-dp-lis`.
+# Theory: Longest Increasing Subsequence
+> 1D DP over positions plus the patience-sorting speedup to O(n log n).
 
-## 1. Problem statement (5)
-- Input, output, constraints stated formally.
-- For Longest Increasing Subsequence (LIS): dp[i] = length of LIS ending at i; O(n log n) via tails[].
-- Context: DP + patience-sorting / binary search optimization.
-- Success = correct output on all edge cases + proven bounds.
+## Problem statement
+- Input: array a[0..n-1] of comparable elements.
+- Output: length of the longest strictly increasing subsequence, plus one such subsequence.
+- Subsequence (order kept, contiguity not required) vs subarray (contiguous): different problems.
+- Edge cases: empty gives 0; all-equal gives 1 under strict semantics.
 
-## 2. Intuition in one paragraph (8)
-- Longest Increasing Subsequence (LIS) exploits structure: tails[k] = minimal tail of increasing subsequence of length k+1, kept sorted.
-- Think of it as maintaining a promise while scanning/building the answer.
-- If the promise ever breaks, the algorithm has a repair step.
-- Example domain: stock trends, box stacking, patience sorting.
+## Recurrence (O(n^2) version)
+- dp[i] = 1 + max dp[j] over j < i with a[j] < a[i]; dp[i] = 1 if no such j exists.
+- Answer is max over i of dp[i], not dp[n-1]: the best subsequence can end anywhere.
+- Parent[i] = argmax j gives reconstruction by walking back from the argmax i.
+- Time O(n^2) from n states times O(n) transitions; space O(n).
 
-## 3. Formal model (10)
-- State: defines current partial solution.
-- Decision: choice at each step derived from DP + patience-sorting / binary search optimization.
-- Transition: how state evolves (see recurrence below).
-- Objective: minimize/maximize cost or decide feasibility.
-- Model instance: `dp[i] = length of LIS ending at i; O(n log n) via tails[]`.
+## Tails method (O(n log n) version)
+- Maintain tails[k] = smallest possible tail of an increasing subsequence of length k+1.
+- For each x: binary-search the first tails entry >= x, replace it (or append if none).
+- Replacement is safe: it only lowers a tail, which can never hurt future extensions.
+- tails stays sorted because each entry is a minimal tail for its length class.
 
-## 4. Mechanics step-by-step (15)
-1. Initialize structures (arrays, heaps, hash maps as needed).
-2. Establish base case / empty-structure invariant.
-3. Iterate / recurse over input in defined order.
-4. Apply local rule (greedy choice, DP transition, pointer move).
-5. Maintain auxiliary data (prefix sums, pi table, residual graph).
-6. Prune / skip provably useless branches.
-7. Record best answer seen so far.
-8. Terminate when input exhausted or target reached.
-9. Reconstruct solution via parent pointers if needed.
-10. Validate output with checker.
+## Worked trace
+- a = 3 1 2 8 6 7 4 5. tails evolves: [3], [1], [1,2], [1,2,8], [1,2,6], [1,2,6,7], [1,2,4,7], [1,2,4,5].
+- Final length 4 (example LIS: 1 2 4 5); note tails itself is not the subsequence.
+- Each step touches one binary search; total O(n log n) time, O(n) space.
 
-## 5. Worked trace (12)
-- Small input example tailored to Longest Increasing Subsequence (LIS).
-- Table-driven trace (step | state | decision | invariant holds?).
-- Step 1: init — invariant holds vacuously.
-- Step 2: first decision — show why alternatives are dominated.
-- Step 3: middle — show auxiliary structure update.
-- Step 4: last — show answer extraction.
-- Key lesson: trace exposes off-by-one and order bugs early.
+## Correctness argument
+- Invariant: after processing a prefix, tails[k] is minimal over that prefix - induction on steps.
+- Binary search position pos means x extends length pos and beats the old tail there.
+- Appending happens exactly when x extends the longest length seen so far.
+- Strictness: first->= keeps equals from extending, matching strict LIS semantics.
 
-## 6. Invariants (precise) (10)
-- I1: tails[k] = minimal tail of increasing subsequence of length k+1, kept sorted.
-- I2: Every discarded candidate cannot belong to an optimal solution.
-- I3: Auxiliary structure always reflects processed prefix.
-- Initialization: I holds before loop (empty prefix).
-- Maintenance: each iteration re-establishes I (case split).
-- Termination: I + exit condition => correctness.
+## Complexity derivation
+- O(n^2) version: n states, up to n transitions each, O(1) per transition.
+- Tails version: n elements times Theta(log n) binary search = Theta(n log n).
+- Reconstruction needs parent pointers (O(n) space); tails alone cannot rebuild the sequence.
+- Sorting-based reductions (envelopes) add their O(n log n) sort on top.
 
-## 7. Correctness proof sketch (10)
-- Lemma 1 (safety): maintained invariant holds each iteration.
-- Lemma 2 (progress): measure strictly decreases/increases toward goal.
-- Theorem: on termination output is optimal/correct.
-- Proof by induction on steps using I1–I3.
-- Counterexample if invariant dropped: construct small failing input.
+## Variants
+- Envelopes: sort width asc, height desc for ties, then LIS on heights.
+- Non-decreasing variant: binary search first-> instead, with semantics stated up front.
+- Counting distinct LIS: extra DP layer, valid only with duplicate handling.
 
-## 8. Complexity analysis with proof (12)
-- Count primitive ops per step; sum over steps.
-- Recurrence where applicable: T(n) = a·T(n/b) + f(n) (see MATH_FOUNDATION.md).
-- Apply Master theorem / Akra-Bazzi / accounting method.
-- Typical bound for this lab: O(n^2) naive, O(n log n) optimized, O(n) space.
-- Space: auxiliary tables + recursion stack + output.
-- Lower bound argument: comparison / information-theoretic where relevant.
-- Tightness: exhibit worst-case family achieving the bound.
+## Pitfalls
+- Returning tails content as the subsequence instead of its length.
+- Ascending-tie sort in envelopes, letting equal widths nest illegally.
+- Mixing strict and non-strict binary search across the two methods.
+- Forgetting the answer is max dp[i], then returning dp[n-1].
 
-## 9. Variants and connections (8)
-- Iterative vs recursive formulations.
-- Top-down memo vs bottom-up tabulation (for DP-flavored Longest Increasing Subsequence (LIS)).
-- Randomized / parallel / streaming variants.
-- Reduces to / from neighboring lab topics.
-- When NOT to use: input too small, constraints violated, simpler method wins.
-
-## 10. Common misconceptions (5)
-- Confusing average with worst case.
-- Forgetting reconstruction vs value-only DP.
-- Off-by-one in indices / hash modulus.
-- Assuming sorted input when it is not.
-- Ignoring integer overflow in cost accumulation.
-
-## 11. Interview signal (3)
-- State invariant first, then code.
-- Derive complexity without hand-waving.
-- Name one pitfall and its test.
-
-## 12. Checklist (2)
-- [ ] Can replay trace without notes. [ ] Can prove bound. [ ] Can code in 20 min.
+## Interview signal
+- Prove the tails invariant and the safety of replacement in two sentences.
+- Explain the envelope tie rule from the nesting definition.
+- State why reconstruction needs parents beyond tails.

@@ -1,50 +1,48 @@
-# REAL_WORLD_PROJECT — Stacks & Queues (`03-stacks-queues`)
-> Ship a production-flavored use-case of stacks+queues with metrics. ~6–10 hours.
+# REAL_WORLD_PROJECT — Stacks & Queues
 
-## Problem statement
-Build a small but honest service/CLI around `StackQueue` for: scheduling, BFS/DFS, buffering, pipeline stages.
-Examples: autocomplete API (trie), priority scheduler (heap), ordered index with range scan (BST/balanced tree),
-deduplicating ingest cache (hash), graph route planner (graphs), disk-pre-check layer (bloom), ring buffer pipeline (queue/stack).
+Production use-case: **bounded job queue with overflow policy for a worker pool**. Secondary: bracket/expression evaluator CLI.
 
-## Functional requirements
-1. CLI or HTTP endpoint: `put/get/delete` (or domain equivalent: `schedule/pop`, `insert/suggest`, `add/mightContain`).
-2. Persistence or snapshot: load/save to file (JSON/CSV/serialized); reload preserves correctness.
-3. Config: capacity / threshold / k,m / comparator / seed exposed via flags or properties file.
-4. Observability: log operation latencies (avg/p50/p99), hit/miss or FPR estimate, resize/rotation counts, memory.
-5. Correctness: oracle cross-check on a sample workload (vs `HashMap`/`TreeMap`/`PriorityQueue` as appropriate).
+## 1. Problem statement
+Serve enqueue/dequeue with backpressure at scale with a latency SLO and a memory budget.
+Define SLOs up front: p50/p99 op latency, throughput (ops/s), max queue depth, correctness bar (FIFO order proof).
 
-## Non-functional targets (measure and report)
-| Metric | Target (toy-prod) | How to measure |
+## 2. Architecture
+- Ingest: producers submitting jobs to the bounded queue.
+- Core: ArrayDeque/ring queue behind a narrow interface.
+- Serve: dequeue API + depth metrics + health.
+- Persist: overflow spill file where durability matters.
+
+## 3. Implementation plan (2 weeks)
+W1: core + invariant checker + unit/property tests.
+W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+
+## 4. Metrics to report
+
+| Metric | Target | How measured |
 |---|---|---|
-| Throughput | ≥10k ops/s single-thread on 100k dataset | benchmark harness, warmup, 5 runs median |
-| p99 latency | <1 ms point op on laptop | HDR-ish histogram or sorted samples |
-| Memory | report bytes/elem (Runtime/JOL) | before/after load snapshot |
-| Correctness | 0 mismatches vs oracle on 10k random ops | oracle test log |
-| Resilience | graceful empty/full/degraded (incl. bloom FPR) behavior | chaos script: empty, dup flood, adversarial order |
+| p50 op latency | define SLO | JMH / load test |
+| p99 op latency | define SLO | hdrhistogram |
+| Throughput | ops/s | load generator |
+| Memory | MB at N entries | JOL / heap dump |
+| Correctness | exact FIFO vs oracle | property tests |
+| Availability | drain time on shutdown | chaos/restart drill |
 
-## Architecture sketch
-```
-client -> Service (StackQueue + policy) -> snapshot file
-              |-> metrics log (CSV: op, nanos, size, aux)
-              |-> oracle checker (sampled, off-path)
-```
-Keep it single-module; no frameworks required (`com.sun.net.httpserver` or plain CLI is fine).
+## 5. Risks & mitigations
+- Overflow loss -> drop-newest/oldest policy + spill.
+- Consumer stall -> depth alerts + autoscale hook.
+- Memory blowup -> bounded caps + backpressure.
+- Concurrency bugs -> SPSC/MPSC discipline + stress tests.
 
-## Milestones
-1. Slice 1 (2h): domain model + `StackQueue` wired, CLI works on tiny fixture.
-2. Slice 2 (2–3h): persistence + config + edge handling (empty/dup/null/adversarial).
-3. Slice 3 (2–3h): metrics + benchmark script + chart.
-4. Hardening (1–2h): oracle test, chaos script, 1-page ops note (deploy, monitor, rollback).
+## 6. Field notes
+Sourced field notes (fetched Oct 2026 — verify before citing)
+- https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html
+- https://en.wikipedia.org/wiki/Queue_(abstract_data_type)
+Confirm API/limit numbers against the live docs before quoting them in reviews.
 
-## Deliverables
-- `src/` implementation + `README` run instructions (java version, commands).
-- `metrics.csv` + chart + 1-page report (targets vs actuals, bottleneck, next scaling step).
-- Postmortem: one real bug found via oracle/chaos, invariant violated, fix.
+## 7. Deliverables
+- Repo with tests + JMH bench + dashboard screenshot.
+- One-page ops runbook: SLOs, alerts, rollback.
+- Demo script with seeded load.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Oracle Java docs — `StackQueue` counterpart guarantees: https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html
-- Reference survey / encyclopedia entry for stacks+queues: https://en.wikipedia.org/wiki/Queue_(abstract_data_type)
-Verify version-specific behavior against your JDK (run `java -version`) before citing numbers.
-
-## Evaluation
-- Works end-to-end from cold start (3 pts) · Metrics honest + reproducible (3) · Edge/chaos handled (2) · Report + postmortem depth (2). Ship ≥7/10.
+## 8. Grading
+- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.

@@ -1,88 +1,49 @@
-# THEORY — Longest Common Subsequence (LCS)
-> Mechanics + invariants + complexity proof. Lab `13-dp-lcs`.
+# Theory: Longest Common Subsequence
+> Two-string DP over prefix pairs: recurrence, fill order, reconstruction, bounds.
 
-## 1. Problem statement (5)
-- Input, output, constraints stated formally.
-- For Longest Common Subsequence (LCS): X[1..m], Y[1..n]; dp[i][j] = LCS length of prefixes.
-- Context: classic 2D DP over two strings.
-- Success = correct output on all edge cases + proven bounds.
+## Problem statement
+- Input: strings X of length m and Y of length n over the same alphabet.
+- Output: the length of the longest sequence that is a subsequence of both, plus one such sequence.
+- A subsequence keeps order but not contiguity; do not confuse it with substring.
+- Boundary cases: either string empty gives length 0; identical strings give full length.
 
-## 2. Intuition in one paragraph (8)
-- Longest Common Subsequence (LCS) exploits structure: optimal substructure of prefix pairs; overlapping subproblems.
-- Think of it as maintaining a promise while scanning/building the answer.
-- If the promise ever breaks, the algorithm has a repair step.
-- Example domain: diff tools, bioinformatics alignment, version control.
+## Recurrence
+- State dp[i][j] = LCS length of prefixes X[1..i] and Y[1..j], with dp[0][*] = dp[*][0] = 0.
+- If X[i] == Y[j]: dp[i][j] = dp[i-1][j-1] + 1 (last characters pair up in some optimum).
+- Else: dp[i][j] = max(dp[i-1][j], dp[i][j-1]) (drop one tail or the other).
+- The answer is dp[m][n]; the recurrence references only already-filled neighbors.
 
-## 3. Formal model (10)
-- State: defines current partial solution.
-- Decision: choice at each step derived from classic 2D DP over two strings.
-- Transition: how state evolves (see recurrence below).
-- Objective: minimize/maximize cost or decide feasibility.
-- Model instance: `X[1..m], Y[1..n]; dp[i][j] = LCS length of prefixes`.
+## Worked trace
+- X = ABC, Y = AC. Row 0 and column 0 are all zeros by definition.
+- i=1 (A) vs j=1 (A): equal, dp = dp[0][0] + 1 = 1. j=2 (C): differ, max(0, 1) = 1.
+- i=2 (B): vs A differ max(1, 0) = 1; vs C differ max(1, 1) = 1.
+- i=3 (C): vs A differ max(1, 0) = 1; vs C equal, dp[2][1] + 1 = 2.
+- Result 2 with subsequence AC; backtracking from dp[3][2] recovers it.
 
-## 4. Mechanics step-by-step (15)
-1. Initialize structures (arrays, heaps, hash maps as needed).
-2. Establish base case / empty-structure invariant.
-3. Iterate / recurse over input in defined order.
-4. Apply local rule (greedy choice, DP transition, pointer move).
-5. Maintain auxiliary data (prefix sums, pi table, residual graph).
-6. Prune / skip provably useless branches.
-7. Record best answer seen so far.
-8. Terminate when input exhausted or target reached.
-9. Reconstruct solution via parent pointers if needed.
-10. Validate output with checker.
+## Correctness argument
+- Case X[i] == Y[j]: some optimal solution pairs them (else swap the partner in), so +1 is safe.
+- Case differ: no optimal solution needs both tails, so dropping one tail keeps an optimum.
+- Induction on i + j lifts the per-cell claim to the full table.
+- Fill order (rows outer, columns inner) guarantees every referenced cell is final.
 
-## 5. Worked trace (12)
-- Small input example tailored to Longest Common Subsequence (LCS).
-- Table-driven trace (step | state | decision | invariant holds?).
-- Step 1: init — invariant holds vacuously.
-- Step 2: first decision — show why alternatives are dominated.
-- Step 3: middle — show auxiliary structure update.
-- Step 4: last — show answer extraction.
-- Key lesson: trace exposes off-by-one and order bugs early.
+## Complexity derivation
+- States: (m+1)(n+1) cells, each computed in O(1) from three neighbors.
+- Time Theta(m*n); full table space Theta(m*n) when reconstruction is needed.
+- Length-only needs one rolling row: space Theta(min(m, n)) by orienting the short string across.
+- Reconstruction walks back at most m + n steps following parent decisions.
 
-## 6. Invariants (precise) (10)
-- I1: optimal substructure of prefix pairs; overlapping subproblems.
-- I2: Every discarded candidate cannot belong to an optimal solution.
-- I3: Auxiliary structure always reflects processed prefix.
-- Initialization: I holds before loop (empty prefix).
-- Maintenance: each iteration re-establishes I (case split).
-- Termination: I + exit condition => correctness.
+## Variants
+- Edit distance (Levenshtein) on the same table with insert/delete/substitute costs.
+- Length-only rolling rows vs full table with parent pointers: know which the task needs.
+- Space-shrinking divide-and-conquer (Hirschberg) exists but is beyond this lab's scope.
 
-## 7. Correctness proof sketch (10)
-- Lemma 1 (safety): maintained invariant holds each iteration.
-- Lemma 2 (progress): measure strictly decreases/increases toward goal.
-- Theorem: on termination output is optimal/correct.
-- Proof by induction on steps using I1–I3.
-- Counterexample if invariant dropped: construct small failing input.
+## Pitfalls
+- Off-by-one: dp indices run 0..m while string indices run 0..m-1; the +1 shift is mandatory.
+- Reconstructing from a rolling-row table that no longer holds the parents.
+- Treating ties (equal max from top vs left) as errors; any optimal parent is fine.
+- Assuming the recovered LCS is unique; usually it is not.
 
-## 8. Complexity analysis with proof (12)
-- Count primitive ops per step; sum over steps.
-- Recurrence where applicable: T(n) = a·T(n/b) + f(n) (see MATH_FOUNDATION.md).
-- Apply Master theorem / Akra-Bazzi / accounting method.
-- Typical bound for this lab: O(m*n) time, O(min(m,n)) space optimized.
-- Space: auxiliary tables + recursion stack + output.
-- Lower bound argument: comparison / information-theoretic where relevant.
-- Tightness: exhibit worst-case family achieving the bound.
-
-## 9. Variants and connections (8)
-- Iterative vs recursive formulations.
-- Top-down memo vs bottom-up tabulation (for DP-flavored Longest Common Subsequence (LCS)).
-- Randomized / parallel / streaming variants.
-- Reduces to / from neighboring lab topics.
-- When NOT to use: input too small, constraints violated, simpler method wins.
-
-## 10. Common misconceptions (5)
-- Confusing average with worst case.
-- Forgetting reconstruction vs value-only DP.
-- Off-by-one in indices / hash modulus.
-- Assuming sorted input when it is not.
-- Ignoring integer overflow in cost accumulation.
-
-## 11. Interview signal (3)
-- State invariant first, then code.
-- Derive complexity without hand-waving.
-- Name one pitfall and its test.
-
-## 12. Checklist (2)
-- [ ] Can replay trace without notes. [ ] Can prove bound. [ ] Can code in 20 min.
+## Interview signal
+- Write the recurrence and defend the equal-character case in one sentence.
+- State fill order and the rolling-row optimization with what is lost.
+- Trace a 3x2 table cold without index mistakes.

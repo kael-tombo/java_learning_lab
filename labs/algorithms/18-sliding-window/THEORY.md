@@ -1,88 +1,54 @@
-# THEORY — Sliding Window Technique
-> Mechanics + invariants + complexity proof. Lab `18-sliding-window`.
+# Theory: Sliding Windows and Amortized Linearity
+> Fixed and variable windows over arrays and strings with at-most-once pointer moves.
 
-## 1. Problem statement (5)
-- Input, output, constraints stated formally.
-- For Sliding Window Technique: expand right, shrink left while invalid; freq map / deque.
-- Context: variable / fixed windows with monotonic aggregates.
-- Success = correct output on all edge cases + proven bounds.
+## Problem statement
+- Fixed window: all subarrays of size k (max sum, averages).
+- Variable window: longest/shortest subarray satisfying a content predicate (repeat-free, sum bound).
+- Window [l..r] with incremental state (sum, frequency map) updated at both ends.
+- Goal: O(n) total by moving each pointer at most n steps.
 
-## 2. Intuition in one paragraph (8)
-- Sliding Window Technique exploits structure: window invariant: [l,r) is longest/shortest valid ending at r.
-- Think of it as maintaining a promise while scanning/building the answer.
-- If the promise ever breaks, the algorithm has a repair step.
-- Example domain: rate limiting, longest-substring-k-distinct, min-subarray.
+## Fixed windows
+- Seed sum of a[0..k-1]; slide: add a[r+1], subtract a[l], advance both.
+- Each step O(1); total O(n) time, O(1) space for n-k+1 windows.
+- Correctness: the maintained sum always equals the current window by induction on slides.
+- All-negative series work unchanged; the maximum is simply the least bad window.
 
-## 3. Formal model (10)
-- State: defines current partial solution.
-- Decision: choice at each step derived from variable / fixed windows with monotonic aggregates.
-- Transition: how state evolves (see recurrence below).
-- Objective: minimize/maximize cost or decide feasibility.
-- Model instance: `expand right, shrink left while invalid; freq map / deque`.
+## Variable windows (longest repeat-free substring)
+- Expand r; while s[r] repeats inside, advance l past the previous occurrence.
+- Last-seen map gives the shrink target in O(1); best bounds update on every expansion.
+- Invariant: window is always repeat-free when the best update runs.
+- "abba" trap: l = max(l, last+1) so l never moves backward.
 
-## 4. Mechanics step-by-step (15)
-1. Initialize structures (arrays, heaps, hash maps as needed).
-2. Establish base case / empty-structure invariant.
-3. Iterate / recurse over input in defined order.
-4. Apply local rule (greedy choice, DP transition, pointer move).
-5. Maintain auxiliary data (prefix sums, pi table, residual graph).
-6. Prune / skip provably useless branches.
-7. Record best answer seen so far.
-8. Terminate when input exhausted or target reached.
-9. Reconstruct solution via parent pointers if needed.
-10. Validate output with checker.
+## Amortized analysis
+- l and r each advance at most n times over the run: at most 2n pointer moves.
+- Inner shrink loops look nested but charge against l's forward progress (aggregate method).
+- Total O(n) time with O(1) or O(alphabet) space depending on the state kept.
+- Counters on visits verify the bound empirically.
 
-## 5. Worked trace (12)
-- Small input example tailored to Sliding Window Technique.
-- Table-driven trace (step | state | decision | invariant holds?).
-- Step 1: init — invariant holds vacuously.
-- Step 2: first decision — show why alternatives are dominated.
-- Step 3: middle — show auxiliary structure update.
-- Step 4: last — show answer extraction.
-- Key lesson: trace exposes off-by-one and order bugs early.
+## Shrinkable constraints
+- Pattern needs a predicate where shrinking can restore validity (repeat-free, at-most-K).
+- longest-with-property uses expand-then-shrink-while-invalid; shortest uses shrink-while-valid.
+- Non-shrinkable predicates (median conditions, exact-once-everywhere) break the pattern.
+- Naming the predicate and its shrink step is the design work of each new problem.
 
-## 6. Invariants (precise) (10)
-- I1: window invariant: [l,r) is longest/shortest valid ending at r.
-- I2: Every discarded candidate cannot belong to an optimal solution.
-- I3: Auxiliary structure always reflects processed prefix.
-- Initialization: I holds before loop (empty prefix).
-- Maintenance: each iteration re-establishes I (case split).
-- Termination: I + exit condition => correctness.
+## Complexity derivation
+- Fixed: n-k+1 windows times O(1) = Theta(n) time, Theta(1) space.
+- Variable: 2n moves times O(1) updates = Theta(n) time, map space for frequencies.
+- Rescanning the window per step would revert to Theta(n^2) - the incremental state prevents it.
+- Alphabet-bounded maps (ASCII 128) keep space effectively constant.
 
-## 7. Correctness proof sketch (10)
-- Lemma 1 (safety): maintained invariant holds each iteration.
-- Lemma 2 (progress): measure strictly decreases/increases toward goal.
-- Theorem: on termination output is optimal/correct.
-- Proof by induction on steps using I1–I3.
-- Counterexample if invariant dropped: construct small failing input.
+## Variants
+- At-most-K-distinct: same skeleton with a distinct-count validity predicate.
+- Minimum window covering: shrink-while-valid with best tracking on the valid side.
+- Deque-based sliding maximum: same window shape, stronger data structure.
 
-## 8. Complexity analysis with proof (12)
-- Count primitive ops per step; sum over steps.
-- Recurrence where applicable: T(n) = a·T(n/b) + f(n) (see MATH_FOUNDATION.md).
-- Apply Master theorem / Akra-Bazzi / accounting method.
-- Typical bound for this lab: O(n) each index visited <= twice; O(k) aux.
-- Space: auxiliary tables + recursion stack + output.
-- Lower bound argument: comparison / information-theoretic where relevant.
-- Tightness: exhibit worst-case family achieving the bound.
+## Pitfalls
+- Letting l move backward via unguarded last-seen assignment.
+- Recomputing window state from scratch each step (silent quadratic).
+- Stale best bounds updated only on expansion in shortest-window problems.
+- k = 0 or k > n handled as answers instead of errors.
 
-## 9. Variants and connections (8)
-- Iterative vs recursive formulations.
-- Top-down memo vs bottom-up tabulation (for DP-flavored Sliding Window Technique).
-- Randomized / parallel / streaming variants.
-- Reduces to / from neighboring lab topics.
-- When NOT to use: input too small, constraints violated, simpler method wins.
-
-## 10. Common misconceptions (5)
-- Confusing average with worst case.
-- Forgetting reconstruction vs value-only DP.
-- Off-by-one in indices / hash modulus.
-- Assuming sorted input when it is not.
-- Ignoring integer overflow in cost accumulation.
-
-## 11. Interview signal (3)
-- State invariant first, then code.
-- Derive complexity without hand-waving.
-- Name one pitfall and its test.
-
-## 12. Checklist (2)
-- [ ] Can replay trace without notes. [ ] Can prove bound. [ ] Can code in 20 min.
+## Interview signal
+- Prove the 2n bound by counting pointer moves, not by gesturing at loops.
+- State the window invariant and the shrink step for longest-unique.
+- Classify a new problem as fixed vs variable window with reasons.

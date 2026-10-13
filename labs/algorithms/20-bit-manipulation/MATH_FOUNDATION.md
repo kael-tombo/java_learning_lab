@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — Bit Manipulation
-> Recurrences / Master theorem / amortized. Lab `20-bit-manipulation`.
+# Math Foundation: Two's Complement Proofs and Popcount
+> Bitwise identities proved from arithmetic: lowbit, clearing, XOR group laws.
 
-## 1. Why math matters here
-- Bit Manipulation claims O(1) per op / O(words) for big ints — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- ~x flips all bits; -x = ~x + 1 by two's complement definition.
+- x & -x: intersection of x with its negation (the lowbit claim).
+- Popcount: number of 1-bits; word size w = 32 (int) or 64 (long).
+- Shifts: << zero-fills; >> sign-extends; >>> zero-extends; distances masked.
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for Bit Manipulation, instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- Each idiom: O(1) word ops, O(1) space - verification by inspection.
+- Clearing-loop popcount: one iteration per set bit = exactly popcount iterations.
+- Shift-loop popcount: w iterations always; builtin: O(1)-class reference.
+- Flag packing: 31 independent booleans per int (position 31 excluded by sign).
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- None needed: straight-line identities proved by bit-position case analysis.
+- Clearing progress: popcount strictly decreases each n &= n-1 step.
+- Loop termination: popcount reaches 0 after exactly popcount steps.
+- XOR accumulation: order-free by commutativity/associativity of XOR.
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in Bit Manipulation.
+## Derivation of the bound
+- x & -x: -x = ~x+1 flips trailing ones to 1... proof: trailing zeros of x stay aligned. (4 lines)
+- n & (n-1): subtracting borrows through trailing ones, clearing the lowest 1. (3 lines)
+- Power-of-two: single-bit numbers are exactly the positive n with n&(n-1) == 0. (2 lines)
+- XOR loner: pairs cancel to 0, identity leaves the loner: a^a^b = b. (2 lines)
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For x & -x isolates lowbit; n&(n-1) clears lowbit: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: O(1) per op / O(words) for big ints derived by this product.
+## Worked mini-proofs
+- Proof 1: lowbit isolation from ~x+1 bit pattern. (4 lines)
+- Proof 2: clearing drops exactly the lowest set bit (borrow analysis). (3 lines)
+- Proof 3: loner correctness from XOR group laws. (2 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to Bit Manipulation: each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. 12 & -12. Answer: 4.
+- 2. Iterations of clearing-loop on 0b1011000. Answer: 3.
+- 3. Loner of [4,1,2,1,2]. Answer: 4.
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- Power-of-two test without n > 0 (0 passes the mask check).
+- >> vs >>> confusion on negative values.
+- Shift distances >= width silently masking.
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive O(1) per op / O(words) for big ints.
+## Checklist
+- Prove lowbit and clearing from two's complement without notes.
+- State all three shift rules with an example each.

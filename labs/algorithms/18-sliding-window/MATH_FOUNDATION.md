@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — Sliding Window Technique
-> Recurrences / Master theorem / amortized. Lab `18-sliding-window`.
+# Math Foundation: Amortized 2n and Map Accounting
+> Aggregate pointer moves, O(1) window updates, fixed vs variable cost models.
 
-## 1. Why math matters here
-- Sliding Window Technique claims O(n) each index visited <= twice; O(k) aux — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- Window [l..r]; state: sum, frequency map, validity predicate.
+- Expand: r++ with state add; shrink: l++ with state remove.
+- Visit: pointer landing on an index; budget 2n total across both pointers.
+- Shrinkable predicate: shrinking can restore validity (repeat-free, at-most-K).
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for Sliding Window Technique, instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- l advances <= n times, r advances <= n times: <= 2n moves total.
+- State updates O(1) amortized per move (hash ops, sum add/subtract).
+- Total Theta(n) time; space O(1) for sums, O(alphabet) for frequency maps.
+- Fixed windows: exactly n-k+1 slides at O(1): Theta(n) with no amortization needed.
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- Iterative, not recursive: progress measured by (l, r) lexicographic advance.
+- Best-answer updates ride on expansion (longest) or valid shrinks (shortest).
+- Last-seen map jumps l forward past repeats in O(1) per distinct char.
+- Guard l = max(l, last+1) keeps monotonicity (the abba fix).
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in Sliding Window Technique.
+## Derivation of the bound
+- Aggregate: every inner-shrink iteration advances l; l advances <= n times.
+- Outer loop advances r <= n times: total iterations O(n) despite nesting.
+- Map ops assumed O(1) average; worst-case hash pathologies noted, not analyzed here.
+- Rescan-per-step variants would pay Theta(n^2): the incremental state is the difference.
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For expand right, shrink left while invalid; freq map / deque: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: O(n) each index visited <= twice; O(k) aux derived by this product.
+## Worked mini-proofs
+- Proof 1: aggregate 2n bound from monotone domains. (3 lines)
+- Proof 2: window-sum correctness by induction on slides. (3 lines)
+- Proof 3: repeat-free invariant maintenance with last-seen jumps. (4 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to Sliding Window Technique: each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. Moves bound for n = 10^6. Answer: at most 2 x 10^6 pointer moves.
+- 2. Longest repeat-free length of abcabcbb. Answer: 3.
+- 3. Fixed max-sum-k for [2,1,5,1,3,2], k = 3. Answer: 9 (windows 5+1+3).
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- Backward l moves breaking the charging argument silently.
+- Stale best values in shortest-window variants (update on the wrong side).
+- Non-shrinkable predicates forced into the pattern anyway.
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive O(n) each index visited <= twice; O(k) aux.
+## Checklist
+- Prove 2n by aggregate method without notes.
+- State the guard that keeps l monotone and why it is needed.

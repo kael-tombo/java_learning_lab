@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — Cryptographic Algorithms
-> Recurrences / Master theorem / amortized. Lab `15-cryptographic-algorithms`.
+# Math Foundation: Birthday Bound, Bit Costs, XOR Algebra
+> Collision math, square-and-multiply bit counting, XOR group laws - all conceptual.
 
-## 1. Why math matters here
-- Cryptographic Algorithms claims RSA O(k^3), AES rounds O(blocks), SHA-256 O(n) — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- n-bit digest: 2^n possible outputs; k hashed inputs drawn in the analysis.
+- Collision: distinct inputs with equal digests; preimage: input matching a given digest.
+- Exponent bit-length L = floor(log2 e) + 1 drives square-and-multiply cost.
+- XOR: bitwise addition mod 2; involution means applying twice returns the start.
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for Cryptographic Algorithms, instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- Collision pairs among k inputs: C(k, 2) pairs, each colliding with probability 2^-n.
+- Expected collisions about k^2 / 2^(n+1); setting to 1 gives k about 2^(n/2).
+- Hence the birthday bound: 256-bit digests need on the order of 2^128 trials.
+- Preimage stays at 2^n trials: collisions are quadratically easier than preimages.
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- Square-and-multiply loop: one iteration per exponent bit, O(1) modular work each.
+- Cost Theta(L) = Theta(log e) multiplications; memory O(1) accumulators.
+- Hash streaming: one pass, O(1) state update per byte: Theta(n) for n bytes.
+- XOR pass: one gate-delay-class op per byte position: Theta(n).
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in Cryptographic Algorithms.
+## Derivation of the bound
+- Birthday: union bound over pairs gives the k^2/2^(n+1) estimate above.
+- Modpow: L bits force L squarings plus at most L multiplies: Theta(log e).
+- Verification hashing costs exactly one more pass: no asymptotic overhead.
+- Key-reuse leak: C1 XOR C2 = P1 XOR P2 holds bitwise for every position.
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For one-way functions, modular exponentiation, Merkle-Damgard / sponge: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: RSA O(k^3), AES rounds O(blocks), SHA-256 O(n) derived by this product.
+## Worked mini-proofs
+- Proof 1: birthday estimate from pair counting and union bound. (5 lines)
+- Proof 2: modpow invariant (result x base^exp constant) by induction on bits. (5 lines)
+- Proof 3: XOR cancellation (p^k)^(q^k) = p^q from associativity/commutativity. (3 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to Cryptographic Algorithms: each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. Trials for 50 percent collision at n = 64? Answer: about 2^32.
+- 2. Multiplies for e = 13 (binary 1101)? Answer: 3 squarings + 2 multiplies = 5.
+- 3. (HELLO^k)^(WORLD^k) in bytes? Answer: HELLO XOR WORLD byte-wise.
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- Confusing preimage (2^n) with collision (2^(n/2)) difficulty.
+- Counting only squarings and forgetting the conditional multiplies.
+- Treating the birthday estimate as a guarantee rather than an expectation.
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive RSA O(k^3), AES rounds O(blocks), SHA-256 O(n).
+## Checklist
+- Derive the birthday bound from pair counting cold.
+- Derive modpow cost from exponent bit-length.

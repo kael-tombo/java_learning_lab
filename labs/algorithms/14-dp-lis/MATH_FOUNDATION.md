@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — Longest Increasing Subsequence (LIS)
-> Recurrences / Master theorem / amortized. Lab `14-dp-lis`.
+# Math Foundation: LIS Bounds, Binary Search, Patience
+> O(n^2) DP counting, the O(n log n) tails argument, binary search halving.
 
-## 1. Why math matters here
-- Longest Increasing Subsequence (LIS) claims O(n^2) naive, O(n log n) optimized, O(n) space — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- dp[i]: LIS length ending exactly at position i (1 + best compatible predecessor).
+- tails[k]: minimal possible tail of an increasing subsequence of length k+1.
+- Binary search over tails: first index with value >= x (lower bound).
+- Strict semantics: equals never extend; the search variant encodes this.
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for Longest Increasing Subsequence (LIS), instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- O(n^2) version: n states, each scanning up to n predecessors at O(1) each.
+- Total Theta(n^2) worst case; sorted-ascending input attains it (all pairs compatible).
+- Tails version: n placements, each one binary search over at most n piles.
+- Total Theta(n log n); descending input still pays all n searches.
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- dp[i] = 1 + max{dp[j] : j < i, a[j] < a[i]}, or 1 if the set is empty.
+- Answer max_i dp[i]; the recurrence is a DAG longest path (edges j -> i).
+- Tails update: pos = lower_bound(tails, x); tails[pos] = x (or append).
+- Binary search recurrence T(k) = T(k/2) + O(1) = Theta(log k).
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in Longest Increasing Subsequence (LIS).
+## Derivation of the bound
+- Halving argument: each step discards half the remaining pile range.
+- After ceil(log2 n) + 1 steps one candidate remains: Theta(log n) per element.
+- Tails sortedness invariant makes binary search applicable at every step.
+- Replacement safety: lowering a tail preserves all future extensions (subset argument).
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For dp[i] = length of LIS ending at i; O(n log n) via tails[]: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: O(n^2) naive, O(n log n) optimized, O(n) space derived by this product.
+## Worked mini-proofs
+- Proof 1: binary search takes Theta(log n) by the halving count. (3 lines)
+- Proof 2: tails stays sorted by the minimal-tail definition per length. (4 lines)
+- Proof 3: replacement never destroys extendability (old tail >= new tail). (4 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to Longest Increasing Subsequence (LIS): each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. LIS length of 3 1 2 8 6 7 4 5. Answer: 4.
+- 2. Tails after processing 3 1 2. Answer: [1, 2].
+- 3. Why does tails length equal LIS length? Answer: appends happen exactly on extensions.
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- Binary search variant (first->= vs first->) mismatched with strictness.
+- Reading the subsequence from tails instead of parent pointers.
+- Quoting O(n log n) while actually coding the O(n^2) predecessor scan.
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive O(n^2) naive, O(n log n) optimized, O(n) space.
+## Checklist
+- Derive both bounds from states-times-transitions and search-per-element.
+- State the tails invariant and prove replacement safety.

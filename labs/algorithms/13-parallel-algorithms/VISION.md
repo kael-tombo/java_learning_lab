@@ -1,48 +1,33 @@
-# VISION — Parallel Algorithms (Work-Span / Fork-Join)
-> Mastery path. Lab `13-parallel-algorithms`.
+# Vision: Parallel Algorithms
+> Work/span reasoning that tells you what speedup is possible before you write a thread.
 
-## Where this sits
-- Parallel Algorithms (Work-Span / Fork-Join) is one tool in the algorithms arsenal: PRAM model, fork-join, divide-and-conquer parallelism.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; Work-stealing schedulers; Brent's theorem memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (parallel sort, prefix-sum, matrix multiply).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain determinacy races avoided; join synchronizes all forks without notes; derive Work-stealing schedulers; Brent's theorem on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Multicore programming with threads, pools, and parallel loops used correctly.
+- Performance analysis that separates algorithmic work from parallel overhead.
+- Later labs on scheduling and load balancing, which assume work/span vocabulary.
+## What mastering it unlocks
+- Compute work and span for a parallel loop and the resulting parallelism ratio.
+- Apply Amdahl's law to bound speedup from a measured sequential fraction.
+- Spot a data race by naming the shared state and the interleaving that breaks it.
+- Choose chunking that balances load without drowning in task overhead.
+- Explain why more threads can slow a program down, with the overhead term named.
+## What it does not cover
+- Distributed systems: this lab is shared-memory parallelism, not networks and partitions.
+- Lock-free data structure design, which needs memory-model reasoning beyond this lab.
+- Automatic parallelization by compilers, which is a separate specialty.
+## Core questions you will answer
+- What is the difference between work, span, and wall-clock time?
+- If 10 percent of a program is sequential, what speedup cap does Amdahl give on 16 cores?
+- Which variables in a chunked sum need synchronization, and which provably do not?
+- Why is a reproducible fixed-seed test valuable for parallel code?
+## How to judge progress
+- Annotate a loop nest with its work, span, and the bottleneck step.
+- Rewrite a racy counter so the result is exact, and explain why the fix works.
+- Predict whether parallelizing a given loop is worth it, with numbers.
+## Common misuse
+- Measuring speedup against an unoptimized baseline, which inflates the ratio.
+- Sharing one Random or counter across threads and wondering why results drift.
+## After this lab
+- 24-scheduling-algorithms for assigning work to machines over time.
+- 23-load-balancing for distributing work evenly at runtime.
+One-line self-test: Define work and span for parallel sum over n elements with p chunks.

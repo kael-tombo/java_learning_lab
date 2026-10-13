@@ -1,85 +1,33 @@
-# REAL_WORLD_PROJECT — Network Flow (Max-Flow / Min-Cut)
-> Production use-case with metrics + prevention. Lab `17-network-flow`.
+# Real-World Project: Shift Assigner
+> Bipartite worker-to-shift matching via max flow, with a cut certificate for gaps.
 
-## Use-case: bipartite matching, logistics, image segmentation
-- System: backend service handling large inputs where Network Flow (Max-Flow / Min-Cut) is on the hot path.
-- Why this algorithm: augmenting paths, residual graphs, push-relabel gives Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
-
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Network Flow (Max-Flow / Min-Cut)) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
-
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
-
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
-
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-
-## Cost note
-- Optimized variant (Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+## Problem
+Assign workers to shifts they are qualified for, maximizing filled shifts.
+Unfilled shifts need an explanation: the minimum cut names the bottleneck group.
+## Inputs
+- workers.csv, shifts.csv, and qualifications.csv (worker, shift) pairs.
+- Fixtures: perfect case (all filled), bottleneck case (one short), empty-qualification case.
+- Output: assignment list, filled count, and bottleneck explanation when short.
+## Steps
+1. Build the flow network: source to workers, qualification edges, shifts to sink, all unit capacity.
+2. Run Edmonds-Karp to max flow and read the assignment off saturated worker-shift edges.
+3. Take the source-reachable set in the final residual graph as the minimum cut.
+4. Translate the cut into words: which worker group and which shift group limit the matching.
+5. Print assignment lines plus filled/total and the bottleneck note.
+6. Cross-check the matching size with a direct augmenting-path implementation.
+## Acceptance criteria
+- Perfect fixture fills all shifts with a valid assignment (every pair qualified).
+- Bottleneck fixture reports the exact shortfall with the correct limiting group.
+- Empty-qualification fixture reports zero filled without crashing.
+- Both solvers agree on matching size across all fixtures.
+- 50-worker random fixture (fixed seed) solves in under 5 seconds.
+## Failure modes
+- Unknown worker/shift ids in qualifications are rejected with row numbers.
+- Duplicate qualification rows are deduplicated with a warning count.
+- Disconnected workers appear explicitly as unassigned, never silently dropped.
+## Extensions
+- Capacities above 1 (workers taking multiple shifts) as a documented extension.
+- Priority shifts mode sketch with min-cost flow named as the follow-up.
+## How to demo
+- Show the bottleneck explanation for the short fixture and verify it by hand.
+- Show the residual reachable set and map it to the printed explanation.

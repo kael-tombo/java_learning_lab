@@ -1,48 +1,33 @@
-# VISION — String Matching (KMP / Rabin-Karp / Z)
-> Mastery path. Lab `16-string-matching`.
+# Vision: String Matching
+> Finding patterns in linear time: naive limits, KMP automata, rolling hashes.
 
-## Where this sits
-- String Matching (KMP / Rabin-Karp / Z) is one tool in the algorithms arsenal: linear pattern matching with automata / rolling hash.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; KMP/Z O(n+m), Rabin-Karp avg O(n+m), naive O(nm) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (grep, plagiarism detection, DNA search).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain KMP invariant: pi gives longest proper border; no re-scan without notes; derive KMP/Z O(n+m), Rabin-Karp avg O(n+m), naive O(nm) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Log scanning, text search, and plagiarism-style exact-match tooling.
+- Automaton thinking: the prefix function as a tiny state machine.
+- Fingerprinting: trading certainty for speed with verifiable hashes.
+## What mastering it unlocks
+- Exhibit the input family that forces naive search into Theta(n*m).
+- Compute the prefix function by hand and explain each fallback.
+- Run KMP search and account for every character examination.
+- Maintain a rolling hash update and repair negative residues correctly.
+- Choose between KMP and Rabin-Karp from the problem constraints.
+## What it does not cover
+- Regular expression engines, backreferences, and backtracking matchers.
+- Approximate matching (edit distance, k-mismatches) and multiple-pattern automata in depth.
+- Suffix arrays and suffix trees, which live in advanced string labs.
+## Core questions you will answer
+- Why is the total fallback work of prefix construction linear, not quadratic?
+- After a full match, why resume at pi[m-1] instead of 0?
+- Why does a hash match still need direct verification?
+- When does naive search beat KMP in practice despite worse asymptotics?
+## How to judge progress
+- Trace pi construction and KMP search on unseen patterns without errors.
+- Implement rolling hash updates that never go negative.
+- Justify the algorithm choice for a stated alphabet and pattern count.
+## Common misuse
+- Restarting KMP at 0 after each match and missing overlaps.
+- Using hash equality as proof of a match without the confirming comparison.
+## After this lab
+- 08-string-algorithms for the broader string-algorithm context.
+- 27-suffix-array for indexing a fixed text under many queries.
+One-line self-test: Explain what pi[i] means and why it bounds the shift after a mismatch.

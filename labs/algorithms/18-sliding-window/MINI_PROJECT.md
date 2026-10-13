@@ -1,83 +1,33 @@
-# MINI_PROJECT — Sliding Window Technique
-> Implement + benchmark + visualize. Lab `18-sliding-window`.
+# Mini Project: Window Drills
+> Two window patterns drilled to linearity with counters.
 
+## Background
+- Fixed windows slide in O(1) per step; variable windows shrink on violation.
+- Each index enters and leaves at most once - the counters prove it.
+- Last-seen maps make the longest-unique shrink step O(1).
 ## Goal
-- Build a runnable Java CLI that solves expand right, shrink left while invalid; freq map / deque, benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
-
-## Spec
-1. `lab.18_sliding_window.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving window invariant: [l,r) is longest/shortest valid ending at r.
-
-## Starter code
-```java
-package lab.18_sliding_window;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
-
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
-
-## Visualization
-- For n<=16 print DP row / window [l,r) / decision path.
-- Example (ASCII): `l=2 r=7 window=[4 1 5] best=3 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
-
+Implement longest-unique-substring and max-sum-k with visit counters.
+Verify the classic fixtures and the 2n visit bound.
+## Tasks
+1. Implement longest-unique with expand/shrink and best-bounds tracking.
+2. Assert abcabcbb gives 3, bbbbb gives 1, empty gives 0.
+3. Implement fixed max-sum-k with O(1) window updates.
+4. Verify max-sum fixtures including all-negative series by hand.
+5. Count index visits and assert at most 2 per index everywhere.
+6. Test k = 1, k = length, and single-character inputs.
+## Acceptance criteria
+- All string fixtures report exact expected values with valid bounds.
+- All numeric fixtures match hand-computed answers.
+- Visit bound holds on every fixture with counters printed.
+- Edge cases (empty, k = 1, k = length) pass.
+- Reported substrings verify repeat-free on re-check.
+## Pitfalls
+- Moving left backward on some inputs, breaking the amortized bound.
+- Rescanning the window per step, returning to quadratic silently.
+- Shrink conditions that never trigger, growing the window to the whole string.
+- Forgetting to update best bounds when shrinking (stale answers).
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for O(n) each index visited <= twice; O(k) aux.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches O(n) each index visited <= twice; O(k) aux.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- At-most-K-distinct as a second variable-window drill.
+- Minimum-window-substring sketch with the validity predicate spelled out.
+## Timebox
+One afternoon session, roughly 2 hours with counters.

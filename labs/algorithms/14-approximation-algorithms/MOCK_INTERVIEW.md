@@ -1,176 +1,84 @@
-# Mock Interview: Approximation Algorithms — NP-Hard Approximation
+# Mock Interview: Approximation Algorithms: Vertex Cover, Set Cover, Makespan
+> Three worked questions on provable near-optimality. Each answer is complete runnable Java; outputs below were observed.
 
-## Interview Details
-- **Topic**: Approximation Algorithms
-- **Difficulty Range**: Hard to Hard
-- **Total Time**: 45 minutes
-- **Interviewer**: Senior Software Engineer at Amazon
-- **Candidate**: Senior Software Engineer (6 years experience)
+## Q1: Compare greedy vertex cover against the true optimum on a small graph.
+Key insight: Taking both endpoints of an uncovered edge is a 2-approximation: the chosen edges are disjoint, any cover needs one endpoint per edge, so greedy uses at most twice the optimum. Brute force on 5 nodes verifies the ratio on this instance.
+Complexity: Greedy O(V + E); brute-force check O(2^V * E) for the comparison only.
+```java
+import java.util.HashSet;
+public class L14Q1VCover {
+    public static void main(String[] args) {
+        int[][] e = {{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 0}, {0, 2}};
+        HashSet<Integer> cov = new HashSet<>();
+        for (int[] x : e)
+            if (!cov.contains(x[0]) && !cov.contains(x[1])) { cov.add(x[0]); cov.add(x[1]); }
+        int opt = 5;
+        for (int m = 0; m < 32; m++) {
+            boolean ok = true;
+            for (int[] x : e)
+                if ((m & (1 << x[0])) == 0 && (m & (1 << x[1])) == 0) ok = false;
+            if (ok) opt = Math.min(opt, Integer.bitCount(m));
+        }
+        System.out.println("greedy=" + cov.size() + " opt=" + opt);
+    }
+}
+```
+Observed output: `greedy=4 opt=3`
+Follow-up: Prove the factor 2 from the disjoint-edges argument, and find an input family attaining it.
 
----
+## Q2: Cover a universe greedily by always taking the set with most uncovered elements.
+Key insight: Greedy set cover repeatedly takes the set covering the most still-uncovered elements; it uses at most H(d) times the optimum where d is the largest set size. The charging argument assigns each newly covered element cost 1/(newly covered).
+Complexity: Time O(sets * universe); the ratio is logarithmic, not constant.
+```java
+import java.util.HashSet;
+public class L14Q2SetCover {
+    public static void main(String[] args) {
+        int[][] sets = {{0, 1, 2}, {2, 3}, {3, 4, 5}, {0, 5}, {1, 4}};
+        HashSet<Integer> left = new HashSet<>();
+        for (int i = 0; i < 6; i++) left.add(i); int used = 0;
+        while (!left.isEmpty()) {
+            int bi = -1, bn = -1;
+            for (int i = 0; i < sets.length; i++) {
+                int n = 0;
+                for (int x : sets[i]) if (left.contains(x)) n++;
+                if (n > bn) { bn = n; bi = i; }
+            }
+            for (int x : sets[bi]) left.remove(x);
+            used++;
+        }
+        System.out.println("sets-used=" + used);
+    }
+}
+```
+Observed output: `sets-used=2`
+Follow-up: Why can no polynomial algorithm do much better in general, in one sentence about hardness?
 
-## Question 1: Vertex Cover Approximation
+## Q3: Schedule jobs on 2 machines with longest-processing-time-first and compare to optimal.
+Key insight: LPT (assign each job, longest first, to the least-loaded machine) is a 4/3-approximation for makespan. On small inputs brute force over 2^6 assignments gives the optimum to compare against.
+Complexity: Greedy O(n log n); brute-force check O(2^n) for the comparison only.
+```java
+import java.util.Arrays;
+public class L14Q3Lpt {
+    public static void main(String[] args) {
+        int[] jobs = {5, 5, 4, 4, 3, 3};
+        Arrays.sort(jobs);
+        int a = 0, b = 0;
+        for (int i = jobs.length - 1; i >= 0; i--) {
+            if (a <= b) a += jobs[i]; else b += jobs[i];
+        }
+        int greedy = Math.max(a, b), opt = 99;
+        for (int m = 0; m < 64; m++) {
+            int x = 0;
+            for (int i = 0; i < 6; i++) if ((m & (1 << i)) != 0) x += new int[]{5, 5, 4, 4, 3, 3}[i];
+            opt = Math.min(opt, Math.max(x, 24 - x));
+        }
+        System.out.println("lpt=" + greedy + " opt=" + opt);
+    }
+}
+```
+Observed output: `lpt=12 opt=12`
+Follow-up: Where does the 4/3 factor come from: which job in the order witnesses the worst case?
 
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Let us start with Vertex Cover Approximation. Explain your approach and consider the trade-offs."
-
-**Candidate**: "I will start by discussing the brute force solution. The naive approach has O(n^2) time complexity because we check every pair or permutation. However, this problem has characteristics that allow significant optimization."
-
-**Interviewer**: "What algorithm paradigm do you think applies here?"
-
-**Candidate**: "This problem fits the Approximation Algorithms paradigm. The key insight is that we can leverage the specific properties of this approach to reduce the complexity. Instead of checking all possibilities, we can use a systematic method that builds up the solution incrementally."
-
-**Interviewer**: "Walk me through the optimal solution."
-
-**Candidate**: "I will implement the algorithm with these steps. First, I handle the base cases. Then I process the input using the core algorithmic technique. I maintain necessary state variables and update them appropriately. The key decision point is how we transition between states. At the end, I return the computed result."
-
-**Interviewer**: "What is the time and space complexity?"
-
-**Candidate**: "The time complexity is O(n log n) for the sorting-based preprocessing plus O(n) for the main algorithm, giving O(n log n) total. Space complexity is O(n) for the auxiliary data structures. This is optimal because we must sort the input, and comparison-based sorting has a lower bound of omega(n log n)."
-
-**Interviewer**: "What edge cases should we test?"
-
-**Candidate**: "We should test: empty input returning a default, single element, all identical values, large values causing overflow, and values at boundary conditions. I will make sure the algorithm handles each of these gracefully."
-
-**Time Taken**: 13 minutes
-**What Went Well**: 
-- Clear communication of algorithmic trade-offs
-- Good recognition of the correct paradigm
-- Proactive complexity analysis
-**Could Improve**: 
-- Should ask about input size before optimizing
-- Could mention alternative algorithm paradigms considered
-
----
-
-## Question 2: Set Cover Problem
-
-**Difficulty**: Hard
-**Company Frequency**: Amazon, Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Next problem: Set Cover Problem. This is a more challenging algorithmic problem."
-
-**Candidate**: "Let me restate the problem to ensure I understand correctly. We are looking for... I see this as an extension of the previous pattern but with additional constraints."
-
-**Interviewer**: "What makes this different from the first problem?"
-
-**Candidate**: "The main difference is that this problem requires handling more complex state transitions. The state space is larger, so we need to be more careful about how we represent and update the state. A direct adaptation of the previous approach would be too slow."
-
-**Interviewer**: "How do you propose to solve it?"
-
-**Candidate**: "I will use the same algorithmic paradigm but with additional optimizations. Specifically, I can reduce the state space by noting that certain states are equivalent. This is a form of state compression. Alternatively, I can use a different variation of the algorithm that handles the specific constraints better."
-
-**Interviewer**: "Explain the implementation details."
-
-**Candidate**: "I initialize the data structures with appropriate initial values. Then I iterate through the input, applying the algorithm specific transitions. At each step, I check for early termination conditions. The core logic involves updating state based on the current input and previous state. Finally, I extract the answer from the state."
-
-**Interviewer**: "What is the complexity and can you prove optimality?"
-
-**Candidate**: "Time complexity is O(n) where n is the input size. Space is O(n) because we need to store the state for all elements. This is optimal because we must examine each input element at least once. A lower bound argument: any algorithm must read all the input, so omega(n) is a lower bound. Our algorithm achieves this bound."
-
-**Time Taken**: 14 minutes
-**What Went Well**: 
-- Correctly identified the harder variant characteristics
-- Good state compression thinking
-- Strong lower bound justification
-**Could Improve**: 
-- Could describe the state transition more precisely
-- Should mention space optimization possibilities
-
----
-
-## Question 3: Traveling Salesman Approximation
-
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Final problem: Traveling Salesman Approximation. This is a hard algorithm problem that appears frequently in our interviews."
-
-**Candidate**: "This is a significantly harder problem. Let me think carefully. The brute force approach would be O(2^n) or worse, which is infeasible for large inputs. I need to use the advanced algorithmic paradigm effectively."
-
-**Interviewer**: "What is your approach strategy?"
-
-**Candidate**: "I will combine multiple algorithmic techniques. The problem has overlapping subproblems suggesting DP, but also has a structure that allows greedy choices in certain cases. I need to carefully analyze the properties to determine which approach to use."
-
-**Interviewer**: "How do you decide between the different approaches?"
-
-**Candidate**: "I compare the trade-offs. A pure greedy approach would be O(n log n) but might fail for some edge cases. A DP approach would be O(n^2) and always correct. A divide-and-conquer approach would be O(n log n) with more complex merge logic. Given the constraints in the problem, I believe the DP approach is most appropriate because it guarantees correctness and the quadratic time is acceptable for the expected input size."
-
-**Interviewer**: "Explain the DP state definition."
-
-**Candidate**: "The state dp[i] represents the optimal solution for the subproblem up to i. The recurrence is dp[i] = min/max over valid transitions from previous states. The base cases are initialized first, then we fill the DP table in increasing order of i. The final answer is at dp[n]."
-
-**Interviewer**: "Can you optimize space?"
-
-**Candidate**: "Yes, if the recurrence only depends on a fixed number of previous states, we can reduce space from O(n) to O(k) where k is the number of states needed. This is a common optimization that is always worth mentioning."
-
-**Time Taken**: 16 minutes
-**What Went Well**: 
-- Systematic comparison of different algorithmic approaches
-- Clear DP state definition
-- Considered space optimization proactively
-**Could Improve**: 
-- Could have written the DP recurrence more formally
-- Should verify with a small example mentally
-
----
-
-## Interviewer Feedback
-
-### Overall Assessment: Strong Hire
-
-**Strengths**:
-- Strong algorithmic reasoning and pattern recognition
-- Always analyzes complexity and discusses lower bounds
-- Considers multiple algorithm paradigms before choosing
-- Handles hard problems with systematic decomposition
-- Excellent communication throughout the interview
-
-**Areas for Improvement**:
-- Could be faster at coding once approach is settled
-- Should verify algorithm correctness with small examples
-- Can improve space optimization awareness for DP problems
-- Should discuss concurrency and parallelization possibilities
-
-### Follow-Up Questions
-
-1. "What if the input size is 10^9? How does your algorithm scale?"
-2. "Can you parallelize this across multiple CPU cores?"
-3. "How would you handle streaming or infinite input?"
-4. "What if memory is limited to O(1)? Can you still solve it?"
-5. "Is there a randomized algorithm that performs better on average?"
-6. "How would your algorithm perform with adversarial input?"
-7. "Can you prove the optimality of your approach?"
-
-### Recommended Practice Plan
-
-| Area | Focus | Activities |
-|------|-------|-----------|
-| Advanced Approximation Algorithms | Harder variations | Solve 5 more problems in this paradigm |
-| Complexity Proofs | Formal lower bounds | Practice omega(n log n) and omega(n) proofs |
-| Space Optimization | In-place algorithms | Study memory-constrained algorithm techniques |
-| Company Specific | Target company tag | Solve 10 tagged problems on LeetCode |
-
----
-
-## Key Takeaways
-
-| Aspect | Rating (1-5) | Notes |
-|--------|-------------|-------|
-| Problem Understanding | 5 | Excellent restatement and clarification |
-| Algorithm Selection | 5 | Considered multiple paradigms correctly |
-| Code Quality | 4 | Good, but room for cleaner implementation |
-| Complexity Analysis | 5 | Detailed with lower bound justification |
-| Edge Cases | 4 | Good coverage, could be more systematic |
-| Communication | 5 | Clear and structured throughout |
-| Time Management | 4 | Slight overrun on hard problem |
-| Follow-up Handling | 4 | Good depth, more practice needed |
-
-## Candidate Self-Reflection
-
-"I performed well on recognizing algorithm patterns and analyzing complexity. The first two problems were straightforward applications of the paradigm. The third problem required deeper analysis and I think I chose the right approach. Moving forward, I will practice more space optimization and ensure I test my algorithm logic with small examples before coding. The feedback about being more systematic with edge cases is valuable and I will incorporate it into my preparation routine."
+## Checklist
+- State the key insight before coding; name the loop invariant.
+- Derive time and space bounds from the code structure, not from memory.

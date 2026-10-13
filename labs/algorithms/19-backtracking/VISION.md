@@ -1,48 +1,33 @@
-# VISION — Backtracking Search
-> Mastery path. Lab `19-backtracking`.
+# Vision: Backtracking
+> Systematic search with undo: decision trees, constraints, and pruning.
 
-## Where this sits
-- Backtracking Search is one tool in the algorithms arsenal: DFS over decision tree with pruning.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; worst O(b^d); pruning + memo can collapse to DP memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (N-queens, Sudoku, permutations, subsets).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain partial assignment never violates constraints (pruned otherwise) without notes; derive worst O(b^d); pruning + memo can collapse to DP on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- N-queens, Sudoku-style constraint filling, subsets, permutations, combination sums.
+- Constraint propagation habits: test early, fail fast, undo cleanly.
+- Branch and bound foundations: bounds are just smarter prune tests.
+## What mastering it unlocks
+- Structure any exhaustive search as choose, recurse, unchoose.
+- Enforce N-queens constraints incrementally with column/diagonal tests.
+- Count visited nodes to quantify what pruning actually saved.
+- Avoid duplicate work with ordering rules (start index, skip lists).
+- Estimate the raw tree size (n!, 2^n) before claiming an optimization matters.
+## What it does not cover
+- Heuristic search (A-star, beam search) and stochastic local search.
+- SAT/CDCL solving and propagation engines in full depth.
+- Dynamic programming over subsets (Held-Karp style) except as contrast.
+## Core questions you will answer
+- What exactly is undone at each backtrack step, and what may persist?
+- Why does the diagonal test use absolute differences?
+- How does a start-index parameter prevent duplicate combinations?
+- When does pruning change the worst case, and when only the constant?
+## How to judge progress
+- Write choose-recurse-unchoose for a new combinatorial object without a template.
+- Instrument node counts and report pruning savings as numbers.
+- Predict tree size class (factorial, exponential, Catalan-ish) up front.
+## Common misuse
+- Forgetting the undo step and watching state leak across siblings.
+- Pruning with an unsound test that silently drops valid solutions.
+## After this lab
+- 11-branch-and-bound for bounds-driven pruning of the same trees.
+- 10-backtracking for the companion lab with overlapping drills.
+One-line self-test: Explain the undo step and why siblings would corrupt each other without it.

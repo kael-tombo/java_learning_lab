@@ -1,68 +1,45 @@
-# MATH_FOUNDATION — Network Flow (Max-Flow / Min-Cut)
-> Recurrences / Master theorem / amortized. Lab `17-network-flow`.
+# Math Foundation: Augmentation Bounds and Cut Duality
+> Ford-Fulkerson O(E*|f|), Edmonds-Karp O(V*E^2), cut capacity as optimality proof.
 
-## 1. Why math matters here
-- Network Flow (Max-Flow / Min-Cut) claims Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3) — this file proves it.
-- Tools: recurrences, Master/Akra-Bazzi, potential method, probability.
+## Definitions
+- Flow: per-edge values within capacities with conservation at non-terminals.
+- Residual graph: forward slack plus backward edges recording pushed flow.
+- Augmenting path: s-t path in the residual graph; bottleneck = minimum slack.
+- Cut (S, T): capacity = sum of capacities from S side to T side.
 
-## 2. Recurrence setup
-- Divide-and-conquer shape: T(n) = a·T(n/b) + f(n), T(1)=Theta(1).
-- DP shape: T(n) = sum of subproblem costs + transition cost.
-- Example: for Network Flow (Max-Flow / Min-Cut), instantiate a,b,f from loop/recursion structure.
-- Unrolling: draw recursion tree, sum per level.
+## Counting argument
+- One augmentation: O(E) path search plus O(V) update: O(E) total.
+- Ford-Fulkerson augments at most |f| times (unit progress per round): O(E*|f|).
+- Edmonds-Karp uses BFS shortest paths: O(V*E) augmentations suffice.
+- Total O(V*E^2); capacities need not be integers for this bound.
 
-## 3. Master theorem (statement + use)
-- Case 1: f(n)=O(n^{log_b a - ε}) → T(n)=Theta(n^{log_b a}).
-- Case 2: f(n)=Theta(n^{log_b a} log^k n) → T(n)=Theta(n^{log_b a} log^{k+1} n).
-- Case 3: f(n)=Omega(n^{log_b a + ε}) + regularity → T(n)=Theta(f(n)).
-- Worked: T(n)=2T(n/2)+O(n) → Case 2 → Theta(n log n).
-- Worked: T(n)=T(n-1)+O(1) → Theta(n) by unrolling.
-- Gap: floors/ceilings ignored asymptotically; Akra-Bazzi for uneven splits.
+## Recurrence
+- Flow value rises by the bottleneck each round: strictly increasing progress.
+- BFS distances from s in the residual graph never decrease across rounds.
+- Each augmentation saturates at least one edge on a shortest path.
+- Edges saturate O(V) times before distances must rise: O(V*E) rounds total.
 
-## 4. Substitution method template
-- Guess O(g(n)); prove by induction with constants c,n0.
-- Show upper and lower separately; pick c large / small.
-- Example induction for linear recurrences in Network Flow (Max-Flow / Min-Cut).
+## Derivation of the bound
+- Weak duality: every flow value <= every cut capacity (telescoping conservation sum).
+- Termination with no augmenting path yields the reachable-set cut at equality.
+- Max-flow min-cut: the final flow meets its cut, proving both optimal.
+- Integer capacities additionally give integral flows (each bottleneck integral).
 
-## 5. DP counting argument
-- #states × transition cost = total time.
-- For residual capacity cf = c - f; max-flow == min-cut value: count states, bound transitions, multiply.
-- Space = #states kept simultaneously (rolling optimization).
-- Typical: Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3) derived by this product.
+## Worked mini-proofs
+- Proof 1: flow <= cut via conservation summed over S. (4 lines)
+- Proof 2: BFS distance monotonicity across augmentations (standard lemma). (5 lines)
+- Proof 3: reachable-set cut capacity equals final flow value. (4 lines)
 
-## 6. Amortized analysis (3 methods)
-- Aggregate: total over sequence ÷ n. Example: dynamic array push.
-- Accounting: charge extra on cheap ops; spend on expensive ones.
-- Potential: Φ(D0)=0, Φ>=0; amortized a_i = c_i + Φ_i − Φ_{i-1}.
-- Apply to Network Flow (Max-Flow / Min-Cut): each index pushed/popped ≤ once → O(n) total.
+## Exercises with answers
+- 1. Max flow of the 4-node fixture (3,2 / 1,2 / 3). Answer: 5.
+- 2. Min cut capacity of the same fixture. Answer: 5 (S = {s} suffices).
+- 3. Ford-Fulkerson rounds bound for integer max flow 5. Answer: at most 5 unit rounds.
 
-## 7. Probabilistic analysis (for randomized variants)
-- Linearity of expectation; indicator variables.
-- Expected QuickSort-style: E[T]=O(n log n) via comparison indicators.
-- High-probability via Chernoff; amplification by repetition.
-- Hash collision probability ≤ 1/M per pair (union bound).
+## Pitfalls
+- Quoting O(E*|f|) for Edmonds-Karp (the BFS bound is better and capacity-free).
+- Reading the cut off the original graph instead of the final residual.
+- Forgetting backward edges, which breaks both the algorithm and the duality.
 
-## 8. Lower bounds
-- Comparison lower bound Omega(n log n) for sorting-based steps.
-- Information-theoretic: log2(#outputs) bits needed.
-- Adversary argument for search/matching lower bounds.
-
-## 9. Worked proofs (3)
-- Proof A: closed form of linear recurrence by induction (6 lines).
-- Proof B: Master Case 2 on balanced split (8 lines).
-- Proof C: amortized O(1) for pointer/window moves via potential Φ = window size (8 lines).
-
-## 10. Exercises with solutions
-1. Solve T(n)=3T(n/2)+O(n). → Theta(n^{log2 3}). [Solution sketch included]
-2. Solve T(n)=T(n/2)+O(1). → Theta(log n).
-3. Prove sieve bound O(n log log n) via harmonic-over-primes sum.
-4. Show two-pointer scan is O(n) amortized (each pointer moves ≤ n).
-5. Amplify Monte Carlo error from 1/3 to <10^-6: repetitions needed? → ~30 (Chernoff/majority).
-
-## 11. Pitfalls
-- Dropping floors/mods changes constants, not asymptotics — but breaks code.
-- Confusing expected vs worst-case guarantees.
-- Forgetting regularity condition in Case 3.
-
-## 12. Checklist
-- [ ] Can state Master cases cold. [ ] Can do potential-method sketch. [ ] Can derive Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3).
+## Checklist
+- Derive both augmentation bounds from rounds-times-search.
+- Prove weak duality from conservation in four lines.

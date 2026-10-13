@@ -1,48 +1,33 @@
-# VISION — Greedy Algorithms
-> Mastery path. Lab `16-greedy`.
+# Vision: Greedy Algorithms
+> Locally optimal choices that are globally optimal - and proof of why.
 
-## Where this sits
-- Greedy Algorithms is one tool in the algorithms arsenal: locally optimal choices with global proof.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; usually O(n log n) dominated by sort; O(n) after memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (activity selection, Huffman, fractional knapsack).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain matroid / exchange argument; stays-ahead invariant without notes; derive usually O(n log n) dominated by sort; O(n) after on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Scheduling, fractional resource allocation, and Huffman coding.
+- Exchange arguments: the proof pattern behind every greedy correctness claim.
+- The judgment of when greedy suffices and when DP is required.
+## What mastering it unlocks
+- Prove activity selection by exchanging the first pick into an optimal solution.
+- Explain why fractional knapsack is greedy-safe and 0/1 knapsack is not.
+- Build Huffman codes with a priority queue and argue prefix-freeness.
+- Produce the counterexample that breaks greedy on non-canonical coin systems.
+- Name the greedy-choice property and optimal substructure for each algorithm here.
+## What it does not cover
+- Problems needing DP (0/1 knapsack, general coin change) except as contrast.
+- Matroid theory in full generality - the abstraction behind the pattern.
+- Greedy heuristics without guarantees, which belong to approximation labs.
+## Core questions you will answer
+- What exchange turns an arbitrary optimal activity set into one using the earliest finish?
+- Which property of fractions makes the density order safe?
+- Why does merging the two lightest Huffman nodes preserve optimality?
+- What is the smallest coin system where greedy change fails?
+## How to judge progress
+- Prove one greedy algorithm cold with a clean exchange argument.
+- Break greedy on demand with a minimal counterexample.
+- Classify a new problem as greedy-safe or DP-needing with reasons.
+## Common misuse
+- Sorting by the wrong key (start time, value instead of density) and asserting optimality.
+- Believing greedy coin change works for every denomination set.
+## After this lab
+- 05-dynamic-programming for the DP side of the greedy-vs-DP boundary.
+- 16-string-matching for greedy-free scanning with full guarantees.
+One-line self-test: Give the exchange argument for activity selection in three steps.

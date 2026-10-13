@@ -1,176 +1,84 @@
-# Mock Interview: Network Flow — Max Flow, Min Cut, Dinic
+# Mock Interview: Network Flow: Max-Flow, Bipartite Matching, Min-Cut
+> Three worked questions on flows and cuts. Each answer is complete runnable Java; outputs below were observed.
 
-## Interview Details
-- **Topic**: Network Flow
-- **Difficulty Range**: Hard to Hard
-- **Total Time**: 45 minutes
-- **Interviewer**: Senior Software Engineer at Amazon
-- **Candidate**: Senior Software Engineer (6 years experience)
+## Q1: Compute max flow on a 4-node network with Edmonds-Karp.
+Key insight: Every augmentation pushes flow along a shortest residual path and updates forward/backward residual edges; the loop stops exactly when the sink is unreachable, at which point max-flow min-cut says the flow is optimal.
+Complexity: Time O(V*E^2) for Edmonds-Karp; general Ford-Fulkerson is O(E*|f|). Space O(V^2) here.
+```java
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Queue;
+public class L17Q1MaxFlow {
+    public static void main(String[] args) {
+        int[][] cap = {{0, 3, 2, 0}, {0, 0, 1, 2}, {0, 0, 0, 3}, {0, 0, 0, 0}};
+        int flow = 0, f;
+        int[] par = new int[4];
+        for (;;) {
+            Arrays.fill(par, -1); par[0] = 0;
+            Queue<Integer> q = new ArrayDeque<>(); q.add(0);
+            while (!q.isEmpty() && par[3] < 0) {
+                int u = q.poll();
+                for (int v = 0; v < 4; v++) if (par[v] < 0 && cap[u][v] > 0) { par[v] = u; q.add(v); }
+            }
+            if (par[3] < 0) break;
+            f = 99; for (int v = 3; v != 0; v = par[v]) f = Math.min(f, cap[par[v]][v]);
+            for (int v = 3; v != 0; v = par[v]) { cap[par[v]][v] -= f; cap[v][par[v]] += f; }
+            flow += f;
+        }
+        System.out.println("maxflow=" + flow);
+    }
+}
+```
+Observed output: `maxflow=5`
+Follow-up: Why does Ford-Fulkerson cost O(E*|f|), and which capacity choice makes that bound hurt?
 
----
+## Q2: Match 3 workers to 3 jobs with augmenting-path (Kuhn) search.
+Key insight: Bipartite matching reduces to flow (source to workers, jobs to sink, unit capacities); Kuhn's DFS finds augmenting paths directly and rematches displaced workers recursively. The match array doubles as the proof of who got which job.
+Complexity: Time O(V*E); space O(V).
+```java
+import java.util.Arrays;
+public class L17Q2Bipartite {
+    static boolean[][] g = {{true, true, false}, {true, false, false}, {false, true, true}};
+    static int[] mt = {-1, -1, -1};
+    static boolean[] seen = new boolean[3];
+    static boolean kuhn(int u) {
+        for (int v = 0; v < 3; v++) {
+            if (!g[u][v] || seen[v]) continue; seen[v] = true;
+            if (mt[v] < 0 || kuhn(mt[v])) { mt[v] = u; return true; }
+        }
+        return false;
+    }
+    public static void main(String[] args) {
+        int n = 0;
+        for (int u = 0; u < 3; u++) { seen = new boolean[3]; if (kuhn(u)) n++; }
+        System.out.println("matching=" + n + " " + Arrays.toString(mt));
+    }
+}
+```
+Observed output: `matching=3 [1, 0, 2]`
+Follow-up: Trace which worker gets rematched when worker 1 steals job 0, and why the recursion terminates.
 
-## Question 1: Max Flow with Ford-Fulkerson
+## Q3: Verify max-flow min-cut equality by enumerating all s-t cuts.
+Key insight: Any s-t cut's capacity upper-bounds every flow; enumerating all 4 cuts of the Q1 network shows the minimum cut equals the computed max flow of 5. The equality certificate is the point, not the enumeration.
+Complexity: Enumeration is O(2^V * V^2) - a check for tiny graphs only; real min-cut comes from the residual reachable set.
+```java
+public class L17Q3MinCut {
+    public static void main(String[] args) {
+        int[][] cap = {{0, 3, 2, 0}, {0, 0, 1, 2}, {0, 0, 0, 3}, {0, 0, 0, 0}};
+        int best = 99; String cut = "";
+        for (int m = 0; m < 4; m++) {
+            boolean[] inS = {true, (m & 1) != 0, (m & 2) != 0, false};
+            int c = 0;
+            for (int u = 0; u < 4; u++) for (int v = 0; v < 4; v++) if (inS[u] && !inS[v]) c += cap[u][v];
+            if (c < best) { best = c; cut = (inS[1] ? "1" : "") + (inS[2] ? "2" : ""); }
+        }
+        System.out.println("mincut=" + best + " S={0" + cut + "}");
+    }
+}
+```
+Observed output: `mincut=5 S={0}`
+Follow-up: How do you read the minimum cut off the residual graph instead of enumerating, and which set is S?
 
-**Difficulty**: Hard
-**Company Frequency**: Google, Amazon
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Let us start with Max Flow with Ford-Fulkerson. Explain your approach and consider the trade-offs."
-
-**Candidate**: "I will start by discussing the brute force solution. The naive approach has O(n^2) time complexity because we check every pair or permutation. However, this problem has characteristics that allow significant optimization."
-
-**Interviewer**: "What algorithm paradigm do you think applies here?"
-
-**Candidate**: "This problem fits the Network Flow paradigm. The key insight is that we can leverage the specific properties of this approach to reduce the complexity. Instead of checking all possibilities, we can use a systematic method that builds up the solution incrementally."
-
-**Interviewer**: "Walk me through the optimal solution."
-
-**Candidate**: "I will implement the algorithm with these steps. First, I handle the base cases. Then I process the input using the core algorithmic technique. I maintain necessary state variables and update them appropriately. The key decision point is how we transition between states. At the end, I return the computed result."
-
-**Interviewer**: "What is the time and space complexity?"
-
-**Candidate**: "The time complexity is O(n log n) for the sorting-based preprocessing plus O(n) for the main algorithm, giving O(n log n) total. Space complexity is O(n) for the auxiliary data structures. This is optimal because we must sort the input, and comparison-based sorting has a lower bound of omega(n log n)."
-
-**Interviewer**: "What edge cases should we test?"
-
-**Candidate**: "We should test: empty input returning a default, single element, all identical values, large values causing overflow, and values at boundary conditions. I will make sure the algorithm handles each of these gracefully."
-
-**Time Taken**: 13 minutes
-**What Went Well**: 
-- Clear communication of algorithmic trade-offs
-- Good recognition of the correct paradigm
-- Proactive complexity analysis
-**Could Improve**: 
-- Should ask about input size before optimizing
-- Could mention alternative algorithm paradigms considered
-
----
-
-## Question 2: Dinic Algorithm Implementation
-
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Next problem: Dinic Algorithm Implementation. This is a more challenging algorithmic problem."
-
-**Candidate**: "Let me restate the problem to ensure I understand correctly. We are looking for... I see this as an extension of the previous pattern but with additional constraints."
-
-**Interviewer**: "What makes this different from the first problem?"
-
-**Candidate**: "The main difference is that this problem requires handling more complex state transitions. The state space is larger, so we need to be more careful about how we represent and update the state. A direct adaptation of the previous approach would be too slow."
-
-**Interviewer**: "How do you propose to solve it?"
-
-**Candidate**: "I will use the same algorithmic paradigm but with additional optimizations. Specifically, I can reduce the state space by noting that certain states are equivalent. This is a form of state compression. Alternatively, I can use a different variation of the algorithm that handles the specific constraints better."
-
-**Interviewer**: "Explain the implementation details."
-
-**Candidate**: "I initialize the data structures with appropriate initial values. Then I iterate through the input, applying the algorithm specific transitions. At each step, I check for early termination conditions. The core logic involves updating state based on the current input and previous state. Finally, I extract the answer from the state."
-
-**Interviewer**: "What is the complexity and can you prove optimality?"
-
-**Candidate**: "Time complexity is O(n) where n is the input size. Space is O(n) because we need to store the state for all elements. This is optimal because we must examine each input element at least once. A lower bound argument: any algorithm must read all the input, so omega(n) is a lower bound. Our algorithm achieves this bound."
-
-**Time Taken**: 14 minutes
-**What Went Well**: 
-- Correctly identified the harder variant characteristics
-- Good state compression thinking
-- Strong lower bound justification
-**Could Improve**: 
-- Could describe the state transition more precisely
-- Should mention space optimization possibilities
-
----
-
-## Question 3: Bipartite Matching via Max Flow
-
-**Difficulty**: Hard
-**Company Frequency**: Google, Amazon
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Final problem: Bipartite Matching via Max Flow. This is a hard algorithm problem that appears frequently in our interviews."
-
-**Candidate**: "This is a significantly harder problem. Let me think carefully. The brute force approach would be O(2^n) or worse, which is infeasible for large inputs. I need to use the advanced algorithmic paradigm effectively."
-
-**Interviewer**: "What is your approach strategy?"
-
-**Candidate**: "I will combine multiple algorithmic techniques. The problem has overlapping subproblems suggesting DP, but also has a structure that allows greedy choices in certain cases. I need to carefully analyze the properties to determine which approach to use."
-
-**Interviewer**: "How do you decide between the different approaches?"
-
-**Candidate**: "I compare the trade-offs. A pure greedy approach would be O(n log n) but might fail for some edge cases. A DP approach would be O(n^2) and always correct. A divide-and-conquer approach would be O(n log n) with more complex merge logic. Given the constraints in the problem, I believe the DP approach is most appropriate because it guarantees correctness and the quadratic time is acceptable for the expected input size."
-
-**Interviewer**: "Explain the DP state definition."
-
-**Candidate**: "The state dp[i] represents the optimal solution for the subproblem up to i. The recurrence is dp[i] = min/max over valid transitions from previous states. The base cases are initialized first, then we fill the DP table in increasing order of i. The final answer is at dp[n]."
-
-**Interviewer**: "Can you optimize space?"
-
-**Candidate**: "Yes, if the recurrence only depends on a fixed number of previous states, we can reduce space from O(n) to O(k) where k is the number of states needed. This is a common optimization that is always worth mentioning."
-
-**Time Taken**: 16 minutes
-**What Went Well**: 
-- Systematic comparison of different algorithmic approaches
-- Clear DP state definition
-- Considered space optimization proactively
-**Could Improve**: 
-- Could have written the DP recurrence more formally
-- Should verify with a small example mentally
-
----
-
-## Interviewer Feedback
-
-### Overall Assessment: Strong Hire
-
-**Strengths**:
-- Strong algorithmic reasoning and pattern recognition
-- Always analyzes complexity and discusses lower bounds
-- Considers multiple algorithm paradigms before choosing
-- Handles hard problems with systematic decomposition
-- Excellent communication throughout the interview
-
-**Areas for Improvement**:
-- Could be faster at coding once approach is settled
-- Should verify algorithm correctness with small examples
-- Can improve space optimization awareness for DP problems
-- Should discuss concurrency and parallelization possibilities
-
-### Follow-Up Questions
-
-1. "What if the input size is 10^9? How does your algorithm scale?"
-2. "Can you parallelize this across multiple CPU cores?"
-3. "How would you handle streaming or infinite input?"
-4. "What if memory is limited to O(1)? Can you still solve it?"
-5. "Is there a randomized algorithm that performs better on average?"
-6. "How would your algorithm perform with adversarial input?"
-7. "Can you prove the optimality of your approach?"
-
-### Recommended Practice Plan
-
-| Area | Focus | Activities |
-|------|-------|-----------|
-| Advanced Network Flow | Harder variations | Solve 5 more problems in this paradigm |
-| Complexity Proofs | Formal lower bounds | Practice omega(n log n) and omega(n) proofs |
-| Space Optimization | In-place algorithms | Study memory-constrained algorithm techniques |
-| Company Specific | Target company tag | Solve 10 tagged problems on LeetCode |
-
----
-
-## Key Takeaways
-
-| Aspect | Rating (1-5) | Notes |
-|--------|-------------|-------|
-| Problem Understanding | 5 | Excellent restatement and clarification |
-| Algorithm Selection | 5 | Considered multiple paradigms correctly |
-| Code Quality | 4 | Good, but room for cleaner implementation |
-| Complexity Analysis | 5 | Detailed with lower bound justification |
-| Edge Cases | 4 | Good coverage, could be more systematic |
-| Communication | 5 | Clear and structured throughout |
-| Time Management | 4 | Slight overrun on hard problem |
-| Follow-up Handling | 4 | Good depth, more practice needed |
-
-## Candidate Self-Reflection
-
-"I performed well on recognizing algorithm patterns and analyzing complexity. The first two problems were straightforward applications of the paradigm. The third problem required deeper analysis and I think I chose the right approach. Moving forward, I will practice more space optimization and ensure I test my algorithm logic with small examples before coding. The feedback about being more systematic with edge cases is valuable and I will incorporate it into my preparation routine."
+## Checklist
+- State the key insight before coding; name the loop invariant.
+- Derive time and space bounds from the code structure, not from memory.

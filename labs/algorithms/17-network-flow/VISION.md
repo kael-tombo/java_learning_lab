@@ -1,48 +1,33 @@
-# VISION — Network Flow (Max-Flow / Min-Cut)
-> Mastery path. Lab `17-network-flow`.
+# Vision: Network Flow
+> Max-flow/min-cut duality with algorithms that certify their own answers.
 
-## Where this sits
-- Network Flow (Max-Flow / Min-Cut) is one tool in the algorithms arsenal: augmenting paths, residual graphs, push-relabel.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
-
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (bipartite matching, logistics, image segmentation).
-
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
-
-## How to know you are done
-- Explain flow conservation + skew symmetry preserved each augmentation without notes; derive Edmonds-Karp O(VE^2), Dinic O(E sqrt V / V^2 E), Push-relabel O(V^3) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
-
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
-
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
-
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Where this leads
+- Bipartite matching, assignment, and transportation-style allocation models.
+- Reductions: turning a new problem into flow and inheriting the algorithms.
+- Certificates: cuts that prove a flow optimal without trusting the code.
+## What mastering it unlocks
+- Augment along residual paths and maintain forward/backward edges correctly.
+- State max-flow min-cut and use a cut to certify a computed flow.
+- Reduce bipartite matching to flow with unit capacities and read off the matching.
+- Explain Ford-Fulkerson O(E*|f|) and why Edmonds-Karp fixes it to O(V*E^2).
+- Extract the minimum cut as the source-reachable set in the final residual graph.
+## What it does not cover
+- Push-relabel internals and highest-label variants in full detail.
+- Minimum-cost flow and circulation with demands.
+- Dynamic or stochastic network models.
+## Core questions you will answer
+- Why must every augmentation add a backward edge to the residual graph?
+- Why does BFS (shortest augmenting path) bound the number of augmentations?
+- How does the reachable set in the residual graph define a minimum cut?
+- Which capacities make plain Ford-Fulkerson slow, and why?
+## How to judge progress
+- Code Edmonds-Karp and certify the result with the cut on demand.
+- Reduce a matching or allocation story to a flow network correctly.
+- Derive both complexity bounds from the augmentation structure.
+## Common misuse
+- Forgetting backward edges, which silently caps the flow below optimum.
+- Quoting max-flow min-cut as magic instead of exhibiting the certifying cut.
+## After this lab
+- 28-push-relabel-flow for the faster max-flow family.
+- 07-graph-algorithms for BFS/DFS/Dijkstra foundations underneath flow.
+One-line self-test: Explain why the residual reachable set certifies optimality in two sentences.

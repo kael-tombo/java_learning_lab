@@ -1,85 +1,33 @@
-# REAL_WORLD_PROJECT — Two Pointers Technique
-> Production use-case with metrics + prevention. Lab `17-two-pointers`.
+# Real-World Project: Sorted Ledger Tools
+> Dedup and pair-sum on sorted integer ledgers with operation budgets.
 
-## Use-case: pair-sum, dedup, container-with-most-water
-- System: backend service handling large inputs where Two Pointers Technique is on the hot path.
-- Why this algorithm: converging / sliding pointer pairs on ordered data gives O(n) time after sort, O(1) extra space which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
-
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Two Pointers Technique) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
-
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
-
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
-
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-
-## Cost note
-- Optimized variant (O(n) time after sort, O(1) extra space) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+## Problem
+Daily sorted exports contain duplicate transaction ids that must collapse in place.
+Auditors also need all pairs summing to a control total, found in one pass.
+## Inputs
+- ledger.csv: sorted integers, one per line, up to 1M rows.
+- Control total T for the pair-sum query.
+- Fixtures: heavy duplicates, no duplicates, empty file, single row.
+## Steps
+1. Dedup in place with read/write pointers; report unique count and prefix.
+2. Pair-sum with inward-moving pointers; collect all disjoint qualifying pairs.
+3. Count element visits in both routines and assert visits are at most 2n.
+4. Verify dedup output is sorted, unique, and a subsequence of the input.
+5. Verify each reported pair sums to T and pairs are disjoint.
+6. Print counts, visits, and the visit budget check (visits <= 2n).
+## Acceptance criteria
+- Heavy-duplicate fixture collapses to the exact expected unique list.
+- Pair-sum fixture finds all expected pairs with no false positives.
+- Empty and single-row inputs return empty results without errors.
+- Visit counters stay within 2n on every fixture including 1M rows.
+- Unsorted input is detected (first inversion reported) and rejected.
+## Failure modes
+- Unsorted input never proceeds; the inversion index is part of the error.
+- Integer overflow in pair sums uses long accumulation with a documented cap.
+- Pairs sharing an element are resolved by the disjoint rule, documented and tested.
+## Extensions
+- Dutch-flag partition mode for three-valued status columns.
+- Three-sum counting mode with the sorted two-loop structure.
+## How to demo
+- Show the visit-budget line on the 1M-row file.
+- Show the inversion error on a deliberately shuffled fixture.
