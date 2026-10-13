@@ -1,148 +1,79 @@
-# Bytecode Introduction — Refactoring
+# Refactoring: Bytecode Introduction
 
-## Refactoring Patterns
+## 1. Collapse double dispatch into one invokeinterface
 
-### Pattern 1: Replace Array with Collection
-**Before**:
+Before (two lookups, concrete coupling):
+
 ```java
-String[] names = new String[100];
-names[0] = "Alice";
-int count = 1;
-```
-**After**:
-```java
-List<String> names = new ArrayList<>();
-names.add("Alice");
+int n = list.size() + list.size();   // two invokeinterface sites
 ```
 
-### Pattern 2: Replace Raw Type with Generics
-**Before**:
+After (one site, one lookup shape):
+
 ```java
-List list = new ArrayList();
-list.add("hello");
-String s = (String) list.get(0);
-```
-**After**:
-```java
-List<String> list = new ArrayList<>();
-list.add("hello");
-String s = list.get(0);
+int n = list.size();
+int total = n + n;
 ```
 
-### Pattern 3: Replace Legacy with Modern Variant
-**Before**: Hashtable, Vector, Stack (synchronized overhead)
-**After**: HashMap, ArrayList, ArrayDeque
+Effect: half the interface lookups; the JIT profiles one site
+instead of splitting history across two. Trivial, and exactly the
+kind of win `javap -c` makes visible.
 
-### Pattern 4: Fix LinkedList Random Access
-**Before**: list.get(i) in loop on LinkedList -> O(n^2)
-**After**: Enhanced for-loop or ArrayList
+## 2. Hoist capturing lambdas out of hot loops
 
-### Pattern 5: Introduce EnumMap for Enum Keys
-**Before**: Map<Color, String> map = new HashMap<>();
-**After**: Map<Color, String> map = new EnumMap<>(Color.class);
+Before (allocation per iteration):
 
-### Pattern 6: Use Empty Collection Constants
-**Before**: return new ArrayList<>(); // Allocates every call
-**After**: return Collections.emptyList(); // Reuses singleton
+```java
+for (int i = 0; i < n; i++) run(() -> store(i));  // captures i: allocs
+```
 
-## Step-by-Step Refactoring
+After (capture once):
 
-### Step 1: Identify the Problem
-- Profiling shows hotspot in collection code
-- Excessive allocations in GC logs
-- ConcurrentModificationException in logs
-- High memory usage from collections
+```java
+IntConsumer c = store::add;         // one invokedynamic linkage, one instance
+for (int i = 0; i < n; i++) c.accept(i);
+```
 
-### Step 2: Choose the Right Alternative
-- ArrayList vs LinkedList: Random access? Use ArrayList
-- HashMap vs TreeMap: Need sorted order? Use TreeMap
-- HashMap vs ConcurrentHashMap: Concurrent access? Use ConcurrentHashMap
+Effect: linkage was already once-per-site; this removes the
+per-evaluation capture allocation snippet 5 distinguishes from
+linkage. Non-capturing lambdas need no such hoist (singleton).
 
-### Step 3: Migrate Carefully
-1. Change declaration to interface (if not already)
-2. Update constructor to new implementation
-3. Run existing tests
-4. Profile to verify improvement
+## 3. Replace megamorphic interface calls with a switch on type
 
-### Step 4: Measure Impact
-- Throughput: Operations/second
-- Latency: Average and P99
-- Memory: Heap usage
-- GC: Pause time and frequency
+Before (itable probe per call, megamorphic after 3+ receivers):
 
+```java
+int sum(List<Shape> ss) { int t = 0; for (Shape s : ss) t += s.area(); return t; }
+```
 
-## Further Exploration
+After (profile-friendly, devirtualizable arms):
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+```java
+int sum(List<Shape> ss) { int t = 0; for (Shape s : ss) t += areaOf(s); return t; }
+static int areaOf(Shape s) {
+    if (s instanceof Circle c) return c.circleArea();
+    if (s instanceof Rect r) return r.rectArea();
+    return s.area();
+}
+```
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Effect: arms dispatch on final-class targets the JIT inlines;
+pattern variables keep it readable (Java 17+).
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 4. Trade narrowing conversions for wider locals
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+Before (silent truncation risk + conversion ops):
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+```java
+byte b = (byte) (a + c);   // iadd, i2b, istore
+```
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+After (widen the computation, narrow once at the boundary):
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+```java
+int sum = a + c;           // stays int through hot path
+sink((byte) sum);          // single narrowing at the edge
+```
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Effect: fewer `i2b/i2c` ops in hot code, truncation audited at one
+site instead of scattered casts.

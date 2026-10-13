@@ -1,118 +1,59 @@
-# Class Loading — Flashcards
+# Flashcards: Class Loading
 
-## Card 1: Time Complexity
-**Q**: What is the average and worst-case time complexity of the primary operation?
-**A**: Average O(1), worst-case O(n) (when all elements hash to same bucket)
+## Q: What are the three phases of class use, and which runs code?
+**A:** Loading (find bytes, build `Class`), linking (verify, prepare,
+resolve), initialization (run `<clinit>`). Only initialization runs
+application code.
 
-## Card 2: Load Factor
-**Q**: What is the default load factor and what does it mean?
-**A**: Default 0.75. Structure resizes when 75% full, balancing time and space.
+## Q: What is the JDK 9+ loader hierarchy?
+**A:** bootstrap (null, native, java.base) ← platform ("platform")
+← app ("app"). Measured: app's parent is platform, platform's parent
+is null. No extension loader (removed, JEP 220).
 
-## Card 3: Resize Factor
-**Q**: By what factor does the backing array grow during resize?
-**A**: 2x for HashMap/HashSet, 1.5x for ArrayList
+## Q: What is the default loadClass algorithm?
+**A:** Check loaded cache → delegate to parent (recursing to
+bootstrap) → only on parent failure, `findClass` locally.
+Parent-first, always by default.
 
-## Card 4: Treeification
-**Q**: At what threshold does a linked list become a red-black tree?
-**A**: TREEIFY_THRESHOLD = 8 entries in a single bucket
+## Q: Why can't a classpath class shadow java.lang.String?
+**A:** Delegation reaches bootstrap first, which already provides it.
+Shadowing is blocked by ordering — a security property, not tidiness.
 
-## Card 5: Fail-Fast
-**Q**: What is fail-fast behavior and how is it implemented?
-**A**: Iterators throw ConcurrentModificationException if collection is structurally modified during iteration. Implemented via modCount field.
+## Q: loadClass vs Class.forName — what differs?
+**A:** Both load and link; only `forName` (default) initializes.
+`forName(name, false, loader)` loads without initializing. Proof is
+the absent `<clinit>` line after `loadClass` in `InitVsLoad`.
 
-## Card 6: equals() vs hashCode()
-**Q**: What is the contract between equals() and hashCode()?
-**A**: If a.equals(b) then a.hashCode() == b.hashCode(). The reverse is not required.
+## Q: What is class identity?
+**A:** (binary name, defining loader). Same bytes via two loaders are
+two classes; cross-loader casts throw `ClassCastException`.
 
-## Card 7: Initial Capacity
-**Q**: What is the default initial capacity?
-**A**: 16 (for HashMap), 10 (for ArrayList)
+## Q: Which uses trigger initialization (JLS §12.4)?
+**A:** `new`, static method invoke, static non-constant field access,
+default `Class.forName`, subclass init (parent first). Compile-time
+constants do not.
 
-## Card 8: Null Keys
-**Q**: Which collections allow null keys?
-**A**: HashMap, LinkedHashMap, WeakHashMap allow one null key. Hashtable, ConcurrentHashMap, TreeMap do not.
+## Q: Why don't compile-time constants initialize?
+**A:** They inline at the use site via `ConstantValue` at
+client-compile time. `ConstNoInit` prints `PORT` with no `<clinit>`
+line; only the computed field triggers it.
 
-## Card 9: Synchronized Wrapper
-**Q**: How do you make a non-thread-safe collection thread-safe?
-**A**: Collections.synchronizedMap(map), Collections.synchronizedList(list), etc.
+## Q: What does a correct custom loader override?
+**A:** `findClass` (fetch bytes, `defineClass`). Never `loadClass`
+unless breaking delegation deliberately. Each `defineClass` mints a
+new `Class`; redefining is `LinkageError`.
 
-## Card 10: ConcurrentHashMap Segments
-**Q**: How did ConcurrentHashMap handle concurrency before Java 8?
-**A**: Used segment-based locking — 16 independent locks, each protecting a portion of the map.
+## Q: What are the three linking sub-steps and their failures?
+**A:** Verify (`VerifyError`/`ClassFormatError`), prepare (zero
+statics, no code), resolve lazily (`NoSuchMethodError`,
+`NoSuchFieldError`, `IllegalAccessError` on version skew).
 
+## Q: Why does the context class loader exist?
+**A:** Delegation is one-directional (parents never see children), so
+platform-layer frameworks use the thread-context loader as the
+down-channel to app classes and resources.
 
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Q: Null parent in `new DirLoader(dir)` with super(null) — what does it mean?
+**A:** Bootstrap-only delegation: `java.lang.Object` still resolves
+(bootstrap provides it) while the target class stays loader-local.
+Total isolation for the `SplitIdentity` demonstration.

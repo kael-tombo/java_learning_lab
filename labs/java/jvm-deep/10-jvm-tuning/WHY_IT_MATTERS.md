@@ -1,141 +1,39 @@
-# JVM Tuning — Why It Matters
+# Why It Matters: JVM Tuning
 
-## Practical Importance
+Every production JVM you operate inherits this lab's numbers: 256M/4G
+ergonomics at 16 GB, young as one third of heap, Eden at eight tenths of
+young, TLAB allocation at ~10 instructions, compressed references below
+32 GB, 240 MB of code cache, unbounded Metaspace. Defaults are the
+starting posture of every service; tuning literacy is operating literacy.
 
-### In Everyday Java Development
-JVM Tuning appears in virtually every Java application:
-- Configuration maps and property bags
-- Caching frequently accessed data
-- Grouping and organizing objects
-- Managing collections of entities
-- Building REST API responses
-- Implementing business rules and workflows
+The TLAB measurement (~35 vs ~250 ms, ~8x) justifies the single most
+common allocation question: no, you should not pool small short-lived
+objects — the allocator already beats your pool by removing the lock.
+Pooling helps only large, expensive, or humongous-adjacent buffers where
+the win is lifecycle control, not allocation speed. The flag stays on;
+the pool designs around it.
 
-### Performance Impact
-Choosing the right implementation can mean:
-- **10x-100x** difference in throughput for common operations
-- **Memory savings** of 30-50% in data-heavy applications
-- **Latency reduction** from O(n) to O(1) for critical paths
-- **Scalability improvements** in concurrent systems
+Capacity-plane separation prevents the costliest misdiagnosis: a
+`Metaspace` exhaustion graphed as heap growth buys bigger `-Xmx` for a
+classloader leak, and a full code cache graphed as GC pressure buys heap
+for a compilation cliff. Pool-level graphs (heap vs CodeHeap vs
+Metaspace) route each symptom to its plane before any flag changes.
 
-### Common Use Cases
+The one-flag experiment is the transferable skill across labs 06-09:
+tier caps isolate JIT effects, pinned heaps isolate collector effects,
+interval flags isolate timer effects. Teams that internalize "changed X,
+observed Y move, therefore mechanism Z" stop accumulating flag folklore
+and start producing reproducible tuning records — the difference between
+a runbook and a rumor collection.
 
-#### Enterprise Applications
-- Session management in web applications
-- Database result set caching
-- Configuration management and properties
-- Message routing and queuing
-- Entity state tracking in ORM frameworks
+The compression cliff deserves its own line in every capacity review:
+heaps sized just over 32 GB pay double reference footprint for marginal
+extra room, the worst bytes-per-GB trade in the sizing space. Checking
+`UseCompressedOops` after every heap resize costs one grep and prevents
+the quietest regression this lab covers.
 
-#### Big Data Systems
-- In-memory data grids and caches
-- Stream processing state stores
-- Distributed cache nodes
-- Data partition management
-
-#### Real-Time Systems
-- Game state management
-- Financial trading systems (order books)
-- Telemetry data aggregation
-- Real-time analytics dashboards
-
-## Why Developers Should Care
-
-### Interview Relevance
-This is one of the most common topics in Java interviews:
-- Implementation details and complexity analysis
-- Performance characteristics and trade-offs
-- Concurrent behavior and thread safety
-- Design decisions and alternatives
-- Use case selection criteria
-
-### Code Quality
-Understanding this topic leads to:
-- Better API design decisions
-- More performant applications
-- Fewer production incidents
-- Cleaner, more maintainable code
-
-### Career Impact
-Mastering these concepts:
-- Differentiates senior engineers from juniors
-- Enables architectural decision-making authority
-- Improves code review effectiveness
-- Builds debugging and profiling skills
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Explicit-GC posture belongs in the same review: one unrestricted
+`System.gc()` path hands any caller a full-STW pause button, undoing the
+carefullest heap and collector work in a single call. Gate it, log its
+cause tokens, and alert on them — posture, not just flags, is the tuning
+surface.

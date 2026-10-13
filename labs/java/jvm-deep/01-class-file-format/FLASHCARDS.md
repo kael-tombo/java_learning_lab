@@ -1,118 +1,60 @@
-# Class File Format — Flashcards
+# Flashcards: Class File Format
 
-## Card 1: Time Complexity
-**Q**: What is the average and worst-case time complexity of the primary operation?
-**A**: Average O(1), worst-case O(n) (when all elements hash to same bucket)
+## Q: What are bytes 0–3 of every class file?
+**A:** `0xCAFEBABE` (magic). Anything else is not a class file.
 
-## Card 2: Load Factor
-**Q**: What is the default load factor and what does it mean?
-**A**: Default 0.75. Structure resizes when 75% full, balancing time and space.
+## Q: What live at bytes 4–5 and 6–7?
+**A:** Minor version (0 from `javac`) and major version
+(release-selected: 8→52, 11→55, 17→61, 21→65, 23→67).
 
-## Card 3: Resize Factor
-**Q**: By what factor does the backing array grow during resize?
-**A**: 2x for HashMap/HashSet, 1.5x for ArrayList
+## Q: What is `constant_pool_count`?
+**A:** Entries + 1. Index 0 is a reserved phantom; real entries are
+count − 1.
 
-## Card 4: Treeification
-**Q**: At what threshold does a linked list become a red-black tree?
-**A**: TREEIFY_THRESHOLD = 8 entries in a single bucket
+## Q: Which pool entries take two slots, and what is the visible effect?
+**A:** `Long=5` and `Double=6`. After `#12 = Long`, the next entry is
+`#14` — index 13 is unusable (JVMS §4.4.5).
 
-## Card 5: Fail-Fast
-**Q**: What is fail-fast behavior and how is it implemented?
-**A**: Iterators throw ConcurrentModificationException if collection is structurally modified during iteration. Implemented via modCount field.
+## Q: Is pool index 0 usable?
+**A:** No. A zero `super_class` means `java.lang.Object` itself; no
+attribute or reference uses index 0 as an entry.
 
-## Card 6: equals() vs hashCode()
-**Q**: What is the contract between equals() and hashCode()?
-**A**: If a.equals(b) then a.hashCode() == b.hashCode(). The reverse is not required.
+## Q: What does `String #23 = String #24 // hi` mean?
+**A:** `String` entries hold no characters — they point at a `Utf8`
+entry. Two entries cooperate to spell one string.
 
-## Card 7: Initial Capacity
-**Q**: What is the default initial capacity?
-**A**: 16 (for HashMap), 10 (for ArrayList)
+## Q: How many hops resolve one Methodref?
+**A:** Three: Methodref → Class/NameAndType → Utf8.
 
-## Card 8: Null Keys
-**Q**: Which collections allow null keys?
-**A**: HashMap, LinkedHashMap, WeakHashMap allow one null key. Hashtable, ConcurrentHashMap, TreeMap do not.
+## Q: What does `stack=3, locals=4, args_size=3` decompose to?
+**A:** Max stack depth 3; 4 local slots (this + x + neg + y);
+args_size 3 = receiver + 2 parameters.
 
-## Card 9: Synchronized Wrapper
-**Q**: How do you make a non-thread-safe collection thread-safe?
-**A**: Collections.synchronizedMap(map), Collections.synchronizedList(list), etc.
+## Q: Who computes max_stack/max_locals, and who checks them?
+**A:** `javac` computes; the verifier checks. Mismatches fail with
+`VerifyError`.
 
-## Card 10: ConcurrentHashMap Segments
-**Q**: How did ConcurrentHashMap handle concurrency before Java 8?
-**A**: Used segment-based locking — 16 independent locks, each protecting a portion of the map.
+## Q: When does StackMapTable appear?
+**A:** Only where control flow merges (version 50+, Java 6). The
+straight-line probe method has none; the branching one has one.
 
+## Q: What is split verification (JSR-202)?
+**A:** `javac` emits type frames at merge points; the verifier checks
+them in one pass instead of inferring types by dataflow iteration.
 
-## Further Exploration
+## Q: What does ConstantValue do, and what bug does it cause?
+**A:** Carries compile-time-constant static-final initializers, which
+clients inline at their compile time. Changing the library without
+recompiling clients leaves stale values.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Q: Which pool tags back invokedynamic?
+**A:** `Dynamic=17` and `InvokeDynamic=18`, pointing at the
+`BootstrapMethods` attribute.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Q: What are NestHost/NestMembers, Record, PermittedSubclasses?
+**A:** Class-shape attributes: nestmates (11+, private access across
+nested classes), `Record` (16+), `PermittedSubclasses` (17+).
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Q: What does `-g:none` remove, and what is the symptom?
+**A:** `SourceFile`, `LineNumberTable`, `LocalVariableTable`.
+Stack traces show `Unknown Source`.

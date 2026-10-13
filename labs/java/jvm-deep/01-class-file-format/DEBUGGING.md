@@ -1,134 +1,69 @@
-# Class File Format — Debugging
+# Debugging: Class File Format
 
-## Debugging Strategies
+## UnsupportedClassVersionError
 
-### Print-Based Debugging
-```java
-System.out.println("State: " + collection);
-System.out.println("Size: " + collection.size());
-System.out.println("Contains key X: " + collection.containsKey("X"));
+```text
+Exception in thread "main" java.lang.UnsupportedClassVersionError:
+V has been compiled by a more recent version of the Java Runtime
+(class file version 67.0), this version only recognizes up to 65.0
 ```
 
-### IDE Debugger Inspection
-Modern IDEs provide collection visualizers:
-- **IntelliJ IDEA**: Shows internal structure, hash codes, conflicts
-- **Eclipse**: Detail formatters for common collections
-- **VS Code**: Java Debug Extension with variable inspection
+Cause: major in bytes 6–7 exceeds the running JVM. Fix: read the
+major first (`xxd -l 8 V.class` — bytes 6,7), then recompile with
+`javac --release 21` (→65) or run on a newer JDK. The lab's measured
+mapping: 8→52, 11→55, 17→61, 21→65, 23→67.
 
-### JFR Events
-Java Flight Recorder captures collection-related events:
-- **Allocation events**: When collections allocate new backing arrays
-- **GC events**: Collection overhead during GC pauses
-- **Lock events**: Contention on synchronized collections
+## VerifyError after hand-editing
 
-### Heap Dump Analysis
-```bash
-jmap -dump:live,format=b,file=heap.hprof <pid>
-```
-Use Eclipse MAT or JProfiler to analyze:
-- **Dominator tree**: Find largest collections
-- **GC root paths**: Why collections aren't collected
-- **OQL queries**: Filter specific collection types
-
-### Thread Dump Analysis
-```bash
-jstack <pid> > threaddump.txt
-```
-Look for threads stuck in collection code, infinite resize loops, deadlocks.
-
-## Debugging Tools
-
-### JOL (Java Object Layout)
-```java
-System.out.println(GraphLayout.parseInstance(map).toFootprint());
+```text
+java.lang.VerifyError: Bad type on operand stack
 ```
 
-### jhsdb
-```bash
-jhsdb jmap --heap --pid <pid>
-jhsdb jmap --histo --pid <pid>
+The `Code` header (`stack=`, `locals=`) disagrees with the instruction
+stream, or a branch target lacks a `StackMapTable` frame. Re-derive
+the header from the code (probe shape: `stack=3, locals=4,
+args_size=3`) instead of patching numbers. Regenerate frames rather
+than copying them from another method.
+
+## ClassFormatError: magic or truncation
+
+```text
+java.lang.ClassFormatError: Incompatible magic value
 ```
 
-## Debugging Checklist
-1. Check equals() and hashCode() implementations
-2. Verify collection is the correct type
-3. Confirm thread safety guarantees
-4. Check for ConcurrentModificationException patterns
-5. Verify initial capacity for expected data size
+Bytes 0–3 are not `CAFEBABE`: the file is not a class (HTML error
+page saved as `.class`, partial download, wrong file). Check length
+too — a truncated pool reads past EOF and fails the same way.
 
+## Pool index out of range
 
-## Further Exploration
+`javap -v` shows `#12 = Long` then `#14`: code that assumes dense
+numbering reports `#13` missing or resolves the wrong entry. When
+your parser throws "invalid constant pool index", check whether the
+preceding entry is tag 5/6 and whether you skipped its shadow slot.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Missing line numbers in stack traces
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+```text
+at Probe.absOrNeg(Unknown Source)
+```
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+The class was compiled with `javac -g:none`: `LineNumberTable`,
+`LocalVariableTable`, and possibly `SourceFile` were stripped.
+Recompile without `-g:none` and confirm `javap -v` lists the tables.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## Stale constant value at runtime
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+Symptom: library changed `static final int PORT` to 9090, client
+still prints 8080 after redeploying only the library. Diagnosis:
+`javap -v -p Client.class` shows the literal `8080` in the client's
+own bytecode — `ConstantValue` inlined it at client-compile time.
+Fix: recompile the client.
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## Fields to inspect, in order
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. `xxd -l 10 V.class` — magic, minor, major, pool count.
+2. `javap -v -p V.class | head -60` — pool entries, gaps, flags.
+3. `javap -c -p V.class` — `Code` headers vs instruction stream.
+4. Presence/absence of `StackMapTable` per method — must correlate
+   with branches (`ifeq`, `goto`, switches in the `-c` output).

@@ -1,134 +1,61 @@
-# ASM Bytecode — Debugging
+# Debugging: Bytecode Generation
 
-## Debugging Strategies
+## Preview-gate failures
 
-### Print-Based Debugging
-```java
-System.out.println("State: " + collection);
-System.out.println("Size: " + collection.size());
-System.out.println("Contains key X: " + collection.containsKey("X"));
+```text
+error: package java.lang.classfile does not exist        // javac: add
+      --release 23 --enable-preview
+ExceptionInInitializerError / UnsupportedOperationException at
+ClassFile.of()                                           // java: add
+      --enable-preview (and run on JDK 23)
 ```
 
-### IDE Debugger Inspection
-Modern IDEs provide collection visualizers:
-- **IntelliJ IDEA**: Shows internal structure, hash codes, conflicts
-- **Eclipse**: Detail formatters for common collections
-- **VS Code**: Java Debug Extension with variable inspection
+Both halves are required; the compile gate and the runtime gate fail
+independently. Verify with `java --version` (23) before anything else
+— stanza 1 of every probe session.
 
-### JFR Events
-Java Flight Recorder captures collection-related events:
-- **Allocation events**: When collections allocate new backing arrays
-- **GC events**: Collection overhead during GC pauses
-- **Lock events**: Contention on synchronized collections
+## VerifyError from generated classes
 
-### Heap Dump Analysis
-```bash
-jmap -dump:live,format=b,file=heap.hprof <pid>
-```
-Use Eclipse MAT or JProfiler to analyze:
-- **Dominator tree**: Find largest collections
-- **GC root paths**: Why collections aren't collected
-- **OQL queries**: Filter specific collection types
-
-### Thread Dump Analysis
-```bash
-jstack <pid> > threaddump.txt
-```
-Look for threads stuck in collection code, infinite resize loops, deadlocks.
-
-## Debugging Tools
-
-### JOL (Java Object Layout)
-```java
-System.out.println(GraphLayout.parseInstance(map).toFootprint());
+```text
+java.lang.VerifyError: Bad type on operand stack (GenMax.max)
 ```
 
-### jhsdb
-```bash
-jhsdb jmap --heap --pid <pid>
-jhsdb jmap --histo --pid <pid>
-```
+The builder derives frames from the instructions you gave it, so a
+`VerifyError` means the instruction sequence itself is inconsistent
+(wrong branch structure, missing `labelBinding`, stack effect you did
+not intend). Re-read the emission order against snippet 4's shape:
+`iload/iload/if_icmpge(elseL)/iload/ireturn/labelBinding/iload/ireturn`.
+Labels abstract offsets but not stack discipline.
 
-## Debugging Checklist
-1. Check equals() and hashCode() implementations
-2. Verify collection is the correct type
-3. Confirm thread safety guarantees
-4. Check for ConcurrentModificationException patterns
-5. Verify initial capacity for expected data size
+## Dropped method still present (or too much dropped)
 
+- `main` survives `DropMethod`: the name comparison missed
+  (overloads share names — compare name *and* `MethodTypeDesc`), or
+  `builder.with(element)` ran unconditionally after the guard.
+- `<init>` gone too: the guard matched too broadly (e.g., dropping
+  by return type alone). Re-parse the output (`ClassFile.of().parse(slim)`)
+  and list methods — the probe's own listing step is the debugger.
 
-## Further Exploration
+## Synthetic lambda$ methods in listings
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+Parsing a class that contains lambdas (including the transform
+lambda inside `DropMethod` itself) yields `lambda$main$0`-style
+entries. Filter `nm.startsWith("lambda$")` for structural assertions,
+but keep them in `builder.with(e)` passes — dropping a synthetic
+body while keeping its `invokedynamic` caller breaks linkage.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## Magic check passes, defineClass still fails
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+`magic intact: true` only proves bytes 0–1. Version mismatch
+(builder default vs runtime), bad frames, or bad descriptors fail
+later with `UnsupportedClassVersionError` or `VerifyError`. Check in
+order: `model.majorVersion()` vs runtime, `defineClass` exception
+type (version vs verify), then instruction listing.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## Version round-trip disagreement
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+`model.majorVersion()` vs raw bytes 6–7 must agree exactly (snippet
+5: both 61 for `--release 17`). Disagreement means the bytes changed
+between reads (recompiled fixture, stale temp dir) — recompile the
+fixture deterministically and compare in one process, as the snippet
+does.

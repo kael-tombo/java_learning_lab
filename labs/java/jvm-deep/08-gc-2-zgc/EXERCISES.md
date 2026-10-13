@@ -1,154 +1,67 @@
-# ZGC — Exercises
+# Exercises: ZGC
 
-## Beginner Exercises
+Runnable tasks with exact flags. Pin heaps; join tags with `+`.
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of ZGC.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
+## 1. Prove the opt-in
+
+```bash
+java -XX:+UseZGC -XX:+PrintFlagsFinal -version | grep -E "UseZGC|ZGenerational|ZCollectionInterval"
 ```
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
+Expect `UseZGC = true`, `ZGenerational = true`,
+`ZCollectionInterval = 0`. Re-run without `-XX:+UseZGC` and confirm the
+first flag reads false while the other two still print their defaults.
+
+## 2. Name the generational surface
+
+```bash
+javac ZBeans.java && java -XX:+UseZGC -Xmx256m -cp . ZBeans
 ```
 
-## Intermediate Exercises
+Using the lab's `ZBeans` probe (lists collectors and `ZGC*` pools
+sorted): assert minor+major Cycles and Pauses collectors plus young+old
+pools. Then point the same probe at a default (G1) JVM and record how
+every name differs.
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+## 3. Measure the sub-millisecond bar
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
+```bash
+javac ZChurn.java && java -XX:+UseZGC -Xmx128m -Xlog:gc+phases -cp . ZChurn
 ```
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
+Extract `Pause ... (\d+\.\d+)ms` at line end; assert at least one pause
+and max < 1.0 ms (reference 0.010-0.026 ms). Deliberately also match the
+unanchored pattern once to see cycle totals pollute the sample — then
+restore the anchor.
+
+## 4. Read the reasons
+
+```bash
+java -XX:+UseZGC -Xmx128m -Xlog:gc -cp . ZChurn
 ```
 
-## Advanced Exercises
+Find `Major Collection (Warmup)` exactly once at startup, `Minor
+Collection` with `(High Usage)` / `(Allocation Rate)` under churn, and
+`M(...)` occupancy deltas. Write one sentence per line class: what
+triggered it and what it reclaimed.
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+## 5. Collect an idle JVM on the timer
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
-
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
+```bash
+javac ZTimer.java && java -XX:+UseZGC -Xmx256m -XX:ZCollectionInterval=0.1 -Xlog:gc -cp . ZTimer
 ```
 
-## Challenge Exercises
+Count `Major Collection (Timer)` over the 600 ms sleep (expect >= 2,
+~120 ms spacing). Re-run without the interval flag; expect zero. State
+the production corollary: which of your idle services wants this flag,
+and at what interval in seconds rather than 0.1.
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+## 6. Compare a G1 pause line
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+```bash
+java -Xmx128m -Xlog:gc* -cp . ChurnXY
+```
 
-## Bonus Exercises
-
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
-
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Run the shared churn under default G1, extract the `G1 Evacuation Pause`
+milliseconds, and place them beside the ZGC maxima from exercise 3.
+Assert the order-of-magnitude gap holds (10x bar) on your machine.

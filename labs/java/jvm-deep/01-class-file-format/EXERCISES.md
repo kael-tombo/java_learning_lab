@@ -1,154 +1,63 @@
-# Class File Format — Exercises
+# Exercises: Class File Format
 
-## Beginner Exercises
+All tasks need a JDK (not JRE) on PATH for `javac`/`javap`. Use the
+exact `--release` flags given; majors depend on them.
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of Class File Format.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
-```
+## 1. Read the 8-byte header by hand
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
-```
+Compile `public class V{}` with `--release 17`, then print bytes 0–9
+as hex (see CODE_DEEP_DIVE snippet 1 for the reader shape).
 
-## Intermediate Exercises
+Expect: `CA FE BA BE 00 00 00 3D` then pool count. `0x3D` is 61.
+Repeat with `--release 8` (`0x34` = 52) and `--release 21`
+(`0x41` = 65). Record all three before continuing.
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+## 2. Pin the release→major table
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
-```
+Extend snippet 2 to cover `--release 11` and `--release 23`.
+Expect 55 and 67. You now own five measured rows (52/55/61/65/67)
+instead of a memorized table.
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+## 3. Find the pool gap
 
-## Advanced Exercises
+Compile the PoolGap probe (`Probe2` with a `long`, a `double`, an
+`int`, a `String`) with `--release 17`. Run `javap -v -p` and locate
+the `Long` and `Double` entries.
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+Confirm: the index immediately after each is absent from the dump.
+Write down both gaps (e.g., `#12 → #14`). Break your own parser on
+purpose: parse with stride 1, watch every later entry misresolve.
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+## 4. Decompose a Code header
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
+Compile the `Probe3.absOrNeg` probe with `--release 17`. Run
+`javap -v -c -p` and copy the `stack=/locals=/args_size=` line.
 
-## Challenge Exercises
+Expect `stack=3, locals=4, args_size=3`. Map each local slot: 0
+`this`, 1 `x`, 2 `neg`, 3 `y`. Explain where the value 3 in
+`args_size` comes from (receiver + 2 params).
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+## 5. Correlate StackMapTable with branches
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+Compile `Probe4` (`straight` + `branchy`) with `--release 17`. Split
+`javap -v -p` output per method.
 
-## Bonus Exercises
+Confirm: `straight` has no `StackMapTable`; `branchy` has one.
+Add a second branch (e.g., a loop) to `straight`, recompile, and
+confirm the attribute appears. Remove all branches from `branchy`
+and confirm it disappears.
 
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
+## 6. Reproduce the stale constant
 
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
+Class `Lib { static final int PORT = 8080; }`, client prints
+`Lib.PORT`. Compile both with `--release 17`, run (prints 8080).
+Change `Lib` to 9090, recompile only `Lib`, rerun the old client.
 
+Confirm it still prints 8080. Run `javap -c` on the client to find
+the inlined `sipush 8080`. Recompile the client; confirm 9090.
 
-## Further Exploration
+## 7. Strip debug info and observe
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Compile a throwing probe normally and with `-g:none`. Compare
+`javap -v` (SourceFile/LineNumberTable present vs absent) and run
+both to compare stack traces (`Unknown Source` in the stripped one).

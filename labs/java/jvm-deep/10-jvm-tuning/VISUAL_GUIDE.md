@@ -1,123 +1,40 @@
-# JVM Tuning — Visual Guide
+# Visual Guide: JVM Tuning
 
-## ASCII Architecture Diagrams
+## The ergonomic derivation tree
 
-### Internal Array Structure
-```
-+-------------------------------------------------------+
-|                  Backing Array                          |
-+------+------+------+------+------+------+------+------+
-|  0   |  1   |  2   |  3   |  4   |  5   |  6   |  7   |
-+------+------+------+------+------+------+------+------+
-|  K8  | null |  K3  | null | K1-->| null |  K5  |  K9  |
-|  V8  |      |  V3  |      | V1   |      |  V5  |  V9  |
-+------+------+------+------+--+---+------+------+------+
-                                 |
-                           +-----+-----+
-                           | K1 | V1   |
-                           +-----+-----+
-                           | K7 | V7   |
-                           +-----+-----+
-```
+Draw RAM at the top (16 GB reference). Two branches: /64 to 256M
+initial, /4 to 4G max. A third branch (`-Xmx256m`) bypasses the tree and
+lands exactly on 268,435,456 — a straight arrow labeled "explicit beats
+ergonomic." Inside containers redraw the root as the cgroup limit, not
+host RAM; the whole tree re-derives from the smaller root.
 
-### Hash Function Flow
-```
-Key "hello" -> hashCode() = 99162322
-             -> XOR high 16: 99162322 ^ (99162322 >>> 16) = 99160825
-             -> Index: 99160825 & (16-1) = 9
-             -> Bucket[9]
-```
+## The generational pie
 
-### Collision Chain
-```
-Bucket[4] ---> +---------+    +---------+    +---------+
-               | Key: A  |    | Key: M  |    | Key: Z  |
-               | Val: 1  |--> | Val: 13 |--> | Val: 26 |
-               | hash:65 |    | hash:77 |    | hash:90 |
-               +---------+    +---------+    +---------+
-```
+One pie for the heap: old two thirds, young one third (NewRatio 2). Zoom
+the young slice: Eden eight tenths, two survivors one tenth each
+(SurvivorRatio 8). Shade survivors to 50% (TargetSurvivorRatio) as the
+desired fill line — tenuring adapts to hold that line across cycles.
 
-### Resize Operation
-```
-Before (capacity=4): size=4, threshold=3 -> RESIZE
-After (capacity=8): keys redistributed by hash & (newCap-1)
-```
+## TLAB cartoon
 
-## See DIAGRAMS/ directory for full resolution diagrams.
+Eden as a long strip. Default path: per-thread colored blocks (TLABs)
+with private bump arrows inside each; one shared arrow at the strip head
+for refills only. `-XX:-UseTLAB` path: every allocation arrow converges
+on the single shared head with a lock icon — the visual source of the
+~8x timing gap. One glance explains why refill contention, not object
+size, dominates.
 
+## Three-plane dashboard sketch
 
-## Further Exploration
+Three side-by-side gauges: heap occupancy (young/old or G1 regions),
+CodeHeap fullness (against 240M ceiling — mark the cliff where
+compilation stops), Metaspace growth (against no ceiling — mark the
+~21M first-trigger line). A red zone on one gauge never justifies turning
+another gauge's knob; draw the knobs under their own gauges.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## The one-flag graph
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Two bars for ParallelGC young-pause counts: tall at 128m, short at 512m,
+labels noting identical code and flags except heap. Beside them two equal
+bars for G1 with a "cruise control absorbed it" caption. The three-bar
+comparison teaches both the lever and its limits in one figure.

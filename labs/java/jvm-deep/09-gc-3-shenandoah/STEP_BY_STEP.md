@@ -1,161 +1,34 @@
-# Shenandoah GC — Step-by-Step Implementation
+# Step by Step: Shenandoah GC
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab09/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab09/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+All steps run green on the Oracle build; nothing pretends to observe
+Shenandoah where it is compiled out. Labels: [measured]/[JEP]/[reported].
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
-
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab09;
-
-import java.util.Objects;
-
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
-
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
-
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
-
-## Step 4: Implement Core Operations
-
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
-
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
-
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
-
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
-
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Probe availability [measured]: `java -XX:+UseShenandoahGC -version`,
+   capture exit code and "not supported" text. Assert exactly one of
+   supported/refused holds (`supported != refused`). Record which branch
+   your JVM takes.
+2. Read the flag surface [measured]: `java -XX:+PrintFlagsFinal -version`,
+   count rows containing `Shenandoah` with ` = ` (expect exactly 1:
+   `UseShenandoahGC`), and rows matching G1 flags (expect >5). The ratio
+   1-vs-many is the compiled-out evidence.
+3. Run the pause-gap probe [measured]: identical churn (`ChurnXY`, 2000 x
+   128 KB bounded) under default G1 and under `-XX:+UseZGC`, both at
+   `-Xmx128m -Xlog:gc*`. Extract G1 evacuation milliseconds and ZGC
+   handshake milliseconds with the dual regexes; assert both >0 and
+   `zgc_max * 10 < g1_max`. This gap is the design goal Shenandoah chases
+   from the Brooks direction [JEP].
+4. Enumerate collector names [measured]: run the `WhoAmI` MXBean probe
+   under default flags (expect `G1`) and under `-XX:+UseZGC` (expect
+   `ZGC`). Note Shenandoah's pair (`Shenandoah Cycles`/`Pauses`) is
+   [reported] via Micrometer, not printed here.
+5. Confirm warmup universality [measured]: on the `ZChurn` probe at
+   `-Xmx256m -Xlog:gc`, verify G1 young work at startup and ZGC's `Major
+   Collection (Warmup)`. Shenandoah's own `Pause Init Mark` opens its
+   cycles the same way on shipping builds [JEP].
+6. (On Temurin/Semeru/RH only): re-run steps 1-2 and watch the branches
+   flip — exit 0 with `Using Shenandoah`, full tuning surface present.
+   The assertions hold with booleans flipped because each branch asserts
+   its documented outcome.
+7. Write the one-paragraph brief: Brooks word vs color bits, concurrent
+   evacuation with root-sized pauses, single-gen default [JEP], Oracle
+   builds omit it [measured].

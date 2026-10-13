@@ -1,169 +1,47 @@
-# JVM Tuning — Mathematical Foundation
+# Math Foundation: JVM Tuning
 
-## 1. Asymptotic Complexity Analysis
+Defensible content only; numbers measured on JDK 23 (16 GB / 8-CPU).
 
-### Big-O Notation
-All complexity analysis uses standard asymptotic notation:
+## Ergonomic equations
 
-- **O(1)**: Constant time — independent of input size
-- **O(log n)**: Logarithmic — typical for balanced tree operations
-- **O(n)**: Linear — proportional to input size
-- **O(n log n)**: Log-linear — sorting, heap operations
-- **O(n^2)**: Quadratic — nested iterations
+`Initial = RAM/64`: 16 GiB / 64 = 256 MiB exactly. `Max = RAM/4`: 16 / 4
+= 4 GiB exactly. Tolerance form: `|init - phys/64| < phys/64` and `|max -
+phys/4| < phys/8` (container rounding absorbed). Exactness form: `-Xmx256m`
+implies `MaxHeapSize == 256 * 1048576 == 268435456` with zero tolerance.
 
-### Amortized Analysis
-Amortized analysis considers the average cost of an operation over a sequence:
+## Generational partition
 
-    T_amortized(n) = (1/n) * sum(t_i for i=1 to n)
+Heap H, NewRatio 2: young = H/3, old = 2H/3. SurvivorRatio 8 within young
+Y: Eden = 8Y/10, each survivor = Y/10. At H = 3 GB: young 1 GB, Eden 800
+MB, survivors 100 MB each. TargetSurvivorRatio 50: post-GC survivor fill
+aims at 50 MB per 100 MB space; tenuring threshold moves to hold it.
 
-Where t_i is the cost of the i-th operation.
+## TLAB contention arithmetic
 
-#### Accounting Method
-Each operation pays a small additional cost into a bank account. Expensive operations draw from this account.
+3M allocations at ~35 ms TLAB vs ~280 ms shared: per-allocation ~12 ns vs
+~93 ns, delta ~80 ns of atomic/lock overhead each. Throughput ratio ~8x;
+lab asserts >3x (2.6x safety under the observation). Scaling: delta grows
+with thread count on the shared path (CAS retries), stays flat on TLABs.
 
-#### Potential Method
-A potential function Phi(D_i) maps data structure state D_i to a real number. The amortized cost is:
+## Compression savings
 
-    c_i + Phi(D_i) - Phi(D_{i-1})
+Reference array of N entries: 8N bytes uncompressed vs 4N compressed,
+saving 4N (1M-entry table saves 4 MB). Object with two references: header
+16 + 16 = 32 bytes uncompressed vs 12 + 8 = 20 bytes compressed (~38%
+smaller). Cliff: heaps just over ~32 GB pay the uncompressed layout for
+marginal extra capacity — worst bytes-per-GB in the sizing space.
 
-### Case Study: ArrayList Growth
-For ArrayList with 1.5x growth factor:
-- Insertions 1 to n cost: n (insertions) + sum of resize costs
-- Resize costs: 1 + 2 + 3 + ... + n * (2/3)^k which sums to approximately n
-- Amortized cost per insertion: O(1)
+## Code cache exhaustion rate
 
-## 2. Probability Fundamentals
+240 MB ceiling against steady compiled-code residency R plus churn C per
+deploy: headroom = 240 - R MB absorbs C until full, then compilation
+stops and interpreted fallback steps throughput down with no GC signal.
+The instrument is CodeHeap-pool fullness percentage, not any pause line.
 
-### Hash Functions and Collisions
-For a hash table with m buckets and n elements:
+## One-flag inference logic
 
-- Probability of no collision when inserting k elements: prod((m-i)/m for i=0 to k-1)
-- Expected number of collisions: n - m + m((m-1)/m)^n
-- Load factor: alpha = n/m
-
-### Birthday Paradox
-With 23 people in a room, probability of shared birthday > 50%. For hash tables:
-
-    P(collision) approx 1 - exp(-n(n-1)/(2m))
-
-When n > sqrt(2m), collisions are likely.
-
-## 3. Graph Theory for Tree Structures
-
-### Tree Properties
-- A tree with n nodes has n-1 edges
-- Height of a perfect binary tree: floor(log_2 n)
-- Number of leaves in a perfect binary tree of height h: 2^h
-- Internal nodes in a full binary tree: n - 1
-
-### Red-Black Tree Height
-A red-black tree with n internal nodes has height at most 2*log_2(n+1).
-This guarantee comes from the red-black properties:
-1. Every node is either red or black
-2. The root is black
-3. All leaves (NIL) are black
-4. If a node is red, both its children are black
-5. Every path from a node to its descendant leaves has the same number of black nodes
-
-## 4. Number Theory
-
-### Prime Numbers for Hash Tables
-Using prime-sized hash tables reduces collision probability when hash function distribution is unknown.
-The multiplicative hash: h(k) = floor(m * (k * A mod 1)) where A is the golden ratio (sqrt(5)-1)/2.
-
-### Modulo Arithmetic for Index Calculation
-The index is calculated as: index = hash & (capacity - 1) when capacity is a power of two.
-This is equivalent to hash mod capacity, but much faster as it's a single bitwise operation.
-
-## 5. Probability for Bloom Filters
-
-### False Positive Rate
-For a Bloom filter with m bits, n elements, k hash functions:
-
-    P_FP = (1 - (1 - 1/m)^(kn))^k approx (1 - exp(-kn/m))^k
-
-### Optimal Hash Functions
-    k_optimal = (m/n) * ln(2)
-
-## Summary
-These mathematical foundations underpin the theoretical guarantees and practical performance
-characteristics of the JVM Tuning. Understanding them enables informed design decisions and
-accurate performance predictions. The key takeaway is that data structure selection should be
-guided by mathematical analysis of the expected workload patterns.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+ParallelGC counts: small-heap pauses S, big-heap pauses B, prediction S >
+B with all else equal. Observation S > B confirms the fixed-fraction
+mechanism; S ~= B under G1 confirms adaptivity absorbing the lever. Both
+outcomes are findings because the prediction was registered before the
+run — the experiment cannot fail, only distinguish mechanisms.

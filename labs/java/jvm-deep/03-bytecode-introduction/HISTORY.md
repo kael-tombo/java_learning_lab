@@ -1,146 +1,54 @@
-# Bytecode Introduction — History
+# History: Bytecode Introduction
 
-## Origins
-Bytecode Introduction has its roots in fundamental computer science research dating back to the 1950s and 1960s.
-The concept evolved through multiple iterations before becoming a standard part of the
-Java Collections Framework.
+## Stack machines win portability (1970s–1995)
 
-## Timeline
+UCSD Pascal's p-code and Smalltalk-80's bytecode proved stack
+instruction sets stay compact without register fields. Gosling's team
+chose the same shape for Oak/Java: 1–3 byte instructions, an operand
+stack per frame, and `max_stack`/`max_locals` headers so runtimes
+size frames without scanning code. x86/ARM stayed register machines;
+the JVM stayed abstract — the JIT bridges them per platform.
 
-### Pre-Java (1960s-1990s)
-- 1960: Initial theoretical work on underlying data structures by researchers
-- 1970s: Widespread adoption in academic systems programming (UNIX, Pascal)
-- 1980s: Standardization in C++ STL influenced Java's design significantly
-- 1995: Java 1.0 released with java.util.Hashtable and java.util.Vector
+## The five invokes accrete (1995–2011)
 
-### Java Evolution
+`invokestatic`/`invokespecial`/`invokevirtual`/`invokeinterface`
+shipped with Java 1.0, mapping directly to static, constructor/
+private/super, class-instance, and interface dispatch. The fifth,
+`invokedynamic`, arrived via JSR 292 in Java 7 (2011): dynamic
+languages on the JVM (JRuby, Nashorn, later Clojure) needed call
+sites the compiler does not fix. The bootstrap-method design linked
+once at first execution instead of dispatching per call.
 
-#### Java 2 (1998) — Collections Framework
-- Java 1.2 introduced the Collections Framework as a unified architecture
-- HashMap, ArrayList, LinkedList, TreeMap added to java.util
-- Collections utility class with sorting, searching, wrapping methods
-- Load factor concept formalized in java.util.HashMap
+## Split verification: JSR-202 (Java 6, 2006)
 
-#### Java 5 (2004) — Generics
-- JSR-14 added generics to the language
-- Collections gained type safety via generic type parameters
-- ConcurrentHashMap officially added in java.util.concurrent
-- java.util.concurrent.locks package introduced
-- EnumMap and EnumSet for enum-based keys
+Full dataflow verification iterated method bodies to a fixed point —
+correct but slow at application scale. JSR-202 required
+`StackMapTable` frames in version-50+ classes: producers state types
+at merge points, the verifier checks one pass. Pre-50 classes still
+verify by inference, which is why old bytecode links measurably
+slower.
 
-#### Java 8 (2014) — Major Overhaul
-- HashMap treeification: linked list -> red-black tree at TREEIFY_THRESHOLD=8
-- ConcurrentHashMap rewritten using CAS (removed segment-based locking entirely)
-- Stream API and lambda expressions changed collection usage patterns
-- Map interface gained default methods: getOrDefault, putIfAbsent, computeIfAbsent
+## Lambdas ride invokedynamic (Java 8, 2014)
 
-#### Java 9-11 (2017-2018)
-- List.of(), Set.of(), Map.of() factory methods for immutable collections
-- Immutable collection internal optimizations (compact storage)
-- Optional improvements for stream integration
+Project Lambda compiled `() -> ...` to `invokedynamic` bootstraped
+by `LambdaMetafactory` rather than generating anonymous classes per
+site. The generated `lambda$...` adapter spins once and caches —
+loops do not re-link. String concatenation followed in Java 9
+(`StringConcatFactory` via the same instruction), and `Dynamic`
+constants (condy, Java 11) generalized linkage to data.
 
-#### Java 17+ (2021+) — Modern Enhancements
-- SequencedCollection and SequencedMap interfaces (Java 21+)
-- HashMap treeified bin improvements
-- ConcurrentHashMap performance optimizations
-- Enhanced garbage collection interaction
+## Erasure and descriptors (1995–2004, frozen since)
 
-## Key Design Decisions
+Descriptors (`(II)I`, `Ljava/util/List;`) predate generics; when
+generics arrived (Java 5, 2004) they erased to raw types at this
+level, adding `Signature` attributes for reflection instead of
+changing linkage. Every `NoSuchMethodError` since keys on erased
+strings — the descriptor table in THEORY.md §5 has not needed a
+revision since.
 
-### Why Power-of-Two Sizing?
-Hash-based collections use power-of-two capacities because it enables fast bitwise
-index calculation (hash & (capacity-1)) instead of expensive modulo operations.
+## The tag-11 correction (this lab)
 
-### Why 0.75 Load Factor?
-The default load factor of 0.75 represents a trade-off between time and space costs.
-Lower values (0.5) reduce collisions but increase memory. Higher values (0.9) save
-memory but increase lookup times.
-
-### Why Treeify at 8?
-The threshold of 8 for treeification balances the cost of tree nodes (larger memory
-footprint) against the O(n) lookup penalty for long chains. With good hash distribution,
-buckets rarely exceed 8 entries.
-
-## Impact
-This data structure has influenced countless applications and frameworks:
-- Database indexing strategies
-- Cache implementations (Caffeine, Guava Cache)
-- Distributed systems key-value stores
-- In-memory data grids (Hazelcast, Ignite)
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+An earlier revision of THEORY.md listed `InvokeDynamic` as tag 11.
+It is 18; 11 is `InterfaceMethodref`. The correction is recorded in
+the file itself — a reminder that pool-tag tables are checked
+against JVMS §4.4, not memory.

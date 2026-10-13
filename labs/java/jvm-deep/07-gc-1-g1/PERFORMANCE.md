@@ -1,135 +1,43 @@
-# G1 Garbage Collector — Performance
+# Performance: G1 GC
 
-## Time Complexity
+## Where time goes
 
-### Operation Costs
-| Operation | Average Case | Worst Case | Notes |
-|-----------|-------------|-----------|-------|
-| Insert    | O(1)        | O(n)      | Resizing or collisions |
-| Lookup    | O(1)        | O(n)      | Hash collisions |
-| Delete    | O(1)        | O(n)      | After locating element |
-| Contains  | O(1)        | O(n)      | Same as lookup |
-| Iteration | O(n)        | O(n)      | Traverses all elements |
-| Size      | O(1)        | O(1)      | Maintained as field |
+Young evacuations dominate most G1 profiles: 2-5 ms per pause at 256 MB
+in this lab, scaling with live-set size (bytes copied) rather than heap
+size. Concurrent marking and refinement cost background CPU but no STW
+time; the STW remark/cleanup beats are small beside evacuation. Full GC
+is off the chart by design — its absence is the healthy state.
 
-### Amortized Analysis
-Individual operations may be expensive (resize), but amortized cost over a sequence
-of operations is O(1) for most data structures.
+## Reading a pause line
 
-## Memory Footprint
+`Pause Young (Normal) (G1 Evacuation Pause) 23M->9M(256M) 4.294ms` says:
+collected the young set, heap went 23M to 9M, the pause cost 4.294 ms.
+Track the after-number across pauses for live-set growth and the ms
+number against the 200 ms goal. A rising after-number with steady churn
+means promotion pressure; a rising ms with steady bytes means RSet or
+to-space strain.
 
-### Object Overhead
-- **Base object header**: 12-16 bytes (depending on JVM flags)
-- **Reference**: 4 bytes (Compressed OOPs) or 8 bytes
-- **int fields**: 4 bytes each
-- **Padding**: Aligned to 8-byte boundaries
+## Tuning levers that work
 
-### Per-Element Storage
-| Structure | Per-Element Overhead | Cache Locality |
-|-----------|---------------------|----------------|
-| HashMap   | ~32 bytes + K + V   | Poor (chains) |
-| ArrayList | 4-8 bytes (ref)     | Excellent |
-| LinkedList| ~24 bytes (3 ptrs)  | Poor |
-| TreeMap   | ~40 bytes (4 ptrs)  | Poor |
+Size the heap so young pauses fit the goal with margin — `-Xmx` is the
+first lever, and every experiment pins it. Lower `MaxGCPauseMillis` only
+when pauses already fit; it shrinks young sets and collects more often,
+trading throughput for pause size. Raise `InitiatingHeapOccupancyPercent`
+above 45 only with measured marking headroom; starting marking late
+risks evacuation failure when the old set fills mid-mark.
 
-## Optimization Techniques
+## Pathologies with signatures
 
-### CPU Cache Behavior
-- **Sequential access**: Array-based structures have excellent cache locality
-- **Pointer chasing**: Linked structures have poor cache locality
-- **False sharing**: Concurrent writes to adjacent memory cause cache line bouncing
+Humongous churn: old-gen growth invisible at info logging, confirmed at
+`gc+humongous=debug` with spanning `type array` lines. To-space
+exhaustion: evacuation pauses spike then a full GC appears — the log's
+way of saying the young sizing overshot free space. RSet bloat: pauses
+grow while copied bytes stay flat, under heavy cross-region mutation.
 
-### JIT Compilation
-- **Inlining**: Small methods (get(), put()) are prime candidates for inlining
-- **Intrinsification**: System.arraycopy() is a hotspot intrinsic
-- **Branch Prediction**: Common-case fast paths benefit from predictable branching
-- **Loop Unrolling**: Iteration over arrays can be unrolled by JIT
+## Throughput versus pause posture
 
-### GC Impact
-- **Young Gen**: Short-lived iterators, temporary collections collected in young gen
-- **Old Gen**: Long-lived maps and caches promoted to old gen
-- **Allocation Rate**: Frequent resize causes allocation spikes
-- **Card Table**: Large collections increase GC root scanning overhead
-
-## Profiling Tools
-- **JMH**: Java Microbenchmark Harness for accurate microbenchmarks
-- **async-profiler**: CPU/wall-clock/allocation profiling
-- **JFR**: Java Flight Recorder event collection
-- **JOL**: Java Object Layout for memory analysis
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+G1 keeps more throughput than the concurrent-evacuation collectors
+because only marking is concurrent — evacuation still stops the world
+without barrier tax on every load. The price is pauses that grow with
+live data (milliseconds here versus hundredths of a millisecond under
+ZGC). Choose by live-set size and pause budget, measured per workload.

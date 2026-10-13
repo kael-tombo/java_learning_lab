@@ -1,120 +1,60 @@
-# JVM Tuning — Quiz
+# Quiz: JVM Tuning
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in JVM Tuning?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+Real Q&A; numbers measured on JDK 23 (16 GB / 8-CPU reference box).
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## 1. What heap do ergonomics derive, and what overrides them?
 
-## Question 3: Memory
-How much additional memory overhead does JVM Tuning have per element (approximately)?
+`InitialHeapSize` RAM/64 (256M here), `MaxHeapSize` RAM/4 (4G here).
+Explicit `-Xmx256m` lands exactly on 268435456. Containers derive from
+cgroup limits — verify inside the deployment, never on the laptop.
 
-## Question 4: Concurrency
-Is JVM Tuning safe for concurrent access without external synchronization? Explain why or why not.
+## 2. What geometry do the three ratios define?
 
-## Question 5: Scalability
-How does JVM Tuning perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+`NewRatio=2`: young = 1/3 heap. `SurvivorRatio=8`: Eden 8/10 of young,
+each survivor 1/10. `TargetSurvivorRatio=50`: survivors held toward half
+full by adaptive tenuring. Parallel/Serial build this directly; G1 starts
+here then adapts; ZGC ignores fixed young structurally.
 
-## Question 6: Design
-Why was JVM Tuning designed this way? What alternatives were considered during its development?
+## 3. What is the TLAB result, structurally?
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+3M small nodes: ~35 ms with TLABs (per-thread bump-pointer, ~10
+instructions, no lock) vs ~250-315 ms with `-XX:-UseTLAB` (shared Eden
+top, atomic per allocation) — ~8x, asserted >3x. The off-switch is
+diagnostic-only; production keeps TLABs unconditionally.
 
-## Question 8: Comparison
-Compare JVM Tuning with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## 4. State the compression and plane numbers.
 
-## Question 9: Real-World
-Describe a real-world scenario where JVM Tuning is the optimal choice.
-Describe a scenario where it would be a poor choice.
+`UseCompressedOops` + `UseCompressedClassPointers` on (sub-32 GB):
+references halved, headers 12 vs 16 bytes. `ReservedCodeCacheSize=240M`
+(full stops compilation silently — watch CodeHeap pools).
+`MetaspaceSize` ~21M first trigger, `MaxMetaspaceSize` unlimited,
+`CompressedClassSpaceSize=1G`. `UseLargePages=false` default.
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+## 5. Describe the one-flag experiment and both outcomes.
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+Identical churn under ParallelGC at `-Xmx128m` vs `-Xmx512m`, counting
+`Pause Young (` lines in `-Xlog:gc`: smaller heap collects more often
+(fixed young fraction = clean lever). Same pair under G1 reads flat —
+adaptivity absorbs the lever, which is itself the finding. One variable
+changed; both outcomes distinguish mechanisms.
 
+## 6. What is the tuning method, in order?
 
-## Further Exploration
+Objective plus load generator; baseline (`gc*` logs, JFR); mechanism
+hypothesis (not "make it faster"); exactly one flag; re-measure. Knob
+order: explicit `-Xmx`, collector, pause target — exotic flags last.
+Most production JVMs sit within 3 flags of default.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## 7. Where does pressure in each plane surface?
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Heap: `gc` pause lines and heap pools. Code cache: CodeHeap-pool
+fullness near 240M with throughput drop and no GC signal. Metaspace:
+Metaspace-pool growth with metadata-GC causes. Raising `-Xmx` for a
+non-heap plane wastes memory and hides the real graph.
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## 8. What fails when large pages or explicit GC are mishandled?
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Large pages without OS pool/privilege: silently inert (or fast failure);
+small heaps waste memory at 2 MB granularity. Unrestricted `System.gc()`:
+caller-triggered full STW spikes — gate with `DisableExplicitGC` where
+untrusted paths exist.

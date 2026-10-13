@@ -1,123 +1,61 @@
-# Class Loading — Common Mistakes
+# Common Mistakes: Class Loading
 
-## Mistake 1: Incorrect equals/hashCode
-**Problem**: Custom objects used without properly overriding equals() and hashCode().
-**Effect**: Keys not found, duplicates occur, behavior unpredictable.
-**Fix**: Always override both methods. Use Objects.hash().
+## 1. Drawing the extension loader
 
-## Mistake 2: Assuming Insertion Order
-**Problem**: Depending on specific iteration order without checking contract.
-**Effect**: Works in testing, fails in production with different implementation.
-**Fix**: Use LinkedHashMap/LinkedHashSet when order matters.
+Bootstrap → extension → application describes Java 8. Since 9 the
+middle rung is platform (`ClassLoader.getPlatformClassLoader()`),
+and the extension mechanism is removed (JEP 220). `LoaderTree`
+prints the real chain: app's parent is platform, platform's parent
+is null. Update every diagram.
 
-## Mistake 3: Concurrent Modification
-**Problem**: Modifying non-thread-safe collection while iterating.
-**Effect**: ConcurrentModificationException at runtime.
-**Fix**: Use concurrent collections or synchronize externally.
+## 2. Expecting loadClass to run <clinit>
 
-## Mistake 4: Using Mutable Keys
-**Problem**: Modifying key object after insertion into hash-based collection.
-**Effect**: Object in wrong bucket, cannot be found, memory leaks.
-**Fix**: Use immutable keys (String, Integer, records).
+`loader.loadClass(name)` loads and links only. Initialization waits
+for active use. The `InitVsLoad` probe proves it by absence: no
+`<clinit>` line appears before the first print. Calling
+`loadClass` then reading a static field and concluding "loadClass
+initialized it" misattributes — the field read did.
 
-## Mistake 5: Ignoring Initial Capacity
-**Problem**: Default capacity for large expected dataset.
-**Effect**: Multiple resizing operations degrade performance.
-**Fix**: Use constructor with initial capacity: new HashMap<>(expectedSize).
+## 3. Reflecting right after loadClass to "check" init state
 
-## Mistake 6: LinkedList Random Access
-**Problem**: Using LinkedList.get(index) in a loop.
-**Effect**: O(n^2) time complexity instead of O(n).
-**Fix**: Use iterator or ArrayList for random access.
+`Field.get`, `Method.invoke`, even `Class.getField` on the target
+can trigger initialization (active use), destroying the observation.
+The probe deliberately reads no members between `loadClass` and its
+print. Absence-of-side-effect is the instrument; any probe defeats it.
 
-## Mistake 7: Stream Overuse
-**Problem**: Complex stream pipelines on large collections.
-**Effect**: Poor performance, high memory usage.
-**Fix**: Use simple loops for critical paths.
+## 4. Casting across duplicate deployments
 
-## Mistake 8: Not Trimming After Bulk Load
-**Problem**: Keeping oversized internal array after bulk loading.
-**Effect**: Wasted memory.
-**Fix**: Call trimToSize() after bulk loading.
+Two loaders, same `Widget` bytes → two `Class` objects → `w2.cast(o1)`
+throws `ClassCastException` despite identical names. Identity is
+(name, defining loader). "Deployed the same jar twice" incidents
+(double-registered JDBC drivers, duplicated model classes in
+WAR + EAR) are this picture.
 
-## Mistake 9: Assuming Thread Safety
-**Problem**: Using HashMap in multi-threaded context.
-**Effect**: Data corruption, infinite loops (pre-Java 8), lost updates.
-**Fix**: Use ConcurrentHashMap for concurrent access.
+## 5. Redeploying one jar for a constant change
 
+`static final int PORT = 8080` inlines into clients (`ConstNoInit`:
+`PORT` prints with no `<clinit>` line). Changing the library alone
+leaves clients on the old value. Rebuild clients; treat constant
+changes as API changes.
 
-## Further Exploration
+## 6. Framework code using its own loader for app classes
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+`javax.xml` (platform layer) cannot see classpath classes by
+delegation — parents never see children. `ContextVsOwn` shows the
+framework loader failing where the context loader succeeds. Library
+code must use `Thread.currentThread().getContextClassLoader()` for
+app resources, not `getClass().getClassLoader()`.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 7. Overriding loadClass instead of findClass
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+Overriding `loadClass` replaces parent-first delegation, usually by
+accident, producing sibling namespaces and `LinkageError`s. Override
+`findClass` (fetch bytes, `defineClass`) and inherit delegation —
+unless container-style isolation is the explicit goal.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 8. Calling defineClass twice for one name
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Each call mints a new `Class`; the second definition of the same
+binary name in one loader is `LinkageError: duplicate class
+definition`. Cache with `findLoadedClass` (inherited `loadClass`
+already does) instead of redefining.

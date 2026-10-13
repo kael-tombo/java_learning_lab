@@ -1,154 +1,62 @@
-# Class Loading — Exercises
+# Exercises: Class Loading
 
-## Beginner Exercises
+All probes run on any JDK 9+ (verified on JDK 23). Only `javac` on
+PATH is needed for the `Widget` fixture.
 
-### Exercise 1: Basic Operations
-Implement a program that demonstrates the core operations of Class Loading.
-```java
-// Create an instance of the data structure
-// Add 5-10 elements
-// Retrieve each element and verify correctness
-// Test contains() for existing and non-existing keys
-// Remove an element and verify it is gone
-```
+## 1. Print your own hierarchy
 
-### Exercise 2: Iteration
-Write code to iterate through all elements using multiple approaches.
-```java
-// Use for-each loop
-// Use iterator explicitly
-// Use Java 8 forEach() method
-// Use stream API
-// Compare iteration order guarantees
-```
+Write `LoaderTree` (CODE_DEEP_DIVE snippet 1): print the system and
+platform loaders' names, `app.getParent() == platform`, and
+`platform.getParent() == null`.
 
-## Intermediate Exercises
+Expect `platform` / `app` names and both comparisons true. Write one
+sentence stating why no extension loader appears (JEP 220).
 
-### Exercise 3: Custom Object Storage
-Create a custom class (Person with name and age). Override equals() and hashCode() correctly.
-Store instances and verify lookup behavior.
+## 2. Separate load from initialization
 
-### Exercise 4: Comparator-Based Ordering
-Implement a Comparator and use it to control ordering behavior in sorted variants.
-```java
-Comparator<Person> byAge = Comparator.comparingInt(Person::age);
-// Use with sorted collection
-```
+Write `InitVsLoad` (snippet 2): a `Payload` class whose `<clinit>`
+prints a line. Call `loader.loadClass("InitVsLoad$Payload")`, print
+a marker, then `Class.forName("InitVsLoad$Payload")`.
 
-### Exercise 5: Concurrent Access
-Use synchronized wrappers or concurrent variants to safely access from multiple threads.
-```java
-Map<String, Integer> syncMap = Collections.synchronizedMap(new HashMap<>());
-// Test concurrent put/get from 4 threads
-```
+Expect the marker with no `<clinit>` line before it, then the
+`<clinit>` line, then `initialized=true`, then `c1 == c2` true. Now
+insert a reflective field read between `loadClass` and the marker
+and watch the observation collapse — then remove it.
 
-## Advanced Exercises
+## 3. Mint two identities from one file
 
-### Exercise 6: Custom Implementation
-Implement a simplified version of this data structure from scratch.
-Implement all core operations without using java.util collections.
+Write `SplitIdentity` (snippet 3): compile `Widget.java` into a temp
+dir with `javac -d`, load it through two `DirLoader` instances, and
+attempt `w2.cast(o1)`.
 
-### Exercise 7: Performance Benchmark
-Write a JMH benchmark comparing this structure with alternatives.
-Measure throughput, latency, and allocation rates.
+Expect `w1 != w2` true and the cast rejected. Print both classes'
+loaders and confirm neither is the system loader. Change `super(null)`
+to `super(SplitIdentity.class.getClassLoader())` and confirm the
+split persists (delegation only affects parent-visible names).
 
-### Exercise 8: Memory Footprint Analysis
-Use JOL (Java Object Layout) to measure the memory footprint with varying element counts.
-```java
-// Use GraphLayout.parseInstance() to measure memory
-```
+## 4. Show constants skipping initialization
 
-## Challenge Exercises
+Write `ConstNoInit` (snippet 4): `Config` with a `<clinit>` print, a
+`static final int PORT = 8080`, and a computed static. Read `PORT`
+first, then the computed field.
 
-### Exercise 9: Thread-Safe Variant
-Implement a thread-safe version using ReentrantReadWriteLock or synchronized blocks.
-Benchmark against java.util.concurrent variants.
+Expect `PORT = 8080` with no `<clinit>` line before it, then the
+`<clinit>` line, then the computed value. Run `javap -c` on your
+class and find the inlined `sipush 8080` at the use site.
 
-### Exercise 10: Optimization
-Analyze the implementation and identify optimization opportunities.
-Profile with async-profiler and verify improvements.
+## 5. Prove delegation is one-directional
 
-## Bonus Exercises
+Write `ContextVsOwn` (snippet 5): show the context loader loading
+your own class, and the framework loader (`DocumentBuilderFactory`'s
+loader) failing to.
 
-### Exercise 11: Serialization
-Make the implementation serializable and test round-trip serialization/deserialization.
+Expect context-is-app true, context-sees-app true, framework-sees-
+app false. In a fresh `new Thread(...)` with no context set, print
+the context loader and explain what framework lookups would lose.
 
-### Exercise 12: Custom Iterators
-Implement custom iterators that support fail-fast behavior and the remove() operation.
+## 6. Break delegation on purpose (then revert)
 
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Temporarily override `loadClass` in `DirLoader` to check `findClass`
+first for `Widget` only. Reload twice through one loader instance
+and observe `LinkageError: duplicate class definition` on the second
+define. Revert to `findClass`-only and confirm single definition.

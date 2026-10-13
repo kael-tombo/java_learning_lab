@@ -1,161 +1,31 @@
-# JIT Compilation — Step-by-Step Implementation
+# Step by Step: JIT Compilation
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab06/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab06/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
-
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
-
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab06;
-
-import java.util.Objects;
-
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
-
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
-
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
-
-## Step 4: Implement Core Operations
-
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
-
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
-
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
-
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
-
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Compile the `HotLoop` probe with `javac` into a temp directory so the
+   experiment never pollutes the repo.
+2. Launch it with `-XX:+PrintCompilation` and 300,000 calls to `burn(200)`.
+3. Grep the log for `HotLoop::burn`. Confirm a tier-3 line appears first.
+4. Confirm a tier-4 line appears later. The method crossed 200 then 5000
+   invocations exactly as THEORY predicts.
+5. Re-run with `-XX:TieredStopAtLevel=1`. Confirm output still prints the
+   correct total but no tier-4 line exists anywhere.
+6. Swap to the `InlineMe` probe (500,000 calls to 3-byte `tiny`). Run with
+   `-XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining`.
+7. Find the `tiny` inline line. Note it cites hotness plus small size.
+8. Run `LoopWork` under `-Xint`, record milliseconds. Run again with the
+   default pipeline, record milliseconds. Confirm the JIT run is faster by
+   more than 3x.
+9. Query `-XX:+UnlockDiagnosticVMOptions -XX:+PrintFlagsFinal -version` and
+   verify `TieredCompilation=true`, `DoEscapeAnalysis=true`,
+   `Tier4InvocationThreshold=5000`, `MaxInlineSize=35`.
+10. Pick one threshold, change it deliberately (for example
+    `-XX:Tier4InvocationThreshold=500`), re-run step 2, and watch tier 4
+    arrive earlier in the log order.
+11. Cross-check the back-edge path: run a single-call loop-heavy probe and
+    confirm `%` (on-stack replacement) variants appear, proving promotion
+    can trip mid-loop rather than only at method entry.
+12. Negative control: pass `-XX:+PrintDeoptimizationDetails` once, watch
+    startup fail, and record why product builds reject it — then use
+    `TraceDeoptimization` for the real deoptimization trace.
+13. Capture one `PrintInlining` line for a hot callee and annotate which
+    budget it passed (size under 35/325, hotness past tier thresholds) —
+    the decision made legible in a single annotated line for your notes.

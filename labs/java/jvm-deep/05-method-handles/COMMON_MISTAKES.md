@@ -1,123 +1,67 @@
-# Method Handles — Common Mistakes
+# Common Mistakes: Method Handles
 
-## Mistake 1: Incorrect equals/hashCode
-**Problem**: Custom objects used without properly overriding equals() and hashCode().
-**Effect**: Keys not found, duplicates occur, behavior unpredictable.
-**Fix**: Always override both methods. Use Objects.hash().
+## 1. Dating method handles to Java 9
 
-## Mistake 2: Assuming Insertion Order
-**Problem**: Depending on specific iteration order without checking contract.
-**Effect**: Works in testing, fails in production with different implementation.
-**Fix**: Use LinkedHashMap/LinkedHashSet when order matters.
+Handles and `invokedynamic` are JSR 292, Java 7. JEP 274 (Java 9)
+added combinators and loop support — enhancements, not the origin.
+Dating them to 9 misattributes a decade of dynamic-language work
+(JRuby, Nashorn) that shipped on 7/8.
 
-## Mistake 3: Concurrent Modification
-**Problem**: Modifying non-thread-safe collection while iterating.
-**Effect**: ConcurrentModificationException at runtime.
-**Fix**: Use concurrent collections or synchronize externally.
+## 2. Constructor MethodType with a return type
 
-## Mistake 4: Using Mutable Keys
-**Problem**: Modifying key object after insertion into hash-based collection.
-**Effect**: Object in wrong bucket, cannot be found, memory leaks.
-**Fix**: Use immutable keys (String, Integer, records).
+```java
+lookup.findConstructor(ArrayList.class,
+    MethodType.methodType(ArrayList.class, int.class));  // WRONG
+```
 
-## Mistake 5: Ignoring Initial Capacity
-**Problem**: Default capacity for large expected dataset.
-**Effect**: Multiple resizing operations degrade performance.
-**Fix**: Use constructor with initial capacity: new HashMap<>(expectedSize).
+Constructors carry `(params)V` — always void at lookup (snippet 1;
+this lab's own THEORY once showed otherwise). The *returned handle*
+adapts to `(int)ArrayList`. The lookup descriptor and the handle
+type differ by rule, not by accident.
 
-## Mistake 6: LinkedList Random Access
-**Problem**: Using LinkedList.get(index) in a loop.
-**Effect**: O(n^2) time complexity instead of O(n).
-**Fix**: Use iterator or ArrayList for random access.
+## 3. bindTo with a primitive value
 
-## Mistake 7: Stream Overuse
-**Problem**: Complex stream pipelines on large collections.
-**Effect**: Poor performance, high memory usage.
-**Fix**: Use simple loops for critical paths.
+`bindTo` binds the first argument but requires a *reference*
+receiver/value. Binding `40` to an `(int,int)int` handle via
+`bindTo(40)` fails — use `MethodHandles.insertArguments(add, 0, 40)`
+(it boxes the bound primitive), giving `(int)int` and `add40(2) =
+42`. Reserve `bindTo` for reference receivers (the substring-style
+`(String,...)` first args).
 
-## Mistake 8: Not Trimming After Bulk Load
-**Problem**: Keeping oversized internal array after bulk loading.
-**Effect**: Wasted memory.
-**Fix**: Call trimToSize() after bulk loading.
+## 4. guardWithTest arity confusion
 
-## Mistake 9: Assuming Thread Safety
-**Problem**: Using HashMap in multi-threaded context.
-**Effect**: Data corruption, infinite loops (pre-Java 8), lost updates.
-**Fix**: Use ConcurrentHashMap for concurrent access.
+The test takes a *prefix* of the arguments; target and fallback take
+the *full* list. `guardWithTest(isBig(int), add(int,int),
+mul(int,int))` composes to `(int,int)int`: `big(200)` routes
+`add(200,1)`, `big(1)`-false routes `mul(1,3)`. Giving branches the
+tail (or the test the full list) mismatches the composed type — read
+the printed `guarded type:` line, it states the contract.
 
+## 5. Setting final fields via handles (at runtime)
 
-## Further Exploration
+```java
+lookup.findSetter(Point.class, "y", int.class);  // y is final
+```
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+rejected at *lookup* with `IllegalAccessException`, not at
+invocation (snippet 2). Final-field reads work (`findGetter`);
+writes never reach a call site. Design configuration holder updates
+around this: finals are handle-immutable by construction.
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+## 6. Relinking a ConstantCallSite
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+`constant.setTarget(h2)` is forbidden/ignored — the site folds to
+its target permanently so the JIT treats it as a direct call (what
+lambda sites rely on). Mutability needs `MutableCallSite`
+(`setTarget` relinks all callers, volatile semantics). Choosing
+constant-by-default and mutable-only-for-guards/caches is the
+correct split.
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+## 7. invokeExact inside generic helpers
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Erasure stamps `Object` static types where the handle wants
+primitives; `invokeExact` rejects at link time
+(`WrongMethodTypeException`), never inside. Prefer `invoke` or an
+explicit `asType` view in generic code (snippet 5's
+`(Object,Object)Object` view), keeping `invokeExact` for
+monomorphic hot paths where strictness is the optimization.

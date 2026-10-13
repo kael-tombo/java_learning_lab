@@ -1,169 +1,69 @@
-# Class Loading — Mathematical Foundation
+# Math Foundation: Class Loading
 
-## 1. Asymptotic Complexity Analysis
+Only discrete facts this lab measures. Class loading involves no
+continuous mathematics — the "math" is counting, identity relations,
+and ordering.
 
-### Big-O Notation
-All complexity analysis uses standard asymptotic notation:
+## Identity as an ordered pair
 
-- **O(1)**: Constant time — independent of input size
-- **O(log n)**: Logarithmic — typical for balanced tree operations
-- **O(n)**: Linear — proportional to input size
-- **O(n log n)**: Log-linear — sorting, heap operations
-- **O(n^2)**: Quadratic — nested iterations
+```text
+RuntimeType = (binaryName, definingLoader)
+T1 == T2  iff  name1 == name2 AND loader1 == loader2
+```
 
-### Amortized Analysis
-Amortized analysis considers the average cost of an operation over a sequence:
+`SplitIdentity` exhibits `(Widget, L1) != (Widget, L2)`: same first
+component, different second, cast rejected. Every `ClassCastException`
+message of the form "X cannot be cast to X" asserts the names match
+and the loaders differ.
 
-    T_amortized(n) = (1/n) * sum(t_i for i=1 to n)
+## Delegation depth
 
-Where t_i is the cost of the i-th operation.
+```text
+lookup chain length = 3  (app -> platform -> bootstrap)
+worst-case parent probes per loadClass miss = 2 (platform, bootstrap)
+cache hit cost = O(1) via findLoadedClass
+```
 
-#### Accounting Method
-Each operation pays a small additional cost into a bank account. Expensive operations draw from this account.
+The loaded-class cache makes repeated `loadClass` calls constant
+time; only first loads walk the chain and hit `findClass` I/O.
 
-#### Potential Method
-A potential function Phi(D_i) maps data structure state D_i to a real number. The amortized cost is:
+## Initialization exactly-once
 
-    c_i + Phi(D_i) - Phi(D_{i-1})
+```text
+<clinit> executions per (name, loader) = 1 (success) or 0 + error mark
+concurrent initializers: 1 runs, N-1 block on the init lock
+```
 
-### Case Study: ArrayList Growth
-For ArrayList with 1.5x growth factor:
-- Insertions 1 to n cost: n (insertions) + sum of resize costs
-- Resize costs: 1 + 2 + 3 + ... + n * (2/3)^k which sums to approximately n
-- Amortized cost per insertion: O(1)
+JLS §12.4 guarantees the count regardless of thread count. The
+`InitVsLoad` probe observes the 0-state (after `loadClass`) and the
+1-state (after `forName`) of the same counter.
 
-## 2. Probability Fundamentals
+## Constant vs computed statics (partition)
 
-### Hash Functions and Collisions
-For a hash table with m buckets and n elements:
+```text
+static fields = compile_time_constants + runtime_initialized
+initialization triggered by reading runtime_initialized only
+```
 
-- Probability of no collision when inserting k elements: prod((m-i)/m for i=0 to k-1)
-- Expected number of collisions: n - m + m((m-1)/m)^n
-- Load factor: alpha = n/m
+`ConstNoInit`: reading `PORT` (constant, `ConstantValue`-inlined)
+triggers 0 initializations; reading `computed` triggers 1. The
+partition is decided at compile time by the constant-expression
+rules (JLS §15.29), not at runtime.
 
-### Birthday Paradox
-With 23 people in a room, probability of shared birthday > 50%. For hash tables:
+## Loader-local class count
 
-    P(collision) approx 1 - exp(-n(n-1)/(2m))
+Two loaders each defining `Widget` hold 2 `Class` objects, 2 static
+stores, 2 init locks for 1 binary name. In general N isolating
+loaders × M shared names = N·M runtime types. Container memory and
+metaspace sizing must budget the product, not the name count.
 
-When n > sqrt(2m), collisions are likely.
+## Resolution laziness (ordering, not arithmetic)
 
-## 3. Graph Theory for Tree Structures
+```text
+load(t0) < link(t0) < first_use(ti) resolves reference i
+failure of reference i surfaces at ti, never at t0
+```
 
-### Tree Properties
-- A tree with n nodes has n-1 edges
-- Height of a perfect binary tree: floor(log_2 n)
-- Number of leaves in a perfect binary tree of height h: 2^h
-- Internal nodes in a full binary tree: n - 1
-
-### Red-Black Tree Height
-A red-black tree with n internal nodes has height at most 2*log_2(n+1).
-This guarantee comes from the red-black properties:
-1. Every node is either red or black
-2. The root is black
-3. All leaves (NIL) are black
-4. If a node is red, both its children are black
-5. Every path from a node to its descendant leaves has the same number of black nodes
-
-## 4. Number Theory
-
-### Prime Numbers for Hash Tables
-Using prime-sized hash tables reduces collision probability when hash function distribution is unknown.
-The multiplicative hash: h(k) = floor(m * (k * A mod 1)) where A is the golden ratio (sqrt(5)-1)/2.
-
-### Modulo Arithmetic for Index Calculation
-The index is calculated as: index = hash & (capacity - 1) when capacity is a power of two.
-This is equivalent to hash mod capacity, but much faster as it's a single bitwise operation.
-
-## 5. Probability for Bloom Filters
-
-### False Positive Rate
-For a Bloom filter with m bits, n elements, k hash functions:
-
-    P_FP = (1 - (1 - 1/m)^(kn))^k approx (1 - exp(-kn/m))^k
-
-### Optimal Hash Functions
-    k_optimal = (m/n) * ln(2)
-
-## Summary
-These mathematical foundations underpin the theoretical guarantees and practical performance
-characteristics of the Class Loading. Understanding them enables informed design decisions and
-accurate performance predictions. The key takeaway is that data structure selection should be
-guided by mathematical analysis of the expected workload patterns.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Version-skew errors (`NoSuchMethodError`) are ordered after load by
+construction — which is why a service can start cleanly and fail
+minutes later on first execution of a changed path.

@@ -1,161 +1,50 @@
-# Method Handles — Step-by-Step Implementation
+# Step by Step: Method Handles
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab05/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab05/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Step 1 — Run the lookup trio
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
-
-## Step 3: Create Main Implementation
 ```java
-package com.javalab.lab05;
-
-import java.util.Objects;
-
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
-
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
-
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
+MethodHandles.Lookup lookup = MethodHandles.lookup();
+MethodHandle sqrt = lookup.findStatic(Math.class, "sqrt",
+    MethodType.methodType(double.class, double.class));
+MethodHandle sub = lookup.findVirtual(String.class, "substring",
+    MethodType.methodType(String.class, int.class, int.class));
+MethodHandle ctor = lookup.findConstructor(ArrayList.class,
+    MethodType.methodType(void.class, int.class));  // void ALWAYS
 ```
 
-## Step 4: Implement Core Operations
+Print all three `.type()`s. Expect `(double)double`,
+`(String,int,int)String`, `(int)ArrayList`. State aloud why the
+lookup said void but the handle shows a class.
 
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
+## Step 2 — Touch fields without reflection
 
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
+Write `FieldHandles` (CODE_DEEP_DIVE snippet 2): getter/setter on
+`Point.x`, read/set/reread, then `findGetter` on final `y` (works)
+and `findSetter` on `y` (expect `IllegalAccessException` at lookup).
 
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
+Confirm types `(Point)int` and `(Point,int)void`.
 
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
+## Step 3 — Compose three combinators
 
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
+Write `Combinators` (snippet 3): `insertArguments(add, 0, 40)` →
+`(int)int`, `add40(2) = 42`; `filterArguments(add, 0, dbl)` →
+`addDblFirst(21, 0) = 42`; `guardWithTest(isBig, add, mul)` →
+`(int,int)int`, `(200,1) = 201`, `(1,3) = 3`.
 
-## Step 6: Run and Verify
-```bash
-mvn test
-```
-All tests should pass. Check code coverage.
+For each, write the consumed-args sentence: who takes the prefix,
+who takes the full list.
 
+## Step 4 — Relink one site, freeze another
 
-## Further Exploration
+Write `Retarget` (snippet 4): `MutableCallSite(h1)` → `one`, then
+`setTarget(h2)` → `two` through the same invoker;
+`ConstantCallSite(h1)` → `one`, relink rejected-or-ignored, still
+`one`. Name which kind backs lambdas and why (folds to direct call).
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Step 5 — Feel the strictness boundary
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Write `ExactVsLoose` (snippet 5): `invokeExact("a","b")` → `ab`;
+statically-`Object` receiver rejected (`WrongMethodTypeException`
+at link); `invoke("a","c")` adapts → `ac`; `asType` view type
+`(Object,Object)Object`. Decide for your own hot path: exact or
+adapting, and write the reason in one sentence.

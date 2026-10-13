@@ -1,123 +1,40 @@
-# G1 Garbage Collector — Visual Guide
+# Visual Guide: G1 GC
 
-## ASCII Architecture Diagrams
+## The region map
 
-### Internal Array Structure
-```
-+-------------------------------------------------------+
-|                  Backing Array                          |
-+------+------+------+------+------+------+------+------+
-|  0   |  1   |  2   |  3   |  4   |  5   |  6   |  7   |
-+------+------+------+------+------+------+------+------+
-|  K8  | null |  K3  | null | K1-->| null |  K5  |  K9  |
-|  V8  |      |  V3  |      | V1   |      |  V5  |  V9  |
-+------+------+------+------+--+---+------+------+------+
-                                 |
-                           +-----+-----+
-                           | K1 | V1   |
-                           +-----+-----+
-                           | K7 | V7   |
-                           +-----+-----+
-```
+Draw the heap as a grid of equal squares. Color Eden squares green,
+Survivor yellow, Old blue, Humongous red (spanning two squares for the
+lab's 2 MB arrays on 1M regions). Between pauses the colors shift —
+green squares turn yellow or blue, red squares never change color until
+cleanup. The grid motif (not two fixed boxes) is the whole point.
 
-### Hash Function Flow
-```
-Key "hello" -> hashCode() = 99162322
-             -> XOR high 16: 99162322 ^ (99162322 >>> 16) = 99160825
-             -> Index: 99160825 & (16-1) = 9
-             -> Bucket[9]
-```
+## A young pause, frame by frame
 
-### Collision Chain
-```
-Bucket[4] ---> +---------+    +---------+    +---------+
-               | Key: A  |    | Key: M  |    | Key: Z  |
-               | Val: 1  |--> | Val: 13 |--> | Val: 26 |
-               | hash:65 |    | hash:77 |    | hash:90 |
-               +---------+    +---------+    +---------+
-```
+Frame 1: several green squares full, one yellow half full. Frame 2
+(freeze): arrows from live objects in green to free space in fresh
+yellow/blue squares; dead objects gray out in place. Frame 3: the old
+green squares blank (free), the log prints `used->used(heap) Xms`. All
+application threads stand still between frames 1 and 3 — that stillness
+is the STW pause, measured 2-5 ms here.
 
-### Resize Operation
-```
-Before (capacity=4): size=4, threshold=3 -> RESIZE
-After (capacity=8): keys redistributed by hash & (newCap-1)
-```
+## SATB snapshot sketch
 
-## See DIAGRAMS/ directory for full resolution diagrams.
+Draw the object graph as nodes and arrows. Circle the snapshot moment:
+every arrow overwritten after the circle gets a numbered tag (SATB
+buffer entry) pointing at its old target. Marking follows both the live
+arrows and the tagged old targets. Ghost nodes reachable only through
+tags are the floating garbage — shaded, labeled "next cycle".
 
+## Mixed collections ordering
 
-## Further Exploration
+Bar-chart old regions by garbage percentage. Mixed GCs pick the tallest
+bars first and evacuate them alongside the young set. Each `Pause Young
+(Mixed)` line knocks one or two tall bars down; short bars wait for later
+cycles. Garbage-first is literally tallest-bar-first.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Reading the init log
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+One line rules them all: `Heap Region Size: 1M` (256m) or `4M` (8g),
+plus worker counts (`ParallelGCThreads`, `Concurrent Refinement
+Workers`). Sketch these as the map legend — every later interpretation
+(region counts, humongous cutoffs) reads through this legend.

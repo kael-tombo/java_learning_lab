@@ -1,141 +1,50 @@
-# Class Loading — Why It Matters
+# Why It Matters: Class Loading
 
-## Practical Importance
+## Every deploy incident is a loading incident
 
-### In Everyday Java Development
-Class Loading appears in virtually every Java application:
-- Configuration maps and property bags
-- Caching frequently accessed data
-- Grouping and organizing objects
-- Managing collections of entities
-- Building REST API responses
-- Implementing business rules and workflows
+Duplicated jars (WAR + EAR, shaded + unshaded) produce split
+identities: `X cannot be cast to X` with identical names. Knowing the
+(name, loader) rule turns a mystifying message into a two-command
+diagnosis (`getClassLoader()` on both sides) and a packaging fix.
+Without it, teams "fix" casts with serialization round-trips that
+mask the duplication.
 
-### Performance Impact
-Choosing the right implementation can mean:
-- **10x-100x** difference in throughput for common operations
-- **Memory savings** of 30-50% in data-heavy applications
-- **Latency reduction** from O(n) to O(1) for critical paths
-- **Scalability improvements** in concurrent systems
+## Startup behavior is phase behavior
 
-### Common Use Cases
+Slow cold starts concentrate in first-load I/O, verification, and
+`<clinit>` graphs — not in "the JVM being slow". Reading
+`-Xlog:class+load` output as phase events (which class linked when,
+which init blocked whom) directs real fixes: lazy holders, fewer
+eager `forName` sweeps, constants instead of computed statics.
 
-#### Enterprise Applications
-- Session management in web applications
-- Database result set caching
-- Configuration management and properties
-- Message routing and queuing
-- Entity state tracking in ORM frameworks
+## Framework literacy requires the down-channel
 
-#### Big Data Systems
-- In-memory data grids and caches
-- Stream processing state stores
-- Distributed cache nodes
-- Data partition management
+JDBC driver registration, JNDI lookups, JAXB contexts, logging
+backends — all cross the loader hierarchy through the context
+loader. Code that works in `main` and fails in Tomcat, Quarkus, or a
+pool thread is almost always a context problem. Setting and
+propagating contexts is production hygiene, not trivia.
 
-#### Real-Time Systems
-- Game state management
-- Financial trading systems (order books)
-- Telemetry data aggregation
-- Real-time analytics dashboards
+## Constants discipline prevents stale deploys
 
-## Why Developers Should Care
+The `ConstantValue` inlining rule (lab 01's bytes, this lab's
+initialization bypass) means flag/port/version constants demand
+client rebuilds. Release pipelines that version libraries without
+rebuilding consumers ship split-brain config. The rule belongs in
+build documentation, enforced by CI, not rediscovered per incident.
 
-### Interview Relevance
-This is one of the most common topics in Java interviews:
-- Implementation details and complexity analysis
-- Performance characteristics and trade-offs
-- Concurrent behavior and thread safety
-- Design decisions and alternatives
-- Use case selection criteria
+## Security reviews start at delegation
 
-### Code Quality
-Understanding this topic leads to:
-- Better API design decisions
-- More performant applications
-- Fewer production incidents
-- Cleaner, more maintainable code
+"Can untrusted code shadow core classes?" is answered by delegation
+ordering, verified by the `java.*` test, not by code audit. Custom
+loaders, agents, and plugins are the review surface: any
+`loadClass` override or skipped verification is a firewall change.
+Treat loader code with the scrutiny of authentication code.
 
-### Career Impact
-Mastering these concepts:
-- Differentiates senior engineers from juniors
-- Enables architectural decision-making authority
-- Improves code review effectiveness
-- Builds debugging and profiling skills
+## Modules build on this foundation
 
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+`open`/`opens`, layer-based loading, `InaccessibleObjectException` —
+JPMS enforcement assumes the delegation and identity model underneath.
+Engineers who can already draw the three-rung tree and state the
+identity pair learn modules as deltas; those who cannot memorize
+`--add-opens` incantations per error.

@@ -1,150 +1,51 @@
-# Shenandoah GC — Internal Implementation
+# Internals: Shenandoah GC
 
-## Internal Architecture
+## Forwarder CAS protocol [JEP]
 
-### Storage Layout
-The internal storage follows a specific memory layout designed for efficient access patterns
-and cache utilization. The primary structure uses an array-based backing store with specific
-growth and shrinkage policies.
+Each object's Brooks word points at the current copy (initially itself).
+A mover allocates space in the target region, copies, then CASes the
+forwarder from old to new. Concurrent readers load through the forwarder
+(read barrier), so they see old or new but never a half-copy. A losing
+mover discards its copy and adopts the winner's — exactly one copy wins
+per object per evacuation, decided by a single atomic.
 
-#### Array/Buffer Details
-- **Initial Capacity**: Default of 16 (HashMap) or 10 (ArrayList), configurable via constructor
-- **Growth Policy**: When capacity is exceeded, the internal array grows by a factor of 2x (HashMap) or 1.5x (ArrayList)
-- **Shrink Policy**: trimToSize() reduces capacity to match current size exactly
+## Barrier complement [JEP]
 
-### Sentinel/Nil Nodes
-Many linked structures use sentinel nodes to simplify boundary conditions:
-- **Head Sentinel**: Precedes first real element, simplifies insertion at beginning
-- **Tail Sentinel**: Follows last real element, simplifies appending
-- **Nil Leaf**: Red-black trees use sentinel nil leaf to fix insertion/deletion fixup
+Read barrier on every through-forwarder access (healing reads), SATB
+pre-write barrier on reference stores during marking (snapshot
+consistency), plus the CAS on the forwarder itself during evacuation.
+ZGC's healing flows through loads on colored references; Shenandoah's
+flows through forwarder indirection plus store-side SATB logging. The
+write-heavy versus load-heavy placement is the structural difference the
+THEORY table names.
 
-### State Variables
+## Pause inventory [JEP]
 
-#### Modification Counter (modCount)
-Each mutating operation increments this counter. Iterators check modCount at the start of
-each iteration operation and throw ConcurrentModificationException if it changed since last check.
+`Pause Init Mark`, `Pause Final Mark`, `Pause Init Update Refs`, `Pause
+Final Update Refs`, plus the final-mark outlier as largest routine beat.
+All are root/buffer-sized handshakes; none walk the heap. Concurrent
+phases between them (marking, precleaning, evacuation, update refs,
+cleanups) carry the O(heap) work off the pause path.
 
-#### Structural Fields
-- **size**: Current number of elements stored
-- **capacity**: Current backing array length
-- **threshold**: Capacity * load factor, triggers resize when exceeded
-- **loadFactor**: Configurable density control (default 0.75)
+## Flag surface on this build [measured]
 
-### Internal Algorithms
+`PrintFlagsFinal` shows exactly one `Shenandoah*` row
+(`UseShenandoahGC`) against a full G1 family (>5 rows). The mode, pacing,
+uncommit, and heuristics flags documented in the JEP/CSR trail are absent
+because `#ifdef INCLUDE_SHENANDOAHGC` guards them with the collector.
+Pasting them into an Oracle-build launch script is silently ignored.
 
-#### Hash Function
-The supplemental hash function spreads key hashes to reduce collisions:
-```java
-static final int hash(Object key) {
-    int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
-}
-```
-This XORs the high 16 bits into the low 16 bits to improve bit distribution.
+## Observability names [reported]
 
-#### Index Calculation
-```
-index = (capacity - 1) & hash
-```
-Bitwise AND replaces modulo when capacity is a power of two, which is much faster.
+Micrometer's `JvmGcMetrics` maps MXBean `"Shenandoah Cycles"` (old-gen
+accounting) and `"... Pauses"` notifications — the same Cycles/Pauses
+split ZGC exposes [measured in lab 08]. Log shape follows `gc` tags with
+Shenandoah phase names (`Pause Init Mark`, `Concurrent evacuation`).
+Dashboards keyed on `G1 Eden Space` go blind here exactly as under ZGC.
 
-#### Treeification
-When a bucket chain exceeds TREEIFY_THRESHOLD (8), the linked list is converted to a
-red-black tree. This prevents O(n) worst-case lookup for poorly-distributed hash codes.
-The UNTREEIFY_THRESHOLD (6) is lower to prevent oscillation between list and tree.
+## Generational state [JEP]
 
-### Memory Barriers (Concurrent Variants)
-Concurrent variants use specific memory ordering guarantees:
-- **Volatile reads**: volatile fields establish happens-before relationships
-- **CAS operations**: Atomic compare-and-swap for lock-free updates
-- **VarHandle**: Opaque, acquire, release access modes
-
-### Debugging Internals
-- **-XX:+PrintFieldLayout**: Shows object field layout in memory
-- **JHSDB**: HotSpot debugger for inspecting runtime structures
-- **JOL (Java Object Layout)**: Tool for measuring object memory footprint
-
-### Source Code Navigation
-Key internal methods to study in the JDK source:
-- HashMap: putVal(), getNode(), resize(), treeifyBin()
-- ConcurrentHashMap: putVal(), transfer(), addCount()
-- ArrayList: grow(), add(), remove(), subList()
-- LinkedList: linkFirst(), linkLast(), unlink(), node()
-- TreeMap: put(), getEntry(), fixAfterInsertion(), rotateLeft/Right()
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+JEP 521: single generation stays default; generational mode
+(`-XX:+UseGenerationalShenandoah` on builds shipping it) is opt-in, with
+minor collections for the young gen. JEP 404 integrated it as
+experimental in 24; JEP 521 tracks productization.

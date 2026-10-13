@@ -1,147 +1,45 @@
-# ZGC
+# README — ZGC
 
-## Overview
-ZGC colored pointers, multi-mapping, load barriers, concurrent compaction, generational ZGC, NUMA-aware allocation
+ZGC keeps stop-the-world pauses sub-millisecond by relocating objects
+concurrently: colored pointers plus load barriers let stragglers heal on
+next access instead of rendezvousing. This lab measures generational ZGC
+on JDK 23.
 
-## Learning Objectives
-- Understand the internal mechanics of ZGC
-- Implement working code that demonstrates core concepts
-- Analyze performance characteristics and trade-offs
-- Apply this knowledge in real-world Java applications
+## What you will observe [measured]
 
-## Prerequisites
-- Java 21+
-- Basic understanding of Java collections framework
-- Familiarity with data structures and algorithms
+- Opt-in via `-XX:+UseZGC`; `ZGenerational=true` default;
+  `ZCollectionInterval=0.0` (timer off unless asked).
+- Collectors `ZGC Minor/Major Cycles` plus `ZGC Minor/Major Pauses`;
+  pools `ZGC Young Generation` and `ZGC Old Generation`.
+- Every STW handshake 0.010-0.026 ms in the reference run (asserted as
+  <1 ms for machine margin) — three beats per cycle (mark start, mark
+  end, relocate start), everything else concurrent.
+- Log reasons `(Warmup)` (always the first cycle), `(High Usage)`,
+  `(Allocation Rate)`, `(Timer)` when the interval flag is set.
+- `ZCollectionInterval=0.1` collects an idle JVM every ~120 ms with zero
+  allocation — heap hygiene without pressure.
 
-## Lab Structure
-This micro-lab follows the standard 24-file pedagogical structure with 7 subdirectories for hands-on work.
+## Phase prefixes
 
-## Quick Start
-1. Navigate to the source directory: `src/main/java/com/javalab/08/`
-2. Review the main implementation class
-3. Run tests using: `mvn test` or `gradle test`
-4. Complete the exercises in EXERCISES.md
-5. Build the MINI_PROJECT to cement understanding
+Lowercase `y` = young-only work in a minor; uppercase `Y`/`O` = young and
+old phases interleaved in a major. Roots scan inside the microsecond
+pauses; the heap walks concurrently between them.
 
-## File Index
-| File | Description |
-|------|-------------|
-| README.md | Overview and navigation |
-| THEORY.md | Comprehensive theoretical foundation |
-| MATH_FOUNDATION.md | Mathematical prerequisites |
-| CODE_DEEP_DIVE.md | Detailed code walkthroughs |
-| EXERCISES.md | Practice problems with solutions |
-| QUIZ.md | Self-assessment questions |
-| ARCHITECTURE.md | Design and architectural considerations |
-| SECURITY.md | Security implications |
-| PERFORMANCE.md | Performance characteristics and optimization |
-| REFACTORING.md | Improving existing code |
-| DEBUGGING.md | Debugging strategies and tools |
-| COMMON_MISTAKES.md | Pitfalls and anti-patterns |
-| STEP_BY_STEP.md | Guided tutorial-style implementation |
-| VISUAL_GUIDE.md | Diagrams and visual explanations |
-| INTERNALS.md | Under-the-hood implementation details |
-| HOW_IT_WORKS.md | Step-by-step mechanical explanation |
-| MENTAL_MODELS.md | Analogies and mental frameworks |
-| HISTORY.md | Evolution across Java versions |
-| WHY_IT_MATTERS.md | Practical importance in real-world development |
-| WHY_IT_EXISTS.md | Historical context and motivation |
-| REFERENCES.md | Further reading and resources |
-| REFLECTION.md | Guided self-reflection prompts |
-| INTERVIEW.md | Common interview questions |
-| FLASHCARDS.md | Spaced-repetition learning cards |
+## Logging rule
 
-## Subdirectories
-| Directory | Purpose |
-|-----------|---------|
-| MINI_PROJECT/ | Small hands-on project |
-| REAL_WORLD_PROJECT/ | Production-scale project |
-| CHALLENGE/ | Advanced challenge problems |
-| TESTS/ | Unit and integration tests |
-| BENCHMARK/ | Performance benchmarks |
-| DIAGRAMS/ | Visual aids and architecture diagrams |
-| SOLUTION/ | Solutions to exercises and projects |
+`-Xlog:gc`, `-Xlog:gc+phases` (tags join with `+`, never commas). Cycle
+totals in seconds are concurrent spans, not pauses — pauses are the
+`Pause ... Xms` phase lines. Heaps pinned with `-Xmx` throughout.
 
-## Time Estimate
-- Reading: 30-45 minutes
-- Exercises: 45-60 minutes
-- Mini Project: 60-90 minutes
-- Total: 2-3 hours
+## Exit criteria
 
+You can separate a pause from a cycle total, name the minor/major split,
+explain load-barrier healing in one paragraph, and trigger an idle
+collection on the timer.
 
-## Further Exploration
+## Numbers pocket reference
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Opt-in `-XX:+UseZGC`; `ZGenerational=true`; `ZCollectionInterval=0` off.
+Pauses 0.010-0.026 ms reference (<1 ms bar). Reasons: Warmup (first,
+always), Allocation Rate, High Usage, Timer, explicit causes. Prefixes:
+`y` minor, `Y`/`O` major phases. Heaps pinned throughout.

@@ -1,120 +1,46 @@
-# Class File Format — Quiz
+# Quiz: Class File Format
 
-## Question 1: Fundamentals
-What is the average time complexity of the primary lookup operation in Class File Format?
-- A) O(1)
-- B) O(log n)
-- C) O(n)
-- D) O(n log n)
+## Q1: A hex dump starts `CA FE BA BE 00 00 00 3D`. What are the minor and major versions?
+**A:** Minor 0, major 0x3D = 61 (Java 17). The file was compiled with `--release 17` (or a newer toolchain targeting 17).
 
-## Question 2: Invariants
-What invariant must be maintained after every mutation operation?
+## Q2: `constant_pool_count` reads 47. How many real entries are there, and why?
+**A:** 46. Index 0 is a reserved phantom; entries run `#1..#46`.
 
-## Question 3: Memory
-How much additional memory overhead does Class File Format have per element (approximately)?
+## Q3: `javap -v` shows `#12 = Long` followed by `#14`. Is the file corrupt?
+**A:** No. `Long` (tag 5) occupies two slots, so index 13 is dead by spec (JVMS §4.4.5). `Double` (tag 6) behaves the same.
 
-## Question 4: Concurrency
-Is Class File Format safe for concurrent access without external synchronization? Explain why or why not.
+## Q4: What does a zero `super_class` index mean?
+**A:** The class is `java.lang.Object` itself — the only class with no superclass. Index 0 here means "absent", not "first entry".
 
-## Question 5: Scalability
-How does Class File Format perform as the number of elements grows from 10 to 10 million? What factors degrade performance?
+## Q5: The probe method `(IZ)I` reports `stack=3, locals=4, args_size=3`. Account for all 4 locals.
+**A:** Slot 0 `this` (receiver), slot 1 `x` (int param), slot 2 `neg` (boolean param), slot 3 `y` (method local). `args_size=3` counts receiver + params; the extra slot is the local.
 
-## Question 6: Design
-Why was Class File Format designed this way? What alternatives were considered during its development?
+## Q6: Who computes `max_stack`/`max_locals`, and what happens if they undercount?
+**A:** `javac` computes them; the verifier checks. Undercounting fails linking with `VerifyError` — no code runs.
 
-## Question 7: Edge Cases
-What happens when:
-a) All elements have identical hash codes
-b) The data structure is empty and an element is removed
-c) A null value is stored (if supported)
+## Q7: Method `straight` has no `StackMapTable` but `branchy` does. Explain.
+**A:** Frames are emitted only at control-flow merges (split verification, JSR-202, version 50+). Straight-line code has no merges, so no attribute; branching code does.
 
-## Question 8: Comparison
-Compare Class File Format with the most similar alternative in the Java collections framework.
-List 3 advantages and 3 disadvantages of each.
+## Q8: After changing `Lib.PORT` from 8080 to 9090 and redeploying only `Lib`, the client still prints 8080. Why, and what is the fix?
+**A:** `PORT` is a compile-time constant carried by `ConstantValue` and inlined into the client's bytecode at client-compile time. Fix: recompile the client.
 
-## Question 9: Real-World
-Describe a real-world scenario where Class File Format is the optimal choice.
-Describe a scenario where it would be a poor choice.
+## Q9: Which pool tags and attribute implement lambda/string-concat linkage?
+**A:** `Dynamic=17` / `InvokeDynamic=18` entries pointing at the `BootstrapMethods` attribute, resolved once at first execution.
 
-## Question 10: Internals
-Explain the internal resizing mechanism. What triggers it and how does it work step by step?
+## Q10: What do `NestHost`, `Record`, and `PermittedSubclasses` record, and since when?
+**A:** Nestmates for cross-nested-class private access (Java 11, replacing synthetic accessors); record shape (Java 16); sealed-class allowlist (Java 17). All are declarative attributes enforced by access checks.
 
-## Answer Key
-Answers to all questions can be found in the SOLUTION/ directory and the accompanying theory files.
+## Q11: What does `javac` emit for minor_version, and should a parser branch on it?
+**A:** 0, invariably for `javac` output. No — only exotic producers set it; gate compatibility on major alone.
 
+## Q12: A `String` pool entry points at a `Utf8`. Why the indirection instead of inline bytes?
+**A:** So identical strings deduplicate: one `Utf8` holds the bytes, every `String`, `Class`, name, and descriptor reference cites it. The pool is an addressing scheme, not just storage.
 
-## Further Exploration
+## Q13: Where does `try/catch` live in the class file — as instructions or metadata?
+**A:** Metadata: the `Code` attribute's exception table (start_pc/end_pc/handler_pc/catch_type rows) wraps ranges of straight-line bytecode. No dedicated try instruction exists.
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+## Q14: Full major table spot-check: which majors correspond to releases 9, 12, 16, 19, 22?
+**A:** 53, 56, 60, 63, 66 — each release increments the major by exactly one from 45 (1.1) through 67 (23).
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Q15: `javap -v` on a method shows `LineNumberTable` but no `StackMapTable`, yet the method contains an `if`. What are the two possible causes?
+**A:** Either the class-file version predates 50.0 (pre-Java-6 code verifies by inference, no frames emitted), or the dump was truncated per-method and the attribute scrolled past the grep window. Check the major first (bytes 6–7), then the full method section.

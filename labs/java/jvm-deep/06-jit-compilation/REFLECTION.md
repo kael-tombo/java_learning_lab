@@ -1,123 +1,44 @@
-# JIT Compilation — Reflection
+# Reflection: JIT Compilation
 
-## Guided Reflection Prompts
+## What surprised you?
 
-### Understanding
-1. Before studying this micro-lab, what was your understanding of JIT Compilation?
-2. What was the most surprising aspect of the internal implementation?
-3. How has your mental model of this concept changed after the deep dive?
+Most learners expect compilation to be one event. The log shows two
+promotions (tier 3, then tier 4) separated by thousands of invocations.
+Which of your mental benchmarks assumed a single "compiled" state, and
+how does a two-stage pipeline change their warmup story?
 
-### Application
-4. In your current projects, where would JIT Compilation be the right choice?
-5. Where have you seen JIT Compilation used incorrectly in codebases you've worked with?
-6. Can you think of a system that would fail without the correct choice?
+## Threshold check
 
-### Design Trade-offs
-7. What design trade-offs does JIT Compilation make and why?
-8. If you were redesigning it, what would you do differently?
-9. How do the performance characteristics affect your programming style?
+Without looking: which tier is C1 with profiling, and which number (200
+or 5000) belongs to it? If you answered "tier 3, 200", the pipeline is
+yours. If you hesitated, re-read the THEORY table before moving on —
+every later file assumes that mapping.
 
-### Deeper Questions
-10. How does JIT Compilation interact with the Java Memory Model?
-11. What role does JIT Compilation play in concurrent systems?
-12. How does garbage collection behavior affect the choice?
-13. What are the limits? When should you use a database instead?
+## Your own hot spot
 
-### Teaching Others
-14. How would you explain JIT Compilation to a junior developer?
-15. What analogy works best for conveying its core concepts?
-16. What common mistakes would you warn them about?
+Name one method in a project you maintain that likely crosses tier 4 in
+production (a serializer, a loop kernel, a predicate). What evidence
+would confirm it — which flag, which log line, which column? What would
+you do differently if the line never appears?
 
-### Connection to Broader Topics
-17. How does JIT Compilation relate to operating system data structures?
-18. What database concepts are similar?
-19. How do distributed systems use similar structures?
-20. What other programming languages implement this differently and why?
+## Deoptimization in your words
 
-## Self-Assessment
-- [ ] I can explain the time complexity of all operations
-- [ ] I can implement a simplified version from memory
-- [ ] I can identify when this is the wrong choice
-- [ ] I can debug common issues related to this concept
-- [ ] I can optimize code using this concept
-- [ ] I can teach the concept to others
+Explain the uncommon-trap round trip (compiled -> interpreter ->
+recompile) to a colleague in three sentences, naming the qualitative
+cost (interpreter round trip plus recompile) without inventing timings.
+Where in your system would a burst of traps most plausibly originate?
 
-## Learning Summary
-Write a brief summary (2-3 paragraphs) of what you learned and how you plan to apply it.
+## One experiment you will run
 
+Pick one: cap tiers at 1 and re-measure a service test, halve
+`Tier4InvocationThreshold` and watch promotion order shift, or trace
+deoptimization around a deploy. Write down the predicted log diff before
+running — the habit of predicting the log is the skill this lab teaches.
 
-## Further Exploration
+## Thresholds from memory, then verified
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Cover the table and recite: 200/5000 invocation pair, 60000/40000
+back-edge pair, 2000/15000 compile-threshold scalers, 35/325 inline
+budgets. Then run `PrintFlagsFinal` and check every digit. The point is
+not memorization but learning which numbers live in flags (all of them)
+and which live in folklore (none of them).

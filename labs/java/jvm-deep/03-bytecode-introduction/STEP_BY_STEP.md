@@ -1,161 +1,80 @@
-# Bytecode Introduction — Step-by-Step Implementation
+# Step by Step: Bytecode Introduction
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab03/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab03/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Step 1 — Read stack arithmetic
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
-```
-
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab03;
-
-import java.util.Objects;
-
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
-
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
-
-    public MainImplementation() {
-        this(16, 0.75f);
-    }
-}
-```
-
-## Step 4: Implement Core Operations
-
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
-
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
-
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
-
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
-
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
 ```bash
-mvn test
+mkdir -p /tmp/bc && cd /tmp/bc
+cat > Arith.java <<'EOF'
+public class Arith {
+    int add3(int a, int b, int c) { return a + b + c; }
+}
+EOF
+javac --release 17 Arith.java
+javap -c -p Arith.class
 ```
-All tests should pass. Check code coverage.
 
+Expect `iload_1, iload_2, iadd, iload_3, iadd, ireturn`. Track stack
+depth per line: 0→1→2→1→2→1→0. Note associativity in the order.
 
-## Further Exploration
+## Step 2 — Collect all five invokes
 
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
+```bash
+cat > Calls.java <<'EOF'
+import java.util.List;
+public class Calls {
+    static int stat() { return 1; }
+    private int priv() { return 2; }
+    int virt() { return priv() + stat(); }
+    int iface(List<String> l) { return l.size(); }
+    Runnable lam() { return () -> System.out.println("x"); }
+}
+EOF
+javac --release 17 Calls.java
+javap -c -p Calls.class | grep -o 'invoke[a-z]*' | sort | uniq -c
+```
 
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
+Expect all five modes present. Map each hit to its source line:
+which callee kind selected which instruction?
 
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
+## Step 3 — Read descriptors
 
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
+```bash
+cat > Sigs.java <<'EOF'
+import java.util.List;
+public class Sigs {
+    public static void main(String[] argv) { }
+    int add(int a, int b) { return a + b; }
+    String concat(String a, String b) { return a + b; }
+    List<String> get() { return null; }
+}
+EOF
+javac --release 17 Sigs.java
+javap -s -p Sigs.class
+```
 
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
+Confirm `([Ljava/lang/String;)V`, `(II)I`, the two-`String`
+descriptor, and erased `()Ljava/util/List;`.
 
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
+## Step 4 — Run a handle end to end
 
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
+Write `HandleSqrt` (CODE_DEEP_DIVE snippet 4): `findStatic` for
+`Math.sqrt`, `invokeExact(4.0)` → 2.0, then the wrong-type call.
 
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+## Step 5 — Show lambda linkage
+
+```bash
+cat > Lam.java <<'EOF'
+public class Lam {
+    Runnable r = () -> System.out.println("hello");
+    int n = 0;
+    void bump() { Runnable inc = () -> n++; inc.run(); inc.run(); }
+}
+EOF
+javac --release 17 Lam.java
+javap -v -c -p Lam.class | grep -c invokedynamic
+javap -v -p Lam.class | grep -o 'LambdaMetafactory.metafactory' | head -1
+javap -p Lam.class | grep 'lambda\$'
+```
+
+Expect 2 sites, the metafactory bootstrap, and synthetic bodies.
+State the linkage-vs-allocation distinction aloud before finishing.

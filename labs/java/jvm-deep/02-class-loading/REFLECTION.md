@@ -1,123 +1,45 @@
-# Class Loading — Reflection
+# Reflection: Class Loading
 
-## Guided Reflection Prompts
+## Recalling the probes
 
-### Understanding
-1. Before studying this micro-lab, what was your understanding of Class Loading?
-2. What was the most surprising aspect of the internal implementation?
-3. How has your mental model of this concept changed after the deep dive?
+- Reproduce the `LoaderTree` output from memory: both loader names,
+  both parent comparisons, bootstrap's representation. Which line
+  proves the extension loader is gone?
+- State the `InitVsLoad` output order (marker, `<clinit>`, flag,
+  identity) and explain why no reflective read may sit between
+  `loadClass` and the marker.
+- Sketch `SplitIdentity`'s three printed lines and the loader each
+  `Widget` instance answers to.
 
-### Application
-4. In your current projects, where would Class Loading be the right choice?
-5. Where have you seen Class Loading used incorrectly in codebases you've worked with?
-6. Can you think of a system that would fail without the correct choice?
+## Checking your model
 
-### Design Trade-offs
-7. What design trade-offs does Class Loading make and why?
-8. If you were redesigning it, what would you do differently?
-9. How do the performance characteristics affect your programming style?
+- A log shows `Widget cannot be cast to Widget`. Name the two
+  `getClassLoader()` calls that confirm a loader split, and the
+  deployment change that removes it.
+- A service starts cleanly and throws `NoSuchMethodError` ten
+  minutes later. Which linking sub-step deferred the failure, and
+  which two jars do you `javap`-diff?
+- `getResourceAsStream` returns null for a file you can `ls`. Which
+  loader served the request, which loader should have, and what
+  one-line change fixes it?
 
-### Deeper Questions
-10. How does Class Loading interact with the Java Memory Model?
-11. What role does Class Loading play in concurrent systems?
-12. How does garbage collection behavior affect the choice?
-13. What are the limits? When should you use a database instead?
+## Connecting forward
 
-### Teaching Others
-14. How would you explain Class Loading to a junior developer?
-15. What analogy works best for conveying its core concepts?
-16. What common mistakes would you warn them about?
+- Lab 01's `StackMapTable` is consumed by loading's verify sub-step:
+  what does the verifier check the frames against, and what error
+  follows a mismatch?
+- Lab 03's five invoke modes all resolve symbolic references: which
+  linking sub-step performs that resolution, and when do its
+  failures surface?
+- Lab 05's `findSetter` rejects final fields at lookup: how is that
+  "check once at creation" property the same shape as verification
+  (check once at link) versus per-call checks?
 
-### Connection to Broader Topics
-17. How does Class Loading relate to operating system data structures?
-18. What database concepts are similar?
-19. How do distributed systems use similar structures?
-20. What other programming languages implement this differently and why?
+## What would you teach
 
-## Self-Assessment
-- [ ] I can explain the time complexity of all operations
-- [ ] I can implement a simplified version from memory
-- [ ] I can identify when this is the wrong choice
-- [ ] I can debug common issues related to this concept
-- [ ] I can optimize code using this concept
-- [ ] I can teach the concept to others
-
-## Learning Summary
-Write a brief summary (2-3 paragraphs) of what you learned and how you plan to apply it.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+- Explain parent-first delegation to a teammate using the `java.*`
+  shadowing case in three sentences. Then explain the context loader
+  as the exception to the rule in two more.
+- Write the deploy checklist line for constant changes (which
+  artifacts rebuild) so a release engineer never debugs a stale
+  `PORT` again.

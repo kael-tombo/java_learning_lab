@@ -1,161 +1,80 @@
-# Class File Format — Step-by-Step Implementation
+# Step by Step: Class File Format
 
-## Step 1: Create Project Structure
-```
-my-project/
-+-- src/main/java/com.javalab.lab01/
-|   +-- MainImplementation.java
-+-- src/test/java/com.javalab.lab01/
-|   +-- MainImplementationTest.java
-+-- pom.xml (or build.gradle)
-```
+## Step 1 — Compile a pinned probe
 
-## Step 2: Add Dependencies
-```xml
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.10.0</version>
-    <scope>test</scope>
-</dependency>
+```bash
+mkdir -p /tmp/cff && cd /tmp/cff
+cat > V.java <<'EOF'
+public class V{}
+EOF
+javac --release 17 V.java
 ```
 
-## Step 3: Create Main Implementation
-```java
-package com.javalab.lab01;
+The `--release 17` flag pins major 61. No build tool, no IDE — one
+file, one flag, reproducible bytes.
 
-import java.util.Objects;
+## Step 2 — Dump the first 10 bytes
 
-public class MainImplementation<K, V> {
-    private Node<K, V>[] table;
-    private int size;
-    private final float loadFactor;
-    private int threshold;
+```bash
+xxd -l 10 V.class
+# expect: cafe babe 0000 003d ...  (003d = 61)
+```
 
-    static class Node<K, V> {
-        final K key;
-        V value;
-        Node<K, V> next;
-        Node(K key, V value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+Read bytes 0–3 (magic), 4–5 (minor 0), 6–7 (major), 8–9 (pool count).
 
-    @SuppressWarnings("unchecked")
-    public MainImplementation(int initialCapacity, float loadFactor) {
-        this.loadFactor = loadFactor;
-        this.table = (Node<K, V>[]) new Node[initialCapacity];
-        this.threshold = (int) (initialCapacity * loadFactor);
-    }
+## Step 3 — Walk the pool and find a gap
 
-    public MainImplementation() {
-        this(16, 0.75f);
+```bash
+cat > Probe2.java <<'EOF'
+public class Probe2 {
+    static final long BIG = 0x1122334455667788L;
+    static final int SMALL = 42;
+    static final double PI2 = 3.14159265358979;
+    static final String S = "hi";
+}
+EOF
+javac --release 17 Probe2.java
+javap -v -p Probe2.class | grep -E '^ +#[0-9]+ = (Long|Double|Integer|String)'
+```
+
+Locate the `Long` and `Double` lines; confirm the next printed index
+skips one (`#12 → #14` pattern). Note which tags (5/6) caused it.
+
+## Step 4 — Decompose a Code header
+
+```bash
+cat > Probe3.java <<'EOF'
+public class Probe3 {
+    int counter;
+    int absOrNeg(int x, boolean neg) {
+        int y;
+        if (neg) { y = -x; } else { y = x < 0 ? -x : x; }
+        counter += y;
+        return y;
     }
 }
+EOF
+javac --release 17 Probe3.java
+javap -v -c -p Probe3.class | grep -A2 'int absOrNeg'
 ```
 
-## Step 4: Implement Core Operations
+Expect `stack=3, locals=4, args_size=3`. Map slots: 0 this, 1 x,
+2 neg, 3 y.
 
-### Put Operation
-Hash the key, find the bucket, traverse the chain, insert or update.
+## Step 5 — Correlate StackMapTable with merges
 
-### Get Operation
-Hash the key, find the bucket, traverse the chain, return value or null.
-
-### Remove Operation
-Hash the key, find the bucket, traverse the chain with prev pointer, unlink node.
-
-### Resize
-Double capacity, allocate new array, rehash all entries, update threshold.
-
-## Step 5: Write Tests
-Create JUnit 5 test class with @BeforeEach setup and test methods for:
-- Basic put/get operations
-- Update existing key
-- Remove entries
-- Size tracking
-- Edge cases (nulls, empty, many entries)
-
-## Step 6: Run and Verify
 ```bash
-mvn test
+cat > Probe4.java <<'EOF'
+public class Probe4 {
+    int straight(int x) { return x * 2 + 1; }
+    int branchy(int x) { return x < 0 ? -x : x; }
+}
+EOF
+javac --release 17 Probe4.java
+javap -v -p Probe4.class | grep -B30 StackMapTable | grep -E 'int (straight|branchy)|StackMapTable'
 ```
-All tests should pass. Check code coverage.
 
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+Confirm the attribute sits under `branchy` only. Header, pool, Code,
+and frames now all verified from primary evidence — state the four
+lab invariants aloud: magic fixed, index 0 phantom, wide entries
+double, frames only at merges.

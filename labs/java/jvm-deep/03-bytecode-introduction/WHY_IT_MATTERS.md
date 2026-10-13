@@ -1,141 +1,50 @@
-# Bytecode Introduction — Why It Matters
+# Why It Matters: Bytecode Introduction
 
-## Practical Importance
+## Reading dumps is a daily skill
 
-### In Everyday Java Development
-Bytecode Introduction appears in virtually every Java application:
-- Configuration maps and property bags
-- Caching frequently accessed data
-- Grouping and organizing objects
-- Managing collections of entities
-- Building REST API responses
-- Implementing business rules and workflows
+`NoSuchMethodError` messages quote descriptors; stack traces quote
+line tables; profilers quote `lambda$` frames. Engineers who read
+`javap -c -s` output resolve linkage failures in minutes (diff the
+descriptor against both jars) instead of hours (rebuilding blindly).
+This lab's five probes are the five dumps you will actually open.
 
-### Performance Impact
-Choosing the right implementation can mean:
-- **10x-100x** difference in throughput for common operations
-- **Memory savings** of 30-50% in data-heavy applications
-- **Latency reduction** from O(n) to O(1) for critical paths
-- **Scalability improvements** in concurrent systems
+## Dispatch choice has performance shape
 
-### Common Use Cases
+Interface megamorphism, accidental virtual calls on effectively
+final methods, capturing lambdas in hot loops — each is a bytecode
+pattern with a cost, and each fix (narrow the receiver type, seal
+the hierarchy, hoist the capture) is verifiable in the dump before
+and after. Profilers report symptoms; `invokeinterface` counts name
+causes.
 
-#### Enterprise Applications
-- Session management in web applications
-- Database result set caching
-- Configuration management and properties
-- Message routing and queuing
-- Entity state tracking in ORM frameworks
+## Lambda literacy prevents cargo-cult tuning
 
-#### Big Data Systems
-- In-memory data grids and caches
-- Stream processing state stores
-- Distributed cache nodes
-- Data partition management
+Knowing linkage happens once per site stops pointless hoisting of
+non-capturing lambdas, while knowing capture allocates per
+evaluation directs hoisting where it pays. Teams that hold both
+facts tune loops correctly; teams with one half either allocate in
+hot paths or contort cold paths for nothing.
 
-#### Real-Time Systems
-- Game state management
-- Financial trading systems (order books)
-- Telemetry data aggregation
-- Real-time analytics dashboards
+## Verification knowledge debugs generation
 
-## Why Developers Should Care
+Anyone emitting bytecode (lab 04), shading, obfuscating, or
+post-processing classes meets `VerifyError` eventually. The four
+passes plus the frames-at-merges rule turn the error positional:
+which pass, which merge, which stack depth. Without the model, every
+frame error is a wall; with it, each is an address.
 
-### Interview Relevance
-This is one of the most common topics in Java interviews:
-- Implementation details and complexity analysis
-- Performance characteristics and trade-offs
-- Concurrent behavior and thread safety
-- Design decisions and alternatives
-- Use case selection criteria
+## Handles are a production tool, not trivia
 
-### Code Quality
-Understanding this topic leads to:
-- Better API design decisions
-- More performant applications
-- Fewer production incidents
-- Cleaner, more maintainable code
+Frameworks (Jackson, Spring, Mockito), dynamic languages (JRuby,
+Clojure), and even `String` concatenation stand on method handles
+and `invokedynamic`. Understanding `invokeExact` strictness,
+`WrongMethodTypeException`, and bootstrap-once semantics is
+prerequisite to reading those frameworks' internals — and to lab
+05, which composes handles directly.
 
-### Career Impact
-Mastering these concepts:
-- Differentiates senior engineers from juniors
-- Enables architectural decision-making authority
-- Improves code review effectiveness
-- Builds debugging and profiling skills
+## The tag-11 erratum is a working habit
 
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+This lab once documented the wrong tag and now records the
+correction. Checking pool facts against JVMS §4.4 instead of memory
+(or prior notes) is the transferable discipline: binary formats
+punish confident recall, and the spec page is always one lookup away.
