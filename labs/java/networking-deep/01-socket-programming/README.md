@@ -1,52 +1,26 @@
 ﻿# Socket Programming
-## Overview
-ServerSocket/Socket, TCP client-server, thread-per-connection, connection pool, NIO SocketChannel
-## Learning Objectives
-- Understand the internal mechanics of Socket Programming
-- Implement working code that demonstrates core concepts
-- Analyze performance characteristics and trade-offs
-- Apply this knowledge in real-world Java applications
+
+Blocking TCP sockets (`ServerSocket`/`Socket`): the kernel completes the
+handshake before `accept()` returns, one thread (or pool slot) owns each
+connection, and every protocol needs explicit framing on the byte stream.
+
+## What this lab covers
+
+- **Threading models**: thread-per-connection → bounded pool → NIO
+  multiplexing (when each wins; backlog and timeout behavior)
+- **Socket options that matter**: `SoTimeout` (no infinite reads),
+  `TcpNoDelay` (latency vs batching), half-close for graceful termination
+- **Framing**: length prefixes/delimiters over a stream that fragments and
+  coalesces arbitrarily — where most socket bugs live
+- **Lifecycle**: close order, owner-thread discipline, pool shutdown
+
+## Lab contents
+
+THEORY.md builds the model (handshake → threading → framing → options);
+CODE_DEEP_DIVE.md walks echo/pool/NIO servers; EXERCISES.md drills framing
+and shutdown; QUIZ.md and FLASHCARDS.md lock in the invariants
+(accept-returns-connected, one owner thread, timeouts, framing).
+
 ## Prerequisites
-- Java 21+
-- Basic understanding of Java I/O and networking
-- Familiarity with TCP/IP protocol stack
-## Lab Structure
-This micro-lab follows the standard 24-file pedagogical structure with 7 subdirectories.
-## Quick Start
-1. Navigate to the source directory: src/main/java/com/javalab/01/
-2. Review the main implementation class
-3. Run tests using: mvn test or gradle test
-4. Complete the exercises in EXERCISES.md
-5. Build the MINI_PROJECT to cement understanding
-## File Index
-| File | Description |
-|------|-------------|
-| README.md | Overview and navigation |
-| THEORY.md | Comprehensive theoretical foundation |
-| MATH_FOUNDATION.md | Mathematical prerequisites |
-| CODE_DEEP_DIVE.md | Detailed code walkthroughs |
-| EXERCISES.md | Practice problems with solutions |
-| QUIZ.md | Self-assessment questions |
-| ARCHITECTURE.md | Design and architectural considerations |
-| SECURITY.md | Security implications |
-| PERFORMANCE.md | Performance characteristics and optimization |
-| REFACTORING.md | Improving existing code |
-| DEBUGGING.md | Debugging strategies and tools |
-| COMMON_MISTAKES.md | Pitfalls and anti-patterns |
-| STEP_BY_STEP.md | Guided tutorial-style implementation |
-| VISUAL_GUIDE.md | Diagrams and visual explanations |
-| INTERNALS.md | Under-the-hood implementation details |
-| HOW_IT_WORKS.md | Step-by-step mechanical explanation |
-| MENTAL_MODELS.md | Analogies and mental frameworks |
-| HISTORY.md | Evolution across Java versions |
-| WHY_IT_MATTERS.md | Practical importance in real-world development |
-| WHY_IT_EXISTS.md | Historical context and motivation |
-| REFERENCES.md | Further reading and resources |
-| REFLECTION.md | Guided self-reflection prompts |
-| INTERVIEW.md | Common interview questions |
-| FLASHCARDS.md | Spaced-repetition learning cards |
-## Time Estimate
-- Reading: 30-45 minutes
-- Exercises: 45-60 minutes
-- Mini Project: 60-90 minutes
-- Total: 2-3 hours
+
+Java 17+, `java.net` basics, TCP fundamentals (ports, handshake, streams).

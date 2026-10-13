@@ -1287,10 +1287,6 @@ labs/architecture/09-six-port-architecture/MOCK_INTERVIEW.md,38,19,50,0
 labs/architecture/13-sidecar-ambassador/MOCK_INTERVIEW.md,38,19,50,0
 labs/architecture/14-circuit-breaker-pattern/MOCK_INTERVIEW.md,38,19,50,0
 labs/architecture/15-saga-orchestration/MOCK_INTERVIEW.md,38,19,50,0
-labs/java/networking-deep/01-socket-programming/README.md,14,7,50,0
-labs/java/networking-deep/02-nio-selectors/README.md,14,7,50,0
-labs/java/networking-deep/04-netty-framework/README.md,14,7,50,0
-labs/java/networking-deep/05-grpc-networking/README.md,14,7,50,0
 labs/ai/classical-ml-deep/01-linear-regression/CODE_DEEP_DIVE.md,92,45,49,0
 labs/ai/classical-ml-deep/02-logistic-regression/CODE_DEEP_DIVE.md,92,45,49,0
 labs/ai/classical-ml-deep/03-svm-theory/CODE_DEEP_DIVE.md,92,45,49,0
@@ -1351,7 +1347,6 @@ labs/architecture/12-bff-pattern/MOCK_INTERVIEW.md,40,19,48,0
 labs/architecture/16-api-composition/MOCK_INTERVIEW.md,40,19,48,0
 labs/architecture/18-event-driven-architecture/MOCK_INTERVIEW.md,40,19,48,0
 labs/architecture/19-service-mesh-architecture/MOCK_INTERVIEW.md,40,19,48,0
-labs/java/networking-deep/03-http-clients/README.md,15,7,47,0
 labs/architecture/07-clean-architecture/MOCK_INTERVIEW.md,41,19,46,0
 labs/architecture/20-platform-engineering/MOCK_INTERVIEW.md,41,19,46,0
 labs/architecture/02-event-driven-architecture/MOCK_INTERVIEW.md,42,19,45,0

@@ -1,56 +1,54 @@
-﻿# HTTP Clients (Java 11+) -- Theoretical Foundation
-## Core Concepts
-### 1. Fundamental Principle
-HTTP Clients (Java 11+) is a core networking concept in Java that enables communication between distributed systems.
+﻿# HTTP Clients (Java 11+) — Theoretical Foundation
 
-### 2. Theoretical Foundation
-Network programming in Java is built on the OSI and TCP/IP protocol stack models.
+## Core Concept
 
-#### Key Theoretical Properties
-- Connection-Oriented vs Connectionless: TCP reliable ordered delivery, UDP best-effort
-- Blocking vs Non-Blocking: Blocking waits for operations, non-blocking returns immediately
-- Synchronous vs Asynchronous: Sync blocks caller, async uses callbacks
-- Protocol Layering: Each layer provides abstractions hiding lower-level details
+`java.net.http.HttpClient` (standard since 11) is the JDK's built-in HTTP/1.1
++ HTTP/2 client: immutable client (executor, proxy, auth, redirects,
+timeouts configured once via builder), immutable `HttpRequest`s, and
+pluggable `BodyHandler`s. One client instance serves the whole application
+(it pools connections internally); requests are cheap value objects.
 
-### 3. Algorithmic Details
+## Sync, Async, and Body Shapes
 
-#### TCP Three-Way Handshake
-1. Client sends SYN packet with initial sequence number
-2. Server responds with SYN-ACK acknowledging client sequence and sending its own
-3. Client sends ACK acknowledging server sequence
+```java
+HttpClient client = HttpClient.newBuilder()
+    .connectTimeout(Duration.ofSeconds(5))
+    .followRedirects(HttpClient.Redirect.NORMAL)
+    .build();
+HttpRequest req = HttpRequest.newBuilder(URI.create("https://example.com"))
+    .timeout(Duration.ofSeconds(10))
+    .GET().build();
 
-#### Non-Blocking I/O Loop
-1. Selector.select() blocks until events are available
-2. Process selected keys (OP_ACCEPT, OP_READ, OP_WRITE)
-3. Handle each event (accept, read, write)
-4. Repeat from step 1
+// blocking
+HttpResponse<String> r = client.send(req, HttpResponse.BodyHandlers.ofString());
+// non-blocking
+CompletableFuture<HttpResponse<String>> f =
+    client.sendAsync(req, HttpResponse.BodyHandlers.ofString());
+```
 
-### 4. Trade-offs
+Two timeouts, two jobs: `connectTimeout` (TCP+TLS establishment, on the
+client) vs per-request `timeout` (whole exchange). Body handlers
+(`ofString`, `ofByteArray`, `ofFile`, `ofInputStream`, `discarding`)
+decide where response bytes land — `ofString` on a gigabyte download is
+the classic OOM, `ofFile`/`ofInputStream` the fix.
 
-#### Thread-Per-Connection vs Event Loop
-- Thread-Per-Connection: Simple programming, high memory, context switching overhead
-- Event Loop: Scalable, low memory, complex programming, callback management
-- Hybrid: Event loop for I/O, thread pool for computation
+## HTTP/2 Behavior Worth Knowing
 
-### 5. Mathematical Basis
+- Version is negotiated (ALPN over TLS; cleartext `h2c` needs explicit
+  `.version(HTTP_2)` plus server support) — inspect
+  `response.version()` rather than assuming.
+- Multiplexing is per-client-connection: concurrent `sendAsync` calls share
+  connections instead of opening one TCP stream each (the performance story
+  vs `HttpURLConnection`).
+- `HttpClient` is threadsafe and connection-pooling; creating one per
+  request leaks pools and defeats multiplexing.
 
-#### Network Latency Components
-Total latency = propagation + transmission + processing + queuing delay
-- Propagation: distance divided by speed of light in medium
-- Transmission: packet size divided by bandwidth
-- Processing: packet processing time at nodes
-- Queuing: wait time in router/switch buffers
+## Key Invariants
 
-## Summary
-HTTP Clients (Java 11+) represents fundamental concepts in network programming. Mastery requires understanding both theoretical guarantees and implementation details.
-
-## Key Theorems
-
-### Theorem 1: Reliable Delivery
-TCP guarantees in-order delivery of bytes using sequence numbers, acknowledgments, and retransmission.
-
-### Theorem 2: Flow Control
-TCP uses sliding window flow control where the receiver advertises available buffer space.
-
-### Theorem 3: Congestion Control
-TCP adapts sending rate based on network conditions using AIMD (Additive Increase Multiplicative Decrease).
+1. One shared `HttpClient`; many cheap requests.
+2. Always set both timeouts (connect + request).
+3. Match the body handler to the payload size.
+4. `send` blocks the caller; `sendAsync` returns a `CompletableFuture`
+   with identical completion semantics (status + body or exception).
+5. Check `response.statusCode()` before parsing bodies — 4xx/5xx still
+   complete normally.

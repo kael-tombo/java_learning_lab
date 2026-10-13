@@ -1,56 +1,50 @@
-﻿# gRPC Networking -- Theoretical Foundation
-## Core Concepts
-### 1. Fundamental Principle
-gRPC Networking is a core networking concept in Java that enables communication between distributed systems.
+﻿# gRPC Networking — Theoretical Foundation
 
-### 2. Theoretical Foundation
-Network programming in Java is built on the OSI and TCP/IP protocol stack models.
+## Core Concept (transport + IDL, version-agnostic)
 
-#### Key Theoretical Properties
-- Connection-Oriented vs Connectionless: TCP reliable ordered delivery, UDP best-effort
-- Blocking vs Non-Blocking: Blocking waits for operations, non-blocking returns immediately
-- Synchronous vs Asynchronous: Sync blocks caller, async uses callbacks
-- Protocol Layering: Each layer provides abstractions hiding lower-level details
+gRPC = HTTP/2 transport + Protocol Buffers IDL + generated stubs. The
+`.proto` file declares services and messages once; codegen produces a
+server base class and client stubs in every language. Wire format is binary
+(protobuf), multiplexed over long-lived HTTP/2 connections — one channel
+carries concurrent calls without head-of-line blocking.
 
-### 3. Algorithmic Details
+## The Four Call Shapes (from the IDL, not the library)
 
-#### TCP Three-Way Handshake
-1. Client sends SYN packet with initial sequence number
-2. Server responds with SYN-ACK acknowledging client sequence and sending its own
-3. Client sends ACK acknowledging server sequence
+```proto
+service Directory {
+    rpc Lookup (Name) returns (Entry);            // unary
+    rpc Watch (Name) returns (stream Entry);      // server streaming
+    rpc Upload (stream Chunk) returns (Summary);  // client streaming
+    rpc Chat (stream Msg) returns (stream Msg);   // bidirectional
+}
+```
 
-#### Non-Blocking I/O Loop
-1. Selector.select() blocks until events are available
-2. Process selected keys (OP_ACCEPT, OP_READ, OP_WRITE)
-3. Handle each event (accept, read, write)
-4. Repeat from step 1
+Unary is RPC-shaped; the streaming shapes are flow-controlled message
+pipes with application-level framing already handled (no TCP-framing work —
+protobuf length-prefixing is inside the transport).
 
-### 4. Trade-offs
+## Stubs, Channels, and Lifecycle
 
-#### Thread-Per-Connection vs Event Loop
-- Thread-Per-Connection: Simple programming, high memory, context switching overhead
-- Event Loop: Scalable, low memory, complex programming, callback management
-- Hybrid: Event loop for I/O, thread pool for computation
+- **Channel** (`ManagedChannelBuilder`): the long-lived connection pool —
+  one per server, shared process-wide, `shutdown()` + `awaitTermination`
+  on exit (leaked channels hold threads).
+- **Stubs**: blocking (waits, simplest), future (`ListenableFuture`),
+  async (observer callbacks). Same IDL, three ergonomics; backpressure
+  semantics differ (blocking waits, async observes `onReady`).
+- **Deadlines** propagate per call (`withDeadlineAfter`) — across process
+  boundaries, unlike socket timeouts. No deadline = a wedged downstream
+  wedges you.
+- **Interceptors** (client + server) carry auth tokens, tracing, retries;
+  retry policy needs idempotency analysis (non-idempotent RPCs must not
+  retry blindly).
 
-### 5. Mathematical Basis
+## Key Invariants
 
-#### Network Latency Components
-Total latency = propagation + transmission + processing + queuing delay
-- Propagation: distance divided by speed of light in medium
-- Transmission: packet size divided by bandwidth
-- Processing: packet processing time at nodes
-- Queuing: wait time in router/switch buffers
-
-## Summary
-gRPC Networking represents fundamental concepts in network programming. Mastery requires understanding both theoretical guarantees and implementation details.
-
-## Key Theorems
-
-### Theorem 1: Reliable Delivery
-TCP guarantees in-order delivery of bytes using sequence numbers, acknowledgments, and retransmission.
-
-### Theorem 2: Flow Control
-TCP uses sliding window flow control where the receiver advertises available buffer space.
-
-### Theorem 3: Congestion Control
-TCP adapts sending rate based on network conditions using AIMD (Additive Increase Multiplicative Decrease).
+1. IDL first: wire compatibility is a `.proto` evolution discipline
+   (never reuse field numbers; additive changes only).
+2. One shared channel per server; stubs are cheap and threadsafe.
+3. Every call needs a deadline — timeouts don't cross processes by default.
+4. Streaming calls need explicit completion (`onCompleted`) and cancellation
+   (`cancel`) paths, or they leak call state.
+5. Status codes (not exceptions) cross the wire — map `StatusRuntimeException`
+   codes to domain outcomes at the boundary.

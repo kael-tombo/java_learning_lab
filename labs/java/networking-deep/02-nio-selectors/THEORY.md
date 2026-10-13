@@ -1,56 +1,53 @@
-﻿# NIO Selectors -- Theoretical Foundation
-## Core Concepts
-### 1. Fundamental Principle
-NIO Selectors is a core networking concept in Java that enables communication between distributed systems.
+﻿# NIO Selectors — Theoretical Foundation
 
-### 2. Theoretical Foundation
-Network programming in Java is built on the OSI and TCP/IP protocol stack models.
+## Core Concept
 
-#### Key Theoretical Properties
-- Connection-Oriented vs Connectionless: TCP reliable ordered delivery, UDP best-effort
-- Blocking vs Non-Blocking: Blocking waits for operations, non-blocking returns immediately
-- Synchronous vs Asynchronous: Sync blocks caller, async uses callbacks
-- Protocol Layering: Each layer provides abstractions hiding lower-level details
+`java.nio.channels.Selector` multiplexes thousands of channels onto one
+thread: register each `SocketChannel` (configured non-blocking) with interest
+ops (`OP_ACCEPT`, `OP_CONNECT`, `OP_READ`, `OP_WRITE`), then `select()` blocks
+until ≥1 channel is ready and returns the ready `SelectionKey` set. The
+thread dispatches each key and loops — no thread per connection, no
+per-client stacks.
 
-### 3. Algorithmic Details
+## The Select Loop (the only shape that matters)
 
-#### TCP Three-Way Handshake
-1. Client sends SYN packet with initial sequence number
-2. Server responds with SYN-ACK acknowledging client sequence and sending its own
-3. Client sends ACK acknowledging server sequence
+```java
+selector.select();                       // block until readiness
+for (SelectionKey k : selector.selectedKeys()) {
+    if (k.isAcceptable()) { /* accept, configure non-blocking, register OP_READ */ }
+    if (k.isReadable())   { /* read into ByteBuffer; -1 means closed */ }
+    if (k.isWritable())   { /* flush pending writes; clear OP_WRITE when drained */ }
+    selector.selectedKeys().remove(k);   // MUST remove — the set never clears itself
+}
+```
 
-#### Non-Blocking I/O Loop
-1. Selector.select() blocks until events are available
-2. Process selected keys (OP_ACCEPT, OP_READ, OP_WRITE)
-3. Handle each event (accept, read, write)
-4. Repeat from step 1
+Three rules beginners violate: (1) forgetting `configureBlocking(false)`
+before registering (throws `IllegalBlockingModeException`); (2) never
+removing processed keys (busy-loop on the same set); (3) registering
+`OP_WRITE` permanently (selector spins writable-always — register it only
+while output is pending).
 
-### 4. Trade-offs
+## Buffers, Partial I/O, and State Machines
 
-#### Thread-Per-Connection vs Event Loop
-- Thread-Per-Connection: Simple programming, high memory, context switching overhead
-- Event Loop: Scalable, low memory, complex programming, callback management
-- Hybrid: Event loop for I/O, thread pool for computation
+Non-blocking reads/writes are *partial by contract*: one `read()` may fill
+half the `ByteBuffer`, one `write()` may flush half the queue. Every
+connection therefore needs explicit state — a per-channel attachment
+(`key.attach(session)`) holding the read accumulator and write backlog —
+i.e., a small state machine per connection. Selectors trade threads for
+state machines; the complexity moves, it doesn't vanish.
 
-### 5. Mathematical Basis
+## Wakeup and Shutdown
 
-#### Network Latency Components
-Total latency = propagation + transmission + processing + queuing delay
-- Propagation: distance divided by speed of light in medium
-- Transmission: packet size divided by bandwidth
-- Processing: packet processing time at nodes
-- Queuing: wait time in router/switch buffers
+`selector.wakeup()` unblocks a selecting thread (the cross-thread signal
+for registration changes and shutdown); `Selector.close()` releases the
+underlying poll/epoll/kqueue handle. A selector thread that never wakes
+can't observe new registrations — all cross-thread channel setup must pair
+with `wakeup()`.
 
-## Summary
-NIO Selectors represents fundamental concepts in network programming. Mastery requires understanding both theoretical guarantees and implementation details.
+## Key Invariants
 
-## Key Theorems
-
-### Theorem 1: Reliable Delivery
-TCP guarantees in-order delivery of bytes using sequence numbers, acknowledgments, and retransmission.
-
-### Theorem 2: Flow Control
-TCP uses sliding window flow control where the receiver advertises available buffer space.
-
-### Theorem 3: Congestion Control
-TCP adapts sending rate based on network conditions using AIMD (Additive Increase Multiplicative Decrease).
+1. Channels must be non-blocking before registration.
+2. Processed keys must be removed from the selected set.
+3. `OP_WRITE` is registered only while writes are pending.
+4. Partial reads/writes are normal — frame and buffer explicitly.
+5. Cross-thread changes pair with `wakeup()`.

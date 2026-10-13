@@ -1,56 +1,50 @@
-﻿# Netty Framework -- Theoretical Foundation
-## Core Concepts
-### 1. Fundamental Principle
-Netty Framework is a core networking concept in Java that enables communication between distributed systems.
+﻿# Netty Framework — Theoretical Foundation
 
-### 2. Theoretical Foundation
-Network programming in Java is built on the OSI and TCP/IP protocol stack models.
+## Core Concept (version-agnostic; 4.x architecture)
 
-#### Key Theoretical Properties
-- Connection-Oriented vs Connectionless: TCP reliable ordered delivery, UDP best-effort
-- Blocking vs Non-Blocking: Blocking waits for operations, non-blocking returns immediately
-- Synchronous vs Asynchronous: Sync blocks caller, async uses callbacks
-- Protocol Layering: Each layer provides abstractions hiding lower-level details
+Netty inverts the socket thread model: a handful of **EventLoop** threads
+(each a selector loop, lab 02's shape industrialized) drive **Channels**
+through a **ChannelPipeline** of **ChannelHandlers**. Inbound bytes flow
+head→tail through decoders to business logic; outbound writes flow
+tail→head through encoders to the socket. You write handlers; Netty owns
+threads, selection, batching, and backpressure signaling.
 
-### 3. Algorithmic Details
+## The Fixed Parts: Bootstrap, Groups, Pipeline
 
-#### TCP Three-Way Handshake
-1. Client sends SYN packet with initial sequence number
-2. Server responds with SYN-ACK acknowledging client sequence and sending its own
-3. Client sends ACK acknowledging server sequence
+- **Bootstrap/ServerBootstrap**: bind/connect entry points; `bossGroup`
+  (accepts connections, typically 1 thread) vs `workerGroup` (serves
+  traffic, typically 2×CPU threads).
+- **ChannelInitializer**: installs the per-connection pipeline exactly
+  once at connect time (all state setup lives here, not in handlers'
+  constructors).
+- **ByteBuf**: Netty's buffer — reader/writer indices (no flip()),
+  pooled direct memory by default, and **reference counting**: every
+  handler that consumes a buffer must `release()` it (or pass it on —
+  ownership transfers exactly once). Leaked buffers are the #1 Netty bug;
+  `ResourceLeakDetector` exists for it.
+- **Future/ChannelFuture listeners** replace blocking waits: I/O
+  completion runs as pipeline callbacks, never as `get()` on the event
+  loop (blocking an EventLoop stalls *all* its channels).
 
-#### Non-Blocking I/O Loop
-1. Selector.select() blocks until events are available
-2. Process selected keys (OP_ACCEPT, OP_READ, OP_WRITE)
-3. Handle each event (accept, read, write)
-4. Repeat from step 1
+## Handler Discipline
 
-### 4. Trade-offs
+- `@Sharable` only for stateless handlers; per-connection state lives in
+  the handler instance created per channel (or in channel attributes).
+- Inbound (`channelRead`) vs outbound (`write`) halves are separate
+  interfaces — implement only the direction you touch.
+- Exceptions flow to `exceptionCaught` down the pipeline; an unhandled one
+  closes the channel by default — log-or-close explicitly.
+- Never block inside a handler: offload to a business `EventExecutorGroup`
+  (handler ordering per channel is preserved; blocking the loop is not
+  an option).
 
-#### Thread-Per-Connection vs Event Loop
-- Thread-Per-Connection: Simple programming, high memory, context switching overhead
-- Event Loop: Scalable, low memory, complex programming, callback management
-- Hybrid: Event loop for I/O, thread pool for computation
+## Key Invariants
 
-### 5. Mathematical Basis
-
-#### Network Latency Components
-Total latency = propagation + transmission + processing + queuing delay
-- Propagation: distance divided by speed of light in medium
-- Transmission: packet size divided by bandwidth
-- Processing: packet processing time at nodes
-- Queuing: wait time in router/switch buffers
-
-## Summary
-Netty Framework represents fundamental concepts in network programming. Mastery requires understanding both theoretical guarantees and implementation details.
-
-## Key Theorems
-
-### Theorem 1: Reliable Delivery
-TCP guarantees in-order delivery of bytes using sequence numbers, acknowledgments, and retransmission.
-
-### Theorem 2: Flow Control
-TCP uses sliding window flow control where the receiver advertises available buffer space.
-
-### Theorem 3: Congestion Control
-TCP adapts sending rate based on network conditions using AIMD (Additive Increase Multiplicative Decrease).
+1. Boss accepts, workers serve; counts set at bootstrap.
+2. `ByteBuf` ownership transfers exactly once — release or forward, never
+   both, never neither.
+3. EventLoop threads never block (no `sync()`/`await()` inside handlers).
+4. Pipeline order is the protocol: decoders before logic inbound, encoders
+   after logic outbound.
+5. Graceful shutdown (`shutdownGracefully()`) quiets groups; leaked groups
+   hold the JVM like any non-daemon pool.
