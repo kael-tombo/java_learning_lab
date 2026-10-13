@@ -180,10 +180,25 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class MinorMajor {
+    // Probe duplicated (not referenced) so this snippet compiles standalone
+    static final String PROBE = """
+            import java.util.ArrayList;
+            public class ZChurn {
+                public static void main(String[] a) {
+                    ArrayList<byte[]> hold = new ArrayList<>();
+                    for (int i = 0; i < 2000; i++) {
+                        hold.add(new byte[128 * 1024]);
+                        if (hold.size() > 100) hold.subList(0, 50).clear();
+                    }
+                    System.out.println("done");
+                }
+            }
+            """;
+
     public static void main(String[] args) throws Exception {
         Path dir = Files.createTempDirectory("zgcmm");
         Path src = dir.resolve("ZChurn.java");
-        Files.writeString(src, PauseBudget.PROBE);
+        Files.writeString(src, PROBE);
         new ProcessBuilder("javac", "-d", dir.toString(), src.toString())
                 .redirectErrorStream(true).start().waitFor();
         Process p = new ProcessBuilder("java", "-XX:+UseZGC", "-Xmx128m",

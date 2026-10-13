@@ -1,165 +1,116 @@
 # Shenandoah GC — Theoretical Foundation
 
-## Core Concepts
+## Status Banner (read first)
 
-### 1. Fundamental Principle
-Shenandoah Brooks forwarding pointers, concurrent evacuation, update refs, SATB vs Shenandoah
+Shenandoah is **compiled out of Oracle JDK builds** — on the Oracle JDK 23
+used for this lab, `-XX:+UseShenandoahGC` fails at startup ("not
+supported") and only the bare `UseShenandoahGC` flag exists (all tuning
+flags are compiled out with the collector). It ships in most OpenJDK
+distributions (Temurin, Semeru, Red Hat builds). Every claim below is
+therefore labeled: **[measured]** (ran here), **[JEP]** (primary source),
+or **[reported]** (real downstream consumer, not re-measured). No snippet
+pretends to run Shenandoah where it can't.
 
-### 2. Theoretical Foundation
-The Shenandoah GC is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## Core Concept
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+Shenandoah's one big idea (JEP 189): **concurrent evacuation**. G1 and CMS
+mark concurrently but always stop the world to *move* objects; Shenandoah
+moves them while the application runs, via a **Brooks forwarding pointer**
+— one indirection word per object pointing at the current copy. Readers go
+through the forwarder (read barrier); movers copy and CAS the forwarder;
+stragglers see the new copy on next access. Pauses shrink to root scanning
+plus handshakes — heap-size-independent, like ZGC, by a different
+mechanism (JEP 189: "G1 does some parallel and concurrent work, but it does
+not do concurrent evacuation").
 
-### 3. Algorithmic Details
+## Brooks Pointers vs Colored Pointers (Shenandoah vs ZGC)
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+| | Shenandoah (Brooks) | ZGC (colored) |
+|---|---|---|
+| Where the metadata lives | extra word *in the object* (forwarder) | *in the reference* (color bits) |
+| Barrier placement | read barrier + write barrier (SATB marking) + CAS on forwarder | load barrier (heal on load) |
+| Space cost | one word per object, always | address-space games, no per-object word |
+| Throughput tax shape | barrier + extra indirection on hot reads | barrier on every load |
+| Evacuation rendezvous | forwarder CAS; losers use winner's copy | remap/heal on next load |
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+Both make relocation concurrent; they differ in *what the application pays
+per access*. Neither dominates universally — allocation shape, read/write
+ratio, and heap size decide (measure, per usual).
 
-### 4. Trade-offs
+## The Cycle (single-generation, still the default per JEP 521)
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+1. `Pause Init Mark` — STW roots handshake (~1 ms at 8 GB in the wiki's
+   reference log; scales with root set, not heap).
+2. `Concurrent marking` — SATB traversal alongside the application.
+3. `Concurrent precleaning` — weak refs, class unloading prep.
+4. `Pause Final Mark` — drain SATB buffers, finish marking (~10 ms
+   reference figure; the largest routine pause).
+5. `Concurrent cleanup` — reclaim empty regions immediately.
+6. `Concurrent evacuation` — copy live objects out of the collection set,
+   CAS forwarders; application reads heal through them.
+7. `Pause Init Update Refs` / `Concurrent update references` /
+   `Pause Final Update Refs` — sweep remaining stale references to the new
+   copies, then `Concurrent cleanup` again.
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+Pauses: three short STW beats (init-mark, final-mark, update-refs
+boundaries) plus the final-mark outlier — all root-sized, none heap-sized.
+Reference figures above are from the OpenJDK wiki's 8 GB log; your pauses
+track *your* roots.
 
-### 5. Mathematical Basis
+## Generational Shenandoah (JEP 404 experimental in 24; JEP 521 ongoing)
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+**[JEP]** JEP 521: "By default, Shenandoah will continue to use a single
+generation" — generational mode is opt-in (`-XX:+UseGenerationalShenandoah`
+in builds that ship it... precisely: JEP 404 integrated generational as
+experimental in 24; JEP 521 tracks productization). Young/old split with
+minor collections for the young gen, mirroring the industry-wide
+convergence (G1's regions, ZGC's `ZGenerational`). Not measurable on this
+build; stated for orientation so the flag doesn't surprise you elsewhere.
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+## Tuning Surface (documented; flag names from the JEP/CSR trail)
 
-## Summary
-The Shenandoah GC represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+- Mode: `ShenandoahGCMode` (`normal` default; also `traversal`, `iu`,
+  `passive` debug modes in dev builds).
+- Pacing: `ShenandoahPacing` (default on) — allocation-paced concurrent
+  progress so evacuation outruns allocation (the anti-allocation-stall
+  mechanism; ZGC's headroom equivalent).
+- Uncommit: `ShenandoahUncommit` (default on) + `ShenandoahUncommitDelay`
+  (default 5 min) — return idle regions to the OS; first touch after
+  uncommit stalls (the documented trade the delay tunes).
+- Heuristics: `ShenandoahGCHeuristics` (`adaptive` default; `static`,
+  `compact`, `aggressive` for testing/extremes).
+- None of these exist on the measured Oracle build (single surviving flag:
+  `UseShenandoahGC`) — the table is for Temurin/Semeru/RH runtimes.
 
-## Key Theorems
+## Observability (reported, via Micrometer's collector table)
 
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
+**[reported]** Micrometer's `JvmGcMetrics` maps MXBean name `"Shenandoah
+Cycles"` (old-gen accounting) and handles `"... Pauses"` notifications —
+the same Cycles/Pauses split ZGC exposes (lab 08, measured). Log shape
+follows `gc` tags with Shenandoah's phase names (`Pause Init Mark`,
+`Concurrent evacuation`, ...). If your dashboards key on `G1 Eden Space`,
+they go blind here exactly as under ZGC — pool/collector names are
+collector-defined.
 
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
+## JEP Trail (all primary-source)
 
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
+- JEP 189 (JDK 12): experimental Shenandoah (Flood/Kennke; PPPJ2016 paper
+  is the algorithm reference).
+- JEP 379 (JDK 15): production (Shipilёv; cosmetic flag-class change, no
+  default-GC change — G1 stays default).
+- JEP 404 (JDK 24): generational mode experimental; JEP 521 tracks its
+  productization (single-gen remains default).
+- Shipped in Red Hat 8u/11u downstream *before* upstream integration —
+  the uncommon backport-first history (JEP 379 text).
 
-## Key Insights
+## Key Invariants
 
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
-
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
-
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Evacuation is concurrent; pauses are root-sized handshakes, never heap
+   walks.
+2. The forwarder is the single rendezvous: losers of the CAS use the
+   winner's copy — no thread ever sees a torn move.
+3. SATB marking (shared with G1) means floating garbage dies next cycle,
+   never lives wrongly.
+4. Single-generation is the default (JEP 521); generational is opt-in.
+5. Oracle builds omit the collector: availability is a distribution
+   property, checked at startup, not assumed.

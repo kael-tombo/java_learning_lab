@@ -72,10 +72,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class CapTiers {
+    // Probe duplicated (not referenced) so this snippet compiles standalone
+    static final String PROBE = """
+            public class HotLoop {
+                static long total;
+                static void burn(int n) {
+                    long s = 0;
+                    for (int i = 0; i < n; i++) s += i * (i & 7);
+                    total = s;
+                }
+                public static void main(String[] a) {
+                    for (int i = 0; i < 300_000; i++) burn(200);
+                    System.out.println("total=" + total);
+                }
+            }
+            """;
+
     public static void main(String[] args) throws Exception {
         Path dir = Files.createTempDirectory("jitcap");
         Path src = dir.resolve("HotLoop.java");
-        Files.writeString(src, WatchTiers.PROBE);
+        Files.writeString(src, PROBE);
         new ProcessBuilder("javac", "-d", dir.toString(), src.toString())
                 .redirectErrorStream(true).start().waitFor();
         Process java = new ProcessBuilder("java", "-XX:+PrintCompilation",
@@ -283,8 +299,10 @@ and versions; the *query* is the portable skill, not the values.)
 - **Assuming tier 3 is C2** — tier 3 is profiling C1; C2 is tier 4 only.
 - **Using develop-only flags** — `PrintDeoptimizationDetails` doesn't exist
   in product builds; `TraceDeoptimization` does (with unlock).
-- **Sharing probe sources by copy-paste** — snippet 2 reuses snippet 1's
-  `PROBE` constant; duplication drifts, references don't.
+- **Sharing probe sources by reference** — cross-snippet constants break
+  standalone copying (every snippet here duplicates its probe so readers can
+  copy any single one); duplication of a few lines beats a hidden
+  compile-order dependency.
 - **Expecting `-Xint`/`-Xcomp` to behave** — forced modes disable the
   pipeline these snippets observe; use `TieredStopAtLevel` for controlled
   experiments instead.
