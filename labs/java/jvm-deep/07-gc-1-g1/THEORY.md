@@ -1,165 +1,87 @@
 # G1 Garbage Collector — Theoretical Foundation
 
-## Core Concepts
+## Core Concept
 
-### 1. Fundamental Principle
-G1 region design, SATB, remembered sets/PRT, evacuation pause, concurrent marking, mixed GC, humongous objects
+G1 (Garbage-First, Java 7; default since 9) divides the heap into
+equal-sized **regions** (1–32 MB, ergonomically heap/2048) and collects the
+*subset with the most garbage first* — hence the name. Young regions
+evacuate in stop-the-world pauses; old regions are reclaimed by concurrent
+marking + mixed evacuations; objects over half a region go to dedicated
+**humongous** regions. The design goal is *predictable pauses*
+(`-XX:MaxGCPauseMillis=200` default) rather than maximum throughput.
 
-### 2. Theoretical Foundation
-The G1 Garbage Collector is built on well-established computer science principles that govern how data structures
-and algorithms behave under various conditions. Understanding these principles is essential for
-writing correct, efficient Java code.
+## Regions, Roles, and Sizes (measured on JDK 23)
 
-#### Key Theoretical Properties
-- **Complexity Analysis**: Time and space complexity under best, average, and worst-case scenarios
-- **Correctness Invariants**: Properties that must hold at all times for valid state
-- **Concurrency Safety**: How the structure behaves under concurrent access
-- **Memory Semantics**: What guarantees exist regarding visibility and ordering
+- Region size: `G1HeapRegionSize` ergonomic (here: 2 MB at ~8 GB heap, 1 MB
+  at 256 MB; always a power of two, 1–32 MB). Roles are fluid — any region
+  can be Eden, Survivor, Old, or Humongous at different times (unlike the
+  fixed young/old split of Parallel GC).
+- Young set: Eden + Survivors, sized adaptively (`G1NewSizePercent`…bounds;
+  young length varies per pause to meet the pause target).
+- Humongous threshold: objects ≥ half a region (a 2 MB array at 1 MB
+  regions spans 2 contiguous humongous regions — verified in this lab's
+  logs). Humongous objects are never evacuated by young GC; reclaimed only
+  by concurrent cleanup (or full GC).
+- Remembered sets (per-region PRTs): track cross-region references so
+  evacuating one region finds its roots without scanning the heap —
+  maintained concurrently by refinement threads (`Concurrent Refinement
+  Workers` in the init log).
 
-### 3. Algorithmic Details
+## The Collection Cycle
 
-#### Core Operations
-1. **Insertion**: How elements are added while maintaining structural invariants
-2. **Lookup**: How elements are retrieved efficiently
-3. **Deletion**: How elements are removed without breaking invariants
-4. **Traversal**: How elements are enumerated in a defined order
+1. **Young-only phase**: Eden fills → `Pause Young (Normal) (G1 Evacuation
+   Pause)` — live objects copy to Survivor/Old regions; entirely STW, the
+   dominant pause for most apps (2–5 ms in this lab's measurements at
+   256 MB).
+2. **Concurrent marking**: past `InitiatingHeapOccupancyPercent=45`, G1
+   marks live objects concurrently (SATB snapshot-at-the-beginning:
+   buffers record reference mutations during marking so the snapshot stays
+   consistent) — `Pause Initial Mark` (piggybacked on a young pause) then
+   concurrent phases.
+3. **Mixed GCs**: after marking, old regions with the most garbage join
+   young pauses (`Pause Young (Mixed)`), a few per cycle until reclaimed.
+4. **Full GC**: last resort (humongous fragmentation, metaspace pressure,
+   `System.gc()` without `ExplicitGCInvokesConcurrent`) — uses parallel
+   workers but is still fully stop-the-world; a healthy G1 log shows none.
 
-#### Invariants
-Every data structure maintains specific invariants:
-- **Structural invariants** define valid states
-- **Behavioral invariants** define correct operation sequences
-- **Concurrency invariants** define safe concurrent usage patterns
+## SATB in One Paragraph
 
-### 4. Trade-offs
+Snapshot-At-The-Beginning: when concurrent marking starts, G1 logically
+snapshots the object graph; every reference *overwritten* during marking is
+logged to a SATB buffer (write barrier on field stores), and buffers are
+scanned as extra roots. Deleted objects may be marked live spuriously
+(floating garbage — reclaimed next cycle), but no live object is ever
+missed. Correctness (no live reclamation) traded against precision (some
+dead retained one cycle).
 
-#### Memory vs Speed
-- **Memory overhead**: Additional memory used beyond element storage
-- **Time overhead**: Computational cost of operations
-- **Cache behavior**: How access patterns interact with CPU caches
+## Pause Target vs Reality
 
-#### Complexity Trade-offs
-- CPU-bound operations vs memory-bound operations
-- Single-threaded vs concurrent performance
-- Worst-case vs average-case guarantees
+`MaxGCPauseMillis=200` is a *goal*, not a guarantee: G1 sizes each young set
+predictively (decay-averaged pause model) to fit recent history into the
+budget. Sustained allocation spikes, humongous churn, or to-space exhaustion
+blow past it — the log's per-pause `Xms` readings (not the flag) are the
+ground truth. Tuning starts with reading pauses, not setting flags.
 
-### 5. Mathematical Basis
+## Key Flags (measured defaults, JDK 23)
 
-#### Amortized Analysis
-Many operations have amortized constant time even if individual operations are expensive.
-Understanding amortization is key to predicting real-world performance.
+| Flag | Default | Meaning |
+|---|---|---|
+| `UseG1GC` | true (ergonomic) | default collector |
+| `MaxGCPauseMillis` | 200 | pause-time goal |
+| `G1HeapRegionSize` | heap/2048, clamped 1–32 MB | region size |
+| `InitiatingHeapOccupancyPercent` | 45 | marking trigger (% of heap) |
+| `ConcGCThreads` / `ParallelGCThreads` | ergonomic (2/8 here) | concurrent/parallel worker counts |
 
-#### Probability in Hash-Based Structures
-Hash-based variants rely on probability for their performance guarantees. The load factor directly
-affects the probability of collisions and average probe length.
+Read your own with `java -XX:+PrintFlagsFinal -version` before quoting —
+ergonomic values move with heap and CPU count.
 
-## Summary
-The G1 Garbage Collector represents a careful balance of theoretical computer science principles applied to
-practical Java programming. Mastery requires understanding both the theoretical guarantees and
-the implementation-specific details.
+## Key Invariants
 
-## Key Theorems
-
-### Theorem 1: Correctness
-For any sequence of operations, the data structure maintains its invariants.
-
-### Theorem 2: Complexity
-The amortized time for any sequence of m operations is O(m * f(n)) where f(n) depends on the
-specific operation type.
-
-### Theorem 3: Scalability
-The data structure scales linearly with the number of elements under good hash distribution
-(for hash-based variants) or logarithmically (for tree-based variants).
-
-## Key Insights
-
-### Insight 1: The Role of Hash Codes
-Hash codes determine bucket placement. A good hash function distributes keys uniformly across buckets,
-minimizing collisions. The supplemental hash function XORs high bits into low bits to improve
-distribution when the table size is a power of two.
-
-### Insight 2: Load Factor as a Control Knob
-The load factor is the primary tuning parameter. It controls the density of the hash table.
-A lower load factor (0.5) gives faster lookups but wastes memory. A higher load factor (0.9)
-saves memory but increases collision probability.
-
-### Insight 3: Amortized Growth
-While individual resize operations are O(n), the amortized cost of insertions remains O(1)
-because resizing happens infrequently. Each element pays a constant "resize tax" that funds
-future capacity expansions.
-
-
-## Further Exploration
-
-### Additional Reading
-- Review the companion files in this micro-lab for deeper understanding
-- Complete the exercises in EXERCISES.md to apply your knowledge
-- Build the MINI_PROJECT to cement the concepts
-- Test yourself with QUIZ.md and FLASHCARDS.md
-- Practice with INTERVIEW.md questions for job preparation
-
-### Related Concepts
-- equals() and hashCode() contracts in Java
-- Comparable and Comparator interfaces for ordering
-- Iterator and Iterable patterns for traversal
-- Stream API for functional-style operations
-- Serialization for object persistence
-- Cloning and defensive copying
-
-### Best Practices
-1. Always choose the right data structure for your use case
-2. Consider initial capacity for large datasets
-3. Use immutable objects as keys in hash-based collections
-4. Synchronize externally or use concurrent variants for thread safety
-5. Profile before optimizing - don't guess about performance
-6. Document ordering guarantees your code depends on
-7. Use interfaces (Map, List, Set) for variable declarations
-8. Prefer composition over inheritance for custom collections
-9. Override toString() for meaningful debug output
-10. Consider memory implications of your collection choices
-
-### Common Pitfalls to Avoid
-- Using mutable objects as keys in HashMap/HashSet
-- Iterating and modifying without using iterator methods
-- Assuming iteration order without checking documentation
-- Using LinkedList when random access is needed
-- Ignoring initial capacity for large collections
-- Forgetting to override both equals() and hashCode()
-- Using == instead of equals() for key comparison
-- Not handling ConcurrentModificationException properly
-
-### Next Steps
-1. Implement a custom version of this data structure from scratch
-2. Benchmark against the standard Java implementation
-3. Analyze memory usage with JOL (Java Object Layout)
-4. Profile performance with async-profiler
-5. Write comprehensive unit tests covering all edge cases
-6. Design a thread-safe variant for concurrent use cases
-7. Research alternative implementations in other languages
-8. Apply the concept to a real-world project
-
-### Key Takeaways Summary
-- Understand the internal mechanics and algorithmic complexity
-- Know the performance characteristics and memory footprint
-- Recognize appropriate use cases and selection criteria
-- Master common patterns and anti-patterns
-- Develop debugging intuition for related issues
-- Build mental models that transfer to other concepts
-
-### Discussion Questions
-1. How would you design this differently if starting from scratch?
-2. What are the limits of this approach in terms of scale?
-3. How does this concept interact with modern hardware (CPU caches, NUMA)?
-4. What alternatives exist in other programming languages?
-5. How would you implement this for a distributed system?
-
-### Code Review Checklist
-- [ ] Correct equals() and hashCode() implementations for keys
-- [ ] Appropriate initial capacity and load factor selection
-- [ ] Proper synchronization or concurrent variant for shared state
-- [ ] No concurrent modification during iteration
-- [ ] Immutable or effectively immutable key objects
-- [ ] Consistent use of interface types for declarations
-- [ ] Proper null handling (or documentation of non-null requirement)
-- [ ] toString() implementation for debugging
-- [ ] Serializable implementation if needed
-- [ ] Performance considerations documented
+1. Every object lives in exactly one region with exactly one role at a time.
+2. Young pauses evacuate survivors; liveness for old regions comes from SATB
+   marking, never from a full scan.
+3. Humongous objects bypass Eden/Survivor entirely and are never young-GC
+   evacuated.
+4. The pause target shapes young-set sizing; it never vetoes a needed pause.
+5. RSet correctness (no missed cross-region edge) is what makes partial
+   evacuation sound.
