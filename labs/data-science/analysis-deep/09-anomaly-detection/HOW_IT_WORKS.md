@@ -1,35 +1,45 @@
-﻿# How It Works: Anomaly Detection Advanced
+# How Anomaly Detection Works
 
-## High-Level Explanation
+## 1. Define the event and its cost
 
-### The Core Idea
-Anomaly Detection Advanced is about understanding how mathematical quantities behave under specific operations and transformations.
+Fraud dollar, outage minute, defect escape - with the cost of a miss
+vs a false page. Without costs there is no threshold choice, only
+vibes. Write both costs down first.
 
-### Step-by-Step Mental Model
-1. Start with input values
-2. Apply defined mathematical rules
-3. Verify result satisfies properties
-4. Return computed value
+## 2. Baseline with z and IQR
 
-### Why This Approach?
-- Provides rigorous mathematical guarantees
-- Computationally tractable
-- Generalizes to wide range of problems
+Score history both ways (AnomBase pattern). Agreement between the two
+means an obvious outlier; disagreement (z silent, IQR loud) hints at
+masking or skew - investigate the shape before escalating methods.
 
-## Key Insights
+## 3. Add the isolation view
 
-### Insight 1: Trade-offs
-Speed vs. accuracy vs. stability -- no algorithm excels at all three.
+Run the conceptual isolation check: which points separate in few
+random splits? Use it to catch joint anomalies (odd combinations) that
+univariate fences miss. Keep it as a second opinion, not a replacement.
 
-### Insight 2: Compositionality
-Complex operations built from simpler ones.
+## 4. Sweep the threshold
 
-### Insight 3: Numerical Reality
-Finite precision requires careful implementation.
+Score labeled history, sweep thresholds, record the P/R table (PrCurve
+pattern). Present the curve to stakeholders and let costs pick the
+operating point - the analyst's job is the curve, the business's the
+point.
 
-## Common Questions
-**Q:** Why not use formula directly?
-**A:** Direct application often has numerical instability or poor performance.
+## 5. Confront the base rate
 
-**Q:** When to use this implementation?
-**A:** When reliable, tested computation with known accuracy is needed.
+Plug prevalence, sens, fpr into the Bayes formula and quote PPV plus
+alerts-per-day at current volumes. If PPV is 9%, say "nine of ten pages
+are false" out loud before launch - then design tiers accordingly.
+
+## 6. Tier the response
+
+Critical tier pages humans; medium tier batches for review; low tier
+feeds auto-remediation or logging. Every tier gets an outcome log so
+precision is measured, not assumed.
+
+## 7. Monitor the monitor
+
+Track flag rate, precision-at-k reviewed, and time-to-triage weekly.
+Drift in the bulk (new normal behavior) silently converts precision
+into noise - re-fit baselines on a schedule, with the schedule written
+down.

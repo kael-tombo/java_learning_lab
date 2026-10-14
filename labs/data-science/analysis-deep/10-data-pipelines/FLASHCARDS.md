@@ -1,52 +1,50 @@
-﻿# Flashcards: Data Pipelines
+# Flashcards - Data Pipelines
 
-## Front-Back Cards
+Q: Batch vs streaming in one line?
+A: Bounded inputs on schedule vs unbounded flows continuously; latency
+need decides, each with its failure modes.
 
-### Card 1
-**Front**: What is the definition of Data Pipelines?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: Define idempotent sink.
+A: m(m(S,b),b) = m(S,b): replays are no-ops (keyed upsert, not append).
 
-### Card 2
-**Front**: Key properties of Data Pipelines?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: At-least-once means?
+A: Every record arrives, duplicates possible - the common queue default,
+stated generally here.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: At-most-once vs exactly-once?
+A: Possible loss without duplicates vs each record effective once (joint
+property of source, transport, and sink - never queue alone).
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: Additive-compatible change?
+A: New optional field; old readers unaffected (subset-with-types holds).
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: Breaking change examples?
+A: Type change, removed or renamed required field.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: Replay discipline?
+A: Same code, explicit range, staging output, diff vs production, then
+promote - never rerun against live tables.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: Quality trio?
+A: Row counts vs source, null rates per column, drift vs reference.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: Demo quality numbers?
+A: rows 6, nulls 2, nullRate 0.333, mean 9.375, drift 0.375 vs ref 9.0.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Data Pipelines algorithm: ________. **Answer**: O(n)
+Q: DAG shape?
+A: extract -> validate -> transform -> serve; acyclic, per-node retries,
+data contracts on edges.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+Q: Event time vs arrival time?
+A: When it happened vs when it arrived; windows must declare which, with
+a late-data policy.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+Q: Tumbling window demo values?
+A: Width 3 over {1,5,3,8,2}: 3.000, 5.333, 4.333.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: Compat demo verdicts?
+A: Added currency COMPATIBLE; amount double->string BREAKING.
+
+Q: Backfill promotion needs?
+A: Row delta, key overlap, mismatch rate, checks green, version pin,
+sign-off.

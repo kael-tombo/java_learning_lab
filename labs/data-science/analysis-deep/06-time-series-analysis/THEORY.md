@@ -1,70 +1,56 @@
-﻿# Time Series Analysis -- Theory
+# Time Series Theory
 
-## 1. Introduction
+## 1. What makes a series special
 
-Time Series Analysis is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+A time series keeps its order. y_t may depend on y_{t-1}, y_{t-2},
+and on a seasonal lag y_{t-m}. Methods that assume independent rows
+(such as plain cross-validation with shuffling) are invalid here.
 
-## 2. Core Definitions
+## 2. Stationarity
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Time Series Analysis rests on several key definitions and axioms that form the foundation of the theory.
+A (weakly) stationary series has constant mean, constant variance,
+and autocovariance Cov(y_t, y_{t-k}) that depends only on the lag k,
+never on t. Trends and growing variance violate stationarity.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+The Augmented Dickey-Fuller (ADF) test formalizes one check: its null
+hypothesis is a unit root (non-stationary); rejecting it is evidence
+the series may be stationary. A test never proves stationarity alone,
+so plots of rolling mean/variance accompany it.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 3. Autocorrelation: ACF and PACF
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Time Series Analysis:
+- ACF(k) = Corr(y_t, y_{t-k}). Shows direct plus carried-over dependence.
+- PACF(k) = correlation of y_t and y_{t-k} after removing the linear
+  effect of the lags between them. Isolates the direct link at lag k.
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Reading rules used in Box-Jenkins identification:
 
-### 2.3 Formal Framework
-The mathematical framework for Time Series Analysis is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+- AR(p): PACF cuts off after lag p; ACF tails off gradually.
+- MA(q): ACF cuts off after lag q; PACF tails off gradually.
 
-## 3. Mathematical Formulation
+## 4. AR, MA, ARIMA
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+AR(1): y_t = c + phi_1 * y_{t-1} + e_t, with |phi_1| < 1 for stationarity.
+MA(1): y_t = mu + e_t + theta_1 * e_{t-1}; finite MA orders are always
+stationary but need invertibility (|theta_1| < 1) for unique estimation.
+ARIMA(p,d,q): apply d rounds of differencing (d=1: w_t = y_t - y_{t-1})
+until the series looks stationary, then fit ARMA(p,q) to w_t.
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+## 5. Temporal validation
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+Train on the past, test on the future. Rolling (walk-forward) and
+expanding windows are standard. Shuffling leaks future into training
+(lookahead leakage) and overstates accuracy.
 
-### 3.3 Existence and Uniqueness
-A critical question in Time Series Analysis is whether solutions exist and whether they are unique.
+## 6. Decomposition and baselines
 
-## 4. Important Theorems
+Additive: y_t = Trend_t + Seasonal_t + Residual_t (multiplicative form
+exists for growing seasonal swings). Always compare against naive
+(next = last value) and seasonal-naive (next = value m steps back),
+plus mean and drift baselines, before trusting a fitted model.
 
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
+## 7. Error metrics
 
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Time Series Analysis extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Time Series Analysis requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Time Series Analysis connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Time Series Analysis provide the rigorous basis needed for correct computational implementation and real-world application.
+MAE = mean|y - f|, RMSE = sqrt(mean((y - f)^2)) which punishes large
+misses, MAPE = 100 * mean(|(y - f)/y|). MAPE is undefined at y = 0 and
+explodes near zero, so skip or replace zero-actual points explicitly.

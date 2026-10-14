@@ -1,36 +1,44 @@
-﻿# Interview: Data Pipelines
+# Interview Q&A - Data Pipelines
 
-## Common Interview Questions
+Q: Batch or streaming for daily sales reports?
+A: Batch: bounded, scheduled, replayable - streaming buys nothing when
+decisions run daily, and sells complexity.
 
-### Q1: Conceptual
-**Q**: Explain Data Pipelines and its importance in computing.
-**A**: Data Pipelines enables precise analysis of quantitative relationships, foundational for scientific computing and ML.
+Q: Prove your sink is replay-safe.
+A: Keyed merge with the fixed point m(m(S,b),b) = m(S,b), demonstrated
+by replaying batch2 to an unchanged 3-row map. Appends cannot do this.
 
-### Q2: Implementation
-**Q**: How to implement Data Pipelines in Java 21+?
-**A**: Input validation, core algorithm with stable numerics, convergence checking, error bounds.
+Q: At-least-once vs exactly-once?
+A: At-least-once (common queue default) may duplicate; exactly-once is a
+joint source-transport-sink property needing idempotent/transactional
+sinks - never a queue feature alone.
 
-### Q3: Numerical Analysis
-**Q**: What numerical issues arise?
-**A**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: Additive vs breaking schema change?
+A: New optional field flows (COMPATIBLE); type change or dropped/renamed
+required field halts for versioned migration with dual reads.
 
-### Q4: Performance
-**Q**: How to optimize for large inputs?
-**A**: Algorithmic improvements, parallel processing, memory optimization, JVM tuning.
+Q: Backfill without double-counting?
+A: Same code, explicit range, staging output, diff (counts, key overlap,
+mismatches) vs production, promote on tolerances - never rerun live.
 
-### Q5: System Design
-**Q**: Design a computation service.
-**A**: API design, concurrency model, error handling, monitoring, deployment.
+Q: Your quality trio?
+A: Row counts vs source, null rates per column, drift vs reference -
+fail loudly (quarantine) on breach, never silently serve.
 
-## Coding Challenge
-`java
-public double compute(double[] values) {
-    // O(n) time, O(1) space, handle edge cases
-    return 0.0;
-}
-`
+Q: Late events in windows?
+A: Declare event-time vs arrival-time, route lates to a lateness window
+or side output - discovered policies corrupt history retroactively.
 
-## Behavioral Questions
-1. Describe debugging a numerical issue
-2. How do you ensure code correctness?
-3. Approach to learning new math concepts?
+Q: DAG node keeps failing. Shape of the fix?
+A: Per-node retry with backoff, quarantine its output, page with the
+node name; downstream waits on contracts, never on partial writes.
+
+Q: Source renames a column overnight. Walk me through it.
+A: Landing quarantines on unknown-column strict mode; schema diff pages;
+compat gate blocks deploy; v2 migration with dual reads ships on
+schedule. No silent ignore, no midnight hotfix to readers.
+
+Q: Backfill or live-fix for a logic bug affecting 30 days?
+A: Backfill: same fixed code, explicit 30-day range, staging replay,
+diff within tolerances, promote. Live-fixes on served tables compound
+the original error with an unreviewed second one.

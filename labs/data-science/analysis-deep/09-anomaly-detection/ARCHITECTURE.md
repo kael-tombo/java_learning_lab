@@ -1,45 +1,48 @@
-﻿# Architecture: Anomaly Detection Advanced Implementation
+# Architecture - Anomaly Mini-Toolkit
 
-## System Design
+JDK-only layout (package com.anomlab):
 
-The Anomaly Detection Advanced implementation follows a layered architecture:
+```
+Window    - clean-history slice with center/spread (mean/sd, Q1/IQR)
+Scorer    - z, robust-z (median/MAD), fence checks per point
+Sweep     - threshold grid producing the P/R table from labels
+Bayes     - PPV/alert-volume arithmetic from prev/sens/fpr
+Tiers     - page/batch/log routing by score band + outcome log
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Data flow
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+History -> Window -> Scorer (scores) -> Sweep (curve) -> Bayes (PPV at
+volumes) -> Tiers (who gets woken). Outcome logs flow back into Window
+selection (incidents excluded from "normal").
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Design choices
 
-## Design Patterns
+- Window is immutable once fitted; re-fit constructs a new Window so
+  live scoring never sees a half-updated center.
+- Sweep returns the full table, never a "best" threshold - the pick
+  needs costs the toolkit does not own.
+- Bayes takes measured sens/fpr plus stated prevalence; prevalence is a
+  required explicit argument, never a default, to force the conversation.
+- Tiers log every routing decision with score and band for audit.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Boundaries
 
-### Template Method
-Common algorithm skeleton with customizable steps.
+No clustering or deep models here: baselines plus isolation intuition
+cover the lab's scope; multivariate extensions plug in as new Scorers.
 
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
+## Record sketches
 
-## Package Structure
-`
-com.mathlab.anomalydetection/
-â”œâ”€â”€ AnomalyDetection.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
+```java
+record Window(double center, double spread, double q1, double iqr) {}
+record Verdict(int tp, int fp, int fn, double threshold) {}
+```
 
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
+Window is immutable once fitted; Verdict carries the raw counts so P/R
+are always recomputable from evidence, never from rounded intermediates.
 
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Failure routing
+
+Empty history throws at Window construction (no silent NaN center).
+Thresholds outside [0, 1] for score sweeps throw naming the bound.
+Outcome-log write failures page - a blind detector is worse than none.

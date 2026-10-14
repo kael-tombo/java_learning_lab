@@ -1,130 +1,51 @@
-﻿# Exercises: Anomaly Detection Advanced
+# Exercises - Anomaly Detection
 
-## Theoretical Exercises
+## 1. Masking demo (runnable)
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Anomaly Detection Advanced in your own words.
-**Answer**: Anomaly Detection Advanced involves understanding how mathematical quantities change and relate under specific operations.
+Copy AnomBase, add a second 30.0 (12 points). Show both extremes now
+score |z| < 3 while IQR still flags them. Write the two-sentence lesson
+(robust spread resists; sd does not).
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Anomaly Detection Advanced.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. MAD variant (runnable)
 
-### Exercise 3: Application
-**Question**: Apply the theory of Anomaly Detection Advanced to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Replace mean/sd with median/MAD (MAD = median |x - median|, robust
+z = 0.6745*(x-median)/MAD). Flag robust-|z| > 3.5 on the 12-point set
+from Exercise 1 and compare flags with both classic rules.
 
-## Programming Exercises
+## 3. Full P/R curve (runnable)
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Anomaly Detection Advanced.
+Extend PrCurve to thresholds 0.05..0.95 in steps of 0.05. Print the
+table, find the max-F1 threshold, and state its P/R. Explain why max-F1
+is a default, not a decision (costs decide).
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Your volumes, your PPV (runnable)
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Copy BaseRate with your system's prevalence and daily volume. Print PPV
+plus expected true/false alerts per day. If false pages exceed on-call
+tolerance, compute the fpr needed for PPV = 0.5 at fixed sens = 0.99.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Joint anomaly hunt (paper)
 
-## Challenge Problems
+Two features, each healthy in [9, 11], but valid points always satisfy
+x + y in [19, 21] (they move in opposition). Give a pair both margins
+accept yet the sum rejects (example: (10.9, 10.9) sums to 21.8), and
+name the method family (isolation/multivariate) that catches it while
+univariate fences stay silent.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. Tier design (paper)
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+PPV 0.09, 1000 flags/day, one on-call engineer. Design three tiers with
+volumes each, response times, and the outcome log fields. Show the math
+that keeps pages under ~5/night.
 
-## Solutions
+## 7. Threshold from costs (runnable)
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Anomaly Detection Advanced
+Miss cost $500, false-page cost $5. Extend PrCurve to compute expected
+cost per decision at each 0.05 threshold and print the minimizing one.
+State its P/R and explain why it differs from the max-F1 threshold.
 
-## Multiple Choice Questions
+## 8. Drift response drill (paper)
 
-### Question 1
-What is the fundamental principle underlying Anomaly Detection Advanced?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Anomaly Detection Advanced?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Flag rate triples overnight with no known incident; precision-at-20
+halves. Write the five-line response: freeze, compare center/spread,
+identify the shifted input, re-fit Window, re-sweep thresholds.

@@ -1,36 +1,41 @@
-﻿# Interview: Experimentation and A/B Testing
+# Interview Q&A - Experimentation
 
-## Common Interview Questions
+Q: Walk me through your A/B anatomy.
+A: Hypothesis, randomization unit, control, goal metrics to decide,
+guardrails to veto, fixed horizon, SRM gate before readout.
 
-### Q1: Conceptual
-**Q**: Explain Experimentation and A/B Testing and its importance in computing.
-**A**: Experimentation and A/B Testing enables precise analysis of quantitative relationships, foundational for scientific computing and ML.
+Q: p = 0.04 - ship it?
+A: Show me the CI and the MDE first: 0.04 with CI [0.0001, 0.05] is a
+maybe-tiny effect; the p-value alone never ships.
 
-### Q2: Implementation
-**Q**: How to implement Experimentation and A/B Testing in Java 21+?
-**A**: Input validation, core algorithm with stable numerics, convergence checking, error bounds.
+Q: What is peeking and why does it matter?
+A: Repeated interim looks with early stopping inflate false positives
+(single 0.05 looks compound toward ~26% at six independent peeks).
 
-### Q3: Numerical Analysis
-**Q**: What numerical issues arise?
-**A**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: SRM flagged but goals look great. Call?
+A: Void the test: broken assignment breaks the causal license no matter
+how pretty the metrics are. Fix the split, re-run.
 
-### Q4: Performance
-**Q**: How to optimize for large inputs?
-**A**: Algorithmic improvements, parallel processing, memory optimization, JVM tuning.
+Q: How do you size a test?
+A: Smallest meaningful effect -> MDE -> n via 2.8*SE at 80%/5%;
+convert n to days from traffic, negotiate scope before launch.
 
-### Q5: System Design
-**Q**: Design a computation service.
-**A**: API design, concurrency model, error handling, monitoring, deployment.
+Q: Novelty effect suspected. Handle?
+A: Extend past the spike, segment veterans vs newcomers, require the
+effect in the veteran cohort.
 
-## Coding Challenge
-`java
-public double compute(double[] values) {
-    // O(n) time, O(1) space, handle edge cases
-    return 0.0;
-}
-`
+Q: Goal up, guardrail red. Ship?
+A: No: guardrails veto. A conversion win with surging refunds or
+latency is a loss wearing a costume.
 
-## Behavioral Questions
-1. Describe debugging a numerical issue
-2. How do you ensure code correctness?
-3. Approach to learning new math concepts?
+Q: Slice shows significance after overall null?
+A: Treat as hypothesis for the next test, not a rescue - multiplicity
+accounting applies before any claim.
+
+Q: Ramp 90/10, SRM computed vs 50/50 flags. Bug?
+A: Yes in the check, not the traffic: E must come from the planned 90/10
+ratio. Recompute against plan before touching the assignment code.
+
+Q: Both arms convert 0/5000 after a tracking deploy. Readout?
+A: No readout: zero information, not a zero effect. Fix tracking, then
+relaunch - a p-value over broken telemetry measures nothing.

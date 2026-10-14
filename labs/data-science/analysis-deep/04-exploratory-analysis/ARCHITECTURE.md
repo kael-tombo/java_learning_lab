@@ -1,45 +1,38 @@
-﻿# Architecture: Exploratory Data Analysis Implementation
+# Exploratory Analysis - Architecture
 
-## System Design
+## EDA session pipeline
 
-The Exploratory Data Analysis implementation follows a layered architecture:
+```text
+question --> DISPLAY (sort, bin, tabulate) --> SUMMARIZE (robust first)
+   --> STRATIFY (split by confounders) --> RECORD (numbers + limits)
+       ^                                              |
+       +------------------ next question -------------+
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Component responsibilities
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+- **Display:** sorted lists, text bins, contingency tables. No modelling,
+  no tests - arrangement for the eye.
+- **Summarize:** medians, quartiles, grouped means with n. Resistant
+  summaries first; moments only after shape is known.
+- **Stratify:** re-cuts every comparison by each plausible confounder
+  (ward, age band, region). A comparison that survives stratification is a
+  candidate finding; one that flips (77.34 vs 82.57 pooled against two
+  within-ward wins) was composition all along.
+- **Record:** appends question, display, numbers, strata checked, and the
+  named next question. The record is the deliverable, not any single plot.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## JDK mapping
 
-## Design Patterns
+- Grouping: `LinkedHashMap` key to (sum, n) via `computeIfAbsent`.
+- Rates: integer fractions printed as doubles (81/90 shown as 90.0%) with
+  the raw k/n kept alongside for audit.
+- Correlations: one shared `corr(a, b)` routine reused for all pairs.
+- Ordering: `TreeMap` cells and sorted arrays keep displays deterministic.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Invariants
 
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.exploratory/
-â”œâ”€â”€ ExploratoryAnalysis.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+1. No pooled rate is reported without its stratum rates beside it.
+2. Every mean carries its n; every r carries its n and its scatter check.
+3. Displays precede summaries in code order, mirroring the workflow.
+4. The record accumulates; no finding exists only in a console scrollback.

@@ -1,52 +1,46 @@
-﻿# Flashcards: Anomaly Detection Advanced
+# Flashcards - Anomaly Detection
 
-## Front-Back Cards
+Q: Anomaly vs tail in one line?
+A: Anomaly = different mechanism + rare; tail = rare but same mechanism.
 
-### Card 1
-**Front**: What is the definition of Anomaly Detection Advanced?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: z-score formula and conventional cutoff?
+A: (x - mean)/sd; flag |z| > 3.
 
-### Card 2
-**Front**: Key properties of Anomaly Detection Advanced?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: Tukey fences?
+A: Outside [Q1 - 1.5*IQR, Q3 + 1.5*IQR].
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: What is masking?
+A: Extremes inflate mean/sd so their own z-scores shrink below cutoff.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: Robust alternative to mean/sd?
+A: Median and MAD (median absolute deviation).
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: Isolation intuition?
+A: Random splits isolate odd points in few steps, crowds in many;
+average depth is the score.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: Threshold down -> P? R?
+A: Recall rises, precision (eventually) falls.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: PPV formula?
+A: sens*prev / (sens*prev + fpr*(1-prev)).
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: Base-rate demo numbers?
+A: prev 0.001, sens 0.99, fpr 0.01 -> PPV 0.0902; 99 true vs 999 false
+per 100k.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Anomaly Detection Advanced algorithm: ________. **Answer**: O(n)
+Q: Rarity vs quality lesson?
+A: Below ~1% prevalence, cutting fpr moves PPV more than raising sens.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+Q: Chebyshev bound at k = 3?
+A: At most 1/9 (~11%) beyond |z| = 3 for any distribution.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+Q: Normal data outside Tukey fences?
+A: About 0.7% - more flags than that signals non-normality.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: Alert fatigue mechanism?
+A: Low-precision paging trains on-call to mute; then real pages die too.
+
+Q: Fix for fatigue?
+A: Tiers (page/batch/log), costs-picked thresholds, outcome logging,
+scheduled re-fits.

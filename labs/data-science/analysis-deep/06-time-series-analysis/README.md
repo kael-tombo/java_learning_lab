@@ -1,76 +1,48 @@
-﻿# Time Series Analysis
+# Lab 06 - Time Series Analysis
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Time Series Analysis**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Ordered observations y_1 ... y_T where the index is time. This lab
+covers stationarity, autocorrelation structure, ARIMA-style models,
+temporal validation, decomposition, baselines, and error metrics.
 
-## Topics Covered
-- decomposition trend/seasonal/residual, stationarity ADF/KPSS, autocorrelation ACF/PACF, ARIMA, Holt-Winters
+## Objectives
+
+- Explain stationarity and why most classical models assume it.
+- Read ACF/PACF plots to suggest AR vs MA structure.
+- Write down AR/MA/ARIMA(p,d,q) equations and difference a trend.
+- Split series temporally (never shuffle) and avoid lookahead leakage.
+- Decompose trend/seasonal/residual and beat naive baselines honestly.
+- Compute MAE/RMSE/MAPE and state MAPE's zero-division trap.
+
+## Map of this lab
+
+- THEORY.md / MATH_FOUNDATION.md - definitions, ARIMA equations, ACF math.
+- HOW_IT_WORKS.md / STEP_BY_STEP.md - end-to-end forecasting workflow.
+- CODE_DEEP_DIVE.md - three runnable JDK-only Java programs.
+- EXERCISES.md - hands-on tasks on small inline datasets.
+- HISTORY.md / REFERENCES.md - Box-Jenkins lineage and real books.
+- ARCHITECTURE.md / INTERNALS.md / PERFORMANCE.md - implementation notes.
+- DEBUGGING.md / COMMON_MISTAKES.md / INTERVIEW.md - pitfalls and Q&A.
+
+## Conventions
+
+- Java 21+, plain JDK only (java.util, java.lang.Math, streams).
+- All snippets are single-class, deterministic, ASCII output.
+- Every numeric claim in CODE_DEEP_DIVE.md is observed program output.
 
 ## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Time Series Analysis
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+Basic statistics (mean, variance, correlation) and comfort reading
+a for-loop. No external libraries are used anywhere in this lab.
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+## Worked miniature
 
-## Project Structure
-`
-timeseries/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/timeseries/TimeSeriesAnalysis.java
-    â””â”€â”€ test/java/com/mathlab/timeseries/TimeSeriesAnalysisTest.java
-`
+TsDiff takes {4, 6, 9, 13, 18, 24} to diffs {2, 3, 4, 5, 6} with variance
+falling from 48.2222 to 2.0000. TsErrors scores MAE 1.4000, RMSE 1.4832,
+MAPE 9.4940% with one zero skipped. TsAcf reads lag-2 0.4722 against
+lag-1 0.1250 on zigzag data. Reproduce all three before reading further.
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+## How to verify
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+Every snippet compiles under `javac --release 21 -encoding UTF-8` and
+runs with `java -cp . <Class>`. If your output differs by any digit,
+the bug is in transcription - the checked-in outputs are observed.

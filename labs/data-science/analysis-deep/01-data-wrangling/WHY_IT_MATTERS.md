@@ -1,33 +1,42 @@
-﻿# Why It Matters: Data Wrangling
+# Data Wrangling - Why It Matters
 
-## Real-World Importance
+## Biased inputs, biased outputs
 
-### 1. Scientific Computing
-Fundamental to simulations in physics, climate, and drug discovery.
+A model trained on silently deduplicated-skewed or mean-filled data inherits
+every shortcut. Mean imputation shrinks variance, so confidence intervals
+built downstream are too narrow and reject the truth too often. Listwise
+deletion under MNAR selects the respondents who answered, not the population
+you claim to describe.
 
-### 2. Engineering
-Every discipline relies on these foundations for design and analysis.
+## Cost arithmetic
 
-### 3. Machine Learning and AI
-Core to model training, optimization, and inference.
+An hour of profiling (missing rates, reject counts, fence flags) regularly
+saves days of debugging a model that "mysteriously" drifts after a feed
+change. Reject logs are an early-warning system: a sudden jump in `"N/A"`
+sentinels means the upstream form changed, caught at ingest instead of at
+the board meeting.
 
-### 4. Financial Modeling
-Risk analysis, portfolio optimization, quantitative trading.
+## Trust and audit
 
-### 5. Computer Graphics
-Rendering, animation, physics simulation.
+Regulated work (finance, health, public policy) must show the lineage from
+raw cell to reported number. The receipts this lab emphasizes - parsed vs
+rejected counts, keys removed, fill values with filled counts, fence bounds -
+are the minimum viable audit trail.
 
-## Impact by Industry
-| Industry | Application | Impact |
-|----------|-------------|--------|
-| Healthcare | Imaging, drug discovery | Life-critical |
-| Finance | Risk modeling, trading | Economic |
-| Technology | ML/AI, search | Transformative |
-| Manufacturing | Design optimization | Efficiency |
+## Concrete stakes in the lab examples
 
-## Why Learn This?
-1. Foundational to modern technology
-2. Transferable across domains
-3. Durable knowledge
-4. Enables innovation
-5. High career value
+- Filling the NaN with 6.0 keeps the column mean at 6.0; filling with 0
+  would drag it to 4.8 and punish every average built on it.
+- Keeping both copies of `c7|2026-01-05` double-counts that order in any
+  revenue sum.
+- Treating `"3x"` as 3 instead of rejecting it invents 3 units of whatever
+  is being measured.
+- Deleting 60.0 without review throws away either a typo or the outage.
+
+## Small examples, large habits
+
+The lab arrays fit on an index card precisely so every number can be checked
+by hand. Analysts who learn receipts on five rows keep the habit on five
+million; analysts who learn shortcuts on five rows automate them at scale.
+The stakes above (4.8 vs 6.0, double-counted revenue, invented units) all
+have production analogues measured in money and trust.

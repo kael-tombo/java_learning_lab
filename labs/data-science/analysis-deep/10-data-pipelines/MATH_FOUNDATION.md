@@ -1,81 +1,44 @@
-﻿# Math Foundation for Data Pipelines
+# Math Foundation - Data Pipelines
 
-## Prerequisite Mathematics
+## 1. Idempotence as a fixed point
 
-This document reviews the mathematical prerequisites needed to study Data Pipelines effectively.
+Sink state S with merge m: idempotent means m(m(S, b), b) = m(S, b) for
+any batch b. Keyed upserts satisfy this (same key overwrites with the
+same value); appends do not (replay duplicates rows). The property is
+provable per sink in one line - prove it before claiming replay safety.
 
-## 1. Algebra Review
+## 2. Duplicate bound under at-least-once
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+With per-record duplication probability d over n records, expected
+duplicates are n*d and P(at least one duplicate) = 1 - (1-d)^n. Even
+tiny d guarantees duplicates at scale - the quantitative reason sinks
+must be idempotent rather than hoping transport behaves.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## 3. Windowed aggregation math
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+Tumbling window mean over width w: each event belongs to exactly one
+window, O(n) total. The PipeSchema demo prints window avgs 3.000,
+5.333, 4.333 for width 3 - each a plain mean over its slice. Sliding
+windows cost O(n*w) naive, O(n) with running sums; keep the running
+form when w grows.
 
-## 2. Functions and Graphs
+## 4. Null-rate and drift checks
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+nullRate = nulls/rows (0.333 in the demo: 2 of 6). Drift = |mean -
+reference| (0.375 vs ref 9.0). Thresholds are policy (e.g. nullRate >
+0.05 pages), but the estimators are exact counts - no sampling mystery
+at lab scale; document sampling if production checks sample.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## 5. Compatibility as set relations
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+Reader requires fields R, writer provides W. Compatible if R is a subset
+of W with matching types - the keySet().containsAll check plus the type
+equality in PipeSchema. Any type change or removed field violates the
+subset relation: mechanical, reviewable, no judgment calls.
 
-## 3. Trigonometry
+## 6. Backfill diff arithmetic
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+Row-count delta, key-overlap fraction, and value-mismatch rate between
+staging replay and production quantify a backfill before promotion.
+Promote only when all three sit inside pre-declared tolerances - the
+numbers are small, the discipline is the point.

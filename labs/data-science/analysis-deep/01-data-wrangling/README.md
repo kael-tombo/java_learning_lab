@@ -1,76 +1,51 @@
-﻿# Data Wrangling
+# Lab 01 - Data Wrangling
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Data Wrangling**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Cleaning raw tables so analysis is honest: missing values, duplicate rows,
+ragged types, and outliers.
 
-## Topics Covered
-- DataFrame loading CSV/JSON/DB, cleaning nulls/duplicates/outliers, reshaping melt/pivot, joins
+## What you will learn
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Classify missingness as MCAR, MAR, or MNAR and pick a matching response.
+- Impute with mean, median, mode, or forward-fill without faking certainty.
+- Remove duplicates with composite keys while keeping first-seen order.
+- Coerce strings to numbers with explicit reject rules and counts.
+- Flag outliers with the 1.5 x IQR rule and z-score screening.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Data Wrangling
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Working data
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+All examples use tiny inline arrays so every number is checkable by hand:
 
-## Project Structure
-`
-datawrangling/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/datawrangling/DataWrangling.java
-    â””â”€â”€ test/java/com/mathlab/datawrangling/DataWranglingTest.java
-`
+- `col = {2, 4, NaN, 8, 10}` - one missing entry, observed mean 6.0.
+- Five order rows collapsing to three `(customer, date)` keys.
+- Raw strings `{"12", " 45 ", "3x", "", "7.5", "N/A", "-8"}`.
+- Outlier demo `{12, 14, 13, 15, 14, 13, 12, 15, 14, 60}`.
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+## Build and run (plain JDK only)
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+```text
+javac --release 21 -encoding UTF-8 WrangleMeanImpute.java
+java WrangleMeanImpute
+```
+
+No external libraries are used anywhere in this lab: only
+`java.util`, `java.lang.Math`, and `java.util.stream`.
+
+## Map of this lab
+
+THEORY.md gives the definitions, MATH_FOUNDATION.md the derivations,
+CODE_DEEP_DIVE.md the three verified programs, EXERCISES.md the practice
+tasks, and STEP_BY_STEP.md a fully worked numeric example. Start with
+THEORY.md, then run the code, then attempt the exercises.
+
+## Suggested path
+
+Read THEORY.md for the mechanism taxonomy, run the three programs in
+CODE_DEEP_DIVE.md, follow STEP_BY_STEP.md with a calculator, then do
+EXERCISES.md tasks 1-4 before touching 5-8. COMMON_MISTAKES.md lists the
+traps (NaN comparison, zero-filling) that most first attempts hit.
+
+## What done looks like
+
+You can classify a missing column as MCAR/MAR/MNAR in one sentence, write
+the impute/dedup/coerce trio from memory on plain arrays, and produce the
+receipts (counts at every stage) for any cleaning run you perform.

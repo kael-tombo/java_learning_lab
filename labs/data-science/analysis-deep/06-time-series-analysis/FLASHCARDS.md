@@ -1,52 +1,46 @@
-﻿# Flashcards: Time Series Analysis
+# Flashcards - Time Series
 
-## Front-Back Cards
+Q: What is weak stationarity?
+A: Constant mean, constant variance, autocovariance depending only on lag.
 
-### Card 1
-**Front**: What is the definition of Time Series Analysis?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: What is the ADF null hypothesis?
+A: A unit root is present (the series is non-stationary in that sense).
 
-### Card 2
-**Front**: Key properties of Time Series Analysis?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: AR(p) signature on ACF/PACF?
+A: PACF cuts off after lag p; ACF tails off gradually.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: MA(q) signature on ACF/PACF?
+A: ACF cuts off after lag q; PACF tails off gradually.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: What do p, d, q in ARIMA mean?
+A: AR order p, differencing rounds d, MA order q.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: Why never shuffle a series for validation?
+A: Shuffling leaks future observations into training (lookahead leakage).
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: What is a rolling-origin backtest?
+A: Train on [1..t], forecast ahead, roll t forward, average errors.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: Naive vs seasonal-naive forecast?
+A: Next = last value vs next = value m periods back.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: Write MAE, RMSE, MAPE.
+A: mean|y-f|, sqrt(mean((y-f)^2)), 100*mean(|(y-f)/y|).
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Time Series Analysis algorithm: ________. **Answer**: O(n)
+Q: MAPE trap?
+A: Undefined at actual = 0; explodes near zero - exclude such points.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+Q: Additive decomposition?
+A: y = trend + seasonal + residual.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+Q: Stationarity condition for AR(1)?
+A: |phi_1| < 1.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: First difference of a linear trend gives what?
+A: A constant mean plus MA(1)-type noise - stationary.
+
+Q: Why report baselines?
+A: A model that cannot beat seasonal-naive adds nothing.
+
+Q: Do forecast intervals widen with horizon?
+A: Yes - error variance grows with each step ahead.

@@ -1,29 +1,46 @@
-﻿# Internals: Experimentation and A/B Testing Implementation
+# Internals - Experimentation Computations
 
-## Deep Dive into Implementation Details
+## Normal CDF via erf
 
-### Memory Layout
-Stack-allocated primitives for performance-critical sections, heap objects for larger structures.
+Abramowitz-Stegun 7.1.26 rational approximation, max error ~1.5e-7 -
+five orders below any decision threshold used here. No lookup tables,
+no dependencies, deterministic across JVMs.
 
-### Instruction Flow
-1. Method dispatch
-2. Input validation
-3. Normalization
-4. Core computation loop
-5. Convergence check
-6. Result post-processing
-7. Return
+## Chi-square 1-df closed form
 
-### JIT Compilation
-The JIT compiler may apply inlining, loop unrolling, hoisting, and SIMD vectorization.
+For two arms the 1-df CDF equals erf(sqrt(chi2/2)) - exact, not an
+approximation. k > 2 arms would need the incomplete gamma; out of
+scope, documented at the call site.
 
-### Garbage Collection Impact
-- Temporary objects increase GC pressure
-- Object pooling reduces allocation rate
-- Primitive collections avoid boxing
+## Power table
 
-## Internals Checklist
-- [ ] Memory access pattern analyzed
-- [ ] Hot paths identified for optimization
-- [ ] GC impact measured
-- [ ] Thread safety verified
+O(1) per n: one sqrt per row. Inputs are assumed planning rates, kept
+in a separate type (PlanRate) from observed rates so planning numbers
+can never leak into a readout.
+
+## Overflow discipline
+
+Counts are long; products like x*(n-x) cast to double before dividing.
+n = 0 and x > n throw IllegalArgumentException with the offending arm
+named - silent clamping is banned.
+
+## Determinism
+
+Zero randomness in analysis paths: same counts, same readout, every
+JVM. The only RNG in the lab lives in the peeking exercise with a
+fixed seed, and its seed is part of the printed output.
+
+## Edge cases
+
+- Zero conversions in both arms: d = 0, SE = 0, z = 0/0 - throw a named
+  exception (no information) instead of printing NaN as a result.
+- Tiny p (z > 8): erf saturates to exactly 0.0 in doubles - report p as
+  "< 1e-15" style text rather than a false exact zero.
+- Unbalanced arms (90/10 ramp): formulas hold as written; power follows
+  the smaller arm, so size ramps by it.
+
+## Why unpooled SE here
+
+Unpooled SE matches the CI duality used throughout (interval excludes 0
+iff p < 0.05). Pooled variants exist for the test-only view; mixing the
+two definitions is the classic CI/p disagreement bug.

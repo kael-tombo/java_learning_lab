@@ -1,45 +1,43 @@
-﻿# Architecture: Visualization Fundamentals Implementation
+# Visualization Fundamentals - Architecture
 
-## System Design
+## Text-chart pipeline
 
-The Visualization Fundamentals implementation follows a layered architecture:
+```text
+values --> SCALE (min, width, bins) --> BIN (index per value)
+   --> COUNT (per-bin totals) --> RENDER (count + '#' bar per bin)
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Component responsibilities
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+- **Scale:** owns edges. Declares min, width, bin count, and the edge rule
+  (left-closed, right-open; top bin closed on both ends). No counting logic.
+- **Binner:** pure index function `(int)((v - min) / width)` with clamping.
+  Out-of-range values pin to the end bins and are reported, never dropped.
+- **Counter:** integer array accumulation, O(n). Totals must reconcile with
+  input length.
+- **Renderer:** prints `edge-range: count + bar`. Bar length equals count
+  exactly (scale 1 char = 1 observation); no normalization without a label.
+- **Binned-mean reducer:** `TreeMap` from cell index to (sum, n), emitting
+  cells in x order with both n and mean shown.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## JDK mapping
 
-## Design Patterns
+- Counts: `int[]` arrays indexed by bin - no boxing, no maps needed.
+- Category counts: `LinkedHashMap` with `merge` for stable label order.
+- Ordered cells: `TreeMap<Integer, double[]>` so output follows the x-axis.
+- Bars: `StringBuilder` loops; deterministic across runs and locales.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Invariants
 
-### Template Method
-Common algorithm skeleton with customizable steps.
+1. The scale is declared before any value is examined for shape.
+2. Every input value appears in exactly one bin; counts sum to n.
+3. Empty bins render explicitly - absence of bar is data.
+4. Any aggregated number (cell mean, proportion) is printed beside its n.
 
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
+## Worked trace through the pipeline
 
-## Package Structure
-`
-com.mathlab.visualization/
-â”œâ”€â”€ VisualizationFundamentals.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+Input 5.0 with scale (min 0, width 2): index floor(2.5) = 2, counter[2]++.
+After all ten values, counters read [1,5,3,0,1]; renderer prints each with
+its edge range. Change width to 5 and the same values give [9,1]: identical
+input, coarser lens. The architecture isolates that lens choice in Scale so
+reviews can challenge it without rereading counting code.

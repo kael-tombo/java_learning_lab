@@ -1,35 +1,50 @@
-﻿# Debugging: Data Wrangling Implementation
+# Data Wrangling - Debugging Guide
 
-## Common Bugs
+## Symptom: column mean is NaN after cleaning
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+Cause: a NaN slipped through the sum loop. Fix: filter with `Double.isNaN`
+before aggregating, then assert zero NaN remain (or an explicit accepted
+count). Add a post-fill scan that fails on unexpected NaN.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Symptom: unique-key count exceeds row count
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+Cause: key includes a varying column (timestamp with millis, UUID) so every
+row looks unique. Fix: drop non-identifying fields from the key and
+normalize (trim, case-fold, truncate timestamps to the event grain).
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Symptom: coercion rejects spike after a release
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+Cause: upstream format drift - new sentinel, thousands separators, encoding
+change. Fix: histogram reject reasons, diff against the known set
+(`"3x"`-style, blank, sentinel), and confirm with the feed owner before
+touching the grammar.
 
-## Debugging Techniques
+## Symptom: IQR flags everything / nothing
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+Cause: wrong quartile method on tiny n, or fences computed on uncleaned
+data (NaN included, duplicates included). Fix: clean first (coerce, dedup,
+drop NaN), then compute type-7 quartiles on the analysis column.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
+## Symptom: z-screen misses an obvious giant
 
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+Cause: masking - the giant inflates the sd (14.73 here absorbs part of the
+60.0). Fix: lead with the IQR rule for detection; use z-scores descriptively
+after handling the flag.
+
+## Symptom: reruns shuffle row order
+
+Cause: `HashMap`-based dedup iteration. Fix: `LinkedHashMap` or an explicit
+sort of the output; diff reruns byte-wise in tests.
+
+## Symptom: downstream mean shifted after a "no-op" clean
+
+Cause: an implicit choice (zero-fill, key change) moved the estimand.
+Fix: diff before/after summaries per column and require the receipts
+(counts at each stage) in every cleaning report.
+
+## Symptom: median disagrees with a hand calculation
+
+Cause: even-n averaging forgotten (median of four values needs the middle
+pair's mean), or NaN/duplicates left in the sorted array. Fix: assert the
+array is NaN-free and deduped before sorting, and unit-test median on both
+odd- and even-length inputs with known answers (7 values median 9.0 here).

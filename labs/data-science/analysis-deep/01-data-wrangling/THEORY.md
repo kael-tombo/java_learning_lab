@@ -1,70 +1,54 @@
-﻿# Data Wrangling -- Theory
+# Data Wrangling - Theory
 
-## 1. Introduction
+## 1. Missingness mechanisms
 
-Data Wrangling is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+Let R be a response indicator (1 = observed, 0 = missing) and Y the data.
 
-## 2. Core Definitions
+- **MCAR (missing completely at random):** P(R = 0) is independent of all
+  data, observed or not. Dropping incomplete rows keeps estimates unbiased
+  but wastes information.
+- **MAR (missing at random):** P(R = 0) depends only on observed data.
+  Example: income missing more often for young respondents, and age is
+  recorded. Analyses conditioned on the observed predictors stay valid.
+- **MNAR (missing not at random):** P(R = 0) depends on the missing value
+  itself. Example: high earners skip the income question. No generic fix
+  works; the mechanism itself must be modelled.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Data Wrangling rests on several key definitions and axioms that form the foundation of the theory.
+## 2. Imputation estimators
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+- **Mean imputation:** fill with the observed mean. Preserves the mean but
+  shrinks variance and understates uncertainty.
+- **Median imputation:** robust to skew and outliers; standard for long-tailed
+  money variables.
+- **Mode imputation:** the categorical analogue; fill with the most frequent
+  level.
+- **Forward-fill:** carry the last observation forward; only valid for ordered
+  (usually time-indexed) data where persistence is plausible.
+- **Deletion:** listwise deletion is unbiased only under MCAR.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 3. Deduplication keys
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Data Wrangling:
+A dedup key is a set of columns that functionally identifies one real-world
+event, e.g. `(customer_id, order_date)`. Exact duplicates share the full key;
+near-duplicates need normalized keys (trimmed, case-folded, canonical dates).
+First-seen order is kept with an insertion-ordered map.
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+## 4. Type coercion
 
-### 2.3 Formal Framework
-The mathematical framework for Data Wrangling is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+Parsing turns text into numbers under a strict grammar: optional whitespace,
+optional sign, digits, at most one decimal point. Anything else - `"3x"`,
+blanks, sentinels like `"N/A"` - is rejected and counted, never silently
+dropped or coerced to zero.
 
-## 3. Mathematical Formulation
+## 5. Outlier rules
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+- **Tukey fences:** with quartiles Q1, Q3 and IQR = Q3 - Q1, flag values
+  outside `[Q1 - 1.5 x IQR, Q3 + 1.5 x IQR]`.
+- **z-score screen:** flag `|x - mean| / sd > k` (commonly k = 2 or 3).
+  z-scores use the mean and sd themselves, so a huge outlier inflates the
+  sd and can mask itself; the IQR rule resists this.
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+## 6. Guiding rule
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Data Wrangling is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Data Wrangling extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Data Wrangling requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Data Wrangling connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Data Wrangling provide the rigorous basis needed for correct computational implementation and real-world application.
+Every cleaning choice changes the estimand. Record the rule, the count of
+affected rows, and the before/after summary so the wrangling is auditable.

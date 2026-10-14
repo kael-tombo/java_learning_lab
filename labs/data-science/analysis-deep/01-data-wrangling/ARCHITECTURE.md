@@ -1,45 +1,38 @@
-﻿# Architecture: Data Wrangling Implementation
+# Data Wrangling - Architecture
 
-## System Design
+## Pipeline stages as components
 
-The Data Wrangling implementation follows a layered architecture:
+```text
+raw text -> PROFILER -> COERCER -> DEDUPER -> IMPUTER -> OUTLIER SCREEN -> VALIDATOR -> clean table
+               |           |          |           |             |               |
+            counts    reject log   key set    fill value    fence bounds    receipts
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Component responsibilities
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+- **Profiler:** read-only pass. Emits per-column missing counts and observed
+  type samples. Never mutates.
+- **Coercer:** pure function `String -> OptionalDouble` plus a reject log.
+  Trimming happens inside; the grammar is fixed (sign, digits, one dot).
+- **Deduper:** `LinkedHashMap<String, Row>` keyed by composite key with
+  `putIfAbsent`, preserving first-seen order and giving stable output.
+- **Imputer:** two-phase. Fit phase computes the fill value from observed
+  cells only; apply phase substitutes it for NaN. The fill value and the
+  filled count travel together as one record.
+- **Outlier screen:** needs sorted data for quartiles; emits bounds plus the
+  flagged subset for human review, never deletes by itself.
+- **Validator:** asserts row-count reconciliation
+  (in = kept + removed + rejected) and zero unexplained missing.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## JDK mapping
 
-## Design Patterns
+- Missing numerics: `Double.NaN` with `Double.isNaN` tests.
+- Ordered dedup: `LinkedHashMap` (insertion order + O(1) lookup).
+- Quantiles: copy, `Arrays.sort`, linear interpolation.
+- Aggregation without libraries: `Map.merge` and `computeIfAbsent`.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Data-flow invariants
 
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.datawrangling/
-â”œâ”€â”€ DataWrangling.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+1. No stage after the coercer sees unparsed text.
+2. The imputer never sees duplicated rows (dedup runs first).
+3. Every dropped or filled cell is counted in the receipts.

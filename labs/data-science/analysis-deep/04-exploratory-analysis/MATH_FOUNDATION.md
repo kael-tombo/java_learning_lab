@@ -1,81 +1,47 @@
-﻿# Math Foundation for Exploratory Data Analysis
+# Exploratory Analysis - Math Foundation
 
-## Prerequisite Mathematics
+## Stratified vs pooled rates
 
-This document reviews the mathematical prerequisites needed to study Exploratory Data Analysis effectively.
+Stratum rates r_1 = a_1/n_1, r_2 = a_2/n_2; pooled R = (a_1+a_2)/(n_1+n_2),
+a weighted average with weights n_1, n_2. Treatment pooled:
+(81+192)/(90+263) = 273/353 = 0.7733711048158645. Control pooled:
+(234+55)/(270+80) = 289/350 = 0.8257142857142857. Different weight vectors
+per arm let each arm's pooled rate sit nearer its own larger ward - the
+entire paradox is weighting, no deeper magic.
 
-## 1. Algebra Review
+## Reversal condition
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+With treatment leading both wards (90.0 > 86.7, 73.0 > 68.8), pooled
+reversal needs control's weight concentrated where rates are high (ward A:
+270 of 350 controls) and treatment's where rates are low (ward B: 263 of
+353 treated). In symbols, pooled compares w_A^T r_A^T + w_B^T r_B^T against
+w_A^C r_A^C + w_B^C r_B^C with different w per arm - unlike-stratified
+averages need not preserve within-stratum order.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## Grouped-mean decomposition
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+Overall mean = (n_N m_N + n_S m_S)/(n_N + n_S) = (90+120)/6 = 35.0, always
+between m_N = 30.0 and m_S = 40.0. The between-group gap (10.0) vs
+within-group spread (north spans 40) previews ANOVA logic: compare gap to
+background variation before declaring regions different.
 
-## 2. Functions and Graphs
+## Pearson r as cosine
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+r is the cosine of the angle between centered vectors: 0.9932316263764919
+means age and spend point nearly the same direction in 5-space; -0.985 and
+-0.991 point nearly opposite. Cosine symmetry (r_xy = r_yx) is the algebra
+behind "correlation has no direction" - causation's arrow cannot come from a
+symmetric measure.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## Mean vs median gap as skew meter
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+Mean 4.444444444444445 minus median 3.0 = 1.44 on data spanning 1-15: the
+gap's sign names the longer tail (right), its size relative to spread says
+the tail matters. Formal skew would cube deviations; the gap already
+suffices for triage.
 
-## 3. Trigonometry
+## Small-n uncertainty on r
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+On n = 5, even r 0.99 has wide confidence bands (roughly +/-0.05 or more by
+Fisher z). EDA reports the point estimate with n attached and refuses
+headlines: magnitude impresses, n qualifies, design decides.

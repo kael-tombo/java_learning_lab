@@ -1,31 +1,43 @@
-﻿# History: Descriptive Statistics
+# Descriptive Statistics - History
 
-## Historical Development
+## Galton, regression, and correlation (1880s)
 
-### Ancient Origins
-Early exploration of core concepts by ancient mathematicians.
+Francis Galton's studies of heredity (sweet peas, then human stature, mid
+1880s; "regression towards mediocrity" 1886) discovered that extreme parents
+have less-extreme children - the first regression line, fitted by eye. The
+phenomenon named regression, and Galton's search for its measure launched
+correlation itself.
 
-### 17th-18th Century
-Scientific revolution advances: formalization, connections to physics.
+## Pearson's r (1890s)
 
-### 19th Century
-Rigorous foundations: formal definitions, fundamental theorems.
+Karl Pearson formalized the product-moment correlation coefficient in the
+1890s: r = s_xy / sqrt(s_xx s_yy), the unit-free -1..1 dial used in this
+lab (0.9901475429766744 on the demo pair). Pearson gave Galton's insight its
+exact arithmetic and its bounds.
 
-### 20th Century
-Computational revolution: algorithm development, numerical analysis.
+## Spearman's rank correlation (1904)
 
-### Modern Era
-High-performance computing, GPU acceleration, ML integration.
+Charles Spearman (1904) replaced values by ranks before correlating,
+measuring monotone association immune to outliers and curvature. Where
+Pearson asks "how linear?", Spearman asks "how consistently ordered?" - the
+robust companion every skewed dataset deserves.
 
-## Key Figures
-Many brilliant mathematicians and computer scientists advanced this field.
+## Tukey's five numbers (1977)
 
-## Timeline
-| Era | Development |
-|-----|-------------|
-| Ancient | Early concepts |
-| 1600s | Formal foundations |
-| 1800s | Rigor and extensions |
-| 1900s | Computational methods |
-| 2000s | HPC and GPU |
-| Present | AI/ML integration |
+John Tukey's "Exploratory Data Analysis" (1977) promoted the five-number
+summary and box plot: describe with resistant quartiles first, moments
+second. The lab's Q1 7.0 / median 9.0 / Q3 13.5 / IQR 6.5 reporting order
+follows his prescription exactly.
+
+## Anscombe's warning (1973)
+
+F. J. Anscombe's 1973 quartet proved identical means, variances, and
+correlations can hide different shapes - the reason this lab pairs every
+moment (skew 0.58, kurtosis -0.62) with quartile and dot-plot inspection.
+
+## The through-line
+
+Galton saw the pattern, Pearson measured it, Spearman robustified it, Tukey
+taught resistant description, Anscombe proved summaries alone are blind.
+Five lessons, one workflow: center, spread (labelled n), shape, association
+- then plot.

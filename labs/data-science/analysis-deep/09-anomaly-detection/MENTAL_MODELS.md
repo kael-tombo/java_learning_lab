@@ -1,26 +1,52 @@
-﻿# Mental Models: Anomaly Detection Advanced
+# Mental Models - Anomaly Detection
 
-## Conceptual Frameworks
+## 1. The stranger at the reunion
 
-### Model 1: The Machine
-Input -> processing gears -> output, with configurable parameters.
+Anomalies are not the tallest family members (tails) but the person
+nobody recognizes (different mechanism). Family resemblance checks
+(bulk models) spot them faster than height charts (fixed cutoffs).
 
-### Model 2: The Map
-Maps from input space to output space -- understanding the mapping predicts behavior.
+## 2. Masking as fog from the fire
 
-### Model 3: The Conversation
-Input asks a question, computation processes it, output provides answer.
+The fire (extreme) makes its own fog (inflated sd) and hides inside it.
+Robust stats are wind: median/MAD blow the fog away because extremes
+never enter the measurement.
 
-## Analogies
+## 3. Isolation as hide-and-seek
 
-### Cooking
-Ingredients (input) + Recipe (algorithm) + Techniques (operations) = Dish (output)
+Crowds are hard to find alone in; the stranger on the empty playground
+is found in one glance. Random splits are the seeker; depth is glances.
 
-### Navigation
-Start (initial) -> Route (algorithm) -> Destination (result)
+## 4. Threshold as a dam level
 
-## Thinking Tools
-1. **First Principles**: Break down to fundamentals
-2. **Inversion**: Consider what would cause failure
-3. **Extreme Cases**: Test with extreme inputs
-4. **Analogy Transfer**: Map from familiar domains
+Lower the dam, more water (catches) but more debris (false pages).
+Nobody asks the "correct" dam height without knowing flood vs drought
+costs - thresholds are economics wearing math.
+
+## 5. Base rate as the ocean
+
+Sensitivity is your net; prevalence is the ocean's fish density. A fine
+net in an empty ocean still hauls mostly water - PPV is fish over hauls,
+and the ocean decides it.
+
+## 6. Alerts as fire alarms
+
+An alarm that rings nightly gets its battery removed - then the fire
+kills everyone. Precision is the battery; every false page loosens it.
+
+## 7. Drift as the moving shore
+
+The bulk (shore) moves with product and season; fixed fences end up
+marking dry land as sea. Re-fit on schedule or drown in false tides.
+
+## 8. Precision-at-k as a taste test
+
+No labels? Grade the top 20 flags by hand - the chef tastes the soup
+before serving the banquet. Twenty grades buy a usable precision
+estimate for an hour of operator time, the cheapest evaluation available.
+
+## 9. Tiers as triage tags
+
+Battlefield medics tag: immediate, delayed, minimal. Score bands are
+triage tags for attention - the tag decides the response speed, not the
+patient's worth. Untagged flags all scream equally, and equally ignored.

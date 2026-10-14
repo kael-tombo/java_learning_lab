@@ -1,26 +1,49 @@
-﻿# Mental Models: Time Series Analysis
+# Mental Models - Time Series
 
-## Conceptual Frameworks
+## 1. Memory with fading echoes
 
-### Model 1: The Machine
-Input -> processing gears -> output, with configurable parameters.
+Today = weighted echo of recent days plus fresh noise. AR phrases it as
+echoes of values, MA as echoes of shocks - same intuition, two doors.
 
-### Model 2: The Map
-Maps from input space to output space -- understanding the mapping predicts behavior.
+## 2. Stationarity as a level playing field
 
-### Model 3: The Conversation
-Input asks a question, computation processes it, output provides answer.
+You can only learn "typical behavior" if typical stays put. Trend means
+the field itself is moving; differencing stops the field so you can
+study the game.
 
-## Analogies
+## 3. ACF/PACF as an X-ray
 
-### Cooking
-Ingredients (input) + Recipe (algorithm) + Techniques (operations) = Dish (output)
+ACF shows all ripples including secondhand ones; PACF filters to the
+direct bone at each lag. Cutoffs tell you how many bones matter.
 
-### Navigation
-Start (initial) -> Route (algorithm) -> Destination (result)
+## 4. The future quarantine
 
-## Thinking Tools
-1. **First Principles**: Break down to fundamentals
-2. **Inversion**: Consider what would cause failure
-3. **Extreme Cases**: Test with extreme inputs
-4. **Analogy Transfer**: Map from familiar domains
+The test tail is quarantined: nothing learned past its border may cross
+back. Every leak (scaling on full data, shuffling) breaks quarantine.
+
+## 5. Baselines as sparring partners
+
+Naive and seasonal-naive are the gym partners your model must beat
+daily. If it cannot win the easy rounds, it is not ready.
+
+## 6. Horizon fog
+
+Each step ahead adds fog. Near forecasts are headlights, far ones are
+guesses in mist - intervals must visibly widen.
+
+## 7. Residuals as the conscience
+
+Leftover pattern in residuals is the model confessing incompleteness.
+White-noise residuals are a clean conscience, not proof of truth.
+
+## 8. Differencing as stopping the escalator
+
+Trend is an escalator: measuring step patterns while riding confuses
+motion with structure. Differencing steps off onto solid floor - the
+remaining wiggles are the series' own, readable at last.
+
+## 9. Baselines as the null hypothesis
+
+Every model is a claim ("structure beyond last-value memory exists").
+Naive is the null; rolling error is the test statistic. Ship only on
+rejection - otherwise the claim is fashion.

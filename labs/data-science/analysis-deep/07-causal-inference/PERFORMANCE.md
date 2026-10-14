@@ -1,61 +1,43 @@
-﻿# Performance: Causal Inference Implementation
+# Performance - Causal Inference
 
-## Performance Analysis
+## Complexities
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+- Stratified gaps, DiD, balance tables: O(n) single passes.
+- Nearest-score matching (taught conceptually): O(n log n) with sorted
+  scores; this lab's snippets use exact strata, O(cells).
+- Sensitivity grids: O(grid * cells) - trivial at these sizes.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Scaling guidance
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+- Causal work is assumption-bound, not compute-bound: ten clean strata
+  beat a million rows with unmeasured confounding.
+- With large registries, exact strata explode combinatorially; coarsen
+  deliberately (age bands, not exact age) and show balance before/after.
+- Bootstrap CIs around adjusted gaps cost O(B * n); B = 1000 is the
+  conventional workhorse - state B, seed the RNG, report it.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Causal Inference Implementation
+## No invented benchmarks
 
-## Code Smells and Improvements
+No timings are quoted: on lab-sized tables everything is
+sub-millisecond and any number would be theater. Profile only if a
+real registry pipeline is slow, then report hardware with the numbers.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Real cost driver
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+Human time dominates: drawing the confounding map and defending the
+assumption dwarf computation. Budget review hours, not server hours.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## Cost table
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+| Operation | Time | Memory |
+|---|---|---|
+| stratum gaps, DiD | O(cells) | O(strata) |
+| balance per covariate | O(n) | O(1) |
+| sensitivity grid G | O(G * cells) | O(G) output |
+| bootstrap B resamples | O(B * n) | O(n) |
 
-## Refactoring Plan
+## Measurement note
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+Timing these is theater at lab scale; time the data plumbing (registry
+extracts, joins) instead, and report row counts with every duration so
+rates (rows/sec) - not naked seconds - are comparable.

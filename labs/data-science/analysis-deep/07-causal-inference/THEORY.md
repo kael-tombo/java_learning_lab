@@ -1,70 +1,61 @@
-﻿# Causal Inference -- Theory
+# Causal Inference Theory
 
-## 1. Introduction
+## 1. Correlation vs causation
 
-Causal Inference is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+Two variables move together (correlation) for three possible reasons:
+A causes B, B causes A, or a third factor C drives both. Data alone
+shows the co-movement; only design plus assumptions separate the cases.
+"Conditioning on more variables" does not automatically help - adjusting
+for a mediator or a collider can create bias rather than remove it.
 
-## 2. Core Definitions
+## 2. Potential outcomes framing
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Causal Inference rests on several key definitions and axioms that form the foundation of the theory.
+For a binary treatment, each unit has two potential outcomes: Y(1) if
+treated, Y(0) if not. The causal effect for that unit is Y(1) - Y(0),
+but only one is ever observed - the fundamental problem of causal
+inference. All methods estimate averages (e.g. the average treatment
+effect) under assumptions that stand in for the missing half of data.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. RCTs: the gold standard
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+Randomized controlled trials assign treatment by chance. Randomization
+balances observed and unobserved confounders between arms in
+expectation, so the simple difference in means estimates the average
+causal effect without further adjustment. Blinding and pre-registration
+protect the design from human interference and outcome shopping.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Causal Inference:
+## 4. Confounding and Simpson's paradox
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+A confounder causes (or proxies) both treatment and outcome. Pooling
+across its levels can reverse the true pattern: each subgroup favors
+one option while the aggregate favors the other. CODE_DEEP_DIVE.md
+verifies a concrete case (hospital success rates reversing on pooling).
 
-### 2.3 Formal Framework
-The mathematical framework for Causal Inference is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Propensity-score matching (concept)
 
-## 3. Mathematical Formulation
+The propensity score e(X) = P(treated | covariates X) summarizes who
+gets treated. Matching or stratifying treated and control units with
+similar scores mimics a trial on observables. Assumption, stated
+plainly: no unmeasured confounding - matching fixes only what was
+measured. No theorems are claimed beyond this concept.
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 6. Difference-in-differences structure
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+With a treated and a control group observed before and after:
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+  effect = (treat_post - treat_pre) - (ctrl_post - ctrl_pre)
 
-### 3.3 Existence and Uniqueness
-A critical question in Causal Inference is whether solutions exist and whether they are unique.
+Subtracting the control change removes shared time trends. Assumption:
+parallel trends - without treatment, both groups would have moved
+together. It cannot be proven from the two data points; pre-period
+history can only make it more or less plausible.
 
-## 4. Important Theorems
+## 7. Regression discontinuity and instruments (concepts)
 
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Causal Inference extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Causal Inference requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Causal Inference connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Causal Inference provide the rigorous basis needed for correct computational implementation and real-world application.
+- Discontinuity: treatment assigned by a cutoff (exam score >= 70 gets
+  tutoring). Units just above and below are nearly comparable, so the
+  jump in outcomes at the cutoff estimates a local effect.
+- Instruments: a variable Z (say, draft lottery) pushing treatment.
+  Requirements: relevance (Z moves treatment) and exclusion (Z affects
+  the outcome only through treatment). Exclusion is a subject-matter
+  argument, never a statistical proof.

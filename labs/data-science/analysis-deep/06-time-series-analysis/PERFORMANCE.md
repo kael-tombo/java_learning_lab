@@ -1,61 +1,44 @@
-﻿# Performance: Time Series Analysis Implementation
+# Performance - Time Series
 
-## Performance Analysis
+## Complexities (this lab's scope)
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+- Differencing, MAE/RMSE/MAPE, naive forecasts: O(T) time, O(1) extra.
+- Sample ACF to lag K: O(T*K) time, O(K) extra.
+- Rolling backtest with R origins and horizon H: O(R*H) forecasts plus
+  refit cost per origin for fitted models (baselines refit for free).
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Scaling guidance
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+- Small data (T < 10^4): everything here runs in milliseconds; clarity
+  beats optimization. Prefer the two-pass variance.
+- Long series (T > 10^5): compute ACF with stride sampling for
+  exploration, full pass only for final numbers.
+- Many series (retail catalogs): fit per-series baselines first and
+  spend fitting budget only where baselines fail - most series never
+  need more.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Time Series Analysis Implementation
+## No invented benchmarks
 
-## Code Smells and Improvements
+This lab states no timings or speedups: wall-clock numbers depend on
+hardware and JVM and would mislead. Measure your own with JMH if you
+need them.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Honest cost driver
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+Refitting per rolling origin dominates cost for estimated models. If
+that is too slow, refit every k-th origin and say so in the report.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## Cost table (this lab's programs)
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+| Operation | Time | Extra memory |
+|---|---|---|
+| diff / naive / metrics | O(T) | O(1) |
+| ACF to lag K | O(T*K) | O(K) |
+| PACF Levinson-Durbin | O(K^2) | O(K) |
+| rolling backtest, R origins | O(R * refit) | O(H) |
 
-## Refactoring Plan
+## Measurement note
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+If you time anything, report JVM version, warmup, T, K, and R alongside
+- a naked millisecond number reproduces nothing. Median of 5 timed runs
+after 3 warmup runs is the minimum honest protocol.

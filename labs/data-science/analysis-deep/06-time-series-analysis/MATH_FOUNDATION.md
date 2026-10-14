@@ -1,81 +1,49 @@
-﻿# Math Foundation for Time Series Analysis
+# Math Foundation - Time Series
 
-## Prerequisite Mathematics
+## 1. Autocovariance and autocorrelation
 
-This document reviews the mathematical prerequisites needed to study Time Series Analysis effectively.
+Let mu = E[y_t]. Lag-k autocovariance:
 
-## 1. Algebra Review
+  gamma_k = E[(y_t - mu)(y_{t-k} - mu)]
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+Autocorrelation rho_k = gamma_k / gamma_0, so rho_0 = 1 always.
+Sample estimate on T points with sample mean m:
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+  rho_k = sum_{t=k+1..T} (y_t - m)(y_{t-k} - m) / sum_t (y_t - m)^2
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+For a white-noise series, sample ACF values beyond lag 0 scatter
+inside roughly +/- 1.96/sqrt(T) (an approximate 95% band).
 
-## 2. Functions and Graphs
+## 2. AR(1) stationarity derivation
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+y_t = c + phi * y_{t-1} + e_t, e_t white noise with variance s^2.
+Repeated substitution gives y_t as a weighted sum of past shocks with
+weights 1, phi, phi^2, ... This sum has finite variance only when the
+geometric weights decay, i.e. |phi| < 1. Then E[y_t] = c / (1 - phi)
+and Var(y_t) = s^2 / (1 - phi^2).
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## 3. Why differencing removes a linear trend
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+If y_t = a + b*t + stationary noise, first differences give
+w_t = y_t - y_{t-1} = b + (noise_t - noise_{t-1}), whose mean b is
+constant and whose noise part is stationary (an MA(1) structure).
+Hence ARIMA sets d = 1 for a linear trend, d = 2 for quadratic.
 
-## 3. Trigonometry
+## 4. MA(1) autocorrelation
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+y_t = mu + e_t + theta * e_{t-1}. Then gamma_0 = s^2(1 + theta^2),
+gamma_1 = s^2 * theta, gamma_k = 0 for k >= 2. So the ACF cuts off
+after lag 1: the signature of an MA(1) process.
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
+## 5. Error metric relationships
 
-## 4. Key Formulas for Reference
+RMSE >= MAE always (square-then-root penalizes spread; equality only
+when all absolute errors are identical). MAPE is scale-free (percent)
+but asymmetric: it punishes positive errors more than negative ones
+and is undefined at actual = 0.
 
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
+## 6. Naive forecast error identity
 
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+For a random walk y_t = y_{t-1} + e_t, the naive forecast (predict the
+last value) has expected squared error exactly s^2 per step, which is
+why naive is the baseline to beat rather than a straw man.

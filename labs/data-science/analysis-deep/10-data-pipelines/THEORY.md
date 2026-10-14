@@ -1,76 +1,58 @@
-﻿# Data Pipelines -- Theory
+# Data Pipeline Theory
 
-## 1. Introduction
+## 1. Batch vs streaming
 
-Data Pipelines is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+Batch processes bounded inputs on a schedule (hourly, daily): simple,
+replayable, higher latency. Streaming processes unbounded event flows
+continuously: fresh results, harder correctness (out-of-order events,
+late data, state management). Choose by decision latency: daily
+restocking needs batch; fraud interdiction needs streaming - and say
+which you chose and why, since each heritage brings its failure modes.
 
-## 2. Core Definitions
+## 2. Idempotency
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Data Pipelines rests on several key definitions and axioms that form the foundation of the theory.
+An operation is idempotent if applying it twice equals applying it once
+(upsert by key, write-if-unchanged, delete-if-present). Replay-safe
+sinks make retries harmless: the PipeIdem demo merges batches by order
+key so a replayed batch changes nothing (rows stay 3, values intact).
+Design sinks idempotent first; retries are inevitable.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Delivery semantics (conceptual, careful)
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+- At-least-once: every record arrives, duplicates possible. This is the
+  widely documented default posture of common message queues - stated
+  here as a general default only, with no vendor version claims.
+- At-most-once: no duplicates, but records may be lost.
+- Exactly-once: each record takes effect once. Achievable only as a
+  joint property of source, transport, and an idempotent or
+  transactional sink - never by the queue alone. Treat any stronger
+  claim (naming versions or products) as out of scope for this lab.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Data Pipelines:
+## 4. Schema evolution
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Additive changes (new optional field) keep old readers working:
+COMPATIBLE in the PipeSchema demo. Type changes or renamed required
+fields break readers: BREAKING. Rule: only additive-compatible changes
+flow without coordination; everything else is a versioned migration
+with a dual-read window.
 
-### 2.3 Formal Framework
-The mathematical framework for Data Pipelines is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Backfill and replay discipline
 
-## 3. Mathematical Formulation
+Reprocessing history (new logic, fixed bug) must be a first-class path:
+same code, explicit range, quarantined output compared before swap.
+Ad-hoc reruns against live tables double-count - replay writes to
+staging, diffs against production, then promotes.
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 6. Data-quality checks
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+Row counts vs source, null rates per column, distribution drift of key
+metrics vs a reference (PipeQuality: nullRate 0.333, drift 0.375 on toy
+data). Fail the batch loudly on breach; quarantined data beats silent
+corruption downstream.
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+## 7. Orchestration DAGs
 
-### 3.3 Existence and Uniqueness
-A critical question in Data Pipelines is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Data Pipelines extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Data Pipelines requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Data Pipelines connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Data Pipelines provide the rigorous basis needed for correct computational implementation and real-world application.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-
-- Great Expectations, "GX Core: Open Source Data Quality Platform" (fetched Oct 2026) — https://greatexpectations.io/ — takeaway for this lab: Expectations (e.g. column values between bounds) turn pipeline assumptions into testable, versioned assertions instead of reactive debugging.
-- Great Expectations, "Data Docs / communicate better" section (fetched Oct 2026) — https://greatexpectations.io/ — takeaway for this lab: auto-rendered validation results in plain language give the lab's pipeline stakeholders a shared, human-readable data-quality record.
-- Great Expectations, "Take action 24/7 / integrations" section (fetched Oct 2026) — https://greatexpectations.io/ — takeaway for this lab: pair Expectations with Actions and orchestrator (Airflow/Databricks/Snowflake) integration so bad data is blocked or alerted at detection time, not downstream.
+Tasks as a directed acyclic graph: extract -> validate -> transform ->
+serve, with retries per node and failure isolation. Acyclicity is the
+whole point (no task waits on its own output); keep the DAG definable
+without proprietary features so the pipeline is portable.

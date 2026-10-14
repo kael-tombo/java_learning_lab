@@ -1,35 +1,49 @@
-﻿# Debugging: Data Pipelines Implementation
+# Debugging - Data Pipelines
 
-## Common Bugs
+## 1. Row counts doubled after rerun
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+Cause: blind append sink replayed. Fix: keyed merge (PipeIdem); verify
+by replaying and asserting identical state - the exercise-1 assertion.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## 2. Nulls where values were expected
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+Cause: blank strings vs true nulls, or a renamed source column silently
+mapping to nothing. Fix: distinguish isBlank from null in checks; fail
+on unknown columns instead of ignoring them.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## 3. Schema change broke readers at midnight
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+Cause: breaking change deployed without versioning. Fix: CI compat gate
+(subset + types); breaking edits ship as v2 with a dual-read window and
+a dated reader-migration deadline.
 
-## Debugging Techniques
+## 4. Windows shifted after late data
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+Cause: arrival-time windows with late events, or no lateness policy.
+Fix: declare event-time semantics, route lates per policy, document the
+choice where the window is defined.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
+## 5. Non-deterministic replay output
 
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+Cause: wall-clock calls or hash-order iteration in transforms. Fix:
+event time only, ordered maps, double-run diff assertion in the backfill
+gate - determinism tested, not hoped.
+
+## 6. Silent column drop from source
+
+Cause: source renamed a field; pipeline selected known columns and
+ignored the rest. Fix: strict mode - unknown/missing columns quarantine
+the batch; schema diffs page before serving.
+
+## 7. Backfill promoted bad history
+
+Cause: promotion without diff tolerances. Fix: the six-line gate
+(counts, key overlap, mismatch rate, checks, version pin, sign-off) -
+missing lines block promotion mechanically.
+
+## 8. Drift passes but dashboards look wrong
+
+Symptom: trio green, metrics off. Cause: correct rows, wrong meaning -
+source redefined a code (status 3 now means refunded, meant shipped).
+Fix: semantic checks (value-distribution per code) alongside the trio;
+version the codebook with the schema.

@@ -1,33 +1,41 @@
-﻿# Why It Matters: Visualization Fundamentals
+# Visualization Fundamentals - Why It Matters
 
-## Real-World Importance
+## Wrong chart, wrong decision
 
-### 1. Scientific Computing
-Fundamental to simulations in physics, climate, and drug discovery.
+Bars without zero baselines exaggerate trivial gaps into crises; pie slices
+hide 3%-point differences that stacked bars would show; unplotted outliers
+drag regression lines across the page. Chart selection is decision quality:
+the lab's lone 9 changes "tight cluster around 3" into "cluster plus a
+special case to investigate".
 
-### 2. Engineering
-Every discipline relies on these foundations for design and analysis.
+## The cost of skipping the plot
 
-### 3. Machine Learning and AI
-Core to model training, optimization, and inference.
+Fitting a line through Anscombe's curved or outlier-driven sets yields a
+slope that describes no part of the data. One minute of plotting saves the
+week spent explaining a model that was blind from the start. The three
+mean-6.0 series make this concrete: any analysis run on means alone treats
+flat, trend, and outlier-pair as the same thing.
 
-### 4. Financial Modeling
-Risk analysis, portfolio optimization, quantitative trading.
+## Communication and trust
 
-### 5. Computer Graphics
-Rendering, animation, physics simulation.
+Counts printed beside bars (3/8 books) let any reader verify the claim;
+hidden denominators and truncated axes ask for faith instead. In reviews and
+publications, the reproducible text chart - edges, counts, n stated - is what
+separates evidence from illustration.
 
-## Impact by Industry
-| Industry | Application | Impact |
-|----------|-------------|--------|
-| Healthcare | Imaging, drug discovery | Life-critical |
-| Finance | Risk modeling, trading | Economic |
-| Technology | ML/AI, search | Transformative |
-| Manufacturing | Design optimization | Efficiency |
+## Scale honesty as ethics
 
-## Why Learn This?
-1. Foundational to modern technology
-2. Transferable across domains
-3. Durable knowledge
-4. Enables innovation
-5. High career value
+Truncation and dual axes are not style choices; they change conclusions
+while leaving numbers technically correct. Teams that standardize zero
+baselines and single-axis comparisons remove a whole class of misleading -
+yet defensible-looking - graphics from their reports.
+
+## Small plotted habits scale
+
+The disciplines here - stated edges, printed counts, denominators beside
+percents, a second bin width - cost seconds on ten values and save projects
+on ten million, where re-binning is expensive and truncated axes reach
+executives. Teams that require edges and n in every chart remove most
+visual misinformation before review, not after publication.
+
+Plot-first teams find the stray 9 in minutes; summary-first teams defend the mean for weeks.

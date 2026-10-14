@@ -1,36 +1,51 @@
-﻿# Interview: Data Wrangling
+# Data Wrangling - Interview Questions
 
-## Common Interview Questions
+## Q1. How do you decide between dropping and imputing missing values?
 
-### Q1: Conceptual
-**Q**: Explain Data Wrangling and its importance in computing.
-**A**: Data Wrangling enables precise analysis of quantitative relationships, foundational for scientific computing and ML.
+A: Diagnose the mechanism first. Under MCAR with a low missing rate,
+deletion is honest and simple. Under MAR, impute conditional on the observed
+drivers (bands, model) rather than a global fill. Under MNAR, admit the
+extra assumption and preferably model the mechanism - no fill is neutral.
 
-### Q2: Implementation
-**Q**: How to implement Data Wrangling in Java 21+?
-**A**: Input validation, core algorithm with stable numerics, convergence checking, error bounds.
+## Q2. What is wrong with filling NaN with zero?
 
-### Q3: Numerical Analysis
-**Q**: What numerical issues arise?
-**A**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+A: Zero is a value, not "unknown". On `{2, 4, NaN, 8, 10}` a zero-fill gives
+mean 4.8 instead of 6.0 - a fabricated loss. Rejects and gaps must stay
+distinguishable from measured zeros.
 
-### Q4: Performance
-**Q**: How to optimize for large inputs?
-**A**: Algorithmic improvements, parallel processing, memory optimization, JVM tuning.
+## Q3. How do you dedup a 10-million-row file on the JDK?
 
-### Q5: System Design
-**Q**: Design a computation service.
-**A**: API design, concurrency model, error handling, monitoring, deployment.
+A: Stream rows, normalize key fields (trim, case-fold), hash into a
+`HashSet`/`LinkedHashMap` of keys, keep first-seen. O(n) average time, O(u)
+memory for u unique keys; spill keys to disk if u exceeds memory.
 
-## Coding Challenge
-`java
-public double compute(double[] values) {
-    // O(n) time, O(1) space, handle edge cases
-    return 0.0;
-}
-`
+## Q4. IQR flags and z-scores disagree. What now?
 
-## Behavioral Questions
-1. Describe debugging a numerical issue
-2. How do you ensure code correctness?
-3. Approach to learning new math concepts?
+A: Report both and inspect skew. In right-skewed data the sd is inflated, so
+z-screens under-flag while IQR flags the tail - disagreement itself
+diagnoses skew/masking rather than a bug.
+
+## Q5. Your parser rejects 30% of a column after a feed change. Walk me
+through it.
+
+A: Check the reject reasons distribution first (new sentinel? thousands
+separators? encoding?). Quarantine rejects, confirm with the feed owner,
+then extend the grammar explicitly - never relax parsing silently.
+
+## Q6. How do you validate a cleaning run?
+
+A: Row reconciliation (in = kept + removed + rejected), missing recount,
+before/after mean and spread comparison, and rerun determinism. Any check
+that fails blocks downstream use.
+
+## Q7. Explain variance shrinkage to a stakeholder.
+
+A: "Every gap filled with the average makes the data look more certain than
+it is. Our error bars after filling are optimistic by design, so we widen
+them / run sensitivity with median fills before deciding."
+
+## Q8. When would you NOT remove an outlier?
+
+A: When the flag is the phenomenon: fraud, outage, breakthrough. Remove only
+proven collection errors, and even then log the removal. Default to
+robust methods (median, IQR) that tolerate the point instead.

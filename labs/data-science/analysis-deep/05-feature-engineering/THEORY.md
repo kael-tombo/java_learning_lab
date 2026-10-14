@@ -1,70 +1,45 @@
-﻿# Feature Engineering -- Theory
+# Feature Engineering - Theory
 
-## 1. Introduction
+## 1. Categorical encodings
 
-Feature Engineering is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+- **One-hot:** one binary column per level (red -> [1,0,0]). Claims no order
+  and no distance between levels. Cost: one column per level; rare levels
+  get near-constant columns.
+- **Ordinal:** integers 0,1,2,... Valid only for truly ordered levels
+  (small < medium < large); applied to nominal colors it invents an order
+  the model will exploit.
+- **Target encoding:** replace each level by its mean target (smoothed
+  toward the global mean). Powerful and dangerous: fitted on labels, it
+  leaks the answer into the question unless computed inside train folds
+  only, never on full data.
+- **Hashing trick:** hash level names into a fixed-width vector. Bounded
+  memory for open vocabularies (URLs, tokens); collisions merge levels at
+  random, so it suits linear models with many weak features, not exact
+  identity needs.
 
-## 2. Core Definitions
+## 2. Scaling
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Feature Engineering rests on several key definitions and axioms that form the foundation of the theory.
+- **Min-max:** (x - min)/(max - min) into [0,1]. Needs known bounds; one new
+  extreme breaks the range. Demo: {10..50} maps to quarters exactly.
+- **z-score:** (x - mean)/sd, zero center, unit spread. Assumes roughly
+  symmetric data; outliers inflate sd and compress everything else.
+- **Robust:** (x - median)/IQR. Immune to tails; the demo gives clean
+  [-1.0, -0.5, 0, 0.5, 1.0]. Default for skewed money-like columns.
+- Scale for the consumer: regularized linear models and gradient methods
+  need comparable magnitudes; trees do not care.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Transforms and interactions
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+- **Log:** compresses right skew (areas 50/80/120 become 3.91/4.38/4.79);
+  requires positive values (shift or filter first). Box-Cox generalizes the
+  power choice with a fitted exponent.
+- **Interactions:** products like area x rooms (100/240/480) let linear
+  models price combinations, not just parts. Create sparingly: each product
+  spends degrees of freedom and multiplies multicollinearity.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Feature Engineering:
+## 4. The leakage rule
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Feature Engineering is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Feature Engineering is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Feature Engineering extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Feature Engineering requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Feature Engineering connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Feature Engineering provide the rigorous basis needed for correct computational implementation and real-world application.
+Fit (means, sds, medians, target means, vocabularies) on train only; apply
+the frozen transform to validation, test, and each CV fold's held-out part.
+Fitting on all data (leaky mean 37.5 vs train mean 25.0) lets test
+information shape training features - optimism masquerading as accuracy.

@@ -1,76 +1,44 @@
-﻿# Visualization Fundamentals
+# Lab 02 - Visualization Fundamentals
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Visualization Fundamentals**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Choosing the right chart, scaling axes honestly, and defeating overplotting -
+computed in plain Java and printed as text, no graphics libraries.
 
-## Topics Covered
-- chart types line/bar/scatter/histogram/box/heatmap, encoding, perception, JFreeChart, XChart, Tablesaw
+## What you will learn
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Match chart to variable type: bars for categories, histograms for
+  continuous distributions, scatter for pairs, lines for time.
+- Read and set histogram bins; see how bin width changes the story.
+- Spot dishonest scales: truncated y-axes, dual axes, area-as-length.
+- State the Anscombe lesson: identical means can hide flat, trending, and
+  outlier-driven shapes.
+- Tame overplotting with transparency, jitter, and binned means.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Visualization Fundamentals
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Working data
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+- `{1, 2, 2, 3, 3, 3, 4, 4, 5, 9}` binned at width 2 from 0.
+- Sales labels `{books x3, games x3, food x2}` for bar counts.
+- Twelve `(x, y)` points binned into width-2 cells with cell means.
+- Three 5-point series, each with mean exactly 6.0 but sds 0.0, 3.16, 5.66.
 
-## Project Structure
-`
-visualization/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/visualization/VisualizationFundamentals.java
-    â””â”€â”€ test/java/com/mathlab/visualization/VisualizationFundamentalsTest.java
-`
+## Build and run (plain JDK only)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+```text
+javac --release 21 -encoding UTF-8 VizHistogram.java
+java VizHistogram
+```
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+Only `java.util` and `java.lang.Math` are used. Charts are text (`#` bars)
+so every plot is diffable and checkable by hand.
+
+## Suggested path
+
+THEORY.md for chart selection and scale rules, CODE_DEEP_DIVE.md for the
+three verified text-chart programs, STEP_BY_STEP.md for the hand-worked bin
+counts, then EXERCISES.md. Keep COMMON_MISTAKES.md open while you work: the
+truncated-axis and bin-width traps live there.
+
+## What done looks like
+
+You can bin any small dataset by hand, defend a bin width in one sentence,
+spot a truncated axis instantly, and reproduce the Anscombe moral (shared
+mean 6.0, three shapes) from memory when someone says "just average it".

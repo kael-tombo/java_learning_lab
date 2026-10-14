@@ -1,130 +1,51 @@
-﻿# Exercises: Data Wrangling
+# Data Wrangling - Exercises
 
-## Theoretical Exercises
+All tasks run on the plain JDK. Verify each answer by executing your code;
+expected values below come from verified reference runs.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Data Wrangling in your own words.
-**Answer**: Data Wrangling involves understanding how mathematical quantities change and relate under specific operations.
+## 1. Reproduce the imputation
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Data Wrangling.
-**Answer**: The proof follows from the definitions and established theorems.
+Rewrite the mean-fill for `{2, 4, NaN, 8, 10}` from scratch using streams.
+Expect: missing = 1, mean = 6.0, imputed `[2.0, 4.0, 6.0, 8.0, 10.0]`.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Data Wrangling to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## 2. Median-fill challenge
 
-## Programming Exercises
+Median-fill `{30, 5, NaN, 7, 9}`. Sorted observed = {5, 7, 9, 30}, median =
+(7 + 9)/2 = 8.0, so expect imputed `[30.0, 5.0, 8.0, 7.0, 9.0]`.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Data Wrangling.
+## 3. Forward-fill
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+Forward-fill `{NaN, 4.0, NaN, NaN, 10.0}` carrying the last seen value; a
+leading NaN has nothing to carry, so leave it missing. Expect
+`[NaN, 4.0, 4.0, 4.0, 10.0]` and report filled = 2, still-missing = 1.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## 4. Outlier screen drill
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+Screen `{12, 14, 13, 15, 14, 13, 12, 15, 14, 60}` with both rules. Expect
+Q1 = 13.0, Q3 = 14.75, IQR = 1.75, fences [10.375, 17.375], IQR flags
+[60.0]; mean = 18.2, sample sd = 14.72563901650602, z of 60 = 2.84, so the
+z > 2 screen flags [60.0] as well.
 
-## Challenge Problems
+## 5. Key redesign
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+The dedup table gains an `amount` column where `c7|2026-01-05` rows differ
+(12.50 vs 12.55). Rebuild with key `(customer, date, amount)` and show the
+unique count rises from 3 to 4. Write one paragraph on which key is correct
+for a revenue sum.
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+## 6. Coercion ledger
 
-## Solutions
+Extend the parser to accept `"1e3"` (parseDouble handles it: 1000.0) while
+still rejecting `"12,000"`. Report the new parsed/rejected counts on the
+seven original strings plus these two.
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Data Wrangling
+## 7. MNAR spotter
 
-## Multiple Choice Questions
+A survey column is missing for 40% of rows, and missingness rises with age,
+which is recorded. Classify (MAR - depends on observed age) and state the
+fix: condition on age or impute within age bands, not a global mean.
 
-### Question 1
-What is the fundamental principle underlying Data Wrangling?
+## 8. Receipts check
 
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Data Wrangling?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Write a validator asserting in = kept + removed + rejected on the dedup and
+coercion examples (5 = 3 + 2 + 0; 7 = 4 + 0 + 3). Fail loudly on mismatch.

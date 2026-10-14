@@ -1,76 +1,43 @@
-﻿# Descriptive Statistics
+# Lab 03 - Descriptive Statistics
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Descriptive Statistics**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Summarizing columns honestly: center, spread, shape, and association -
+every number hand-verifiable on one seven-element dataset.
 
-## Topics Covered
-- mean, median, mode, variance, skewness, kurtosis, quantiles, IQR, five-number summary, distribution analysis
+## What you will learn
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Compute mean, median, and mode, and say which the skew recommends.
+- Distinguish population variance (divide by n) from sample variance
+  (divide by n - 1, Bessel's correction) and defend the choice.
+- Read moment skew and excess kurtosis as shape diagnostics.
+- Report quartiles and IQR alongside the sd for skewed data.
+- Compute sample covariance and Pearson's r from the defining sums.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Descriptive Statistics
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Working data
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+One seven-point column `{3, 7, 7, 9, 12, 15, 21}` used throughout:
+sum 74, mean 10.571428571428571, median 9.0, mode 7.0 (twice). Population sd
+5.551245493635842, sample sd 5.99603043290984. Skew 0.5802988304934447,
+excess kurtosis -0.6180158764966452, IQR 6.5. Association demo: xs 1..5 vs
+ys {2,4,5,8,10} gives r = 0.9901475429766744.
 
-## Project Structure
-`
-descriptivestats/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/descriptivestats/DescriptiveStatistics.java
-    â””â”€â”€ test/java/com/mathlab/descriptivestats/DescriptiveStatisticsTest.java
-`
+## Build and run (plain JDK only)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+```text
+javac --release 21 -encoding UTF-8 DescCentral.java
+java DescCentral
+```
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+Only `java.util` (`Arrays`, `Map`) and `java.lang.Math` are used. No
+statistics libraries: every formula is written out so nothing hides.
+
+## Suggested path
+
+THEORY.md for definitions and the n vs n-1 rule, MATH_FOUNDATION.md for the
+derivations (including Bessel), CODE_DEEP_DIVE.md for the three verified
+programs, STEP_BY_STEP.md to check each number by hand, then EXERCISES.md.
+
+## Pocket dataset
+
+Memorize the seven values and their headlines (mean 10.57, median 9.0, sd
+~6.0, IQR 6.5, r-demo 0.99). Any new summary routine you write gets tested
+against these first: if it cannot reproduce them, it is wrong, not novel.

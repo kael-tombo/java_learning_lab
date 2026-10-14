@@ -1,61 +1,46 @@
-﻿# Performance: Visualization Fundamentals Implementation
+# Visualization Fundamentals - Performance Notes
 
-## Performance Analysis
+## Complexity of text charting (n values, b bins, c cells)
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+- Binning: O(n) time, O(b) counter memory. One pass, no sorting.
+- Category counting: O(n) average with hashing, O(labels) memory.
+- Binned means: O(n log c) with `TreeMap`, O(c) memory; a plain array of
+  cells indexed like bins recovers O(n) when edges are uniform.
+- Rendering: O(total count) characters; cap bar length (e.g. scale and label
+  it) when counts reach thousands so output stays readable.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Memory shape
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+Fixed bin arrays use O(b) regardless of n - the reason histograms scale to
+streams: update counters per value, render at the end. Category maps grow
+with distinct labels only. Raw values need not be retained after counting.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Visualization Fundamentals Implementation
+## JDK-specific guidance
 
-## Code Smells and Improvements
+- Primitive `int[]`/`double[]` counters beat boxed collections by a wide
+  constant factor; no allocation per value.
+- `StringBuilder` per line avoids quadratic string concatenation when bars
+  are long.
+- `TreeMap` pays log-factor per point; for uniform grids, index arithmetic
+  into arrays is faster and simpler.
+- Cap rendered bar width: beyond ~200 characters, print `count` plus a
+  scaled bar and state the scale - terminals and logs both suffer otherwise.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Scaling without libraries
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+Two-dimensional grids (x by y counters) extend the same pattern to dense
+scatter data: O(n) time, O(cells) memory, densities printed as text. Exact
+Anscombe-style shape checks on samples complement full-data grids.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## What is NOT claimed here
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+No frame rates or timings: text output speed depends on console and volume.
+Size by the complexities above and measure on your own workload.
 
-## Refactoring Plan
+## Worked sizing example
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+One million values into 50 bins: one pass, 50 counters, trivial memory. The
+same million as individually rendered points would need megabytes of output
+and an unreadable blob - the binned version is both faster to draw and more
+honest to read. That crossover (keep every point vs count into cells) sits
+around a few thousand points for typical displays.

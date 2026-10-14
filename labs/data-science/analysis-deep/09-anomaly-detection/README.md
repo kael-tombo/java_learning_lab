@@ -1,76 +1,39 @@
-﻿# Anomaly Detection Advanced
+# Lab 09 - Anomaly Detection
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Anomaly Detection Advanced**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Anomalies are rare points that matter: fraud, outages, sensor failure.
+This lab covers z-score/IQR baselines, the isolation intuition, the
+precision/recall tradeoff across thresholds, the base-rate fallacy
+with verified Bayes arithmetic, and the operational reality of alert
+fatigue.
 
-## Topics Covered
-- Grubbs test, ESD, isolation forest, LOF, autoencoder, time-series anomaly, Twitter AD, NumPyTS
+## Objectives
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Flag outliers with z-scores and the IQR rule on real numbers.
+- Explain the isolation intuition: anomalies separate in few splits.
+- Trace precision/recall across thresholds and pick one deliberately.
+- Compute PPV from prevalence, sensitivity, and false-positive rate,
+  and feel the base-rate fallacy quantitatively.
+- Design alerts a human team can sustain without fatigue.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Anomaly Detection Advanced
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Map of this lab
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+- THEORY.md / MATH_FOUNDATION.md - scores, rules, Bayes derivations.
+- HOW_IT_WORKS.md / STEP_BY_STEP.md - detector workflow end to end.
+- CODE_DEEP_DIVE.md - three runnable JDK-only Java programs.
+- EXERCISES.md - hands-on tasks with inline datasets.
+- HISTORY.md / REFERENCES.md - background and real books.
+- ARCHITECTURE.md / INTERNALS.md / PERFORMANCE.md - implementation notes.
+- DEBUGGING.md / COMMON_MISTAKES.md / INTERVIEW.md - pitfalls and Q&A.
 
-## Project Structure
-`
-anomalydetection/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/anomalydetection/AnomalyDetection.java
-    â””â”€â”€ test/java/com/mathlab/anomalydetection/AnomalyDetectionTest.java
-`
+## Conventions
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+- Java 21+, plain JDK only. Single-class, deterministic, ASCII output.
+- All outputs in CODE_DEEP_DIVE.md are observed program output.
+- Bayes numbers are computed by the BaseRate program, not asserted.
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Worked miniature
+
+AnomBase centers eleven readings (mean 11.864, sd 5.739) with z and IQR
+agreeing on index 7 (30.000). PrCurve sweeps t = 0.8/0.5/0.2 into P/R of
+0.667/0.500, 0.600/0.750, 0.500/1.000. BaseRate lands PPV 0.0902: 99 true
+vs 999 false per 100k. Reproduce all three before reading further.

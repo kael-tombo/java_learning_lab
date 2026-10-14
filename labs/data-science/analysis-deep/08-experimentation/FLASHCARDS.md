@@ -1,52 +1,48 @@
-﻿# Flashcards: Experimentation and A/B Testing
+# Flashcards - Experimentation
 
-## Front-Back Cards
+Q: Parts of an A/B test?
+A: Hypothesis, randomization unit, control/treatment, goal and guardrail
+metrics.
 
-### Card 1
-**Front**: What is the definition of Experimentation and A/B Testing?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: Goal vs guardrail metric?
+A: Goal decides ship/no-ship; guardrail health numbers can veto a win.
 
-### Card 2
-**Front**: Key properties of Experimentation and A/B Testing?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: Two-proportion SE formula?
+A: sqrt(p_A(1-p_A)/n_A + p_B(1-p_B)/n_B).
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: 95% CI for the difference?
+A: d +/- 1.96*SE; excludes 0 exactly when p < 0.05.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: Power in one sentence?
+A: Chance of detecting a true effect; bigger effect needs smaller n.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: SE scaling with n?
+A: 1/sqrt(n) - 4x traffic halves the error bar and roughly the MDE.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: MDE planning constant for 80% power at 5%?
+A: About 2.8*SE (1.96 significance + 0.84 power quantile).
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: Why is peeking harmful?
+A: Repeated looks multiply false-positive chances; one 0.05 test each
+peek is not a 0.05 procedure.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: Fixes for peeking?
+A: Fixed horizon decided upfront, or sequential methods with adjusted
+boundaries.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Experimentation and A/B Testing algorithm: ________. **Answer**: O(n)
+Q: What is SRM?
+A: Sample-ratio mismatch: arm counts diverging from the planned split,
+signaling broken assignment.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+Q: SRM check statistic?
+A: chi2 = sum (O-E)^2/E on arm counts; small p flags.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+Q: Novelty vs primacy?
+A: Curiosity boost for the new vs habit drag for the old; both fade -
+run past them.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: Randomization unit pitfall?
+A: Analyzing at a finer grain than assignment understates variance.
+
+Q: Significant but CI [0.0028, 0.0212] - ship?
+A: Only if +0.28pp (the low end) still clears the ship threshold.

@@ -1,61 +1,43 @@
-﻿# Performance: Experimentation and A/B Testing Implementation
+# Performance - Experimentation
 
-## Performance Analysis
+## Complexities
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+- Readout (d/SE/z/p/CI): O(1) arithmetic plus one erf evaluation.
+- SRM check: O(arms). Power table: O(rows). All sub-microsecond; the
+  lab's programs are dominated by JVM startup, honestly stated.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Scaling guidance
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+- Analysis never bottlenecks: even a billion-row log aggregates to four
+  numbers (x_A, n_A, x_B, n_B) before statistics begin.
+- Aggregation is the real pipeline: count per arm in one streaming
+  pass, O(events) time, O(arms) memory. Sketch that, don't optimize z.
+- Segmentation multiplies readouts, not cost: each slice reuses the
+  same O(1) math - but each slice spends error budget (multiplicity).
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Experimentation and A/B Testing Implementation
+## No invented benchmarks
 
-## Code Smells and Improvements
+No timings quoted; "runs instantly" claims are omitted because JVM
+startup (~50-100ms in practice, unmeasured here) dominates and varies.
+Time your own harness if it matters.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Real cost driver
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+Traffic-time: the weeks a test occupies the experimentation slot.
+Power planning (SampleSize pattern) is how that cost is controlled -
+statistics here serve scheduling, not CPUs.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## Cost table
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+| Operation | Time | Memory |
+|---|---|---|
+| readout (d/SE/z/p/CI) | O(1) + 1 erf | O(1) |
+| SRM check | O(arms) | O(1) |
+| power table, R rows | O(R) | O(1) |
+| aggregation to counts | O(events) | O(arms) |
 
-## Refactoring Plan
+## Measurement note
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+Time the aggregation pass (events/sec at your row width), never the
+statistics. Report row counts with durations; naked seconds compare
+nothing across traffic scales.

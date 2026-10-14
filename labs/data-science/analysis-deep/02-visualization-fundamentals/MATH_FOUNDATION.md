@@ -1,81 +1,42 @@
-﻿# Math Foundation for Visualization Fundamentals
+# Visualization Fundamentals - Math Foundation
 
-## Prerequisite Mathematics
+## Histogram bin index
 
-This document reviews the mathematical prerequisites needed to study Visualization Fundamentals effectively.
+For edges min + k x width, value v falls in bin
+k = floor((v - min) / width). With min 0, width 2: v = 5 gives
+floor(2.5) = 2, the [4,6) bin. The Java cast `(int)` matches floor for
+non-negative offsets; clamping pins out-of-range values to end bins.
 
-## 1. Algebra Review
+## Bin width trade-off (bias vs variance)
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+Narrow bins: low bias (detail preserved), high variance (counts bounce with
+sampling noise). Wide bins: smooth but biased (the 9 merges into the bulk).
+No formula picks width universally; comparing two widths (as the exercises
+ask) shows which features persist and are therefore real.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## Mean vs median as shape signal
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+Right skew pulls the mean above the median: here 3.6 > 3.0 with the lone 9.
+The gap's sign diagnoses skew direction; its size relative to spread says
+whether the tail matters. Symmetric data keeps them together.
 
-## 2. Functions and Graphs
+## Binned means as conditional expectation
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+Cell mean = E[y | x in cell], estimated by the cell average. With cells
+[0,2) through [6,8), the estimates 3.0, 4.5, 6.5, 8.0 trace the underlying
+trend the way a regressogram does. Standard error per cell is s/sqrt(n), so
+the n = 2 end cells are noisier than the n = 4 middle ones.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## Sample sd formula behind the trio
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+Sample sd = sqrt(sum (x - mean)^2 / (n - 1)). Series b: deviations
+-4,-2,0,2,4, squares sum 40, /4 = 10, sqrt = 3.1622776601683795. Series c:
+deviations -8,0,0,0,8, squares sum 128, /4 = 32, sqrt = 5.656854249492381.
+Same mean 6.0, sds 0 / 3.16 / 5.66: spread hints at shape but never resolves
+it - that needs the plot.
 
-## 3. Trigonometry
+## Proportion arithmetic
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+books 3/8 = 0.375, games 3/8 = 0.375, food 2/8 = 0.25; fractions sum to 1.
+Report counts with fractions so sampling uncertainty (n = 8 total) stays
+visible beside the point estimate.

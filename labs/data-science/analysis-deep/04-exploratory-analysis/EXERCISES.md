@@ -1,130 +1,52 @@
-﻿# Exercises: Exploratory Data Analysis
+# Exploratory Analysis - Exercises
 
-## Theoretical Exercises
+Verify each answer by running your code; expected values come from
+verified reference runs.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Exploratory Data Analysis in your own words.
-**Answer**: Exploratory Data Analysis involves understanding how mathematical quantities change and relate under specific operations.
+## 1. Reproduce grouped means
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Exploratory Data Analysis.
-**Answer**: The proof follows from the definitions and established theorems.
+Rewrite the region group-by from scratch. Expect north n=3 mean 30.0,
+south n=3 mean 40.0, overall 35.0, and the n-sum check 3+3 = 6.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Exploratory Data Analysis to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## 2. Reproduce the reversal
 
-## Programming Exercises
+Recompute all six rates (two wards x two arms plus two pooled). Expect
+90.0 vs 86.66666666666667, 73.00380228136882 vs 68.75, pooled 77.33711048158641
+vs 82.57142857142857. State the winner per row: treat, treat, control.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Exploratory Data Analysis.
+## 3. Composition audit
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+From the ward counts, compute each arm's ward-A share: treated 90/353 =
+25.5%, control 270/350 = 77.1%. Explain in two sentences how these shares
+elect the pooled winner against the within-ward votes.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## 4. Correlation trio
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+Recompute with one shared routine. Expect 0.9932316263764919,
+-0.9853034458841585, -0.990942442678138. Then shuffle one column (fixed seed
+or fixed permutation) and show |r| collapsing - association needs alignment.
 
-## Challenge Problems
+## 5. Shape drill
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+Sort and bin {1,1,2,2,3,3,4,9,15} at width 4 from 0. Expect sorted
+[1.0,1.0,2.0,2.0,3.0,3.0,4.0,9.0,15.0], mean 4.444444444444445, median 3.0,
+bins 6,1,1,1 totalling 9.
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+## 6. Stratify-or-pool judgment
 
-## Solutions
+Ward B alone (n = 263+80): is the treat lead (4.25 points) more or less
+trustworthy than ward A's (3.33 points)? Answer with standard errors of the
+differences (larger n wins: B's se is smaller) and name the remaining threat
+(unmeasured confounders within wards).
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Exploratory Data Analysis
+## 7. Confounder hunt
 
-## Multiple Choice Questions
+Propose two plausible confounders behind age/spend/visits (income, urban
+vs rural) and sketch the stratified display (age bands x region cells) that
+would test each. No data needed - design the table.
 
-### Question 1
-What is the fundamental principle underlying Exploratory Data Analysis?
+## 8. Loop record
 
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Exploratory Data Analysis?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Write a full EDA record for the region question: question, display, numbers
+with n, strata checked (none available at n = 6 - state it), conclusion,
+and the one next question you would ask with ten times the data.

@@ -1,28 +1,49 @@
-﻿# Security: Time Series Analysis Implementation
+# Security Notes - Time Series
 
-## Security Considerations
+## Lookahead as integrity risk
 
-### Input Validation
-- Validate all input parameters before processing
-- Check for null, NaN, Infinity values explicitly
-- Reject inputs that could cause algorithmic issues
+Future data in training is not just a stats error - in regulated demand
+or trading contexts it is a misrepresentation of model skill. Temporal
+splits with a documented cutoff date are the audit trail.
 
-### Denial of Service
-- Set maximum iteration limits for iterative algorithms
-- Validate input size to prevent excessive resource consumption
+## Data provenance
 
-### Numeric Overflow/Underflow
-- Check for intermediate overflow in computations
-- Use Math.addExact for critical integer operations
-- Handle NaN/Infinity propagation
+Series get revised (sales restated, sensors recalibrated). Pin the
+vintage used for each backtest; silently updating history rewrites both
+training and test and voids comparability.
 
-### Thread Safety
-- Use immutable objects where possible
-- Synchronize shared mutable state
+## Forecast-driven abuse
 
-### Secure Coding Checklist
-- [ ] Input validation implemented
-- [ ] Maximum iteration limits set
-- [ ] Overflow protection in place
-- [ ] Edge cases (zero, negative, infinity, NaN) handled
-- [ ] Thread safety documented
+Published forecasts move behavior (orders, prices). If forecasts are
+public, separate the research series from the released numbers and log
+who changed what before release.
+
+## Privacy in granular series
+
+Household energy or individual mobility series can re-identify people
+even aggregated. Aggregate to safe grains and avoid publishing residual
+series that isolate single-source patterns.
+
+## Code-level hygiene (JDK)
+
+No network or file I/O appears in this lab's snippets; keep it that
+way in exercises. Validate array lengths before loops and reject NaN
+inputs so corrupt feeds fail loudly instead of forecasting garbage.
+
+## Model-theft via forecast API
+
+A public forecast endpoint leaks the model: queried densely, it reveals
+seasonality and trend parameters to competitors. Rate-limit, round
+outputs, and log query patterns - forecasts are intellectual property.
+
+## Backtest tampering
+
+Re-choosing the holdout window until results shine is leakage with
+intent. Freeze cutoff dates in version control before fitting; review
+any commit that moves a cutoff after results exist.
+
+## Shared-notebook leakage
+
+Forecast notebooks shared across clients can leak one client's seasonality
+through cached outputs and fitted parameters. Isolate runs per client,
+clear state between them, and treat fitted coefficients as confidential.

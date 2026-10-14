@@ -1,35 +1,49 @@
-﻿# Debugging: Visualization Fundamentals Implementation
+# Visualization Fundamentals - Debugging Guide
 
-## Common Bugs
+## Symptom: counts do not sum to n
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+Cause: values falling outside [min, max) with no clamp, or NaN defeating the
+index cast. Fix: clamp to end bins, filter NaN explicitly, and assert the
+total equals input length in tests.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Symptom: histogram changes shape between runs
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+Cause: bin edges derived from data min/max with unstable float formatting, or
+a `HashMap`-ordered category axis. Fix: hard-code edges; use `TreeMap` for
+numeric cells and `LinkedHashMap` for labels.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Symptom: bar of value 9 renders in the wrong bin
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+Cause: edge-convention confusion (is 10.0 in bin 4 or bin 5?). Fix: document
+left-closed/right-open with top-bin clamping, and unit-test exact edges
+{0.0, 2.0, 10.0} expecting bins 0, 1, 4.
 
-## Debugging Techniques
+## Symptom: binned trend looks flat although scatter slopes
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+Cause: cells too wide (aggregation bias) or integer division truncating the
+mean (`sum / n` with ints yields 4 instead of 4.5). Fix: narrow cells and
+accumulate sums in double.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
+## Symptom: text bars misalign
 
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+Cause: proportional fonts or tab characters in the terminal. Fix: spaces
+only, one `#` per unit, counts printed numerically so alignment is cosmetic
+and exactness never depends on it.
+
+## Symptom: category order shuffles
+
+Cause: `HashMap` iteration for label counts. Fix: `LinkedHashMap` with
+`merge`, preserving first-seen order (books, games, food).
+
+## Symptom: reviewers dispute the finding
+
+Cause: hidden defaults (unstated width, cropped axis). Fix: print edges,
+width, baseline, and n in the chart itself - the lab's headers do exactly
+this, making disputes checkable.
+
+## Symptom: binned means disagree with hand arithmetic
+
+Cause: accumulating into `int` sums (truncation) or pairing xs with the
+wrong ys after a sort. Fix: keep parallel arrays unsorted (or sort index
+pairs together), accumulate in double, and verify one cell by hand - e.g.
+[2,4) holds y values 3,5,4,6 summing to 18, mean 4.5.

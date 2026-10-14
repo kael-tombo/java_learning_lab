@@ -1,70 +1,47 @@
-﻿# Visualization Fundamentals -- Theory
+# Visualization Fundamentals - Theory
 
-## 1. Introduction
+## 1. Chart selection by variable type
 
-Visualization Fundamentals is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+- One categorical variable: bar chart of counts or proportions. Bar length
+  encodes value against a zero baseline.
+- One continuous variable: histogram (binned counts) or dot plot for small n.
+- Two continuous variables: scatter plot; add a binned-mean trend if dense.
+- Time-ordered values: line chart with uniform time spacing on the x-axis.
+- Part-to-whole: stacked bars, not pie slices - angles and areas are judged
+  far less accurately than aligned lengths.
 
-## 2. Core Definitions
+## 2. The honest-axis rules
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Visualization Fundamentals rests on several key definitions and axioms that form the foundation of the theory.
+- Quantitative bar and histogram axes start at zero; truncating the y-axis
+  turns small differences into dramatic ones.
+- Never use dual y-axes with independent scales: rescaling either series
+  flips which "leads", so any crossing is arbitrary.
+- Keep aspect and binning fixed when comparing panels; changing bins between
+  groups manufactures differences.
+- Log scales are for multiplicative relationships; label them loudly, since
+  equal distances mean multiplication, not addition.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. The Anscombe lesson
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+F. J. Anscombe's 1973 quartet gives four (x, y) datasets with effectively
+identical summary statistics (mean of x = 9, mean of y = 7.5, correlation
+about 0.816) but completely different graphs: clean linear cloud, curved
+relationship, one-point outlier lever, and a vertical line with one far
+point. No table of means detects this; only plotting does. Rule: graph
+before you model, every time.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Visualization Fundamentals:
+## 4. Overplotting and its mitigations
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+When thousands of points share pixels, density becomes invisible. Responses:
 
-### 2.3 Formal Framework
-The mathematical framework for Visualization Fundamentals is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+- Alpha blending: draw points semi-transparent so dark regions read as dense.
+- Jitter: add small random offsets to discrete-valued axes to separate ties.
+- Binning: aggregate into cells and show counts or cell means (the approach
+  computed in this lab's snippets).
+- Sampling or contour summaries when the data exceeds the pixel budget.
 
-## 3. Mathematical Formulation
+## 5. Text charts as a discipline
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Visualization Fundamentals is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Visualization Fundamentals extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Visualization Fundamentals requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Visualization Fundamentals connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Visualization Fundamentals provide the rigorous basis needed for correct computational implementation and real-world application.
+Printing `#` bars forces explicit bin edges, counts, and scales - the same
+decisions a graphics library hides. If the text version is ambiguous, the
+graphical one will be too.

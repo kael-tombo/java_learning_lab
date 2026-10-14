@@ -1,35 +1,49 @@
-﻿# Debugging: Time Series Analysis Implementation
+# Debugging - Time Series
 
-## Common Bugs
+## 1. ACF values outside [-1, 1]
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+Cause: dividing by the wrong denominator (e.g. lag-truncated variance)
+or integer division. Fix: single full-sample variance as denominator;
+verify rho_0 == 1.0 exactly in a unit check.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## 2. Forecast shifted by one period
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+Cause: off-by-one aligning differenced forecasts back to levels.
+Fix: anchor inversion at the last training level and assert the first
+forecast sits at T+1 on a toy series by hand.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## 3. MAPE = Infinity or absurd percent
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+Cause: zero or near-zero actuals in the denominator. Fix: apply the
+SKIP-zero policy and report the reduced n (see TsErrors); cross-check
+with MAE/RMSE which have no denominator.
 
-## Debugging Techniques
+## 4. Suspiciously perfect validation scores
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+Cause: shuffled split or scaling/differencing fitted on the full
+series. Fix: re-split strictly temporal, fit every transform inside
+the training prefix, re-run.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
+## 5. Residuals still seasonal
 
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+Symptom: ACF spike at lag m (12 for monthly). Cause: non-seasonal
+model on seasonal data. Fix: seasonal differencing or seasonal terms;
+do not just raise p and q.
+
+## 6. Differenced forecast drifts forever
+
+Cause: forecasting the diff mean far ahead cumulates bias each step.
+Fix: damp the trend (drift with shrinkage) and widen intervals with
+horizon instead of extending the point line.
+
+## 7. Non-reproducible numbers
+
+Cause: hidden randomness or unordered map iteration in aggregation.
+Fix: seed any RNG, use LinkedHashMap/ordered arrays, print inputs with
+the outputs in failing cases.
+
+## 8. Constant-series NaN cascade
+
+Symptom: ACF prints NaN and every downstream number follows. Cause: zero
+variance (flat sensor, dead feed). Fix: detect constant input at the
+boundary, report "no variance - check the sensor," skip structure reads.

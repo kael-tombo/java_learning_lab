@@ -1,35 +1,56 @@
-﻿# How It Works: Experimentation and A/B Testing
+# How A/B Testing Works
 
-## High-Level Explanation
+## 1. Write the hypothesis and the decision rule
 
-### The Core Idea
-Experimentation and A/B Testing is about understanding how mathematical quantities behave under specific operations and transformations.
+One sentence on what changes and which goal metric moves, plus the
+ship threshold (e.g. "+1pp conversion with no guardrail regression").
+Unwritten rules get rewritten after seeing data - that is p-hacking.
 
-### Step-by-Step Mental Model
-1. Start with input values
-2. Apply defined mathematical rules
-3. Verify result satisfies properties
-4. Return computed value
+## 2. Size the test
 
-### Why This Approach?
-- Provides rigorous mathematical guarantees
-- Computationally tractable
-- Generalizes to wide range of problems
+Pick the smallest meaningful effect, set 80% power / 5% significance
+by convention, and convert to runtime from traffic. If the calendar
+says six weeks for a 0.5pp MDE, negotiate scope now, not mid-test.
 
-## Key Insights
+## 3. Randomize and monitor health only
 
-### Insight 1: Trade-offs
-Speed vs. accuracy vs. stability -- no algorithm excels at all three.
+Launch 50/50 (or the planned ratio), watch guardrails and the SRM
+check - never the goal p-value. A broken experience or a skewed split
+stops the test; a promising p-value does not.
 
-### Insight 2: Compositionality
-Complex operations built from simpler ones.
+## 4. Hold the horizon
 
-### Insight 3: Numerical Reality
-Finite precision requires careful implementation.
+Run the pre-planned duration covering weekly cycles. Novelty spikes in
+week one and weekend effects both punish early readers; the fixed
+horizon is what makes the final p-value mean what it says.
 
-## Common Questions
-**Q:** Why not use formula directly?
-**A:** Direct application often has numerical instability or poor performance.
+## 5. Analyze once, with intervals
 
-**Q:** When to use this implementation?
-**A:** When reliable, tested computation with known accuracy is needed.
+Compute d, SE, p, and the 95% CI. Check SRM first: a flagged split
+voids everything below it. Then read goal vs guardrails jointly - a
+conversion win with a refund surge is not a win.
+
+## 6. Segment to explain, not to rescue
+
+Cut by platform or cohort to understand a result, never to hunt a
+significant slice after an overall null. Each slice claim needs its own
+multiplicity accounting.
+
+## 7. Ship, iterate, or kill - with a log
+
+Record hypothesis, dates, n, MDE, result, decision. The log compounds
+into institutional memory: which ideas move metrics and which
+"almost worked" three times running.
+
+## Worked trace on AbTest numbers
+
+Planned 50/50 at n = 10000/arm, MDE ~0.013. Observed split passes SRM,
+d = 0.012 with CI [0.0028, 0.0212]: significant, but the low end misses
+a +1pp ship threshold - decision: iterate, not ship. The interval, not
+the p-value, made the call.
+
+## When to stop arguing
+
+Stop when the CI sits wholly above threshold (ship), wholly below (kill),
+or straddles it after full horizon (declare null, log, move on). A fourth
+option - "run longer until it crosses" - is peeking, explicitly banned.

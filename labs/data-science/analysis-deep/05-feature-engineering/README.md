@@ -1,76 +1,42 @@
-﻿# Feature Engineering
+# Lab 05 - Feature Engineering
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Feature Engineering**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Turning raw columns into model-ready numbers: encodings, scalings,
+transforms, and interactions - with the leakage discipline that keeps them
+honest.
 
-## Topics Covered
-- encoding one-hot/label/target/ordinal, scaling standard/min-max/robust, binning, polynomial features, text TF-IDF
+## What you will learn
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Choose one-hot vs ordinal vs target encoding, and state what each claims.
+- Scale with min-max, z-score, or robust (median/IQR) formulas by hand.
+- Apply log transforms to right skew and build interaction terms.
+- Fit every parameter on train only; transform test and folds with the
+  frozen values.
+- Describe target-encoding leakage and the hashing trick without libraries.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Feature Engineering
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Working data
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+- Colors {red, blue, green, red} one-hot encoded against [red, green, blue].
+- Scale demo {10, 20, 30, 40, 50}: pop sd 14.142135623730951, min-max
+  [0, 0.25, 0.5, 0.75, 1.0], z [-1.414, -0.707, 0, 0.707, 1.414], robust
+  [-1.0, -0.5, 0.0, 0.5, 1.0].
+- Train {10,20,30,40} (mean 25.0, sd 11.180339887498949) vs test {25, 100}:
+  z 0.0 and 6.7082039324993685; leaky all-data mean 37.5 shown as warning.
+- Housing rows: area x rooms interactions 100/240/480 with log-areas
+  3.912023005428146, 4.382026634673881, 4.787491742782046.
 
-## Project Structure
-`
-featureeng/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/featureeng/FeatureEngineering.java
-    â””â”€â”€ test/java/com/mathlab/featureeng/FeatureEngineeringTest.java
-`
+## Build and run (plain JDK only)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+```text
+javac --release 21 -encoding UTF-8 FeatOneHot.java
+java FeatOneHot
+```
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+Only `java.util` and `java.lang.Math`. Matrices are printed arrays; nothing
+is hidden inside a library call.
+
+## Suggested path
+
+THEORY.md for encoding/scaling/transform rules, CODE_DEEP_DIVE.md for the
+three verified programs, STEP_BY_STEP.md to check each number by hand, then
+EXERCISES.md. Keep COMMON_MISTAKES.md open: leakage mistakes look correct
+until the leaderboard (or audit) disagrees.

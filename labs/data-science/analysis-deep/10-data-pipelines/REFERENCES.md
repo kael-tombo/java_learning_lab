@@ -1,31 +1,36 @@
-﻿# References: Data Pipelines
+# References - Data Pipelines
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+Real books only; no invented titles.
 
-## Academic Papers
-1. Author (Year). Landmark paper on Data Pipelines. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+- Kleppmann - "Designing Data-Intensive Applications" (O'Reilly, 2017).
+  The correctness canon: delivery semantics, idempotence, batch/stream
+  tradeoffs, and schema evolution - this lab's THEORY.md follows its
+  framing throughout.
+- White - "Hadoop: The Definitive Guide" (O'Reilly, 4th ed. 2015). The
+  batch-processing counterpart: HDFS/MapReduce mechanics behind the
+  large-scale batch jobs pipelines still run.
+- Kimball and Ross - "The Data Warehouse Toolkit" (Wiley, 3rd ed.
+  2013). Dimensional modeling and the ETL discipline behind modeled
+  serving tables.
+- Inmon - "Building the Data Warehouse" (Wiley, 4th ed. 2005). The
+  warehousing counterpart: enterprise history, auditability, time
+  variance - the provenance thinking behind run logs.
+- Hyndman and Athanasopoulos - "Forecasting: Principles and Practice"
+  (OTexts). For what consumes pipeline output: forecasts inherit every
+  upstream defect, so pipeline readers learn what their data owes them.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+Start with Kleppmann for semantics, Kimball for modeling the serve
+layer, Inmon when auditability requirements get serious.
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+- Redman - "Data Driven: Profiting from Your Most Important Business
+  Asset" (Harvard Business Review Press, 2008). Data quality economics:
+  the cost-of-bad-data case behind every quality gate in this lab.
+- McGilvray - "Executing Data Quality Projects by Design" (Morgan
+  Kaufmann, 2008; 2nd ed. 2021). The practitioner's quality playbook:
+  checks, ownership, and remediation that stick.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Reading order
 
-## Citation Format
-Author. "Data Pipelines." Math Academy, Java Learning Lab, 2026.
+Kleppmann first (semantics you must not get wrong), Kimball alongside
+(modeling the serve layer), Redman for the quality business case,
+McGilvray for running the program, Inmon when auditors arrive.

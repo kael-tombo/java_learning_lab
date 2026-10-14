@@ -1,81 +1,43 @@
-﻿# Math Foundation for Experimentation and A/B Testing
+# Math Foundation - Experimentation
 
-## Prerequisite Mathematics
+## 1. Two-proportion z-test
 
-This document reviews the mathematical prerequisites needed to study Experimentation and A/B Testing effectively.
+p_A = x_A/n_A, p_B = x_B/n_B, d = p_B - p_A,
+SE = sqrt(p_A(1-p_A)/n_A + p_B(1-p_B)/n_B), z = d/SE. Two-sided
+p = 2*(1 - Phi(|z|)) with Phi the standard normal CDF. The AbTest
+program evaluates Phi via the Abramowitz-Stegun erf approximation
+(error ~1e-7, fine for decisions at 0.05/0.01).
 
-## 1. Algebra Review
+## 2. Confidence interval duality
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+d +/- 1.96*SE excludes 0 exactly when p < 0.05 - test and interval are
+two faces of one computation. Report the interval: "significant" hides
+whether the effect is +0.3pp (trivial) or +2pp (ship it).
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## 3. SE scaling 1/sqrt(n)
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+With equal arms and common rate p, SE = sqrt(2p(1-p)/n). Doubling
+precision needs 4x traffic - the iron law behind every "just run it a
+day longer" disappointment. SampleSize output shows MDE ~0.0376 at
+n=1000 shrinking to ~0.0047 at n=64000 per arm.
 
-## 2. Functions and Graphs
+## 4. Power sketch
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+For 80% power at 5% two-sided, the detectable gap is about 2.8*SE
+(1.96 for significance + 0.84 for the power quantile). Solve
+2.8*sqrt(2p(1-p)/n) = MDE for n. The 2.8 factor is where the demo's
+"mde~" column comes from - stated qualitatively in planning docs.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## 5. SRM chi-square
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+k arms, expected E = total/k: chi2 = sum (O-E)^2/E on k-1 degrees of
+freedom (1 df for two arms, where CDF has the closed form erf-based
+expression the Srm program uses). Small p means the split mechanism,
+not chance, explains the imbalance.
 
-## 3. Trigonometry
+## 6. Peeking inflation arithmetic
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+One 0.05 test has a 5% false-positive rate; m independent peeks push it
+toward 1 - 0.95^m (26% at m = 6). Real peeks correlate, so the exact
+number is lower but the direction never is: every unadjusted look
+spends error budget.

@@ -1,31 +1,49 @@
-﻿# References: Feature Engineering
+# Feature Engineering - References
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+## Christopher Bishop, Pattern Recognition and Machine Learning
 
-## Academic Papers
-1. Author (Year). Landmark paper on Feature Engineering. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+Linear basis-function models (Chapter 3): polynomial and interaction
+expansions as engineered features, with the overfitting cost of each added
+term made exact. The theory behind the area-x-rooms product.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+## Hastie, Tibshirani, and Friedman, The Elements of Statistical Learning
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+Regularization chapters show why scaling precedes penalized fits (penalties
+assume comparable units) and how folds must enclose all supervised
+preprocessing - the canonical anti-leakage reference.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Andrew Gelman et al., Regression and Other Stories
 
-## Citation Format
-Author. "Feature Engineering." Math Academy, Java Learning Lab, 2026.
+Rescaling predictors (including dividing by 2 sd for comparability with
+binary inputs) for interpretable coefficients. The practical companion to
+the demo's three scaling lenses.
+
+## Hadley Wickham and Garrett Grolemund, R for Data Science (factors)
+
+Ordered vs unordered categoricals handled exactly: factor levels, ordering,
+and collapsing rare levels. Mirrors the one-hot/ordinal decision here with
+worked data examples.
+
+## John Tukey, Exploratory Data Analysis (1977)
+
+The re-expression ladder: logs and roots for skew before modelling. Read
+the transform chapters before reaching for heavier machinery on tailed
+predictors.
+
+## George Box and David Cox, "An Analysis of Transformations" (1964)
+
+The power-transform paper generalizing log into fitted lambda. Cited
+wherever Box-Cox is mentioned as the principled extension of the lab's log.
+
+## OpenJDK documentation: Math, Arrays, collections
+
+Specs for `Math.log`, `Arrays.toString`, and `List`/`Map` indexing behind
+the snippets. Deterministic outputs rest on these contracts.
+
+## How to read them for this lab
+
+Start with Tukey for transforms and Wickham for categoricals, then Bishop
+for why expansions overfit and HTF for why penalties need scaling and folds
+must enclose preprocessing. Keep Gelman nearby when coefficients must read
+as decisions, Box-Cox when log feels arbitrary, and the OpenJDK docs
+whenever a hash, log, or sort edge case is load-bearing.

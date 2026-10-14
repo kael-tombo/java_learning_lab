@@ -1,35 +1,46 @@
-﻿# Debugging: Exploratory Data Analysis Implementation
+# Exploratory Analysis - Debugging Guide
 
-## Common Bugs
+## Symptom: pooled rate outside all stratum rates
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+Cause: arithmetic bug (wrong denominators) or mixing arms across strata -
+a valid pooled rate always lies between its strata rates per arm (77.34 is
+between 73.00 and 90.0 for treat). Fix: recompute from raw k/n and assert
+containment per arm.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Symptom: group n values do not sum to total
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+Cause: null keys silently grouped, or a filter applied after counting.
+Fix: count before and after grouping, print the null-key bucket explicitly,
+and assert 3+3 = 6 style reconciliation in tests.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Symptom: correlation trio is inconsistent (signs clash with data)
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+Cause: misaligned arrays (age[i] paired with wrong spend[i]) after a sort
+of one column. Fix: never sort parallel arrays independently; sort index
+pairs, and verify one hand-computed cross-term (e.g. first pair
+contribution) in tests.
 
-## Debugging Techniques
+## Symptom: reversal disappears on recheck
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+Cause: stratum key typo merging wards, or integer division (81/90 = 0 in
+ints!) zeroing rates. Fix: keep keys exact, force double division
+(100.0*k/n), and pin all six expected rates byte-for-byte.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
+## Symptom: shape signals disagree (bins say skew, mean/median say symmetric)
 
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+Cause: coarse bins manufacturing asymmetry, or a data transcription error
+(the 15 typed as 1.5). Fix: re-bin at a second width and re-derive from raw
+values; persistent-across-widths features are real.
+
+## Symptom: overall mean outside group means
+
+Cause: groups computed on different filters than the overall (missing
+handling differs), or weighted-vs-unweighted confusion. Fix: single-pass
+joint accumulation (as the snippet does) so overall and groups share one
+denominator logic.
+
+## Symptom: stakeholders quote your exploratory r as proof
+
+Cause: record lacked the association-only caveat in writing. Fix: every
+correlation line ships with n and "association, not causation" attached -
+the snippet's own last line models the habit.

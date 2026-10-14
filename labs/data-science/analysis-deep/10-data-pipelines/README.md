@@ -1,76 +1,45 @@
-﻿# Data Pipelines
+# Lab 10 - Data Pipelines
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Data Pipelines**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Data must move from sources to decisions reliably: ingested, validated,
+transformed, and served, again every day. This lab covers batch vs
+streaming, idempotency, delivery semantics, schema evolution, replay
+discipline, quality checks, and DAG orchestration - with runnable
+JDK-only programs for the core mechanics.
 
-## Topics Covered
-- feature pipelines, transform pipelines, imputation, scaling within CV folds, leak prevention, production deployment
+## Objectives
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Contrast batch vs streaming and pick by latency need, honestly priced.
+- Define idempotency and show a replay-safe sink in code.
+- Explain at-least-once vs exactly-once as concepts, carefully stated.
+- Judge schema changes as additive-compatible vs breaking.
+- Practice backfill/replay discipline and data-quality checks (counts,
+  null rates, drift).
+- Sketch an orchestration DAG without vendor lock-in claims.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Data Pipelines
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Map of this lab
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+- THEORY.md / MATH_FOUNDATION.md - semantics, compat rules, check math.
+- HOW_IT_WORKS.md / STEP_BY_STEP.md - pipeline lifecycle end to end.
+- CODE_DEEP_DIVE.md - three runnable JDK-only Java programs.
+- EXERCISES.md - hands-on tasks with inline data.
+- HISTORY.md / REFERENCES.md - background and real books (Kleppmann).
+- ARCHITECTURE.md / INTERNALS.md / PERFORMANCE.md - implementation notes.
+- DEBUGGING.md / COMMON_MISTAKES.md / INTERVIEW.md - pitfalls and Q&A.
 
-## Project Structure
-`
-datapipelines/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/datapipelines/DataPipelines.java
-    â””â”€â”€ test/java/com/mathlab/datapipelines/DataPipelinesTest.java
-`
+## Careful-statements rule
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+No vendor version numbers, no throughput claims, no invented specs. Queues
+are described by their widely documented default semantics (at-least-once
+delivery is the common default, which permits duplicates) and nothing more.
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Conventions
+
+- Java 21+, plain JDK only. Single-class, deterministic, ASCII output.
+- All outputs in CODE_DEEP_DIVE.md are observed program output.
+
+## Worked miniature
+
+PipeIdem merges two batches with a replay into {o1=9.5, o2=4.0, o3=7.25},
+rows = 3, unchanged by the repeat. PipeQuality reports rows 6, nulls 2,
+nullRate 0.333, drift 0.375 vs ref 9.0. PipeSchema rules currency
+COMPATIBLE and the double-to-string retype BREAKING. Reproduce all three.

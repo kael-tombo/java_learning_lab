@@ -1,62 +1,90 @@
-﻿# Code Deep Dive: ExploratoryAnalysis.java
+# Exploratory Analysis - Code Deep Dive (JDK-only; outputs observed)
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Exploratory Data Analysis.
+## 1. Grouped means with sanity checks
 
-## Class Structure
+```java
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-### ExploratoryAnalysis.java
-The main class implementing core algorithms for Exploratory Data Analysis.
-
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Exploratory Data Analysis:
-
-`java
-public class ExploratoryAnalysis {
-    /**
-     * Computes the core operation for Exploratory Data Analysis.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
+public class EdaGroupByC {
+    public static void main(String[] args) {
+        String[] region = {"north", "south", "north", "south", "north", "south"};
+        double[] spend = {10, 20, 30, 40, 50, 60};
+        Map<String, double[]> acc = new LinkedHashMap<>();
+        double total = 0;
+        for (int i = 0; i < region.length; i++) {
+            double[] a = acc.computeIfAbsent(region[i], k -> new double[2]);
+            a[0] += spend[i]; a[1]++; total += spend[i];
         }
-        return coreAlgorithm(input);
-    }
-
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
+        for (Map.Entry<String, double[]> e : acc.entrySet()) {
+            double[] v = e.getValue();
+            System.out.println(e.getKey() + ": n=" + (int) v[1] + " mean=" + (v[0] / v[1]));
+        }
+        System.out.println("overall mean=" + (total / spend.length));
+        System.out.println("check: group n sums to " + spend.length);
     }
 }
-`
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+```text
+north: n=3 mean=30.0
+south: n=3 mean=40.0
+overall mean=35.0
+check: group n sums to 6
+```
 
-## Numerical Considerations
+## 2. Simpson reversal in counts
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
+```java
+public class EdaSimpsonC {
+    static double pct(int k, int n) {
+        return 100.0 * k / n;
+    }
+    public static void main(String[] args) {
+        int aT = 81, aTn = 90, aC = 234, aCn = 270;
+        int bT = 192, bTn = 263, bC = 55, bCn = 80;
+        System.out.println("wardA treat=" + pct(aT, aTn) + "% control=" + pct(aC, aCn) + "%");
+        System.out.println("wardB treat=" + pct(bT, bTn) + "% control=" + pct(bC, bCn) + "%");
+        System.out.println("pooled treat=" + (100.0 * (aT + bT) / (aTn + bTn)) + "% control=" + (100.0 * (aC + bC) / (aCn + bCn)) + "%");
+    }
+}
+```
 
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
+```text
+wardA treat=90.0% control=86.66666666666667%
+wardB treat=73.00380228136882% control=68.75%
+pooled treat=77.33711048158641% control=82.57142857142857%
+```
 
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
+## 3. Correlation trio, one routine
 
-## Complete Source
-See src/main/java/com/mathlab/exploratory/ExploratoryAnalysis.java for the full implementation.
+```java
+public class EdaCorrMatrixC {
+    static double corr(double[] a, double[] b) {
+        int n = a.length;
+        double ma = 0, mb = 0, sxy = 0, sxx = 0, syy = 0;
+        for (double v : a) ma += v;
+        for (double v : b) mb += v;
+        ma /= n; mb /= n;
+        for (int i = 0; i < n; i++) {
+            double da = a[i] - ma, db = b[i] - mb;
+            sxy += da * db; sxx += da * da; syy += db * db;
+        }
+        return sxy / Math.sqrt(sxx * syy);
+    }
+    public static void main(String[] args) {
+        double[] age = {25, 32, 47, 51, 62}, spend = {200, 350, 500, 550, 700}, visits = {8, 6, 4, 3, 2};
+        System.out.println("r(age,spend)=" + corr(age, spend));
+        System.out.println("r(age,visits)=" + corr(age, visits));
+        System.out.println("r(spend,visits)=" + corr(spend, visits));
+        System.out.println("note: strong r does not imply causation");
+    }
+}
+```
+
+```text
+r(age,spend)=0.9932316263764919
+r(age,visits)=-0.9853034458841585
+r(spend,visits)=-0.990942442678138
+note: strong r does not imply causation
+```

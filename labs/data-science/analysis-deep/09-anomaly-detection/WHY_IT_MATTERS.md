@@ -1,33 +1,43 @@
-﻿# Why It Matters: Anomaly Detection Advanced
+# Why Anomaly Detection Matters
 
-## Real-World Importance
+Stopped fraud pays salaries: catching 99 of 100 fraudulent transfers at
+a 9% PPV still saves multiples of the review labor - but only if the
+review pipeline is sized for 999 false cases per 100k, which is exactly
+the arithmetic most teams skip.
 
-### 1. Scientific Computing
-Fundamental to simulations in physics, climate, and drug discovery.
+Outage minutes cost directly (SLA credits, lost sales) and indirectly
+(trust). A detector that pages in minute two instead of customer-report
+in minute forty is worth its entire false-page budget many times over -
+provided fatigue has not muted it, which is why precision engineering
+is reliability engineering.
 
-### 2. Engineering
-Every discipline relies on these foundations for design and analysis.
+In safety and health settings the same math governs screening: rare
+conditions make even good screens mostly-false-positive, so follow-up
+capacity (biopsies, inspections) must be planned from PPV, not from
+sensitivity brochures. Deploying the screen without the follow-up plan
+manufactures harm, not health.
 
-### 3. Machine Learning and AI
-Core to model training, optimization, and inference.
+Across all of it, the tier discipline - page, batch, log - is what lets
+organizations sustain vigilance for years instead of burning out in one
+noisy quarter.
 
-### 4. Financial Modeling
-Risk analysis, portfolio optimization, quantitative trading.
+## Who pays for detection
 
-### 5. Computer Graphics
-Rendering, animation, physics simulation.
+Merchants and banks pay fraud directly; SaaS firms pay outage minutes in
+credits and churn; factories pay defect escapes in recalls. Each caught
+mechanism-shift is a loss stopped mid-motion - detection earns its keep
+per incident, not per quarter.
 
-## Impact by Industry
-| Industry | Application | Impact |
-|----------|-------------|--------|
-| Healthcare | Imaging, drug discovery | Life-critical |
-| Finance | Risk modeling, trading | Economic |
-| Technology | ML/AI, search | Transformative |
-| Manufacturing | Design optimization | Efficiency |
+## What good practice buys
 
-## Why Learn This?
-1. Foundational to modern technology
-2. Transferable across domains
-3. Durable knowledge
-4. Enables innovation
-5. High career value
+Ranked queues convert reviewer hours into top-decile hits; PPV honesty
+sizes the review team before launch instead of after burnout; tiers keep
+the pager credible for years. Precision engineering is staff retention
+with mathematics.
+
+## The compounding margin
+
+Logged outcomes compound into labeled history, which sharpens sweeps,
+which sharpens tiers. Each quarter's flags train next quarter's curve -
+the detector improves with age while fixed rules rot. Maintenance is the
+feature.

@@ -1,81 +1,43 @@
-﻿# Math Foundation for Anomaly Detection Advanced
+# Math Foundation - Anomaly Detection
 
-## Prerequisite Mathematics
+## 1. z-score properties
 
-This document reviews the mathematical prerequisites needed to study Anomaly Detection Advanced effectively.
+For any distribution, |z| > k flags at most 1/k^2 of points (Chebyshev:
+P(|z| >= k) <= 1/k^2, so k = 3 caps at ~11%). Under normality the 3.0
+cutoff passes ~0.3%. The gap between the two numbers is why "3 sigma"
+means different things on different data - check shape, not folklore.
 
-## 1. Algebra Review
+## 2. Tukey fences
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+Fences at Q1 - 1.5*IQR and Q3 + 1.5*IQR. On normal data about 0.7% of
+points fall outside (a standard fact about the normal quartiles, easy
+to confirm by simulation); on skewed data the outer fence flags the
+long tail - transform first or accept the asymmetry explicitly.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## 3. Precision, recall, F1
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+P = TP/(TP+FP), R = TP/(TP+FN), F1 = 2PR/(P+R). Moving the threshold
+down monotonically raises R and (after the top) lowers P; F1 peaks
+where the harmonic balance sits. PrCurve's three rows are this curve
+sampled at three points - plot all thresholds for the full picture.
 
-## 2. Functions and Graphs
+## 4. Bayes PPV derivation
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+PPV = P(fraud | flag) = sens*prev / (sens*prev + fpr*(1-prev)). With
+prev = 0.001, sens = 0.99, fpr = 0.01: numerator 0.00099, denominator
+0.00099 + 0.00999 = 0.01098, ratio 0.0902. Per 100k: 99 true flags vs
+999 false ones. Every digit verified by the BaseRate program.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## 5. Why rarity dominates quality
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+Hold sens = fpr-complement fixed and halve prevalence: PPV roughly
+halves too (denominator dominated by fpr*(1-prev) ~= fpr). Conclusion:
+below ~1% prevalence, cutting the false-positive rate moves PPV more
+than raising sensitivity - engineer specificity first.
 
-## 3. Trigonometry
+## 6. Masking arithmetic
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+One extreme point inflates sd so its own z shrinks: with ten points
+near 10 plus one at 30, sd is 5.739 and z = 3.31 (still flags); add a
+second extreme and both z-values collapse under 3. Robust center and
+spread (median/MAD) resist because extremes never enter them.

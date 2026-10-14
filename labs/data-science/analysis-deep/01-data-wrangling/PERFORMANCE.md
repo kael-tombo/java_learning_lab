@@ -1,61 +1,41 @@
-﻿# Performance: Data Wrangling Implementation
+# Data Wrangling - Performance Notes
 
-## Performance Analysis
+## Complexity per stage (n rows, u unique keys)
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+- Profiling and missing counts: O(n) time, O(1) extra space.
+- Coercion: O(n x L) for max field length L; one exception object per
+  reject, so pathological all-reject columns pay allocation cost.
+- Dedup: O(n) average time with hashing, O(u) key memory.
+- Mean/mode fill: O(n) time. Median fill: O(n log n) for the sort plus an
+  O(n) copy when the input must stay unmutated.
+- Quartiles: dominated by the same O(n log n) sort.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Memory shape
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+Streaming line-by-line keeps O(1) row memory for profiling, coercion, and
+dedup-key hashing (keys only). Sorting for median/quartiles needs the full
+column in memory: O(n) doubles. On the lab's tiny arrays none of this
+matters; the shapes matter when n reaches millions.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Data Wrangling Implementation
+## JDK-specific guidance
 
-## Code Smells and Improvements
+- Reuse one `StringBuilder` or pre-sized structures in hot loops instead of
+  concatenating keys per row.
+- Prefer `Arrays.sort` on primitive `double[]` (dual-pivot quicksort, fast
+  and in-place) over boxing into `List<Double>` and `Collections.sort`.
+- `LinkedHashMap` costs marginally more than `HashMap` per entry; pay it
+  only where output order stability is required.
+- Exceptions are for rejects, not flow control on mostly-bad data: if over
+  half a column rejects, pre-validate characters before `parseDouble`.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Scaling without libraries
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+Partition by key hash for parallel dedup (per-partition maps, then merge),
+and use single-pass mean/variance accumulation for profiling. Exact median
+and quartiles still need the sort; that is the stage to sample or to replace
+with a sketch only when exactness is explicitly waived.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## What is NOT claimed here
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+No wall-clock timings appear because they depend on hardware and JVM flags.
+Size the stages by the complexities above and measure on your own workload.

@@ -1,81 +1,49 @@
-﻿# Math Foundation for Causal Inference
+# Math Foundation - Causal Inference
 
-## Prerequisite Mathematics
+## 1. Average treatment effect
 
-This document reviews the mathematical prerequisites needed to study Causal Inference effectively.
+ATE = E[Y(1) - Y(0)] over the population. An RCT estimates it by
+E[Y | treated] - E[Y | control], valid because randomization makes
+treatment independent of both potential outcomes.
 
-## 1. Algebra Review
+## 2. Confounding bias decomposition
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+The naive contrast decomposes exactly:
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+  E[Y|T=1] - E[Y|T=0] = ATE + selection bias
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+Selection bias is the difference in baseline outcomes Y(0) between the
+groups that chose (or were chosen for) treatment vs control. In the
+Confound demo the naive gap is -0.3267 while the adjusted gap is
+-0.0067: nearly the whole naive number is selection bias.
 
-## 2. Functions and Graphs
+## 3. Stratified adjustment identity
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+With strata proportions w_k and within-stratum gaps g_k, the adjusted
+estimate is sum_k w_k * g_k. This equals the population ATE if
+treatment is unconfounded within strata (the no-unmeasured-confounding
+assumption again). Weighting by stratum size is what stops a small odd
+stratum from dominating.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## 4. Difference-in-differences algebra
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+effect = (T_post - T_pre) - (C_post - C_pre). Rearranged, it is the
+change in the treated-control gap. Under parallel trends the control
+change equals the treated group's counterfactual change, leaving the
+causal effect. Any group-specific shock breaks the equality - the math
+shows exactly where the assumption enters.
 
-## 3. Trigonometry
+## 5. Instrumental-variables ratio (concept)
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+With a valid binary instrument, the Wald form is
+effect = (outcome gap by Z) / (treatment gap by Z): the outcome shift
+scaled by how much Z moved treatment. Weak relevance (tiny denominator)
+blows up variance; violated exclusion biases everything. Both failure
+modes are visible directly in the ratio.
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
+## 6. Bayes-free warning for matching
 
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+Matching balances measured covariates only. The residual bias from an
+unmeasured confounder U is proportional to U's links with treatment and
+outcome - sensitivity analysis varies those links to bound the damage,
+which EXERCISES.md practices qualitatively.

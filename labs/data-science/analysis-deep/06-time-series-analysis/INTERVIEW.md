@@ -1,36 +1,42 @@
-﻿# Interview: Time Series Analysis
+# Interview Q&A - Time Series
 
-## Common Interview Questions
+Q: How do you check stationarity in practice?
+A: Plot rolling mean/variance, difference if trending, and use the ADF
+unit-root test as one piece of evidence - never the only one.
 
-### Q1: Conceptual
-**Q**: Explain Time Series Analysis and its importance in computing.
-**A**: Time Series Analysis enables precise analysis of quantitative relationships, foundational for scientific computing and ML.
+Q: ACF tails off, PACF cuts off at lag 2. What do you try?
+A: AR(2) on the (possibly differenced) series; verify residuals are
+white noise before accepting it.
 
-### Q2: Implementation
-**Q**: How to implement Time Series Analysis in Java 21+?
-**A**: Input validation, core algorithm with stable numerics, convergence checking, error bounds.
+Q: Why is shuffling a series for cross-validation wrong?
+A: It trains on the future and tests on the past - lookahead leakage
+that inflates scores and hides regime changes.
 
-### Q3: Numerical Analysis
-**Q**: What numerical issues arise?
-**A**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: Your model beats the training fit but loses to seasonal-naive. Ship?
+A: No. Seasonal-naive is the bar on seasonal data; investigate the
+seasonal structure the model is missing.
 
-### Q4: Performance
-**Q**: How to optimize for large inputs?
-**A**: Algorithmic improvements, parallel processing, memory optimization, JVM tuning.
+Q: MAPE is 400%. What do you check first?
+A: Actuals near zero - a handful of near-zero denominators dominate
+MAPE. Switch to MAE/RMSE or exclude by stated policy.
 
-### Q5: System Design
-**Q**: Design a computation service.
-**A**: API design, concurrency model, error handling, monitoring, deployment.
+Q: Residuals still correlate at lag 12 on monthly data. Meaning?
+A: Unmodeled annual seasonality - add seasonal terms or dummies rather
+than raising non-seasonal orders.
 
-## Coding Challenge
-`java
-public double compute(double[] values) {
-    // O(n) time, O(1) space, handle edge cases
-    return 0.0;
-}
-`
+Q: Point forecast for 24 months ahead - concerns?
+A: Error variance grows with horizon; present intervals that widen and
+warn that far-horizon points are scenarios, not promises.
 
-## Behavioral Questions
-1. Describe debugging a numerical issue
-2. How do you ensure code correctness?
-3. Approach to learning new math concepts?
+Q: Random walk - best simple forecast?
+A: Naive (last value); its expected squared error equals the shock
+variance, which is why it is the baseline to beat.
+
+Q: Train RMSE 0.5, rolling RMSE 2.1, seasonal-naive 1.9. Diagnose?
+A: Overfit order that memorized in-sample wiggles; it loses to the
+seasonal baseline out of sample. Cut orders until rolling error clears
+1.9 with white residuals.
+
+Q: Monthly data, ACF spike at lag 12 only. Model?
+A: Pure seasonal structure - seasonal-naive or a seasonal term first.
+Non-seasonal ARMA orders address the wrong frequency entirely.

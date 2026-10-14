@@ -1,26 +1,55 @@
-﻿# Mental Models: Data Pipelines
+# Mental Models - Data Pipelines
 
-## Conceptual Frameworks
+## 1. Plumbing with receipts
 
-### Model 1: The Machine
-Input -> processing gears -> output, with configurable parameters.
+Every batch is water through pipes, but each joint issues a receipt
+(row counts, checks). Leaks (dropped rows) show where receipts disagree -
+no receipt, no trust downstream.
 
-### Model 2: The Map
-Maps from input space to output space -- understanding the mapping predicts behavior.
+## 2. Idempotence as an elevator button
 
-### Model 3: The Conversation
-Input asks a question, computation processes it, output provides answer.
+Pressing twice calls the elevator once. Keyed merges are elevator
+buttons; appends are ticket dispensers (press twice, two tickets).
+Build elevators where retries press repeatedly.
 
-## Analogies
+## 3. Delivery semantics as mail
 
-### Cooking
-Ingredients (input) + Recipe (algorithm) + Techniques (operations) = Dish (output)
+At-least-once is a persistent carrier (may redeliver); at-most-once is
+a careless one (may lose); exactly-once is registered handoff with
+signature (sink) - the signature, not the carrier, makes it exact.
 
-### Navigation
-Start (initial) -> Route (algorithm) -> Destination (result)
+## 4. Schemas as contracts, not suggestions
 
-## Thinking Tools
-1. **First Principles**: Break down to fundamentals
-2. **Inversion**: Consider what would cause failure
-3. **Extreme Cases**: Test with extreme inputs
-4. **Analogy Transfer**: Map from familiar domains
+Reader and writer sign: required fields, types. Additive edits are
+margin notes; breaking edits need re-signing (version + dual read).
+Unsigned changes are breaches, however small.
+
+## 5. Replay as time travel with quarantine
+
+Backfills visit the past but stay in a clean suit (staging) until
+decontaminated (diffed). Time travelers who touch live tables rewrite
+history - quarantine first, always.
+
+## 6. Quality gates as bouncers
+
+Checks stand at the club door: counts, nulls, drift on the list or no
+entry. A polite bouncer (warn-only) admits trouble; fail-loud keeps the
+dance floor (dashboards) safe.
+
+## 7. DAG as an assembly line
+
+Stations in order, each with its own stop button and parts contract.
+Lines never loop back (acyclic); a jammed station quarantines its tray
+while the rest keep rhythm.
+
+## 8. Staging as a clean room
+
+Replay output lands in staging (clean room suits) before touching
+production (the fab floor). Decontamination is the diff; promotion is
+the airlock. No one walks onto the floor in street clothes.
+
+## 9. Contracts as property lines
+
+Schemas mark where your land ends and the neighbor's begins. Additive
+edits are garden beds; breaking edits move the fence - surveyors
+(compat checks) and signatures (versions) required, disputes otherwise.

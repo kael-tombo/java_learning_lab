@@ -1,26 +1,43 @@
-﻿# Mental Models: Feature Engineering
+# Feature Engineering - Mental Models
 
-## Conceptual Frameworks
+## 1. Translation, not invention
 
-### Model 1: The Machine
-Input -> processing gears -> output, with configurable parameters.
+Features translate what was measured into what the model can use: colors to
+vectors, skewed areas to compressed scales, pairs to products. Good
+translation preserves meaning across the conversion (counts recoverable from
+one-hots); bad translation editorializes (ordinal numbers for nominal
+colors invent an order).
 
-### Model 2: The Map
-Maps from input space to output space -- understanding the mapping predicts behavior.
+## 2. Fit is learning; apply is plumbing
 
-### Model 3: The Conversation
-Input asks a question, computation processes it, output provides answer.
+Fitting estimates something about the world (train mean 25.0); applying
+routes new data through that estimate. Leakage is letting the future vote
+in the estimate (mean 37.5). Keep the two verbs separate in code and in
+speech, and most leakage bugs become sayable before they become shippable.
 
-## Analogies
+## 3. Scaling as unit conversion
 
-### Cooking
-Ingredients (input) + Recipe (algorithm) + Techniques (operations) = Dish (output)
+z-scores convert to "train-sd units": test 100 reads as 6.71 sd from home -
+an interpretable distance, not just a big number. Like currency conversion,
+the rate must come from the home economy (train), never from a mix
+including the purchase being converted.
 
-### Navigation
-Start (initial) -> Route (algorithm) -> Destination (result)
+## 4. Target encoding as borrowing answers
 
-## Thinking Tools
-1. **First Principles**: Break down to fundamentals
-2. **Inversion**: Consider what would cause failure
-3. **Extreme Cases**: Test with extreme inputs
-4. **Analogy Transfer**: Map from familiar domains
+Replacing a level by its mean outcome borrows the answer sheet to write the
+question. Borrowed inside train folds with smoothing, it generalizes; handed
+the full sheet (all-data means), it memorizes. The suspicion to cultivate:
+any feature built from labels is guilty until folded.
+
+## 5. Interactions as chemistry
+
+Area and rooms combine like reagents: the product captures what neither has
+alone (big AND many-roomed). But chemistry explodes combinatorially - every
+product is a new dimension that must earn its keep against overfitting, and
+unscaled products dominate purely by magnitude.
+
+## 6. The parameter store as a contract
+
+Frozen constants are a signed contract between fit-time and apply-time:
+same numbers, same columns, same fallbacks. Breaking the contract (refit,
+reorder, rescale) voids every validation result downstream of it.

@@ -1,130 +1,52 @@
-﻿# Exercises: Data Pipelines
+# Exercises - Data Pipelines
 
-## Theoretical Exercises
+## 1. Prove the fixed point (runnable)
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Data Pipelines in your own words.
-**Answer**: Data Pipelines involves understanding how mathematical quantities change and relate under specific operations.
+Copy PipeIdem, apply batch2 twice more, assert the map still equals
+{o1=9.5, o2=4.0, o3=7.25} with rows = 3 after each. Print PASS with the
+map contents - that print is your idempotency proof.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Data Pipelines.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Append vs upsert (runnable)
 
-### Exercise 3: Application
-**Question**: Apply the theory of Data Pipelines to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Replace the map with an ArrayList add per record, replay batch2, and
+count rows (expect 7 with duplicates). State in one sentence why blind
+append can never be replay-safe.
 
-## Programming Exercises
+## 3. Threshold policy (runnable)
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Data Pipelines.
+Copy PipeQuality, add policy: quarantine if nullRate > 0.10 or drift >
+1.0. Show the demo batch quarantines (0.333 > 0.10), then craft a clean
+6-row batch that passes and print both verdicts.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Compat matrix (runnable)
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Extend PipeSchema with: removed field (v3 drops amount), renamed field
+(quantity for amount), widened type (int->long for id, policy: allowed
+with cast documented). Print COMPATIBLE/BREAKING per case with the rule
+cited (subset, name match, or explicit widening policy).
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Late-data windows (paper)
 
-## Challenge Problems
+Events with event-time hours {1, 2, 2, 5} arrive in order 1, 5, 2, 2
+(one batch, late twos). Show the width-2 tumbling means under
+event-time vs arrival-time assignment differ, and state which your
+pipeline uses and where late data goes (lateness window or side output).
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. Backfill promotion checklist (paper)
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Write the six-line promotion gate: staging row delta, key overlap,
+value-mismatch rate, check outcomes, code version pin, approver sign.
+No promotion without all six filled - ceremony is the feature.
 
-## Solutions
+## 7. Throughput sizing (paper + runnable)
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Data Pipelines
+Batches of 6 rows merge in negligible time; scale the thought: 6M rows
+with 10% duplicates replayed. Compute expected stored rows under keyed
+merge (6M) vs blind append (6.6M) and state the serving-store cost of
+the wrong choice in one sentence.
 
-## Multiple Choice Questions
+## 8. Contract negotiation (paper)
 
-### Question 1
-What is the fundamental principle underlying Data Pipelines?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Data Pipelines?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Team A wants to rename amount to total; team B reads amount daily. Write
+the migration plan: v2 adds total (additive), dual-read window dates,
+B's cutover commit, v3 drops amount. Four dated lines, no lock-in.

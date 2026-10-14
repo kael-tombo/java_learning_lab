@@ -1,25 +1,53 @@
-﻿# Visual Guide: Visualization Fundamentals
+# Visualization Fundamentals - Visual Guide
 
-## Conceptual Diagrams
+## The lab histogram (width 2 from 0)
 
-### Diagram 1: Core Concept Flow
-`
-Input -> Preprocessing -> Core Algorithm -> Postprocessing -> Output
-`
+```text
+[0.0,2.0):  1 #
+[2.0,4.0):  5 #####
+[4.0,6.0):  3 ###
+[6.0,8.0):  0
+[8.0,10.0): 1 #
+peak at [2,4), gap, then the lone 9
+```
 
-### Diagram 2: Algorithm Variants
-`
-Input -> Variant Selection -> [Stable | Fast | Precise] -> Result
-`
+## Same mean, three shapes (all mean 6.0)
 
-## Function Behavior
-Visual representation showing how Visualization Fundamentals transforms inputs to outputs with characteristic patterns.
+```text
+a: 6 6 6 6 6        flat line ............
+b: 2 4 6 8 10       steady slope  /
+c: -2 6 6 6 14      flat with outlier pair  *     *
+sds: 0.0 vs 3.16 vs 5.66 - the sd hints, only the plot tells
+```
 
-## Convergence Pattern
-Error decreases as iterations increase, following exponential decay for well-conditioned problems.
+## Truncated axis dishonesty
 
-## Visual Learning Resources
-- Flowcharts for algorithm logic
-- Plots of convergence behavior
-- Heat maps of numerical stability regions
-- Comparison charts for algorithm variants
+```text
+honest (0-based):   truncated (5.5-based):
+5.8 | ## 6.1 | ##   5.8 | #  6.1 | ########
+5.5 | ## ...         (identical data, manufactured drama)
+```
+
+## Overplotting fixes
+
+```text
+raw blob:       alpha:          jitter:         binned means:
+*********       .:##:.:         . * . *         [0,2): 3.0
+*********  -->  :#####:    -->  * . * .    -->  [2,4): 4.5
+*********       .:##:.:         . * . *         [4,6): 6.5
+                                                        [6,8): 8.0
+```
+
+## Category bars with denominators
+
+```text
+books: 3/8 ###     games: 3/8 ###     food: 2/8 ##
+```
+
+## Dual-axis warning
+
+```text
+series A (left axis 0-10) vs series B (right axis 0-1000):
+rescale either axis and the "crossover" moves - crossings are artifacts.
+Plot separately or index both to a common baseline.
+```

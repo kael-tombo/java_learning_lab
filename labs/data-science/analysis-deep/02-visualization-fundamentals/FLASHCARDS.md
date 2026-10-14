@@ -1,52 +1,71 @@
-﻿# Flashcards: Visualization Fundamentals
+# Visualization Fundamentals - Flashcards
 
-## Front-Back Cards
+## Q1. Which chart for one categorical variable?
 
-### Card 1
-**Front**: What is the definition of Visualization Fundamentals?
-**Back**: Mathematical operations transforming inputs according to established rules.
+A: Bar chart of counts/proportions with a zero baseline; length encodes
+value against a common origin.
 
-### Card 2
-**Front**: Key properties of Visualization Fundamentals?
-**Back**: Continuity, convergence, stability, error bounds.
+## Q2. Which chart for one continuous variable?
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+A: Histogram (binned counts) for larger n; dot plot when every value can be
+shown individually.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+## Q3. What is the Anscombe lesson in one sentence?
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+A: Four datasets share mean x 9, mean y 7.5, correlation 0.816 yet graph
+utterly differently - summaries underdetermine shape, so plot first.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+## Q4. Why must bar axes start at zero?
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+A: Otherwise equal lengths misrepresent unequal values; truncation turned
+5.8 vs 6.1 (5% apart) into visual drama.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+## Q5. Why avoid dual y-axes?
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Visualization Fundamentals algorithm: ________. **Answer**: O(n)
+A: Each axis rescales independently, so crossings and leads are artifacts of
+the chosen ranges, not findings.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+## Q6. Name three overplotting mitigations.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+A: Alpha blending (transparency shows density), jitter (separates ties),
+binning into counts or cell means.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+## Q7. What do the lab histogram counts sum to, and why check?
+
+A: 1+5+3+0+1 = 10 = n. Reconciliation proves every value landed in exactly
+one bin.
+
+## Q8. Why print empty bins?
+
+A: The zero-count [6,8) bin shows the gap between bulk and outlier; hiding
+it deletes a finding.
+
+## Q9. What are binned means estimating?
+
+A: E[y | x in cell]: the cell averages 3.0, 4.5, 6.5, 8.0 trace the trend
+like a regressogram.
+
+## Q10. Same mean 6.0, sds 0 / 3.16 / 5.66 - what does the sd tell you?
+
+A: Spread differs (flat, slope, outlier pair), but only plotting resolves
+which shape produced the spread.
+
+## Q11. When is a log scale appropriate?
+
+A: Multiplicative relationships spanning orders of magnitude - labelled
+loudly, since equal distances mean multiplication.
+
+## Q12. Proportion plus what?
+
+A: Always the denominator: 3/8, not 37.5% alone, so the reader sees n = 8
+behind the estimate.
+
+## Q13. What breaks if bin edges change between compared groups?
+
+A: Comparability - different binnings manufacture shape differences, so fix
+one scale for all panels.
+
+## Q14. How do text charts stay honest?
+
+A: Edges, counts, and n are printed explicitly - no hidden defaults for a
+library to choose silently.

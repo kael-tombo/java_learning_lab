@@ -1,130 +1,47 @@
-﻿# Exercises: Visualization Fundamentals
+# Visualization Fundamentals - Exercises
 
-## Theoretical Exercises
+Verify every answer by running your code; expected values come from
+verified reference runs.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Visualization Fundamentals in your own words.
-**Answer**: Visualization Fundamentals involves understanding how mathematical quantities change and relate under specific operations.
+## 1. Reproduce the histogram
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Visualization Fundamentals.
-**Answer**: The proof follows from the definitions and established theorems.
+Rewrite the width-2 binner from scratch on `{1, 2, 2, 3, 3, 3, 4, 4, 5, 9}`.
+Expect counts 1, 5, 3, 0, 1 and total 10.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Visualization Fundamentals to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## 2. Change the width
 
-## Programming Exercises
+Re-bin the same data at width 5 from 0 ([0,5), [5,10)). Expect [0,5): 9,
+[5,10): 1. Write two sentences on what the 9 looks like under each width.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Visualization Fundamentals.
+## 3. Same-mean trio
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+Build series a (five 6s), b (2,4,6,8,10), c (-2,6,6,6,14). Expect means all
+6.0 and sample sds 0.0, 3.1622776601683795, 5.656854249492381. Sketch each as
+one text line and state which two the sd distinguishes least.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## 4. Binned means from scratch
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+Recompute the twelve-point cells with `TreeMap`. Expect n and meanY per cell:
+(2, 3.0), (4, 4.5), (4, 6.5), (2, 8.0).
 
-## Challenge Problems
+## 5. Truncation demo
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+Print two bar pairs for values 5.8 and 6.1: one with a 0 baseline, one with
+a 5.5 baseline. Confirm the truncated pair looks ~7x different while the
+data differ by 5%.
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+## 6. Category extension
 
-## Solutions
+Add two `"food"` sales (n = 10). Expect books 3/10, games 3/10, food 4/10;
+food overtakes. Note how the same label order is preserved.
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Visualization Fundamentals
+## 7. Edge-value audit
 
-## Multiple Choice Questions
+Feed exact edge values {0.0, 2.0, 10.0} to the binner. Expect bins 0, 1, 4
+(left-closed edges; top value clamped into the last bin). Document the rule.
 
-### Question 1
-What is the fundamental principle underlying Visualization Fundamentals?
+## 8. Jitter sketch
 
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Visualization Fundamentals?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+For tied x values {1,1,1,2,2}, add offsets {-0.1, 0, +0.1} by index and print
+the spread positions. State in one sentence when jitter misleads (it
+fabricates spread the data does not have; cap the amplitude).

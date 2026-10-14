@@ -1,49 +1,43 @@
-﻿# Step-by-Step Guide: Exploratory Data Analysis
+# Exploratory Analysis - Worked Example
 
-## Implementation Walkthrough
+## Grouped means: north {10,30,50}, south {20,40,60}
 
-### Step 1: Set Up Project Structure
-`ash
-mkdir -p src/main/java/com/mathlab/exploratory
-mkdir -p src/test/java/com/mathlab/exploratory
-`
+North sum 90/3 = 30.0; south sum 120/3 = 40.0; total 210/6 = 35.0 overall.
+Checks: 3+3 = 6 rows accounted; 35.0 sits between 30.0 and 40.0; gap is 10.0
+on n = 3 per group (suggestive, fragile - say both).
 
-### Step 2: Define the Main Class
-`java
-package com.mathlab.exploratory;
-public class ExploratoryAnalysis { }
-`
+## Simpson reversal, verified by hand
 
-### Step 3: Implement Core Algorithm
-1. Define public API method
-2. Validate inputs
-3. Implement computation
-4. Return result
+Ward A: 81/90 = 0.9 exactly; 234/270 = 0.8666666666666667. Treat leads by
+3.33 points. Ward B: 192/263 = 0.7300380228136882 (73.00%); 55/80 = 0.6875.
+Treat leads by 4.25 points. Pooled treat: 273/353 = 0.7733711048158645
+(77.34%). Pooled control: 289/350 = 0.8257142857142857 (82.57%). Control
+leads pooled by 5.23 points while trailing in both wards.
 
-### Step 4: Add Helper Methods
-Extract sub-computations for readability and reuse.
+## Why the flip happens
 
-### Step 5: Write Unit Tests
-`java
-@Test void testBasic() {
-    assertEquals(expected, ExploratoryAnalysis.compute(input), 1e-10);
-}
-`
+Ward A succeeds ~87-90% for everyone; ward B ~69-73%. Controls concentrate
+in the easy ward (270 of 350); treated concentrate in the hard ward (263 of
+353). Pooled rates weight by these mixes, so control's easy-ward majority
+outvotes treatment's within-ward wins. Composition effect, quantified.
 
-### Step 6: Run Tests
-`ash
-mvn test
-`
+## Correlation trio, verified
 
-### Step 7: Optimize
-Profile and apply targeted optimizations.
+Age {25,32,47,51,62} vs spend {200,350,500,550,700}: r = 0.9932316263764919.
+Age vs visits {8,6,4,3,2}: r = -0.9853034458841585. Spend vs visits: r =
+-0.990942442678138. All |r| > 0.98 on n = 5: striking pattern, tiny sample,
+zero causal content. The coherent sign pattern points at age as the common
+driver to stratify or control for next.
 
-### Step 8: Document
-Add Javadoc and ensure documentation is current.
+## Shape demo check
 
-## Verification Checklist
-- [ ] Basic functionality works
-- [ ] Edge cases handled
-- [ ] Numerical accuracy acceptable
-- [ ] Performance acceptable
-- [ ] Tests cover critical paths
+{1,1,2,2,3,3,4,9,15} sums to 40; mean 40/9 = 4.444444444444445; sorted
+middle (5th of 9) = 3.0. Bins width 4 from 0: 6,1,1,1 - total 9.
+
+## Reconciliation footer
+
+Group n: 3+3 = 6 matches input length. Ward denominators per arm: treated
+90+263 = 353, control 270+80 = 350, matching the pooled fractions exactly.
+Correlation n = 5 all pairs (pairwise-complete here equals listwise). Shape
+bins 6+1+1+1 = 9 matches input length. Every section balances; an unbalanced
+EDA section is an unfinished one.

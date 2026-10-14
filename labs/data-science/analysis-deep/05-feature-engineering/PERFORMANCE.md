@@ -1,61 +1,40 @@
-﻿# Performance: Feature Engineering Implementation
+# Feature Engineering - Performance Notes
 
-## Performance Analysis
+## Complexity (n rows, d features, L levels, w hash width)
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+- One-hot: O(n) apply, O(n x active) memory sparse (dense O(n x L) - avoid
+  dense past dozens of levels).
+- Ordinal/target lookup: O(n) average via hashmap, O(L) memory.
+- Hashing: O(n) time, O(w) memory, no vocabulary - the scaling winner for
+  open vocabularies.
+- Scaling/transforms/interactions: O(n x d) time, O(1) extra; single fused
+  pass over row arrays.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Memory shape
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+Fit accumulators are O(d): sums, counts, per-level sums for target means
+(O(L)). Apply streams row-by-row: O(1) working memory. One-hot dense output
+is the memory cliff (n x L doubles); keep it sparse or hashed past small L.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Feature Engineering Implementation
+## JDK-specific guidance
 
-## Code Smells and Improvements
+- `HashMap<String,Integer>` vocabularies beat `List.indexOf` past ~50
+  levels; size with expected L to avoid rehashing.
+- Fuse per-row transforms (log, product, scale) in one loop pass over
+  primitive arrays - fewer passes, better cache behavior.
+- `Math.log` is the costliest op here; batch transforms before scaling so
+  each value is logged once, then reused.
+- Store fitted constants in plain `double` fields of a small holder object:
+  no boxing in the apply hot loop.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Scaling without libraries
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+Partition by rows for apply (embarrassingly parallel); fit reductions
+(sums, per-level sums) via map-reduce over partitions. The parameter object
+is the only cross-partition traffic - tiny by design.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## What is NOT claimed here
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+No throughput numbers: hashing vs lookup speed depends on hardware and key
+distribution. The complexities above size the work; benchmark your own
+vocabulary sizes.

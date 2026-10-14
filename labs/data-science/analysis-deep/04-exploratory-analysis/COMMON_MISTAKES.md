@@ -1,33 +1,55 @@
-﻿# Common Mistakes: Exploratory Data Analysis
+# Exploratory Analysis - Common Mistakes
 
-## Top 10 Common Mistakes
+## 1. Headlining the pooled rate
 
-### 1. Ignoring Edge Cases
-Failing to handle zero, negative, or extreme values.
+"Control wins 82.57 to 77.34" inverts the evidence (treat won both wards).
+Pool only with strata beside it; unstable sign means strata headline.
 
-### 2. Assuming Exact Arithmetic
-Floating-point operations do not produce exact results.
+## 2. Stratifying nothing
 
-### 3. Premature Optimization
-Optimize only after establishing correctness.
+One uncut comparison is a Simpson candidate by default. Cut by every
+plausible confounder collected (ward, age band, region) before believing
+any gap.
 
-### 4. Algorithm Mismatch
-Using inappropriate algorithms for the input type.
+## 3. Causal verbs for correlations
 
-### 5. Ignoring Numerical Stability
-Unstable formulations amplify rounding errors.
+"Age drives spend" from r 0.993 skips design entirely. Use association
+verbs (tracks, accompanies, predicts in the statistical sense) until time
+order plus controls earn stronger ones.
 
-### 6. Incorrect Boundary Conditions
-Applying formulas outside valid domain.
+## 4. Dropping n from findings
 
-### 7. Missing Convergence Checks
-Iterative algorithms need proper termination criteria.
+"r 0.99" without n = 5, "gap 10" without n = 3 per group. Strip n and vivid
+becomes conclusive-sounding; keep n and readers calibrate automatically.
 
-### 8. Thread Safety Assumptions
-Verify thread safety for concurrent usage.
+## 5. Single-signal stories
 
-### 9. Insufficient Testing
-Test edge cases, not just happy paths.
+One mean gap, one r, one stray each merit follow-up, not reporting. The
+shape demo needed three agreeing signals (bins, gap, mean/median) to become
+a finding - hold every claim to the same bar.
 
-### 10. Documentation Decay
-Keep docs synchronized with implementation.
+## 6. Testing during exploring
+
+p-values on EDA-chosen comparisons are double-dipping: the data suggested
+and confirmed the same hypothesis. Explore now, freeze hypotheses, test on
+fresh data later.
+
+## 7. Ignoring composition tables
+
+Rates without denominators (90% of what? 263 or 90?) hide the mix effect.
+Print k/n beside every percent; the paradox is invisible without them.
+
+## 8. Over-binning tiny data
+
+Nine values into twenty bins is confetti, not a display. Bin counts stay
+below n (4 bins for 9 values here); sort order carries the detail.
+
+## 9. Confusing overall mean position
+
+Overall 35.0 must sit between 30.0 and 40.0 - if your "overall" falls
+outside its groups, the grouping or the arithmetic is broken. Assert it.
+
+## 10. Exploration without record
+
+Unwritten loops evaporate: which strata, what flipped, what is next. The
+record is the analysis product; a console scrollback is not.

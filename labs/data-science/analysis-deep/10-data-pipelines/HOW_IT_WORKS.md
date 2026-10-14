@@ -1,35 +1,45 @@
-﻿# How It Works: Data Pipelines
+# How Data Pipelines Work
 
-## High-Level Explanation
+## 1. Ingest with keys and timestamps
 
-### The Core Idea
-Data Pipelines is about understanding how mathematical quantities behave under specific operations and transformations.
+Every record arrives with a stable key (order id) and event time.
+Keys enable idempotent sinks; event time (vs arrival time) enables
+correct windows when data runs late. Records lacking either get them
+at the gate or get rejected - no keyless appends into served tables.
 
-### Step-by-Step Mental Model
-1. Start with input values
-2. Apply defined mathematical rules
-3. Verify result satisfies properties
-4. Return computed value
+## 2. Validate before transforming
 
-### Why This Approach?
-- Provides rigorous mathematical guarantees
-- Computationally tractable
-- Generalizes to wide range of problems
+Row counts, schema subset check, null rates run on the raw landing
+before any business logic. Bad input quarantined here never becomes a
+mysterious downstream metric dip needing a postmortem.
 
-## Key Insights
+## 3. Transform deterministically
 
-### Insight 1: Trade-offs
-Speed vs. accuracy vs. stability -- no algorithm excels at all three.
+Same input, same output, every run: no wall-clock calls, no unordered
+iteration in business logic. Determinism is what makes replay a test
+rather than a gamble - assert it by double-running staging.
 
-### Insight 2: Compositionality
-Complex operations built from simpler ones.
+## 4. Sink idempotently
 
-### Insight 3: Numerical Reality
-Finite precision requires careful implementation.
+Merge by key (PipeIdem pattern), never blind append, into the serving
+store. Retry any failed batch fearlessly: the fixed-point property
+makes the second attempt a no-op, as the demo's replay row shows.
 
-## Common Questions
-**Q:** Why not use formula directly?
-**A:** Direct application often has numerical instability or poor performance.
+## 5. Evolve schemas additively
 
-**Q:** When to use this implementation?
-**A:** When reliable, tested computation with known accuracy is needed.
+New optional fields flow freely; type changes and renames go through
+versioned migration with dual reads. The compat check runs in CI on
+every schema pull request - mechanical enforcement, not convention docs.
+
+## 6. Orchestrate as a DAG
+
+Nodes own retries and timeouts; edges carry data contracts (schema +
+freshness SLA). Failures quarantine the node output and page with the
+node name - nobody debugs "the pipeline," they debug ExtractOrders.
+
+## 7. Replay, backfill, audit
+
+New logic replays history into staging, diffs against production, then
+promotes. Every run logs code version, input range, row counts, and
+check outcomes - the audit trail that makes month-old numbers
+defensible.

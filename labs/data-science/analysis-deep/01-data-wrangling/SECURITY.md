@@ -1,28 +1,46 @@
-﻿# Security: Data Wrangling Implementation
+# Data Wrangling - Security Notes
 
-## Security Considerations
+## PII in dedup keys
 
-### Input Validation
-- Validate all input parameters before processing
-- Check for null, NaN, Infinity values explicitly
-- Reject inputs that could cause algorithmic issues
+Keys like (name, birthdate) are identifiers. Log key *counts*, never raw key
+values, and hash keys with a salted digest if the reject/key logs leave the
+team. The lab's `c7|2026-01-05` pattern is safe to print only because the
+ids are synthetic.
 
-### Denial of Service
-- Set maximum iteration limits for iterative algorithms
-- Validate input size to prevent excessive resource consumption
+## Log injection through raw values
 
-### Numeric Overflow/Underflow
-- Check for intermediate overflow in computations
-- Use Math.addExact for critical integer operations
-- Handle NaN/Infinity propagation
+Reject logs echo raw input. A value containing newlines or control
+characters (`"3x\nFORGED row"`) can forge log lines. Sanitize or quote
+logged values and strip control characters before writing.
 
-### Thread Safety
-- Use immutable objects where possible
-- Synchronize shared mutable state
+## Malicious input size
 
-### Secure Coding Checklist
-- [ ] Input validation implemented
-- [ ] Maximum iteration limits set
-- [ ] Overflow protection in place
-- [ ] Edge cases (zero, negative, infinity, NaN) handled
-- [ ] Thread safety documented
+A hostile or broken feed can send gigabyte lines or billions of rows; naive
+read-all-then-sort exhausts memory. Cap line length, cap column counts, and
+fail closed with a clear error rather than swapping to death.
+
+## Silent data destruction
+
+Over-permissive coercion (empty string to zero) and auto-deletion of flags
+destroy evidence. Treat cleaning rules as security policy: strict grammars,
+explicit allow-lists for sentinels, and append-only logs of every dropped or
+altered cell.
+
+## Provenance and tampering
+
+Record source file hashes and row counts at ingest so a swapped or truncated
+feed is detected by the reconciliation check (in = kept + removed +
+rejected). A mismatch blocks promotion of the clean table.
+
+## No secrets in cleaning code
+
+Fill values, fences, and keys are fine to version; credentials for source
+systems are not. Keep connection strings and tokens out of wrangling scripts
+and logs entirely.
+
+## Availability of the pipeline itself
+
+Cleaning stages that throw on the first bad row let one malformed record
+deny service to the whole batch. Quarantine rejects per cell, bound the
+reject rate that still allows the run to proceed, and alert (not crash) when
+the bound is crossed.

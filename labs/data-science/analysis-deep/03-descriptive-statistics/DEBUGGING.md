@@ -1,35 +1,50 @@
-﻿# Debugging: Descriptive Statistics Implementation
+# Descriptive Statistics - Debugging Guide
 
-## Common Bugs
+## Symptom: mean prints NaN
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+Cause: a NaN element in the sum loop, or 0/0 from an empty array. Fix:
+pre-scan with `Double.isNaN` counting, reject empty input with an exception,
+and assert finite output.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Symptom: variance negative (tiny, like -1e-12)
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+Cause: one-pass formula cancellation on large-mean data. Fix: switch to
+two-pass deviations; clamp only after confirming the magnitude is rounding
+noise, and log when clamping fires.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Symptom: median off by one position
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+Cause: even-n averaging skipped, or sorting the wrong array. Fix: unit-test
+odd n = 7 (expect 9.0) and an even-n case (expect middle-pair mean); sort a
+clone and assert the original is unchanged.
 
-## Debugging Techniques
+## Symptom: quartiles disagree with a reference tool
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+Cause: different interpolation (type-7 vs median-of-halves vs nearest-rank).
+Fix: state the rule (type-7 here: Q1 7.0, Q3 13.5) and test the positions,
+not just the values - conventions differ legitimately.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
+## Symptom: r outside [-1, 1] slightly (1.0000000002)
 
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+Cause: floating-point rounding in the ratio. Fix: clamp display to [-1, 1]
+only at print time, keep raw for computation, and investigate if the excess
+exceeds 1e-9 (that signals a formula bug, not rounding).
+
+## Symptom: skew sign contradicts mean/median gap
+
+Cause: miscentered powers (used raw instead of deviated values) or wrong
+normalization. Fix: recompute m_3 from explicit deviations and check the
+sign against mean-vs-median; they agree on clean data.
+
+## Symptom: mode returns a surprise value
+
+Cause: floating-point near-ties (7.0 vs 6.9999999) splitting frequencies, or
+tie-breaking by first-seen. Fix: round/bin before tallying continuous data
+and report all tied top values.
+
+## Symptom: sample variance smaller than population variance
+
+Cause: swapped divisors, or ss recomputed inconsistently between the two.
+Fix: derive both from one ss (as the snippets do) and assert sampVar >
+popVar for finite n > 1 - the inequality is algebraic, so violations prove
+code bugs, never data quirks.

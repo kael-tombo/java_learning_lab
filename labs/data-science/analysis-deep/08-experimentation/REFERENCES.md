@@ -1,31 +1,39 @@
-﻿# References: Experimentation and A/B Testing
+# References - Experimentation
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+Real books only; no invented titles.
 
-## Academic Papers
-1. Author (Year). Landmark paper on Experimentation and A/B Testing. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+- Kohavi, Tang, and Xu - "Trustworthy Online Controlled Experiments"
+  (Cambridge, 2020). The field manual: randomization units, pitfall
+  patterns (peeking, SRM, novelty, carryover), metric design, platform
+  lessons from large-scale practice.
+- Box, Hunter, and Hunter - "Statistics for Experimenters" (Wiley,
+  2nd ed. 2005). Classical design (factorial, blocking, response
+  surfaces) that underlies every modern test plan.
+- Lakens - "Improving Your Statistical Inferences" (freely available
+  online course/text). Power, MDE, and interval thinking with unusual
+  clarity; pairs with the SampleSize section here.
+- Gelman and Hill - "Data Analysis Using Regression and Multilevel /
+  Hierarchical Models" (Cambridge, 2007). The regression view of
+  experimental data and disciplined subgroup analysis.
+- Efron and Hastie - "Computer Age Statistical Inference" (Cambridge,
+  2016). Frequentist/Bayesian testing logic in the modern computational
+  setting, including false-discovery perspective.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+Start with Kohavi for online practice, Box for design roots, Lakens
+when power and intervals need sharpening.
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+- Siroker and Koomen - "A/B Testing: The Most Powerful Way to Turn
+  Clicks Into Customers" (Wiley, 2013). Practitioner conversion-testing
+  view; pairs with Kohavi's rigor as street counterpart.
+- Fisher - "The Design of Experiments" (Oliver and Boyd, 1935). The
+  randomization root text; short, opinionated, still worth an afternoon.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Reading order
 
-## Citation Format
-Author. "Experimentation and A/B Testing." Math Academy, Java Learning Lab, 2026.
+Kohavi first (online practice), Siroker alongside (conversion context),
+Box-Hunter-Hunter for design roots, Fisher for the original argument,
+Lakens whenever power and intervals blur.
+
+- Lehmann and Romano - "Testing Statistical Hypotheses" (Springer,
+  3rd ed. 2005). The rigorous testing theory behind every z, p, and
+  power statement in this lab; consult when the approximations chafe.

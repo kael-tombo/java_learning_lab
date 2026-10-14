@@ -1,76 +1,40 @@
-﻿# Causal Inference
+# Lab 07 - Causal Inference
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Causal Inference**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Correlation is not causation. This lab covers what causation means,
+why randomized trials are the benchmark, how confounding (including
+Simpson's paradox) misleads, and what quasi-experimental designs -
+matching, difference-in-differences, discontinuity, instruments - can
+and cannot claim. Every causal claim here is stated with its
+assumptions, never as magic.
 
-## Topics Covered
-- ATE/ATT/CATE, confounding, propensity score matching, DiD, instrumental variables, DAGs, do-calculus
+## Objectives
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Separate correlation from causation with concrete numerical examples.
+- Explain why randomization (RCTs) is the gold standard.
+- Define confounding and demonstrate Simpson's paradox with real numbers.
+- Describe propensity-score matching as a concept with its key assumption.
+- Write the difference-in-differences structure and its parallel-trends
+  assumption.
+- Sketch regression discontinuity and instrumental variables, including
+  the relevance and exclusion requirements for instruments.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Causal Inference
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Map of this lab
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+- THEORY.md / MATH_FOUNDATION.md - potential outcomes, confounding math.
+- HOW_IT_WORKS.md / STEP_BY_STEP.md - how each design is reasoned about.
+- CODE_DEEP_DIVE.md - three runnable JDK-only Java programs.
+- EXERCISES.md - hands-on arithmetic on small inline datasets.
+- HISTORY.md / REFERENCES.md - Fisher/RCT lineage and real books.
+- ARCHITECTURE.md / INTERNALS.md / PERFORMANCE.md - implementation notes.
+- DEBUGGING.md / COMMON_MISTAKES.md / INTERVIEW.md - pitfalls and Q&A.
 
-## Project Structure
-`
-causalinference/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/causalinference/CausalInference.java
-    â””â”€â”€ test/java/com/mathlab/causalinference/CausalInferenceTest.java
-`
+## Caution flag
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+Causal conclusions always rest on untestable assumptions (no unmeasured
+confounding, parallel trends, exclusion). This lab names the assumption
+every time a method is used. Any sentence that hides one is a bug.
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Conventions
+
+- Java 21+, plain JDK only. Single-class, deterministic, ASCII output.
+- Numeric claims in CODE_DEEP_DIVE.md are observed program output.

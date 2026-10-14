@@ -1,61 +1,46 @@
-﻿# Performance: Data Pipelines Implementation
+# Performance - Data Pipelines
 
-## Performance Analysis
+## Complexities
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+- Ingest + checks: O(rows * cols) single pass.
+- Keyed sink merge: O(1) amortized per record.
+- Compat: O(fields). Windows: O(n) naive slice form, O(1) amortized
+  running form. DAG overhead: O(nodes + edges) - negligible.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Scaling guidance
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+- Throughput comes from partitioning by key (parallel merges per
+  partition), not from tuning the merge itself - state the partition
+  key before profiling anything.
+- Checks stream: never hold two copies (raw + transformed) when one
+  pass with staged writes suffices; memory is O(window), not O(history).
+- Backfills are the heavy job: same code, bounded parallelism over key
+  ranges, throttled against the serving store - schedule, don't rush.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Data Pipelines Implementation
+## No invented benchmarks
 
-## Code Smells and Improvements
+No rows/sec or latency figures appear: they depend on hardware, stores,
+and record width. Size from your own load test with production-shaped
+records, then add headroom for replays running concurrently.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Real cost driver
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+Reprocessing and late-data handling dominate budgets: design replay and
+backfill paths before launch, because the first schema break or logic
+bug will demand them under time pressure.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
+## Cost table
 
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
+| Operation | Time | Memory |
+|---|---|---|
+| ingest + checks | O(rows * cols) | O(cols) |
+| keyed merge | O(1) amortized/record | O(keys) |
+| compat check | O(fields) | O(1) |
+| naive windows | O(n) slices | O(window) |
+| DAG overhead | O(nodes + edges) | O(edges) |
 
-## Refactoring Plan
+## Measurement note
 
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+Load-test with production-shaped records (real widths, real skew) and
+report rows/sec with row counts - then add headroom for a concurrent
+replay, because breaks arrive during peak, never during calm.

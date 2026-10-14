@@ -1,130 +1,50 @@
-﻿# Exercises: Descriptive Statistics
+# Descriptive Statistics - Exercises
 
-## Theoretical Exercises
+Verify each answer by running your code; expected values come from
+verified reference runs.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Descriptive Statistics in your own words.
-**Answer**: Descriptive Statistics involves understanding how mathematical quantities change and relate under specific operations.
+## 1. Reproduce center
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Descriptive Statistics.
-**Answer**: The proof follows from the definitions and established theorems.
+Rewrite mean/median/mode for `{3, 7, 7, 9, 12, 15, 21}` from scratch.
+Expect sum 74.0, mean 10.571428571428571, median 9.0, mode 7.0 count 2.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Descriptive Statistics to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## 2. Reproduce spread
 
-## Programming Exercises
+Recompute ss and both normalizations. Expect ss 215.71428571428572,
+popVar 30.816326530612248, sampVar 35.952380952380956, sds 5.551245493635842
+and 5.99603043290984.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Descriptive Statistics.
+## 3. Shape drill
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+Implement moment skew and excess kurtosis on the same seven values. Expect
+skew 0.5802988304934447, excess kurtosis -0.6180158764966452, quartiles
+Q1 7.0 / median 9.0 / Q3 13.5, IQR 6.5.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## 4. Correlation from scratch
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+Recompute the xs 1..5 / ys {2,4,5,8,10} triple sums. Expect s_xy 20.0,
+s_xx 10.0, s_yy 40.8, covSample 5.0, r 0.9901475429766744.
 
-## Challenge Problems
+## 5. Outlier sensitivity
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+Replace 21 with 210 and recompute mean, median, sd, skew. Expect mean to
+jump near 37.6 while median stays 9.0; skew explodes past 2. State which two
+numbers a report should lead with now.
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+## 6. Constant-input guard
 
-## Solutions
+Feed `{5, 5, 5, 5}` to your correlation. Expect s_xx = s_yy = 0 and a
+0/0 division: implement the zero-spread branch returning NaN with a clear
+message instead of a number.
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Descriptive Statistics
+## 7. Rank correlation
 
-## Multiple Choice Questions
+Implement Spearman on `{1,2,3,4,5}` vs `{2,1,4,3,5}` by ranking then
+Pearson on ranks. Expect r_s = 0.8. Compare with Pearson on raw values and
+explain any gap in one sentence.
 
-### Question 1
-What is the fundamental principle underlying Descriptive Statistics?
+## 8. Standard error
 
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Descriptive Statistics?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+From sample sd 5.99603043290984 and n = 7, compute se = s/sqrt(n) = 2.2666...
+and the interval mean +/- 2 x se. State exactly what that interval does and
+does not promise.

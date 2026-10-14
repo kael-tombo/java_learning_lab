@@ -1,70 +1,47 @@
-﻿# Exploratory Data Analysis -- Theory
+# Exploratory Analysis - Theory
 
-## 1. Introduction
+## 1. The EDA workflow (after Tukey)
 
-Exploratory Data Analysis is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+Exploratory data analysis iterates: pose a question, display the relevant
+data, summarize robustly, stratify by plausible confounders, record what was
+seen - then repeat. It precedes modelling and confirmatory testing, and its
+products are understanding and hypotheses, not p-values. The loop is
+skeptical by design: every display is an attempt to be surprised.
 
-## 2. Core Definitions
+## 2. Distribution shape reading
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Exploratory Data Analysis rests on several key definitions and axioms that form the foundation of the theory.
+From a sorted column and its bins, read center (median vs mean gap),
+spread (bulk width vs fences), gaps (empty bins), and strays (isolated
+values). The shape demo sorts to [1,1,2,2,3,3,4,9,15]: bulk 1-4, gap, then
+9 and 15. Mean 4.444444444444445 exceeds median 3.0: right skew confirmed
+two ways (gap pattern plus mean/median gap). Shape vocabulary - symmetric,
+skewed, bimodal, heavy-tailed - routes every later choice of summary and
+model.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Grouped aggregation and its sanity checks
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+Split-apply-combine: partition rows by a key (region), apply a summary
+(mean), combine into a comparison (30.0 vs 40.0). Three checks are
+mandatory: group n values sum to total n (3+3 = 6); the overall mean (35.0)
+lies between the group means; and group sizes are reported, because a mean
+of 3 carries different weight than a mean of 3,000. Unguarded group-bys on
+tiny cells manufacture confident-sounding noise.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Exploratory Data Analysis:
+## 4. Simpson's paradox, concretely
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Treatment beats control in ward A (90.0% vs 86.7%) and in ward B (73.0% vs
+68.8%), yet pooled treatment (273/353 = 77.34%) loses to pooled control
+(289/350 = 82.57%). Mechanism: ward A (high success for everyone) holds
+most controls (270 of 350), while ward B (low success) holds most treated
+(263 of 353) - group mix, not efficacy, decides the pooled rate. Whenever
+strata differ in both composition and baseline rate, pooled comparisons are
+guilty until stratified.
 
-### 2.3 Formal Framework
-The mathematical framework for Exploratory Data Analysis is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Correlation versus causation
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Exploratory Data Analysis is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Exploratory Data Analysis extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Exploratory Data Analysis requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Exploratory Data Analysis connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Exploratory Data Analysis provide the rigorous basis needed for correct computational implementation and real-world application.
+Age/spend r 0.99, age/visits r -0.99, spend/visits r -0.99: strong,
+mutually consistent, and causally mute. Correlation is symmetric and
+atemporal; causation needs time order, a mechanism, and confounder control
+(design, stratification, or experiment). EDA's job is to surface candidate
+relationships with their confounders attached - age here explains all three
+pairwise links - never to certify causes.

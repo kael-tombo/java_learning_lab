@@ -1,35 +1,44 @@
-﻿# Debugging: Feature Engineering Implementation
+# Feature Engineering - Debugging Guide
 
-## Common Bugs
+## Symptom: validation beats test by a wide margin
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+Cause: fold-impure fitting (scaler/target means saw held-out rows). Fix:
+re-run with the row-id overlap checker; refit strictly inside folds; expect
+the honest gap to shrink toward the true generalization error.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Symptom: all-zeros row after encoding
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+Cause: unseen level mapped to zero vector (correct behavior) hitting a model
+with no unknown handling - or a vocabulary typo ("Blue" vs "blue"). Fix:
+normalize case/whitespace at fit and apply identically; add the unknown
+column so "unseen" is a signal, not a void.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Symptom: NaN column after log
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+Cause: zero/negative slipped past the guard. Fix: pre-count `x <= 0`,
+apply the fitted shift, assert finite output per column, quarantine
+offenders with counts.
 
-## Debugging Techniques
+## Symptom: one feature dominates coefficients
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+Cause: unscaled product (480) beside raw smalls (rooms 4). Fix: scale after
+interacting; inspect coefficient x std (standardized effect) rather than raw
+coefficients.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
+## Symptom: train/test skew in scaled means
 
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+Cause: apply used different constants than fit (recomputed "for
+convenience"). Fix: single parameter object threaded from fit to apply;
+test that apply output on train rows reproduces fit-time values exactly.
+
+## Symptom: hashing collisions tank a key feature
+
+Cause: width too small for identity-critical levels (billing ids merged at
+random). Fix: reserve exact encoding for identities; hash only wide weak
+signals, and widen until collision-rate estimates stop moving metrics.
+
+## Symptom: target-encoded model perfect in train, flat in prod
+
+Cause: full-label means memorized levels. Fix: rebuild with fold-nested
+smoothed encoding; compare level-mean stability across folds - unstable
+levels get heavier smoothing (larger m).

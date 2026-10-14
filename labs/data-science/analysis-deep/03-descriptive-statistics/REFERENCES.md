@@ -1,31 +1,49 @@
-﻿# References: Descriptive Statistics
+# Descriptive Statistics - References
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+## John Tukey, Exploratory Data Analysis (1977)
 
-## Academic Papers
-1. Author (Year). Landmark paper on Descriptive Statistics. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+Five-number summaries, box plots, resistant description. The authority for
+reporting quartiles first and moments second on skewed data.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+## William Press et al., Numerical Recipes
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+Accurate summation, sorting/selection for quantiles, and the numerical
+caution behind two-pass variance computation. Read before implementing
+moments on large or large-mean data.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Christopher Bishop, Pattern Recognition and Machine Learning
 
-## Citation Format
-Author. "Descriptive Statistics." Math Academy, Java Learning Lab, 2026.
+Chapter 1 treats sample mean, variance, and covariance as estimators with
+bias properties - the probabilistic home of the n vs n - 1 distinction and
+of covariance as an unnormalized association.
+
+## Hastie, Tibshirani, and Friedman, The Elements of Statistical Learning
+
+Correlation-based screening, linear association, and where naive moment
+summaries break down on real data. Frames the lab's r computation inside
+model-building practice.
+
+## Andrew Gelman and Jennifer Hill, Data Analysis Using Regression and
+Multilevel/Hierarchical Models
+
+Shows means, sds, and correlations doing real work inside regression
+displays - and how skewed predictors distort them, motivating the
+median/IQR habit.
+
+## F. J. Anscombe, "Graphs in Statistical Analysis" (1973)
+
+The quartet paper: identical summaries, different shapes. Cited wherever
+this lab warns that 0.99 or 10.57 alone proves nothing about form.
+
+## OpenJDK documentation: Arrays, Math, Map
+
+Specs for `Arrays.sort`, `Math.sqrt`, and map iteration used in the
+snippets. The ground truth for edge behavior (NaN ordering, clone
+semantics) assumed throughout.
+
+## How to read them for this lab
+
+Work Bishop's estimator-bias passages with pen and paper on the seven
+values; follow Press when your variance loop meets large means; keep Tukey
+open to remember quartiles come first on skew; cite Anscombe whenever anyone
+proposes acting on r = 0.99 without the scatter.

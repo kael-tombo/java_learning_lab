@@ -1,49 +1,56 @@
-﻿# Step-by-Step Guide: Data Pipelines
+# Step by Step - First Pipeline Pass
 
-## Implementation Walkthrough
+## Step 1. Land one batch
 
-### Step 1: Set Up Project Structure
-`ash
-mkdir -p src/main/java/com/mathlab/datapipelines
-mkdir -p src/test/java/com/mathlab/datapipelines
-`
+Take six order rows (PipeQuality's toy set: ids 1-6, two blank amounts).
+Land them untouched in a staging structure - raw first, always.
 
-### Step 2: Define the Main Class
-`java
-package com.mathlab.datapipelines;
-public class DataPipelines { }
-`
+## Step 2. Run the quality trio
 
-### Step 3: Implement Core Algorithm
-1. Define public API method
-2. Validate inputs
-3. Implement computation
-4. Return result
+Count rows (6), null rate (0.333), mean vs reference drift (9.375 vs
+9.0 -> 0.375). Decide pass/quarantine by written thresholds before
+transforming anything.
 
-### Step 4: Add Helper Methods
-Extract sub-computations for readability and reuse.
+## Step 3. Sink with merge-by-key
 
-### Step 5: Write Unit Tests
-`java
-@Test void testBasic() {
-    assertEquals(expected, DataPipelines.compute(input), 1e-10);
-}
-`
+Upsert each row into the serving map keyed by id (PipeIdem: after two
+batches including a replay, rows = 3 with intact values). Assert the
+replay changed nothing - that assertion is the idempotency test.
 
-### Step 6: Run Tests
-`ash
-mvn test
-`
+## Step 4. Check schema compatibility
 
-### Step 7: Optimize
-Profile and apply targeted optimizations.
+Reader needs {id, amount}; writer adds currency -> COMPATIBLE, proceed.
+Writer changes amount to string -> BREAKING, halt and version. Run both
+branches of the demo and quote its verdicts.
 
-### Step 8: Document
-Add Javadoc and ensure documentation is current.
+## Step 5. Window the stream view
 
-## Verification Checklist
-- [ ] Basic functionality works
-- [ ] Edge cases handled
-- [ ] Numerical accuracy acceptable
-- [ ] Performance acceptable
-- [ ] Tests cover critical paths
+Compute width-3 tumbling averages (3.000, 5.333, 4.333 on demo data).
+State event-time vs arrival-time choice for your windows - late data
+policy written down, not discovered.
+
+## Step 6. Wire the DAG order
+
+extract -> validate -> transform -> serve with per-node retry. Draw it
+(node names, no vendor features) and confirm acyclicity by inspection.
+
+## Step 7. Log the run
+
+Code version, input range, counts, check outcomes, decision. Re-run the
+same input and diff outputs: identical means deterministic, promotable,
+done.
+
+## Checkpoint table
+
+| Step | Artifact | Check |
+|---|---|---|
+| 1 landing | raw staged batch | untouched bytes |
+| 2 quality trio | counts/nulls/drift | pass or quarantine |
+| 3 keyed sink | serving map state | replay changes nothing |
+| 4 compat | COMPATIBLE/BREAKING | verdicts quoted |
+| 5 windows | tumbling avgs | event-time declared |
+| 6 DAG | node order drawn | acyclic by inspection |
+| 7 run log | version/range/counts | double-run identical |
+
+An empty cell means the step was skipped; skipped compat review voids
+the deploy.

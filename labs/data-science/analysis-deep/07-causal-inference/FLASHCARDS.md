@@ -1,52 +1,49 @@
-﻿# Flashcards: Causal Inference
+# Flashcards - Causal Inference
 
-## Front-Back Cards
+Q: Correlation vs causation in one line?
+A: Co-movement has three explanations: A->B, B->A, or common cause C.
 
-### Card 1
-**Front**: What is the definition of Causal Inference?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: What is the fundamental problem of causal inference?
+A: Only one of Y(1), Y(0) is observed per unit; the other is missing.
 
-### Card 2
-**Front**: Key properties of Causal Inference?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: Why are RCTs the gold standard?
+A: Randomization balances observed and unobserved confounders in
+expectation, so mean differences estimate causal effects directly.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: What is a confounder?
+A: A common cause (or proxy) of treatment and outcome that biases naive
+comparisons.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: State Simpson's paradox.
+A: Each stratum favors one option while the pooled aggregate favors the
+other, because stratum mix differs across options.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: What is a propensity score?
+A: e(X) = P(treated | covariates X); matches units with similar
+treatment probability.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: Matching's key assumption?
+A: No unmeasured confounding - it fixes only measured covariates.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: Write the DiD estimator.
+A: (treat_post - treat_pre) - (ctrl_post - ctrl_pre).
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: DiD's identifying assumption?
+A: Parallel trends: groups would have moved together absent treatment.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Causal Inference algorithm: ________. **Answer**: O(n)
+Q: Regression discontinuity idea?
+A: Cutoff-assigned treatment; compare units just above vs below for a
+local effect.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+Q: The two IV requirements?
+A: Relevance (Z moves treatment) and exclusion (Z affects outcome only
+through treatment).
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+Q: Naive contrast = ?
+A: ATE plus selection bias - the decomposition that motivates all design.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: Why never adjust for a collider?
+A: Conditioning on a common effect induces association and creates bias.
+
+Q: What ends every causal report?
+A: The number plus its assumption, stated in the same sentence.

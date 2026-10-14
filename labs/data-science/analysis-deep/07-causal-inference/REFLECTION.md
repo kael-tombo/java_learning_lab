@@ -1,39 +1,42 @@
-﻿# Reflection: Causal Inference
+# Reflection - Causal Inference
 
-## Self-Assessment Questions
+## Self-check prompts
 
-### Understanding
-1. Can I explain Causal Inference to a non-mathematician?
-2. Do I understand when to use each variant?
-3. Can I identify numerical issues before they occur?
+- Can I reproduce the Simpson reversal numbers from memory and name the
+  confounder's role in one sentence?
+- Do I compute stratum gaps before any pooled number, every time?
+- Can I write the DiD formula and state parallel trends as an
+  assumption rather than a fact?
+- Do I know the two IV requirements and which one statistics cannot
+  prove?
+- Does every causal sentence I write end with its license?
 
-### Application
-1. Have I implemented the algorithm correctly?
-2. Can I modify for different use cases?
-3. Do I know how to test correctness and performance?
+## What surprised you
 
-### Connection
-1. How does this connect to other math areas?
-2. How does it apply to my work/studies?
-3. What problems can I now solve?
+Most learners expect adjustment to refine the naive number slightly;
+here it collapsed -0.3267 to -0.0067. Write two sentences on what that
+collapse taught you about selection vs effect.
 
-## Learning Journal Prompts
-- Write a summary in your own words
-- Describe a situation where this would help
-- What questions remain?
+## Assumption audit
 
-## Progress Tracking
-| Concept | Before | After | Confidence |
-|---------|--------|-------|-----------|
-| Core definition | | | |
-| Key theorems | | | |
-| Implementation | | | |
-| Numerical aspects | | | |
-| Applications | | | |
+Take one causal claim you met at work or in the news. Name its design,
+write down the assumption it needs, and judge in three lines whether
+the reporting stated it. If not, rewrite the headline honestly.
 
-## Goals for Mastery
-- [ ] Implement from memory
-- [ ] Explain to a peer
-- [ ] Apply to novel problems
-- [ ] Fix numerical issues
-- [ ] Teach others
+## Next step
+
+Pick one: a balance table for a matching exercise, or pre-trend plots
+for a DiD-style dataset. Produce the diagnostic figure before any
+estimate - diagnostics first is the habit this lab installs.
+
+## Teach-back test
+
+Explain Simpson's paradox to a colleague using only the hospital numbers
+(90/100, 190/200, 10/100, 90/200) and the blender metaphor. If they can
+predict the pooled reversal before you show it, the lesson transferred.
+
+## Commitment line
+
+Write one sentence starting "In my next analysis I will..." naming one
+habit (strata before pooling, assumption sentence, sensitivity probe).
+Sign and date it; vague intentions do not count.

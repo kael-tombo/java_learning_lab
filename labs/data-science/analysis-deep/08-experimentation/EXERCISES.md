@@ -1,130 +1,50 @@
-﻿# Exercises: Experimentation and A/B Testing
+# Exercises - Experimentation
 
-## Theoretical Exercises
+## 1. Re-run the readout (runnable)
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Experimentation and A/B Testing in your own words.
-**Answer**: Experimentation and A/B Testing involves understanding how mathematical quantities change and relate under specific operations.
+Copy AbTest with x_A = 400/5000, x_B = 460/5000. Report d, z, p, and
+the 95% CI. State ship/no-ship against a +1pp threshold using the whole
+interval, not just p.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Experimentation and A/B Testing.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Halving drill (runnable)
 
-### Exercise 3: Application
-**Question**: Apply the theory of Experimentation and A/B Testing to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Extend SampleSize with n = 256000. Confirm SE ~0.00084 and MDE ~0.0023,
+then explain in two sentences why buying that precision costs 256x the
+traffic of n = 1000.
 
-## Programming Exercises
+## 3. SRM tripwire (runnable)
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Experimentation and A/B Testing.
+Feed check() with (4800, 5200): chi2 = 16.0, tiny p - flag. Then
+(4980, 5020): chi2 = 0.16, no flag. Explain why the same 4:3 ratio of
+deviation-to-noise reasoning must scale with total n.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Peeking simulation (runnable)
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Simulate (seeded Random, seed 7) six interim z-scores under no effect
+and count runs where |z| > 1.96 at least once in 200 repetitions.
+Report the fraction and compare with the 5% single-look rate - the gap
+is the peeking tax.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Unit-of-analysis trap (paper)
 
-## Challenge Problems
+Randomized by user (1000 users), analyzed by session (50000 sessions)
+with 50 sessions each from 10 power users all in treatment. Explain the
+direction of the SE bias and the fix (aggregate to user first).
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. Novelty plan (paper)
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Treatment redesign spikes +8% in week 1, fades to +1% by week 4.
+Write the launch plan: horizon, veteran-only segment check, and the
+decision rule that prevents shipping a novelty mirage.
 
-## Solutions
+## 7. Threshold decision drill (runnable)
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Experimentation and A/B Testing
+x_A = 950/20000, x_B = 1010/20000. Compute d, SE, 95% CI. Against a ship
+threshold of +0.5pp, decide ship/iterate/kill from the interval's low end
+and write the one-line justification as it would appear in the log.
 
-## Multiple Choice Questions
+## 8. Ramp-ratio SRM (paper)
 
-### Question 1
-What is the fundamental principle underlying Experimentation and A/B Testing?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Experimentation and A/B Testing?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Planned ramp 90/10 yields 9050/950 from 10000. Compute chi2 against the
+90/10 expectation (not 50/50) and explain why the planned ratio - never
+a hardcoded half - defines E in the SRM check.

@@ -1,25 +1,51 @@
-﻿# Visual Guide: Data Wrangling
+# Data Wrangling - Visual Guide
 
-## Conceptual Diagrams
+## Pipeline sketch
 
-### Diagram 1: Core Concept Flow
-`
-Input -> Preprocessing -> Core Algorithm -> Postprocessing -> Output
-`
+```text
+[ raw CSV-ish text ] --> [ profile ] --> [ coerce ] --> [ dedup ]
+      counts               reject log       key set
+--> [ impute ] --> [ screen ] --> [ validate ] --> [ clean table ]
+     fill value      fences          receipts
+```
 
-### Diagram 2: Algorithm Variants
-`
-Input -> Variant Selection -> [Stable | Fast | Precise] -> Result
-`
+## Missingness patterns (rows = records, X = observed, . = missing)
 
-## Function Behavior
-Visual representation showing how Data Wrangling transforms inputs to outputs with characteristic patterns.
+```text
+MCAR:  X X . X     holes scattered, no pattern by column
+       X . X X
+MAR:   young rows: X . X .   holes track the observed age column
+       senior rows: X X X X
+MNAR:  high values: X X . .  holes sit where values would be large
+```
 
-## Convergence Pattern
-Error decreases as iterations increase, following exponential decay for well-conditioned problems.
+## Tukey fences on a number line
 
-## Visual Learning Resources
-- Flowcharts for algorithm logic
-- Plots of convergence behavior
-- Heat maps of numerical stability regions
-- Comparison charts for algorithm variants
+```text
+values:  12 12 13 13 14 14 14 15 15                60
+         |<---- bulk ---->|                        ^
+   lo=10.375          hi=17.375                    flagged
+Q1=13.0   median~14   Q3=14.75   IQR=1.75
+```
+
+## Dedup keying
+
+```text
+row  (c7, 2026-01-05) --key--> [c7|2026-01-05] first seen: KEEP
+row  (c7, 2026-01-05) --key--> [c7|2026-01-05] seen before: DROP
+row  (c7, 2026-01-06) --key--> [c7|2026-01-06] new key: KEEP
+```
+
+## Coercion outcomes
+
+```text
+"12" --> 12.0      " 45 " --> 45.0 (trimmed)   "7.5" --> 7.5
+"-8" --> -8.0      "3x" --> REJECT (bad chars)  "" --> REJECT (blank)
+"N/A" --> REJECT (sentinel)
+parsed = 4, rejected = 3, sum of parsed = 56.5
+```
+
+## Reading rule
+
+If any box in the pipeline picture cannot report its counts, the picture is
+incomplete. Counts are the wrangling equivalent of axis labels.

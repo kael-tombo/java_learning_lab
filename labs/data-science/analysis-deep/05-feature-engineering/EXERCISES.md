@@ -1,130 +1,56 @@
-﻿# Exercises: Feature Engineering
+# Feature Engineering - Exercises
 
-## Theoretical Exercises
+Verify each answer by running your code; expected values come from
+verified reference runs.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Feature Engineering in your own words.
-**Answer**: Feature Engineering involves understanding how mathematical quantities change and relate under specific operations.
+## 1. Reproduce one-hot
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Feature Engineering.
-**Answer**: The proof follows from the definitions and established theorems.
+Rewrite the encoder with vocabulary [red, green, blue]. Expect red [1,0,0],
+blue [0,0,1], green [0,1,0]. Add an unknown ("yellow" -> [0,0,0]) branch and
+test it.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Feature Engineering to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## 2. Reproduce all three scalings
 
-## Programming Exercises
+On {10,20,30,40,50} expect min-max [0.0,0.25,0.5,0.75,1.0], z
+[-1.414213562373095,-0.7071067811865475,0.0,0.7071067811865475,
+1.414213562373095], robust [-1.0,-0.5,0.0,0.5,1.0], popSd
+14.142135623730951.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Feature Engineering.
+## 3. Train-only drill
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+Fit on {10,20,30,40}, transform {25,100}. Expect train mean 25.0, sd
+11.180339887498949, z values 0.0 and 6.7082039324993685. Then compute the
+leaky mean 37.5 and the muted leaky z of 100 (~4.9 with leaky sd) to feel
+the alarm muffling.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## 4. Interaction + log drill
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+Reproduce the three housing rows: products 100.0/240.0/480.0, logs
+3.912023005428146/4.382026634673881/4.787491742782046. Then add rooms^2 as a
+second expansion and argue (two sentences) whether n = 3 earns it.
 
-## Challenge Problems
+## 5. Ordinal trap demo
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+Ordinal-encode colors red=0/green=1/blue=2, fit y = 10 + 5 x on toy targets,
+and show the model charging 5 per "color step". Write the one-paragraph
+postmortem: invented order, priced fiction.
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+## 6. Smoothed target encoding
 
-## Solutions
+With levels A(2 wins/10), B(40/50), global mean 0.5 and smoothing weight 10
+(m = 10): enc(A) = (2+5)/(10+10) = 0.35, enc(B) = (40+5)/(50+10) = 0.75.
+Implement the formula (k*mean + m*global)/(k + m) and confirm. Then state
+where the fold boundary must sit.
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Feature Engineering
+## 7. Hashing sketch
 
-## Multiple Choice Questions
+Hash five strings into width 4 with `String.hashCode() & 3` (mask to
+non-negative first) and print the collision pattern. State one use where
+collisions are acceptable (wide linear text model) and one where they are
+not (exact product ids for billing).
 
-### Question 1
-What is the fundamental principle underlying Feature Engineering?
+## 8. Fold-purity audit
 
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Feature Engineering?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Write a checker asserting the scaler object used on fold k was fitted on
+fold k's train rows only (record row-id sets at fit, intersect at apply).
+Fail closed on any overlap with held-out ids.

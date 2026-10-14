@@ -1,31 +1,38 @@
-﻿# References: Causal Inference
+# References - Causal Inference
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+Real books only; no invented titles.
 
-## Academic Papers
-1. Author (Year). Landmark paper on Causal Inference. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+- Angrist and Pischke - "Mostly Harmless Econometrics" (Princeton,
+  2009). The quasi-experimental toolkit: regression, IV, DiD, and
+  discontinuity designs with labor-market examples.
+- Angrist and Pischke - "Mastering 'Metrics" (Princeton, 2014). The
+  gentler path through the same designs; Chapters on DiD and IV pair
+  directly with this lab's THEORY.md sections 6-7.
+- Rosenbaum - "Design of Observational Studies" (Springer, 2010).
+  Matching, sensitivity analysis, and the discipline of stating
+  assumptions from the Fisher tradition.
+- Pearl - "Causality: Models, Reasoning, and Inference" (Cambridge,
+  2000; 2nd ed. 2009). Graphical models, do-calculus, colliders and
+  mediators made formal.
+- Gelman and Hill - "Data Analysis Using Regression and Multilevel /
+  Hierarchical Models" (Cambridge, 2007). Regression as practiced,
+  with the multilevel view that disciplines subgroup claims.
+- Hernan and Robins - "Causal Inference: What If" (freely available
+  online). Potential outcomes with epidemiologic examples; pairs well
+  with the Simpson/confounding sections here.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+Start with Mastering 'Metrics for intuition, Mostly Harmless for
+rigor, Hernan and Robins when the potential-outcome framing clicks.
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+- Imbens and Rubin - "Causal Inference for Statistics, Social, and
+  Biomedical Sciences" (Cambridge, 2015). Potential outcomes with full
+  mathematical care; the Rubin-model reference.
+- Pearl, Glymour, and Jewell - "Causal Inference in Statistics:
+  A Primer" (Wiley, 2016). The short graphical-models on-ramp before
+  tackling Pearl's "Causality" proper.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Reading order
 
-## Citation Format
-Author. "Causal Inference." Math Academy, Java Learning Lab, 2026.
+Mastering 'Metrics first (intuition), Mostly Harmless alongside
+(rigor), Hernan-Robins for the potential-outcome framing, Imbens-Rubin
+when the math must be airtight, Pearl for graphs.

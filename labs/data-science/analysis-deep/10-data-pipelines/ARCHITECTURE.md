@@ -1,45 +1,51 @@
-﻿# Architecture: Data Pipelines Implementation
+# Architecture - Pipeline Mini-Toolkit
 
-## System Design
+JDK-only layout (package com.pipelab):
 
-The Data Pipelines implementation follows a layered architecture:
+```
+Record    - key + eventTime + fields; validation at construction
+Landing   - raw append-only staging per batch (never mutated)
+Checks    - row counts, null rates, drift vs reference
+Sink      - LinkedHashMap keyed upsert (the idempotent fixed point)
+Schema    - required-field set + types; subset-compat verdicts
+Dag       - extract/validate/transform/serve nodes with retry counts
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Data flow
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+Source -> Landing (raw) -> Checks (gate) -> transform -> Sink (merge by
+key). Schema gates every edge; Dag orders nodes and isolates failures
+per node with the node name attached to every page.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Design choices
 
-## Design Patterns
+- Landing immutable: transforms read staging, write new structures -
+  replay reruns the same pure functions over the same bytes.
+- Sink.merge is the only write path; direct put is package-private so
+  no caller can smuggle a blind overwrite past review.
+- Checks return pass/quarantine verdict objects carrying the numbers,
+  so pages include evidence, not just alarms.
+- Dag is acyclic by construction (topological order at build; cycles
+  throw) - no runtime cycle can form.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Boundaries
 
-### Template Method
-Common algorithm skeleton with customizable steps.
+No distributed transport here: the lab models semantics (keys, merges,
+compat) that any transport needs. Streaming windows appear as pure
+functions over lists, transport-agnostic by design.
 
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
+## Record sketches
 
-## Package Structure
-`
-com.mathlab.datapipelines/
-â”œâ”€â”€ DataPipelines.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
+```java
+record Batch(String id, List<Record> rows) {}
+record CheckVerdict(boolean pass, long rows, double nullRate, double drift) {}
+```
 
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
+Batch is immutable on landing; CheckVerdict carries evidence with the
+pass/fail bit so pages quote numbers, never bare alarms.
 
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Failure routing
+
+Failed nodes quarantine output and page with node name and contract
+breach. Downstream nodes never read partial writes - they wait on the
+contract, which a failed node cannot satisfy by construction.

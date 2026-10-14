@@ -1,45 +1,40 @@
-﻿# Architecture: Feature Engineering Implementation
+# Feature Engineering - Architecture
 
-## System Design
+## Transform pipeline
 
-The Feature Engineering implementation follows a layered architecture:
+```text
+raw columns --> ENCODE (one-hot/ordinal/target, fitted vocab)
+   --> TRANSFORM (log/Box-Cox on skew) --> INTERACT (products)
+   --> SCALE (frozen train constants) --> model-ready matrix
+fit path: TRAIN ONLY --> parameter store --> apply path reuses it
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Component responsibilities
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+- **Encoder:** owns vocabulary (level -> index) fitted on train; maps
+  unknowns to a fixed fallback. One-hot emits sparse-friendly vectors.
+- **Transformer:** owns shift/log decisions for skew; records the shift so
+  apply repeats it exactly (log(x + c) with train's c).
+- **Interactor:** owns the product list (area x rooms); pure per-row
+  arithmetic, no fitted state, but runs before scaling by design.
+- **Scaler:** owns frozen (min/max, mean/sd, median/IQR); apply is
+  division by construction, never refit.
+- **Parameter store:** the single record of every fitted constant with the
+  train slice identity (rows, hash). Validation/test paths read, never
+  write.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## JDK mapping
 
-## Design Patterns
+- Vocabularies: `List` index lookup (`indexOf`) at lab scale; `HashMap`
+  level-to-index beyond dozens of levels.
+- One-hot rows: `int[]` unit vectors printed via `Arrays.toString`.
+- Scaling: primitive double arithmetic; `Math.log` for transforms.
+- Parameter passing: small holder objects/records carrying (mean, sd) from
+  fit to apply - never recomputed downstream.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Invariants
 
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.featureeng/
-â”œâ”€â”€ FeatureEngineering.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+1. No component reads test data during fit; the split precedes all fitting.
+2. Apply uses byte-identical constants to fit (same object, not recompute).
+3. Unknown levels and out-of-range values map to declared fallbacks, loudly.
+4. Column order and widths are fixed at fit; apply cannot add columns.

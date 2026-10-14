@@ -1,35 +1,45 @@
-﻿# How It Works: Causal Inference
+# How Causal Reasoning Works
 
-## High-Level Explanation
+## 1. Start with the causal question
 
-### The Core Idea
-Causal Inference is about understanding how mathematical quantities behave under specific operations and transformations.
+"Does X cause Y?" names treatment, outcome, population, and timing.
+Vague questions ("does marketing work?") get rewritten until the
+intervention is concrete enough to randomize in principle.
 
-### Step-by-Step Mental Model
-1. Start with input values
-2. Apply defined mathematical rules
-3. Verify result satisfies properties
-4. Return computed value
+## 2. Draw the confounding map
 
-### Why This Approach?
-- Provides rigorous mathematical guarantees
-- Computationally tractable
-- Generalizes to wide range of problems
+List common causes of treatment and outcome (severity, income, season).
+These are the variables a design must neutralize by randomization,
+stratification, matching, or differencing - each choice recorded with
+its assumption.
 
-## Key Insights
+## 3. Prefer randomization
 
-### Insight 1: Trade-offs
-Speed vs. accuracy vs. stability -- no algorithm excels at all three.
+If an RCT is ethical and feasible, run one: randomize, pre-register the
+outcome, compare means. Every quasi-experimental design below is a
+fallback for when randomization is impossible, and says so.
 
-### Insight 2: Compositionality
-Complex operations built from simpler ones.
+## 4. Without randomization, stratify or match
 
-### Insight 3: Numerical Reality
-Finite precision requires careful implementation.
+Group units by measured confounders (exact strata) or by propensity
+score, compare treated vs control within groups, then average with
+population weights. Report balance tables: if covariates still differ
+within groups, the adjustment failed mechanically.
 
-## Common Questions
-**Q:** Why not use formula directly?
-**A:** Direct application often has numerical instability or poor performance.
+## 5. With time and a control group, difference twice
 
-**Q:** When to use this implementation?
-**A:** When reliable, tested computation with known accuracy is needed.
+Compute the DiD double difference. Plot pre-period trends for both
+groups side by side - diverging pre-trends falsify parallel trends
+before any causal sentence is written.
+
+## 6. With a cutoff, zoom to the threshold
+
+Compare outcomes just above vs just below; check nobody manipulated
+their score across the line (bunching tests conceptually) since sorting
+around the cutoff destroys comparability.
+
+## 7. State the assumption in the conclusion
+
+Every reported effect ends with its license: "assuming no unmeasured
+confounding" / "assuming parallel trends" / "assuming exclusion".
+A causal number without its assumption is an unfinished sentence.

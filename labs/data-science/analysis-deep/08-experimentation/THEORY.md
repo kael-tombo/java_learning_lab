@@ -1,70 +1,56 @@
-﻿# Experimentation and A/B Testing -- Theory
+# Experimentation Theory
 
-## 1. Introduction
+## 1. Anatomy of an A/B test
 
-Experimentation and A/B Testing is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+- Hypothesis: a falsifiable sentence ("one-click checkout raises
+  purchase rate") fixed before launch.
+- Randomization unit: the entity assigned (user, session, cluster).
+  Analysis should respect it - randomizing by user but analyzing by
+  pageview understates variance.
+- Control vs treatment: identical except the change under test.
+- Goal metrics: the few numbers that decide ship/no-ship.
+- Guardrail metrics: health numbers (crashes, latency, refunds) that
+  can veto a win on goals.
 
-## 2. Core Definitions
+## 2. Reading a result
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Experimentation and A/B Testing rests on several key definitions and axioms that form the foundation of the theory.
+Difference d = p_B - p_A with standard error
+SE = sqrt(p_A(1-p_A)/n_A + p_B(1-p_B)/n_B). The z-statistic d/SE gives a
+p-value; the 95% interval d +/- 1.96*SE shows the compatible range.
+CODE_DEEP_DIVE.md verifies one: diff 0.01200, SE 0.00469, z 2.557,
+p 0.01055, CI [0.00280, 0.02120] - significant at 0.05, barely.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Power and sample size
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+Power is the chance of detecting a true effect. Qualitative rules:
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Experimentation and A/B Testing:
+- Bigger true effect -> smaller n needed (effect sits in the
+  denominator squared).
+- SE shrinks as 1/sqrt(n): quadrupling n halves the error bar, so the
+  minimum detectable effect (MDE) roughly halves too (SampleSize demo).
+- 80% power at 5% significance is the common planning convention.
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Plan n from the smallest effect worth shipping, not from the effect
+you hope for - hoping is how underpowered tests are born.
 
-### 2.3 Formal Framework
-The mathematical framework for Experimentation and A/B Testing is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 4. Peeking and p-hacking
 
-## 3. Mathematical Formulation
+Checking daily and stopping at the first p < 0.05 manufactures false
+positives: repeated looks multiply the chance that noise once crosses
+the line. Remedies: a fixed horizon decided upfront (no early stops),
+or sequential methods with adjusted boundaries. Trying many metrics or
+subgroups until one shines is the same offense in disguise.
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 5. SRM: sample-ratio mismatch
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+A 50/50 split should yield ~equal arms. Systematic imbalance (broken
+redirect, bot filter firing on one arm) invalidates the test even when
+metrics look fine. The chi-square check sum (O-E)^2/E on arm counts
+catches it; p < 0.01 conventionally flags. Verified demo in code.
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+## 6. Novelty and primacy
 
-### 3.3 Existence and Uniqueness
-A critical question in Experimentation and A/B Testing is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Experimentation and A/B Testing extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Experimentation and A/B Testing requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Experimentation and A/B Testing connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Experimentation and A/B Testing provide the rigorous basis needed for correct computational implementation and real-world application.
+New interfaces get curiosity clicks (novelty inflates early treatment)
+while entrenched habits favor the familiar (primacy). Both fade. Run
+long enough to outlast them, or segment by exposure cohort and require
+the effect to persist in veterans, not just newcomers.

@@ -1,70 +1,46 @@
-﻿# Descriptive Statistics -- Theory
+# Descriptive Statistics - Theory
 
-## 1. Introduction
+## 1. Measures of center
 
-Descriptive Statistics is a fundamental concept in Data Analysis Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+- **Mean:** x-bar = (1/n) sum x_i. Uses every value; follows skew and
+  outliers (10.57 here vs median 9.0).
+- **Median:** middle sorted value (9.0 for odd n = 7). Resists up to half
+  the data being contaminated.
+- **Mode:** most frequent value (7.0, appearing twice). The only center
+  defined for nominal categories.
+- Choice rule: symmetric data, report mean and sd; skewed data, report
+  median and IQR (with the mean as a secondary number, never hidden).
 
-## 2. Core Definitions
+## 2. Variance: n versus n - 1
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Descriptive Statistics rests on several key definitions and axioms that form the foundation of the theory.
+- **Population variance:** sigma^2 = (1/n) sum (x_i - mu)^2. Exact
+  description of a finite, fully observed set: 30.816326530612248 here.
+- **Sample variance:** s^2 = (1/(n-1)) sum (x_i - x-bar)^2 = 35.952380952380956.
+  Dividing by n - 1 (Bessel's correction) compensates because deviations
+  about the fitted x-bar are systematically smaller than about the true mu.
+- **Standard deviation:** square root of variance, back in data units:
+  population 5.551245493635842, sample 5.99603043290984.
+- Rule: describing the data in hand, n; estimating the source population
+  from a sample, n - 1. Mixing them up shifts every downstream interval.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Shape: skew and kurtosis
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+- **Moment skew:** m_3 / s^3 where m_3 is the third central moment. Sign
+  gives tail direction (0.58: right tail, matching mean > median).
+- **Excess kurtosis:** m_4 / m_2^2 - 3, zero for the normal distribution.
+  Here -0.62: flatter tails than normal (no far strays besides the mild 21).
+- Both are moment ratios, so outliers dominate them - read them as shape
+  hints, then look at the quartiles.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Descriptive Statistics:
+## 4. Quartiles and IQR
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Q1 = 7.0, median = 9.0, Q3 = 13.5, IQR = 6.5 (type-7 interpolation). The
+five-number summary (min 3, Q1, median, Q3, max 21) describes skew and spread
+without any normality assumption, which is why it accompanies - and for
+skewed data replaces - the mean/sd pair.
 
-### 2.3 Formal Framework
-The mathematical framework for Descriptive Statistics is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Covariance and Pearson's r
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Descriptive Statistics is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Descriptive Statistics extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Descriptive Statistics requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Descriptive Statistics connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Descriptive Statistics provide the rigorous basis needed for correct computational implementation and real-world application.
+Sample covariance = s_xy / (n - 1); Pearson r = s_xy / sqrt(s_xx s_yy),
+bounded in [-1, 1] and unit-free. The lab pair gives cov 5.0 and
+r 0.9901475429766744: strong linear association, still not causation.

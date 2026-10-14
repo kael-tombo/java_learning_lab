@@ -1,31 +1,49 @@
-﻿# References: Exploratory Data Analysis
+# Exploratory Analysis - References
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+## John Tukey, Exploratory Data Analysis (1977)
 
-## Academic Papers
-1. Author (Year). Landmark paper on Exploratory Data Analysis. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+The founding text: displays before models, resistant summaries, structured
+curiosity. The loop in this lab is a compact, code-first rendering of his
+chapters on shape, strata, and scepticism.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+## Hadley Wickham and Garrett Grolemund, R for Data Science (EDA chapters)
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+The clearest modern EDA sequence (questions, visualisation, transformation)
+with grouped analysis throughout. Its stratify-and-compare habit matches the
+ward and region exercises here one-to-one.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Andrew Gelman and Jennifer Hill, Data Analysis Using Regression and
+Multilevel/Hierarchical Models
 
-## Citation Format
-Author. "Exploratory Data Analysis." Math Academy, Java Learning Lab, 2026.
+Stratification, grouping, and confounder control as modelling practice -
+the confirmatory continuation of this lab's EDA, showing where explored
+structures (wards, age bands) go next.
+
+## E. H. Simpson, "The Interpretation of Interaction in Contingency
+Tables" (1951)
+
+The paradox's namesake paper: how aggregation reverses association and why
+strata must be examined. Short, exact, and directly behind the ward numbers reproduced here.
+
+## F. J. Anscombe, "Graphs in Statistical Analysis" (1973)
+
+The quartet paper behind the plot-before-summary rule enforced across this
+lab: no correlation, however strong, travels without its display.
+
+## William Press et al., Numerical Recipes
+
+Correlation, sorting, and tabulation algorithms: the numerical substrate
+beneath grouped means and pairwise r on larger data.
+
+## OpenJDK documentation: java.util collections, Math
+
+Specs for `LinkedHashMap` ordering, `Arrays.sort`, and double printing that
+the snippets' determinism rests on. Consult before assuming edge behavior.
+
+## How to read them for this lab
+
+Start with Tukey for the loop, Simpson (1951) for the reversal mechanics,
+Anscombe for the humility. Use Wickham's EDA chapters as the daily
+checklist, Gelman when strata graduate into models, Press for the numerical
+substrate, and the OpenJDK docs whenever a collection's ordering or a
+double's printing is load-bearing in your display code.

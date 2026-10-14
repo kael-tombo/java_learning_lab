@@ -1,45 +1,46 @@
-﻿# Architecture: Experimentation and A/B Testing Implementation
+# Architecture - Experimentation Mini-Toolkit
 
-## System Design
+JDK-only layout (package com.explab):
 
-The Experimentation and A/B Testing implementation follows a layered architecture:
+```
+Counts    - x_A, n_A, x_B, n_B with validation (x <= n, n > 0)
+Readout   - d, SE, z, p, CI from one Counts object
+SrmCheck  - chi-square on arm counts vs planned ratio
+PowerPlan - SE/MDE table over candidate n (planning only)
+Log       - append-only hypothesis/result rows
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Data flow
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+Traffic -> Counts -> SrmCheck (gate) -> Readout (d + CI) -> Log.
+PowerPlan runs before launch from assumed rates, never from observed
+peeks - the call graph makes peeking-driven resizing awkward by design.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Design choices
 
-## Design Patterns
+- Counts immutable; every derived number recomputed from the four
+  inputs so no stale-rate bug is possible.
+- Readout returns the interval alongside p; no API yields p alone.
+- SrmCheck runs on allocation counts only, blind to metrics, so the
+  gate cannot be influenced by promising goals.
+- Log rows include horizon and MDE to shame post-hoc reinterpretation.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Boundaries
 
-### Template Method
-Common algorithm skeleton with customizable steps.
+No sequential-testing engine here: fixed-horizon analysis only, with
+sequential methods described conceptually in THEORY.md.
 
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
+## Record sketches
 
-## Package Structure
-`
-com.mathlab.experimentation/
-â”œâ”€â”€ Experimentation.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
+```java
+record Counts(long xA, long nA, long xB, long nB) {}
+record Readout(double d, double se, double z, double p, double lo, double hi) {}
+```
 
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
+Counts validates x <= n at construction; Readout has no p-without-CI
+projection - the interval travels with the p-value by construction.
 
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Failure routing
+
+n = 0, x > n, or negative inputs throw naming the arm. SrmCheck takes
+planned ratio as a required argument - no default split exists anywhere.

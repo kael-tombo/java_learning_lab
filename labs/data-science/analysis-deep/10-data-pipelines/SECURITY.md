@@ -1,28 +1,44 @@
-﻿# Security: Data Pipelines Implementation
+# Security Notes - Data Pipelines
 
-## Security Considerations
+## PII in flight and at rest
 
-### Input Validation
-- Validate all input parameters before processing
-- Check for null, NaN, Infinity values explicitly
-- Reject inputs that could cause algorithmic issues
+Pipelines copy sensitive fields everywhere (landing, staging, logs).
+Minimize at ingestion (drop unneeded columns), mask in logs, encrypt
+stores - each copy is breach surface, and pipelines multiply copies.
 
-### Denial of Service
-- Set maximum iteration limits for iterative algorithms
-- Validate input size to prevent excessive resource consumption
+## Schema changes as injection surface
 
-### Numeric Overflow/Underflow
-- Check for intermediate overflow in computations
-- Use Math.addExact for critical integer operations
-- Handle NaN/Infinity propagation
+Renamed fields and type coercions can smuggle malformed values past
+naive parsers (the string-amount that breaks sums). Strict typing,
+unknown-column rejection, and range checks at the landing gate.
 
-### Thread Safety
-- Use immutable objects where possible
-- Synchronize shared mutable state
+## Replay and backfill authorization
 
-### Secure Coding Checklist
-- [ ] Input validation implemented
-- [ ] Maximum iteration limits set
-- [ ] Overflow protection in place
-- [ ] Edge cases (zero, negative, infinity, NaN) handled
-- [ ] Thread safety documented
+Reprocessing history rewrites served truth: require approval, pin code
+versions, and diff before promotion. An unapproved backfill is a data
+integrity incident wearing an engineering badge.
+
+## Provenance and tampering
+
+Run logs (code version, input range, counts) are the tamper-evidence
+seal on numbers. Sign or append-only-store them; silent log edits void
+auditability of every downstream decision.
+
+## Code-level hygiene (JDK)
+
+Validate keys non-null at Record construction; fail on empty batches
+rather than serving stale state; ordered maps in output paths; cast
+counts to double before rate math; no credentials in run logs.
+
+## Replay as a weapon
+
+Authorized-looking replays can rewrite served history (restated revenue,
+erased incidents). Require multi-party approval for production replays,
+pin versions, and keep immutable pre/post diffs - replay power needs
+replay governance.
+
+## Third-party source trust
+
+External feeds arrive with their own keys, clocks, and definitions -
+all attacker- or error-controlled. Quarantine-first ingestion, strict
+schemas, and semantic checks treat every source as untrusted by default.

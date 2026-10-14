@@ -1,76 +1,41 @@
-﻿# Experimentation and A/B Testing
+# Lab 08 - Experimentation (A/B Testing)
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Experimentation and A/B Testing**, a cornerstone topic in Data Analysis Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+An A/B test randomizes users (or another unit) into control and
+treatment, then compares goal metrics while guardrail metrics stand
+watch. This lab covers test anatomy, power reasoning, peeking dangers,
+sample-ratio checks, and novelty effects - with every number verified
+by a runnable JDK-only program.
 
-## Topics Covered
-- A/B testing design, sample size, power analysis, sequential testing, bandit algorithms, epsilon-greedy, Thompson sampling
+## Objectives
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Name the parts: hypothesis, randomization unit, control, goal vs
+  guardrail metrics.
+- Explain power qualitatively (bigger effect needs smaller n) and the
+  standard-error scaling 1/sqrt(n).
+- Show why peeking inflates false positives; use fixed horizons or
+  sequential methods.
+- Run an SRM chi-square check on allocation counts.
+- Recognize novelty/primacy effects and plan past them.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Experimentation and A/B Testing
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Map of this lab
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+- THEORY.md / MATH_FOUNDATION.md - tests, CIs, power math, SRM math.
+- HOW_IT_WORKS.md / STEP_BY_STEP.md - running a test end to end.
+- CODE_DEEP_DIVE.md - three runnable JDK-only Java programs.
+- EXERCISES.md - hands-on tasks with inline numbers.
+- HISTORY.md / REFERENCES.md - background and real books (Kohavi et al).
+- ARCHITECTURE.md / INTERNALS.md / PERFORMANCE.md - implementation notes.
+- DEBUGGING.md / COMMON_MISTAKES.md / INTERVIEW.md - pitfalls and Q&A.
 
-## Project Structure
-`
-experimentation/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/experimentation/Experimentation.java
-    â””â”€â”€ test/java/com/mathlab/experimentation/ExperimentationTest.java
-`
+## Conventions
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+- Java 21+, plain JDK only. Single-class, deterministic, ASCII output.
+- Significance 0.05 and power 0.8 appear as stated conventions, not laws.
+- All outputs in CODE_DEEP_DIVE.md are observed program output.
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Worked miniature
+
+AbTest reads 1200/10000 vs 1320/10000 as diff 0.01200, z 2.55739,
+p 0.01055, CI [0.00280, 0.02120]. SampleSize shows MDE halving per 4x
+traffic (0.0376 at n = 1000 down to 0.0047 at n = 64000). Srm clears
+5050/4950 (p 0.3173) and flags 5400/4600. Reproduce all three first.

@@ -1,31 +1,39 @@
-﻿# References: Anomaly Detection Advanced
+# References - Anomaly Detection
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+Real books only; no invented titles.
 
-## Academic Papers
-1. Author (Year). Landmark paper on Anomaly Detection Advanced. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+- Hawkins - "Identification of Outliers" (Chapman and Hall, 1980). The
+  classical definition (different mechanism) and the early detection
+  taxonomy this lab's framing follows.
+- Tukey - "Exploratory Data Analysis" (Addison-Wesley, 1977). Boxplots,
+  fences, and the resistant-thinking tradition behind the IQR rule.
+- Bishop - "Pattern Recognition and Machine Learning" (Springer, 2006).
+  Density, novelty detection, and the probabilistic view of "normal."
+- Hastie, Tibshirani, and Friedman - "The Elements of Statistical
+  Learning" (Springer, 2nd ed. 2009). Ensemble and tree methods whose
+  thinking underlies isolation-style scoring intuitions.
+- Gelman et al. - "Bayesian Data Analysis" (Chapman and Hall, 3rd ed.
+  2013). The Bayesian machinery behind PPV-style posterior reasoning
+  about flagged events.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+Start with Tukey for hands-on resistance, Hawkins for definition
+discipline, Gelman when the Bayes layer needs full depth.
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+- Aggarwal - "Outlier Analysis" (Springer, 2013; 2nd ed. 2017). The
+  broad methods survey: distance, density, ensemble, and time-series
+  angles in one volume.
+- Barnett and Lewis - "Outliers in Statistical Data" (Wiley, 3rd ed.
+  1994). The classical treatment; strict, thorough, pre-hype.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Reading order
 
-## Citation Format
-Author. "Anomaly Detection Advanced." Math Academy, Java Learning Lab, 2026.
+Tukey first (resistant hands), Hawkins for definition discipline,
+Aggarwal for method breadth, Barnett-Lewis for classical depth, Gelman
+when posterior reasoning about flags gets serious.
+
+## Landmark survey (not a book, stated honestly)
+
+- Chandola, Banerjee, and Kumar - "Anomaly Detection: A Survey" (ACM
+  Computing Surveys, 2009). The classification of detection families
+  (classification, nearest-neighbor, clustering, statistical,
+  information-theoretic, spectral) that organizes the whole literature.

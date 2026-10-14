@@ -1,45 +1,48 @@
-﻿# Architecture: Causal Inference Implementation
+# Architecture - Causal Mini-Toolkit
 
-## System Design
+JDK-only layout (package com causallab):
 
-The Causal Inference implementation follows a layered architecture:
+```
+CellTable   - treatment x stratum counts; pooled rates on demand
+Stratifier  - within-stratum gaps + population-weighted adjustment
+DiDEngine   - double difference from 2x2 group-period means
+Balance     - covariate mean gaps per stratum (matching diagnostics)
+Sensitivity - re-runs adjustment under shifted weights
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Data flow
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+Counts -> CellTable -> Stratifier (adjusted gap) and Balance (did it
+work?) -> Sensitivity (how fragile?). Time data instead flows into
+DiDEngine with pre-trend plots attached, not hidden.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Design choices
 
-## Design Patterns
+- Counts stored as long, rates computed as double on read - no float
+  drift in the raw evidence.
+- Every estimator returns a record {estimate, assumption-string} so the
+  license travels with the number and cannot be dropped downstream.
+- Balance refuses to print an adjusted number when within-stratum
+  imbalance exceeds a set tolerance; fix the match first.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Boundaries
 
-### Template Method
-Common algorithm skeleton with customizable steps.
+No causal discovery or graph search lives here: structure comes from
+subject matter, entered explicitly. The toolkit computes under stated
+assumptions; choosing them stays human work.
 
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
+## Record sketches
 
-## Package Structure
-`
-com.mathlab.causalinference/
-â”œâ”€â”€ CausalInference.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
+```java
+record Estimate(double value, String assumption) {}
+record Stratum(long treatedN, long treatedX, long controlN, long controlX) {}
+```
 
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
+Estimate binds number to license at the type level; Stratum keeps counts
+as longs until rate computation so no float drift enters the evidence.
 
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Failure routing
+
+Empty strata throw with the stratum name; zero denominators never yield
+NaN - they yield an exception explaining which cell is empty and why the
+design cannot answer there.

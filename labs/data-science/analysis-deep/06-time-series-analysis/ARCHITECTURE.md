@@ -1,45 +1,48 @@
-﻿# Architecture: Time Series Analysis Implementation
+# Architecture - Time Series Mini-Toolkit
 
-## System Design
+JDK-only layout used by this lab's programs (package com.tslab):
 
-The Time Series Analysis implementation follows a layered architecture:
+```
+TsSeries   - wraps double[] + period m; guards ragged/empty input
+Differencer- first/second differences; inverse (cumsum) for forecasts
+AcfPacf    - sample ACF lags, PACF via Levinson-Durbin recursion
+Baselines  - naive, seasonal-naive, mean, drift forecast functions
+Metrics    - MAE/RMSE/MAPE with explicit zero-actual policy
+Backtest   - rolling-origin loop returning per-origin errors
+```
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Data flow
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+Raw series -> Differencer (d chosen by ADF-style reasoning) ->
+AcfPacf (order hints) -> model fit -> Backtest -> Metrics vs Baselines.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Design choices
 
-## Design Patterns
+- double[] throughout; no boxed collections on hot paths.
+- Missing values are a separate boolean mask, never silent NaN fill.
+- Metrics take the zero-actual policy as a parameter (SKIP vs FAIL)
+  so MAPE's trap is a compile-time-visible decision.
+- Backtest owns the temporal split so callers cannot shuffle by mistake.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Boundaries
 
-### Template Method
-Common algorithm skeleton with customizable steps.
+Fitting (least squares / MLE) lives behind a `Fitter` interface so the
+validation and metric layers stay independent of the optimizer.
 
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
+## Record sketches
 
-## Package Structure
-`
-com.mathlab.timeseries/
-â”œâ”€â”€ TimeSeriesAnalysis.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
+```java
+record Split(double[] train, double[] test, int origin) {}
+record Score(double mae, double rmse, double mape, int mapeN) {}
+record Verdict(String order, Score rolling, Score baseline) {}
+```
 
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
+Score carries mapeN (points actually averaged) so MAPE exclusions stay
+visible; Verdict pairs every model with its baseline so no number
+travels alone.
 
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Failure routing
+
+Empty series, single-point input, and constant series (zero variance)
+throw IllegalArgumentException naming the violated precondition.
+NaN inputs fail at the TsSeries boundary - never inside Metrics.

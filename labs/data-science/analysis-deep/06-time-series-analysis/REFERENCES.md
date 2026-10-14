@@ -1,31 +1,39 @@
-﻿# References: Time Series Analysis
+# References - Time Series
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+Real books and texts only; no invented titles.
 
-## Academic Papers
-1. Author (Year). Landmark paper on Time Series Analysis. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+- Box, Jenkins, Reinsel, and Ljung - "Time Series Analysis:
+  Forecasting and Control" (5th ed., Wiley, 2015). The ARIMA canon:
+  identification, estimation, diagnostic checking.
+- Hyndman and Athanasopoulos - "Forecasting: Principles and Practice"
+  (3rd ed., OTexts, freely available online). Practical forecasting
+  with decomposition, exponential smoothing, and ARIMA workflows.
+- Shumway and Stoffer - "Time Series Analysis and Its Applications"
+  (Springer). Rigorous ARMA spectral and state-space treatment.
+- Brockwell and Davis - "Introduction to Time Series and Forecasting"
+  (Springer). Stationarity, ACF theory, and classical estimation.
+- Montgomery, Jennings, and Kulahci - "Introduction to Time Series
+  Analysis and Forecasting" (Wiley). Business-oriented forecasting
+  with control-chart connections.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+Start with Hyndman for practice, Box-Jenkins for depth, Shumway and
+Stoffer when the spectral or state-space view is needed.
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
+- Chatfield - "The Analysis of Time Series" (Chapman and Hall, now
+  CRC Press). Compact classical coverage; strong on exploratory steps
+  before modeling.
+- Cryer and Chan - "Time Series Analysis with Applications in R"
+  (Springer, 2nd ed. 2008). Accessible ARIMA with worked examples that
+  translate directly into this lab's Java exercises.
 
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
+## Reading order
 
-## Citation Format
-Author. "Time Series Analysis." Math Academy, Java Learning Lab, 2026.
+Hyndman first (workflows you can run today), Chatfield alongside for
+depth, Box-Jenkins when identification puzzles get hard, Cryer-Chan for
+extra worked examples. Shumway-Stoffer last, for the spectral view.
+
+## Free companion
+
+- NIST/SEMATECH e-Handbook of Statistical Methods (freely available
+  online). The time-series and process-control chapters give a second,
+  example-heavy voice on stationarity, ACF reading, and control limits.

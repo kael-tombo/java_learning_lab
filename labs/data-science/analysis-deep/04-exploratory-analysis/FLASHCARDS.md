@@ -1,52 +1,71 @@
-﻿# Flashcards: Exploratory Data Analysis
+# Exploratory Analysis - Flashcards
 
-## Front-Back Cards
+## Q1. Name the five EDA loop steps.
 
-### Card 1
-**Front**: What is the definition of Exploratory Data Analysis?
-**Back**: Mathematical operations transforming inputs according to established rules.
+A: Question, display, summarize, stratify, record - then repeat. Products
+are understanding and hypotheses, not verdicts.
 
-### Card 2
-**Front**: Key properties of Exploratory Data Analysis?
-**Back**: Continuity, convergence, stability, error bounds.
+## Q2. What are the grouped means and checks?
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+A: North 30.0 (n=3), south 40.0 (n=3), overall 35.0; checks: 3+3 = 6, and
+35.0 lies between the group means.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+## Q3. State the Simpson numbers.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+A: A: 90.0 vs 86.7 (treat leads). B: 73.0 vs 68.8 (treat leads). Pooled:
+77.34 vs 82.57 (control leads). Mix decides the pool.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+## Q4. What mechanism flips the pooled winner?
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+A: Different composition: controls concentrate in easy ward A (270/350),
+treated in hard ward B (263/353). Pooled weights differ per arm.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+## Q5. What is the reporting rule for pooled rates?
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Exploratory Data Analysis algorithm: ________. **Answer**: O(n)
+A: Never alone: stratum rates beside pooled, with the mix explanation.
+Unstable sign means report strata, pool never.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+## Q6. The three correlations?
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+A: age/spend 0.9932316263764919, age/visits -0.9853034458841585,
+spend/visits -0.990942442678138. Strong, symmetric, causally mute.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+## Q7. Why can't r show causation?
+
+A: r is symmetric (r_xy = r_yx, a cosine) and atemporal; causation needs
+time order, mechanism, and confounder control by design.
+
+## Q8. Shape demo numbers?
+
+A: Sorted [1,1,2,2,3,3,4,9,15], mean 4.444444444444445, median 3.0, bins
+6,1,1,1: right skew with two strays, three signals agreeing.
+
+## Q9. What makes a group mean trustworthy?
+
+A: Its n, the overall-mean-between-groups check, and survival under
+stratification - a mean of 3 is suggestive, never conclusive.
+
+## Q10. What ends each EDA loop?
+
+A: A written record: question, display, numbers with n, strata checked,
+and what would change the conclusion.
+
+## Q11. Who founded EDA and when?
+
+A: John Tukey, "Exploratory Data Analysis", 1977: displays and resistant
+summaries before models.
+
+## Q12. Who named Simpson's paradox, when?
+
+A: E. H. Simpson, 1951 paper on interaction in contingency tables:
+aggregation can reverse within-stratum association.
+
+## Q13. What does Anscombe 1973 license in EDA?
+
+A: Distrusting any summary - even r 0.99 - until a display confirms the
+claimed form.
+
+## Q14. Small n, loud what?
+
+A: Loud humility: vivid but fragile - report n attached, fragility named,
+headlines refused.
