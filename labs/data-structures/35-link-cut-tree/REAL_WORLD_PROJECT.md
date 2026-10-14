@@ -1,45 +1,41 @@
-# REAL_WORLD_PROJECT — Link-Cut Trees (35)
+# SDN Prototype on Link-Cut Trees: Dynamic Forest Ops
 
-Production use-case: **dynamic network-topology connectivity service** (e.g. SDN controller prototype). Secondary: path-max latency aggregation.
+Control plane. A software-defined-network controller tracks a changing
+topology: links appear and vanish, operators ask connectivity and
+path-max latency between switches. Link-cut trees hold the forest with
+amortized O(log n) link, cut, connected, and path queries - the lab's
+capstone, and the hardest audit in the track.
 
-## 1. Problem statement
-Answer connected(u,v) and link/cut at high rates with amortized O(log n). SLOs: p99 query latency, update throughput, memory.
+LCT core. Preferred-path splay decomposition with path-parent pointers;
+expose/access, makeRoot (lazy reversal flag), link, cut, findRoot,
+path aggregate (max edge weight). Splay amortized logarithmic behavior
+is shown via operation counts on scripted sequences, not merely cited.
 
-## 2. Architecture
-- Ingest: topology change events (link/cut).
-- Core: LCT forest behind a narrow interface.
-- Serve: connected/aggregate API + metrics + health.
-- Persist: topology snapshot + WAL of mutations.
+Topology caller. 500-switch fabric with 5k link/cut events plus
+connectivity and path-max queries interleaved; every answer diffed
+against a naive adjacency BFS/DFS oracle. Zero divergences tolerated -
+one wrong path-max fails the run with the event index.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariants + property tests vs DFS baseline.
-W2: API + metrics + JMH + restart drill + deploy notes.
+Latency caller. Edge weights as link latencies; path-max and path-sum
+aggregates verified against the oracle on 10k queries over the live
+forest. Cut-then-query across the cut must report disconnected, not a
+stale aggregate.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 connect query | SLO-driven | JMH |
-| Update throughput | ops/s | load gen |
-| Memory | O(n) | JOL |
-| Amortization validity | O(log n) mean | counter stats |
-| Recovery | < 5 s | restart drill |
+Operation journal. Every mutation logged with its resulting root
+structure hash; a replay tool rebuilds the forest from the journal and
+must converge to identical aggregates - the closest this lab gets to a
+recovery story.
 
-## 5. Risks & prevention
-- Preferred-path corruption → invariant assertions in tests; round-trip property.
-- Evert misuse (non-tree precondition) → document preconditions; boolean check.
-- Splay worst-case spike → amortized budget + p99 alert; fallback naive BFS flag.
+Misuse docket. Link creating a cycle (rejected - forest only, tested),
+cut of a non-edge (no-op with signal), query on isolated node (typed
+answer), makeRoot idempotence (double call stable).
 
-## 6. Runbook
-- Alert on p99 drift and amortized budget overruns; manual DFS fallback.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- (link removed)
-- (link removed)
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-
-## 8. Grading rubric
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Ship. LCT, controller CLI, journal plus replay, oracle logs, splay
+count data. Credit: oracle parity 12, aggregate exactness 10, journal
+plus rejection discipline 8.
+## Forest journal
+- Journal replayed in CI.
+- Cycle-link rejects tested.
+- Splay counts archived.
+- Stale-aggregate probe kept.
+- 500-switch fixture pinned.

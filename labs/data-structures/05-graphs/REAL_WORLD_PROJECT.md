@@ -1,48 +1,38 @@
-# REAL_WORLD_PROJECT — Graphs
+# Transit Router and Build-Graph Doctor
 
-Production use-case: **route planner over a transit network**. Secondary: build-dependency graph with cycle reporting.
+Two graphs, one engine. The first is a transit network where stops are
+vertices and timed rides are weighted edges; travelers ask for the
+fewest-hop or fastest route. The second is a build-dependency graph where
+modules are vertices and imports are directed edges; engineers ask what
+broke the build and in which order to rebuild.
 
-## 1. Problem statement
-Serve shortest-path and traversal queries at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 query latency, throughput (ops/s), max heap, correctness bar (exact vs reference BFS/Dijkstra).
+Representation. Adjacency lists with sorted neighbor arrays: BFS/DFS stay
+O(V + E), edge insert stays amortized O(1), and neighbor scans stay
+cache-kind. A reverse adjacency copy exists only for the dependency side,
+where reverse reachability answers "who depends on this."
 
-## 2. Architecture
-- Ingest: edge feeds (transit timetables / dependency manifests).
-- Core: adjacency-list graph with BFS/Dijkstra behind a narrow interface.
-- Serve: route API + metrics + health.
-- Persist: edge snapshot where durability matters.
+Traveler side. BFS for fewest hops, Dijkstra for fastest arrival, and an
+island check (connected components) that names disconnected stops. A
+route response lists stops, transfers, and total weight; unreachable
+pairs return a named no-route answer with the component ids of both ends.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Build side. Cycle detection with the actual cycle path printed, topo
+order for rebuild sequencing, and a blame query: given a failed module,
+the reverse reachable set is the suspect list. Self-loops and duplicate
+edges are rejected at ingest with line numbers.
 
-## 4. Metrics to report
+Scale plan. Transit fixture at 5k stops / 40k edges; dependency fixture
+at 20k modules / 80k edges. Dijkstra with a binary heap; BFS with an
+array deque; iterative DFS everywhere so deep chains cannot overflow.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at V+E scale | JOL / heap dump |
-| Correctness | exact vs reference impl | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Trust. Every shortest path is cross-checked against a Floyd-Warshall
+oracle on small graphs and a second Dijkstra implementation on large
+ones. Topo orders are validated edge by edge. Cycle reports are replayed
+by an independent checker that walks the printed path.
 
-## 5. Risks & mitigations
-- Disconnected input -> component census + degraded answers.
-- Negative weights -> validation + Bellman-Ford fallback.
-- Memory blowup -> adjacency compression + caps.
-- Silent corruption -> checksums + invariant audits.
+Rotten cases. Disconnected queries, midnight edge weights of zero,
+self-dependent module, 10k-deep import chain, and a lockfile with a
+three-cycle. Each has a golden file with the exact expected output.
 
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Graph_traversal
-- https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Credit. Routing accuracy plus oracle agreement 12, cycle/blame quality
+10, scale behavior with honest timings 8.

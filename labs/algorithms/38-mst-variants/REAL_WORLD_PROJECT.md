@@ -1,88 +1,42 @@
 # REAL_WORLD_PROJECT — MST Variants
-> Production use-case with metrics + prevention. Lab `38-mst-variants`.
+> Fiber-build planner: MST primary layout plus second-best backup links, costed and phased for construction crews.
 
-## Use-case: network design (fiber/road), clustering, datacenter cabling
-- System: backend service handling large inputs where MST Variants is on the hot path.
-- Why this algorithm: cut/cycle properties give O(E log V) exact minimum wiring which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Surveyed segment file: (site A, site B, build cost, terrain tag); costs versioned per survey round.
+- Crew constraints: max segments per phase and terrain tags requiring specialist crews.
+- Output: phased build plan with per-phase cost, backup-link list from second-best swaps, and total.
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (MST Variants) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Kruskal primary MST (union-find, deterministic tie-break by segment id for stable plans across runs).
+- Second-best swap table converted to ranked backup links: each backup annotated with (added segment, replaced segment, delta cost).
+- Phasing packs MST edges into crew-feasible phases; terrain tags filter which crew each phase needs.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Total primary cost and backup delta per link (from the swap table, never hand-edited).
+- Phase count and per-phase cost vs crew budget.
+- Plan stability: diff against previous survey version (edge churn count).
+- Compute time vs segment counts for the next survey round.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Disconnected survey (isolated site): planner refuses with the component list instead of a partial tree.
+- Cost update mid-phase: versioned surveys; active phase keeps its version, next phase re-plans with a churn report.
+- Tied weights causing plan flapping: deterministic tie-break by id; churn metric proves stability.
+- Backup link sharing a trench with its primary (correlated failure): terrain-tag rule flags same-trench backups for review.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Disconnected graph input | forest vs tree confusion | component check + 422 contract |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Stale edge weights | over-budget build | weight versioning + re-solve trigger |
+## Rollout
+1. Re-plan last year's build from archived surveys; compare cost and phases vs what was built.
+2. Plan one live region; crews work from phased output with the backup list on standby.
+3. Adopt as the standard planner with versioned surveys mandatory.
 
-## Cost note
-- Optimized variant (union-find + binary heap, O(E log V)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. Reference graph through the planner yields primary 8 and top backup delta +1 with the swap named.
+2. Disconnected input is rejected with component details (test with an isolated vertex).
+3. Tie-break test: shuffled input order gives the identical plan.
+4. Churn report quantifies edge changes between two survey versions.
+5. Rollback restores the previous versioned plan byte-identically.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://algs4.cs.princeton.edu/43mst/ (Princeton Algorithms — minimum spanning trees)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/PriorityQueue.html (Java PriorityQueue — Prim's frontier)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Infrastructure layouts may be sensitive; restrict plan exports.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Total weight vs baseline | gauge | alert on regression |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Edge list ≈ E entries; cap sync V, queue continental-scale graphs.
+## Cost and contract notes
+- Build budget sums phased MST costs plus a contingency per terrain tag; backup deltas priced as options, not commitments.
+- Survey versions diffed edge-by-edge; churn above threshold re-opens the plan review automatically.
+- Crew-day estimates per phase derived from segment counts times the measured segments-per-day rate.
+- Contract: planner input manifest carries survey version; outputs embed it so plans never float free of data.

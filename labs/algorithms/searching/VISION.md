@@ -1,48 +1,42 @@
 # VISION — Searching Track
-> Mastery path. Track `searching`.
+> Direction: from binary-search-by-default to matching the structure to the query mix — hits vs misses, uniform vs skewed.
 
 ## Where this sits
-- Searching is the invariant-handling foundation: bounds, rotation, peaks, predicates.
-- Master it and neighboring tracks get 2× easier (shared invariants + proof templates).
+- Sorted arrays: binary O(log n) always, exponential for unbounded fronts, interpolation O(log log n) only under uniformity.
+- Hash tables: expected O(1) at controlled load factors; misses and resize pauses are the real costs.
+- Trees: BST O(h) degrading without balance; balanced trees restore O(log n) with rotation overhead.
+- The query mix (hit rate, skew, range vs point) picks the winner, not the data structure alone.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(log n) bound memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (lookup services, capacity planning).
+## 4-week direction
+- Week 1: write binary search half-open from memory; prove the interval invariant on paper.
+- Week 2: finish MINI_PROJECT; measure the interpolation collapse yourself on skewed keys.
+- Week 3: push a hash table through 0.5/0.75/0.95 load and record probe growth.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard the method-choice decision tree in 10 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- State each method's bound plus the assumption it depends on (uniformity, load, balance).
+- Split any search benchmark into hit and miss columns by reflex.
+- Pick the method for a given (n, hit rate, skew, range need) and defend it with numbers.
 
-## How to know you are done
-- Explain [lo,hi) invariant without notes; derive O(log n) via Master on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This track does not build text search, nearest-neighbor, or learned indexes; point/range lookup on ordered and hashed keys is the scope.
+- Concurrency control for live indexes is policy (snapshots here), not implemented locking.
+- External-memory (B-tree) search is named with its page-size trigger, not built.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Pitfalls
+- Averaging hits and misses; miss cost dominates adversarial mixes.
+- Deploying interpolation on skewed keys because the uniform bound looked good.
+- Letting load factor drift; probe counts compound silently.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Adjacent tracks
+- Pair with sorting for index construction and data-structures for hash/BST internals.
+- Revisit when a lookup path slows; the hit/miss split is the first diagnostic.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## Weekly drills
+- Write half-open binary search from memory and prove termination via the shrinking interval.
+- Recompute interpolation's expected probe count assumption chain (uniformity in, O(log log n) out).
+- State the load-factor discipline (resize at 0.75, why) with the probe-growth reason.
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not blend hit and miss latencies; report the split or report nothing.
+- Do not enable interpolation without the skew monitor watching it.

@@ -1,46 +1,39 @@
-# REAL_WORLD_PROJECT — Ropes (31)
+# Editor Backend and Log Viewer on Ropes
 
-Production use-case: **large-buffer text service** (editor backend or log viewer) with heavy middle edits. Secondary: concat-heavy document store benchmark.
+Desk. A collaborative editor holds 5 MB documents with heavy middle
+edits; a log viewer concatenates chunk streams and slices windows. Flat
+strings shift O(n) per middle edit; ropes split, concat, and slice in
+O(log n) with rebalancing. Both callers ship on one rope core.
 
-## 1. Problem statement
-Support concat/split/edit on multi-MB buffers with bounded per-op latency. SLOs: p99 edit latency, throughput of edits/s, memory overhead per leaf.
+Rope core. Weight-balanced leaves (1-4 KB chunks), concat nodes with
+cached total length, split by index, rebalance when height exceeds
+4 * log2(leaves). Index, split, concat each O(log n); iteration streams
+leaves without materializing the string.
 
-## 2. Architecture
-- Ingest: edit commands (concat/split/insert/delete).
-- Core: rope with cursor persistence.
-- Serve: render API + metrics + health.
-- Persist: serialized leaf table + parent index.
+Editor caller. Insert/delete at cursor, undo via retained roots
+(bonus tie to lab 20), render visible window by double split. A 20k-edit
+script with cursor jumps must produce exactly the StringBuilder oracle
+text, verified by hash after every 500 edits.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariants + property tests vs String model.
-W2: API + metrics + JMH + deploy notes.
+Document-store caller. Concat-heavy assembly of 10k chunks plus random
+window reads; total time vs StringBuilder and vs StringBuffer, quoted
+per mix (append-heavy, middle-heavy, read-heavy). Each mix names its
+winner with margins.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 edit latency | SLO-driven | JMH |
-| Edit throughput | ops/s | load gen |
-| Memory overhead | ≤ 2x payload | JOL |
-| Render traversal | O(n) once | unit bench |
-| Cursor correctness | exact | property tests |
+Rebalance proof. Adversarial concat chain (always append right) drives
+height up; the audit triggers rebalancing and shows height returning
+near logarithmic with before/after numbers. Leaf-size sweep (512 B to
+16 KB) picks the default with data.
 
-## 5. Risks & prevention
-- Degeneration after many splits → rebalance when depth > c·log n.
-- charAt hot path O(depth) → expose cursor/iterator API.
-- Memory fragmentation from tiny leaves → cap leaf size and merge on concat.
+Rotten edits. Split at 0 and at length, delete past the end (clamped,
+flagged), empty-document ops, 100k-char paste (chunked, timed).
 
-## 6. Runbook
-- Alert on p99 edit latency and depth-growth after splits.
-- Rollback: contiguous buffer mode for small docs.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Rope_(data_structure)
-- (link removed)
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-
-## 8. Grading rubric
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Deliver. Rope, editor CLI, store bench, rebalance log, sweep table.
+Scoring: oracle parity 12, mix-by-mix verdicts 10, rebalance plus edge
+evidence 8.
+## Edit corpus
+- Middle-heavy script versioned.
+- Hash check every 500 edits.
+- Leaf sweep rerun yearly.
+- Rebalance log archived.
+- Paste case timed.

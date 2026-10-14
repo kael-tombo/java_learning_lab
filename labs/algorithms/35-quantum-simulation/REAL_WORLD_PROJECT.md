@@ -1,88 +1,42 @@
-# REAL_WORLD_PROJECT — Quantum Algorithm Simulation
-> Production use-case with metrics + prevention. Lab `35-quantum-simulation`.
+# REAL_WORLD_PROJECT — Classical Simulation of Quantum Circuits
+> Shared teaching-lab simulator service: queued state-vector jobs with a memory estimator gate, per-course quotas, and reproducible seeded sampling.
 
-## Use-case: quantum chemistry prototyping, QAOA research, cryptography impact analysis
-- System: backend service handling large inputs where Quantum Algorithm Simulation is on the hot path.
-- Why this algorithm: state-vector plus unitary gates gives exact O(2^n) reference which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Students submit (circuit file, qubit count, shots, seed) through a course portal; service caps full simulation at a configured n (default 20).
+- Estimator runs first: bytes = 2^n x 16 plus shot-memory; jobs over cap are rejected with the figure, never attempted.
+- Reference circuits (H|0>, Bell pair, GHZ-3) run as a health gate on every deploy.
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Quantum Simulation) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Queue with per-course fair share; one worker simulates one job at a time to bound peak RAM.
+- Seeded sampling only: every histogram is reproducible from (circuit, shots, seed); seed logged with results.
+- Result bundle: final probabilities for n <= 8, histogram otherwise, estimator figure, worker memory high-water mark.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Estimator accuracy: predicted bytes vs worker high-water mark per job (ratio dashboard).
+- Queue wait p95 per course and rejection rate with byte figures attached.
+- Health-gate pass/fail on every deploy (blocks promotion on mismatch).
+- Quota consumption per course per week.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Under-estimated memory (bookkeeping overhead): cap set 20 percent below worker RAM; estimator figure includes the overhead factor, reviewed termly.
+- Student submits n = 100 expecting magic: rejection message shows the byte figure and suggests estimate-only mode.
+- RNG seed reuse across assignments: portal requires explicit seed; default seed flagged in the UI as non-independent.
+- Worker OOM despite cap: cgroup limit kills the worker, job marked failed-clean with the high-water mark recorded.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Qubit-count blowup (2^n) | OOM | hard qubit cap + async queue |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Non-unitary gate bug | norm drift | norm assert after each gate + golden tests |
+## Rollout
+1. Pilot with one course on historical circuits; compare histograms to reference outputs.
+2. Open to all courses with quotas; publish the estimator table in the docs.
+3. Termly review of cap and overhead factor from the accuracy dashboard.
 
-## Cost note
-- Optimized variant (in-place state-vector, O(2^n)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. Health gate reproduces Bell probs 0.5/0/0/0.5 and the n=30 byte figure on every deploy.
+2. An n=50 job is rejected pre-queue with its byte estimate in the message.
+3. Same (circuit, shots, seed) twice gives byte-identical histograms.
+4. OOM-killed worker recovers to accept the next job without manual restart.
+5. Docs page shows the memory table with the classical-simulation-only disclaimer.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://ocw.mit.edu/courses/8-04-quantum-physics-i-spring-2016/ (MIT OCW — quantum physics foundations)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html (Java Math — complex amplitude arithmetic)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Research workloads only; never claim quantum speedup from classical sim.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| State norm drift | gauge | alert on deviation |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- State-vector ≈ 16 bytes × 2^n; cap sync qubits at ~18.
+## Cost and contract notes
+- Worker sizing starts from the estimator table: cap = 80 percent of worker RAM divided by 16 bytes, floored to a whole qubit count.
+- Course quotas priced in estimated GB-seconds from the accuracy dashboard, reviewed termly.
+- Result bundles embed (circuit hash, shots, seed, estimator figure) so any histogram is re-derivable.
+- Rejection messages always include the byte figure and the estimate-only alternative, never a bare error code.

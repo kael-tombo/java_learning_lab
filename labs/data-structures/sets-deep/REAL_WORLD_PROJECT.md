@@ -1,45 +1,40 @@
-# REAL_WORLD_PROJECT — Sets Deep
+# Flag and Tag Store Across Four Set Backends
 
-Production use-case: **tag/feature-flag store**: hash for de-dup, sorted for reporting, BitSet for dense ID sets. Secondary: EnumSet for permission flags.
+Catalog. A feature-flag service with 200k flags plus a document tagging
+pipeline: hash sets for dedup, sorted sets for reporting, bit sets for
+dense id ranges, enum sets for permission bits. One project exercises
+all four and records where each wins.
 
-## 1. Problem statement
-Serve set operations (add/contains/remove/iterate) with SLO and correct iteration semantics per use case.
+Hash lane. Tag dedup over a 1M-ingest stream; membership answers vs a
+sorted-list oracle on 50k probes. Resize behavior and load-factor choice
+logged with max-bucket stats.
 
-## 2. Architecture
-- Ingest: admin/user commands.
-- Core: pluggable set backend.
-- Serve: tag API + metrics.
-- Persist: snapshot / WAL.
+Sorted lane. Flag reporting in key order with range slices for the
+admin UI; order verified against a stream sort on every export. Rank
+and predecessor spot-checks included.
 
-## 3. Implementation plan (2 weeks)
-W1: core + parity tests.
-W2: API + metrics + JMH + runbook + deploy notes.
+BitSet lane. Dense user-id sets (ids below 2M) for rollout cohorts;
+union/intersect/difference vs HashSet oracle on 200 cohort ops. Memory
+per member quoted from heap deltas - the bit set should win by an order
+of magnitude on dense ids, and the report shows the density where the
+advantage flips.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 add latency | SLO | JMH |
-| Throughput | ops/s | load gen |
-| Iteration order correctness | matches spec | property tests |
-| Memory | O(n) | JOL |
-| Recovery | < 5 s | restart drill |
+EnumSet lane. Permission flags as bit vectors over a fixed enum;
+all-of/any-of queries checked exhaustively (the domain is small enough
+for total coverage).
 
-## 5. Risks & prevention
-- Broken equals/hashCode → validate keys at ingress; test with tampered keys.
-- TreeSet compareTo inconsistent with equals → document contract; property test vs HashSet.
-- BitSet silently overgrown → bound by domain; monitor word count.
+Cohort drill. Rollout cohort built three ways (hash, sorted, bit set)
+with identical membership proofs; export order, query time, and bytes
+tabled side by side with a per-density recommendation.
 
-## 6. Runbook
-- Alert on p99 and on iteration-order regressions.
-- Rollback flag to HashSet backend.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashSet.html
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/BitSet.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo + JMH + runbook.
-
-## 8. Grading rubric
-- Correctness 30 / Perf 30 / Operability 20 / Writeup 20.
+Ship. Four-lane service, drill table, oracle logs. Marks: backend
+parity 12, density crossover evidence 10, enum exhaustiveness 8.
+## Store extras
+- Dedup oracle log kept.
+- Export order verified.
+- Cohort triple-proof tabled.
+- Density flip point posted.
+- Enum coverage exhaustive.
+- Resize stats logged.
+- Member bytes quoted.
+- Recommendation dated.

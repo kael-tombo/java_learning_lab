@@ -1,83 +1,37 @@
-# MINI_PROJECT — Graph Coloring & Clique
-> Implement + benchmark + visualize. Lab `37-graph-coloring-clique`.
+# MINI_PROJECT — Graph Coloring and Cliques
+> Build greedy, Welsh-Powell, and Bron-Kerbosch over one edge-list format, reporting the omega/chi bracket on every input.
 
-## Goal
-- Build a runnable Java CLI that colors graphs (DSATUR) and finds max-cliques (Bron–Kerbosch with bounds) up to n=500; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Edge-list file (one `u v` pair per line); reference graph with edges 01,02,12,13,24,34 (greedy 3 colors, max clique {0,1,2}).
+- Extra test graphs: an odd cycle C5, a complete graph K4, and a bipartite K3,3.
 
-## Spec
-1. `lab.37_graph_coloring_clique.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving DSATUR + bound pruning.
+## Build steps
+1. Implement greedy coloring for a given vertex order; verify colors [0,1,2,0,1] on the reference graph in order 0..4.
+2. Implement Welsh-Powell (descending degree); verify order [1,2,0,3,4] with 3 colors on the reference graph.
+3. Implement Bron-Kerbosch (no pivot required) with bitmask sets; verify max clique size 3 on the reference graph.
+4. On every input print: greedy colors, WP colors, clique size omega, and the bracket omega <= chi <= min(greedy, WP).
+5. Add an `--order` flag accepting an explicit permutation to demonstrate order sensitivity on C5 or K4-adjacent cases.
 
-## Starter code
-```java
-package lab.37_graph_coloring_clique;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Reference graph reproduces greedy [0,1,2,0,1] and WP order/colors exactly.
+2. Max clique output is size 3 with vertices {0,1,2} (any equivalent print format showing the set).
+3. K4 reports omega=4 with 4 colors; K3,3 reports 2 colors with omega=2; C5 reports 3 colors.
+4. Every run prints the omega/chi bracket line; on the reference graph it reads 3 <= chi <= 3.
+5. `--order` with a hostile permutation on C5 is accepted and changes (or keeps) the count honestly.
+6. A verifier pass asserts no edge is monochromatic in each coloring.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Which vertex order on your tests most inflates greedy vs WP, and why?
+2. Where does the bracket stay loose (omega far below colors), and what would tighten it?
+3. How does runtime scale for BK on K-graphs vs sparse graphs at equal n?
 
-## Visualization
-- For n<=16 print color classes / clique candidates / pruned sets.
-- Example (ASCII): `colors=3 clique=4 pruned=12 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- DSATUR/branch-and-bound coloring solvers, pivoted BK, and approximation-ratio proofs.
+
+## Worked reference (verified outputs)
+- Reference graph prints greedy colors [0, 1, 2, 0, 1] and WP order [1, 2, 0, 3, 4] with 3 colors.
+- Max clique prints size 3 ({0,1,2}); the bracket line reads 3 <= chi <= 3 on the reference graph.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for branch-and-bound.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches greedy + exponential-exact theory.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add DSATUR (saturation-degree order) and find an input where it beats Welsh-Powell.
+- Add a pivoted Bron-Kerbosch and report node-count reduction vs the unpivoted version on K-graphs.

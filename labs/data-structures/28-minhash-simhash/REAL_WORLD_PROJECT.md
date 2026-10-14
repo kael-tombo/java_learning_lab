@@ -1,48 +1,38 @@
-# REAL_WORLD_PROJECT — MinHash & SimHash (28)
+# Near-Duplicate Suppression on MinHash and SimHash
 
-Production use-case: **near-duplicate suppression in a crawl/ingest pipeline** (web pages or support tickets). Secondary: candidate-pair generation for a recommender.
+Intake problem. A crawl pipe ingests 1M pages where 8 percent are
+near-duplicates, and support tickets repeat with paraphrase. MinHash
+estimates Jaccard similarity for candidate generation; SimHash flags
+near-dupes by small Hamming distance. Kept topics: both callers, with
+candidate-pair generation for the recommender as the second stage.
 
-## 1. Problem statement
-Detect near-duplicates over millions of docs with bounded memory and tunable recall/precision. SLOs: p99 per-doc signing latency, pair-candidate recall ≥ target, memory per doc.
+MinHash lane. 128 permutations over shingle sets (5-grams); signature
+similarity must track exact Jaccard within tolerance on 2k labeled
+pairs. LSH banding (b bands, r rows) turns signatures into candidate
+pairs; recall vs exact pairs quoted at two threshold settings.
 
-## 2. Architecture
-- Ingest: crawler/consumer emitting documents.
-- Core: shingler → signer (MinHash or SimHash) → LSH/hamming index.
-- Serve: candidate API + metrics + health.
-- Persist: signature table + banding metadata.
+SimHash lane. 64-bit token-weighted fingerprints; Hamming distance <= 3
+means duplicate. Precision/recall on 5k labeled ticket pairs with the
+threshold justified by the curve, not by default.
 
-## 3. Implementation plan (2 weeks)
-W1: shingler + MinHash signer + banding index + unit tests.
-W2: SimHash variant + recall curve + JMH bench + deploy notes.
+Recommender caller. Candidate pairs feed a similarity shortlist; the
+metric is pairs reduction (comparisons avoided vs all-pairs) at held
+recall above 95 percent on the labeled set.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 signing latency | < 2 ms | JMH |
-| Candidate recall | ≥ 95% | seeded duplicates |
-| Candidate precision | ≥ 90% | manual sample |
-| Throughput | docs/s | load generator |
-| Memory/doc | ≤ 256 B | JOL |
-| Index rebuild | < 30 s | restart drill |
+Threshold study. Similarity thresholds 0.5/0.7/0.9 each with measured
+precision, recall, and candidate counts - the report names the operating
+point per caller and the cost of moving it.
 
-## 5. Risks & prevention
-- Recall collapse on tiny docs → enforce min shingle count.
-- Banding false negatives → tune (b,r); sweep parameters offline.
-- Hash seed drift → pin seed config; version signatures.
-- Duplicate flood DoSing review queues → cap candidates per doc.
+Drift cases. Empty documents, single-shingle pages, language-mixed
+tickets (shingling policy stated), fingerprint bit-flip robustness
+(1-bit change keeps distance small, verified).
 
-## 6. Runbook
-- Alerts on recall drop below target and p99 > 2 ms.
-- Rollback: exact hash dedup for small corpus; re-sign on seed change.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/MinHash
-- https://en.wikipedia.org/wiki/SimHash
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + recall curve.
-- One-page ops runbook: SLOs, alerts, rollback.
-
-## 8. Grading rubric
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Deliver. Both lanes, LSH index, threshold study, reduction numbers,
+drift log. Marks: estimate agreement 12, operating-point evidence 10,
+candidate math plus drift 8.
+## Operating points
+- Crawl threshold 0.7 default.
+- Tickets distance 3 default.
+- Recall floor 95 percent.
+- Threshold study rerun quarterly.
+- Drift cases in CI.

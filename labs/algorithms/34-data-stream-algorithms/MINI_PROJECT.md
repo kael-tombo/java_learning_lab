@@ -1,83 +1,37 @@
 # MINI_PROJECT — Data Stream Algorithms
-> Implement + benchmark + visualize. Lab `34-data-stream-algorithms`.
+> Build a one-pass sketch toolkit (reservoir, Misra-Gries, Count-Min) that reports its own error against exact counts.
 
-## Goal
-- Build a runnable Java CLI that estimates frequencies (Count-Min), cardinality (HyperLogLog), and samples (reservoir) over streams to n=1M events; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Integer event stream file, one id per line; reference stream of 11 items from MOCK Q2 and 8-item stream from MOCK Q3.
+- Parameters: reservoir k, MG counter budget m, sketch width/depth with explicit hash seeds.
 
-## Spec
-1. `lab.34_data_stream_algorithms.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving sketch linearity + mergeability.
+## Build steps
+1. Implement reservoir sampling (Algorithm R) with injectable Random; verify seed 42 on stream 1..10 with k=3 prints [6, 2, 8].
+2. Implement Misra-Gries with m=2; on the reference stream report candidates {1=4, 2=1} beside exact counts.
+3. Implement Count-Min with 2 rows, width 5, fixed hashes; print est vs true per queried key and assert est >= true.
+4. Add an `--exact` audit mode: hash-map exact counts on the same file, then a comparison table (key, true, MG est, CM est).
+5. Document per-structure memory in bytes as a function of its parameters.
 
-## Starter code
-```java
-package lab.34_data_stream_algorithms;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Reservoir output matches [6, 2, 8] exactly for seed 42 on 1..10.
+2. MG output matches candidates {1=4, 2=1} with true_count_1=6 shown beside it.
+3. CM asserts est >= true for every queried key on the 8-item stream (q=5 est 5, q=2 est 3, q=7 est 3).
+4. Audit mode table prints all three columns from a single pass plus one exact pass.
+5. Memory formulas (k slots, m counters, w*d cells) are stated with the element size used.
+6. Re-running with the same seed reproduces byte-identical output.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. How does the MG shortfall for key 1 relate to the number of decrement rounds?
+2. Which key inflates most under CM, and which hash collision causes it?
+3. What breaks if the stream distribution shifts mid-file (sliding-window need)?
 
-## Visualization
-- For n<=16 print sketch counters / registers / reservoir contents.
-- Example (ASCII): `est=12 true=11 err<=eps*N | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Sliding-window and time-decayed variants, distributed sketches, and HyperLogLog (named in VISION only).
+
+## Worked reference (verified outputs)
+- Reservoir k=3, seed 42, stream 1..10 prints [6, 2, 8]; same seed must give byte-identical output.
+- MG(m=2) prints candidates {1=4, 2=1} with true_count_1=6; CM prints ests 5/3/3 for q=5/2/7, each >= true.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating skewed Zipf worst-case.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches sublinear-space theory.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add a Morris-counter demo (increment with probability 2^-c) and compare its estimate spread against exact over 10 seeds.
+- Add tumbling windows (reset every N items) and show how recall changes vs landmark mode.

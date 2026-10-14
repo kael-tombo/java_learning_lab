@@ -1,48 +1,39 @@
-# REAL_WORLD_PROJECT — Cuckoo & Robin Hood Hashing
+# Feature-Flag Table with p99 Guarantees via Open Addressing
 
-Production use-case: **in-memory feature-flag / session table with p99 guarantees**. Secondary: high-load game entity map benchmark.
+Setting. A feature-flag and session table serving 2M keys where the
+99th percentile lookup latency is the contract, not the average. Two
+open-addressing designs contend: cuckoo hashing with two tables and a
+stash, and Robin Hood hashing with displacement capping.
 
-## 1. Problem statement
-Serve worst-case o(1) open addressing workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Cuckoo lane. Lookup checks two buckets - O(1) worst case by
+construction. Insert displaces along a cuckoo path up to a step cap,
+then parks in the stash or triggers rehash. The report quotes max path
+length and stash occupancy at load factors 0.8, 0.9, 0.95 on 1M keys.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Robin Hood lane. Probe distances recorded per entry; rich entries yield
+to poor ones past the cap distance, keeping variance tight. Lookup
+scans until an entry poorer than the search distance appears. The
+variance table (mean vs p99 probe length) is the lane's headline.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Game-entity caller. High-load entity map with spawn/despawn churn at
+60 Hz ticks; per-tick map time budgeted and measured. Churn script runs
+500k mixed ops with zero lost entities vs a HashMap oracle.
 
-## 4. Metrics to report
+Correctness bar. Both lanes fuzzed against HashMap on 100k ops with
+deletes and rehash triggers; displacement logic must never strand a
+key. Rehash events are counted and timed, never silent.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Failure catalog. Cuckoo cycle storm at 0.99 load (rehash must fire),
+stash overflow (typed error with size guidance), Robin Hood distance
+cap breach (rehash, counted), hash-correlation clustering (mixer swap
+with before/after p99).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Cuckoo_hashing
-- https://en.wikipedia.org/wiki/Linear_probing
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Verdict. One lane wins the default with p99 numbers attached; the other
+stays flagged. Marks: worst-case behavior proof 12, churn parity 10,
+load-limit conduct 8.
+## Load ceiling card
+- Cuckoo cap: 0.95 with stash watch.
+- Robin Hood distance cap posted.
+- Rehash drill timed quarterly.
+- p99 posted per load factor.
+- Mixer swap procedure rehearsed.

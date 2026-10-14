@@ -1,88 +1,43 @@
 # REAL_WORLD_PROJECT — Graph Algorithms Deep Track
-> Production use-case with metrics + prevention. Track `graph-algorithms-deep`.
+> Metro-network resilience service: SCC-based dependency map, bridge/critical-segment alerts, LCA-routed hierarchies, and max-flow evacuation capacity.
 
-## Use-case: road routing, airline scheduling, exam timetabling, logistics
-- System: backend service handling large inputs where graph algorithms are on the hot path.
-- Why these algorithms: settled-labels + residual duality give exact optima within SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Network snapshot: stations as vertices, links with capacity and travel time; nightly import versioned by snapshot id.
+- Dependency edges between signaling subsystems for SCC analysis; hierarchy tree for LCA-routed maintenance dispatch.
+- Evacuation queries: (source set, safe set) pairs evaluated for max-flow capacity.
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (graph-algorithms-deep) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- SCC pass flags cyclic dependencies between subsystems; each cycle ships with the member list for the review board.
+- Bridge/articulation pass marks critical segments; inspection tickets auto-file per critical element per snapshot.
+- LCA on the maintenance hierarchy routes each ticket to the nearest responsible crew node.
+- Edmonds-Karp (bounded by snapshot size guard; larger snapshots use a documented Dinic upgrade path, labeled) answers evacuation capacity.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Critical-segment count and inspection-ticket closure rate per snapshot.
+- SCC cycle count with review-board disposition (accepted/refactored).
+- Evacuation-capacity headroom per queried pair vs required minimum.
+- Import-to-dashboard latency with snapshot-version tracking.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Snapshot with negative travel times (data error): validation quarantines the snapshot; previous version keeps serving.
+- Flow network too large for Edmonds-Karp: size guard diverts to the labeled upgrade path with a logged event.
+- Hierarchy change breaking LCA table: versioned hierarchy with rebuild gate; queries carry the hierarchy version.
+- Stale critical-segment tickets after topology fix: ticket reconciler closes tickets whose elements left the critical set.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Negative-weight surprise | wrong routes | validate + BF fallback + alert |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Stale map/graph snapshot | wrong paths | versioned snapshot + refresh cadence |
+## Rollout
+1. Import 30 days of archived snapshots; compare critical segments vs recorded incidents.
+2. Advisory mode: tickets filed but non-blocking for one quarter.
+3. Blocking mode with the reconciler and versioned snapshots mandatory.
 
-## Cost note
-- Optimized variants (heap labels, Dinic ptr, HK batching) cut compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. Reference 6-node graph through the service path reproduces hand-verified distances, SCCs, and flow value.
+2. Corrupt-snapshot test keeps the previous version serving with an alert.
+3. Size-guard test diverts an oversized flow query to the labeled path.
+4. Reconciler test closes tickets for fixed topology with audit entries.
+5. Rollback restores the previous snapshot and hierarchy versions together.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://algs4.cs.princeton.edu/44sp/ (Princeton Algorithms — shortest paths)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/PriorityQueue.html (Java PriorityQueue — label-setting frontier)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Location/routing data sensitive; minimize + encrypt.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Augment/relax counts | counter | diagnose blowups |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Residual edges ≈ 2E; cap sync V, queue continental graphs.
+## Cost and contract notes
+- Inspection tickets priced per critical element per snapshot; closure rate reported against crew capacity.
+- Evacuation-capacity shortfalls trigger capital-review entries with the required-vs-available numbers attached.
+- Snapshot storage (30 days versioned) costed in the platform budget; queries always declare versions.
+- Contract: capacity answers embed snapshot id, hierarchy version, and method path (EK vs upgraded).

@@ -1,45 +1,39 @@
-# REAL_WORLD_PROJECT — Lists Deep
+# Inbox Service and Snapshot Readers on List Backends
 
-Production use-case: **a job queue / inbox service** using ArrayDeque, with CopyOnWriteArrayList snapshots for readers. Secondary: LRU cache on top of LinkedHashMap.
+Inbox. A job inbox serves producers appending tasks and workers taking
+them FIFO, with 50 reader threads scanning snapshots. ArrayDeque carries
+the queue; CopyOnWriteArrayList carries the snapshots; LinkedHashMap
+backs a small LRU over hot jobs. Each backend chosen for its access
+shape, with the queue/oracle proof to back it.
 
-## 1. Problem statement
-Serve enqueue/dequeue/peek with p99 SLOs and a snapshot read model for monitoring.
+Queue lane. 200k enqueue/dequeue script vs LinkedList oracle - order
+must match exactly. ArrayDeque vs LinkedList timing at three sizes
+quoted; the deque should win locality, shown not claimed.
 
-## 2. Architecture
-- Ingest: producers.
-- Core: ArrayDeque behind a narrow interface; snapshot via CopyOnWriteArrayList.
-- Serve: dequeue API + metrics.
-- Persist: WAL of enqueue/dequeue.
+Snapshot lane. Writer publishes inbox snapshots; readers iterate without
+locks. 50-reader soak asserts no ConcurrentModification-style failure
+and snapshot freshness within one publish interval. Copy cost per
+publish quoted vs inbox size.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariants + property tests.
-W2: API + metrics + JMH + runbook + deploy notes.
+LRU lane. LinkedHashMap access-order cache over hot job metadata, cap
+1k, hit rate on the replayed access trace quoted with the number.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 dequeue | SLO | JMH |
-| Throughput | ops/s | load gen |
-| Snapshot lag | near 0 | event counter |
-| Memory | O(n) | JOL |
-| Recovery | < 5 s | restart drill |
+Surgery lane. LinkedList block moves (O(1) splice given handles) vs
+ArrayList shifting at 50k elements - timed pair proving the crossover
+where pointer surgery beats memmove.
 
-## 5. Risks & prevention
-- LinkedList GC churn → prefer ArrayDeque.
-- Concurrent read sees partial → snapshot via COW list or sync.
-- Null element crashes → reject null at ingress validation.
+Edge file. Dequeue on empty (typed signal), snapshot during concurrent
+publish (reader sees old-or-new, never torn), LRU eviction order audit,
+splice with stale handle (loud failure).
 
-## 6. Runbook
-- Alerts on p99 and on snapshot size vs queue size divergence.
-- Rollback to Vector (if migrating) or back to LinkedList (if regressing) behind a flag.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/LinkedList.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo + JMH + runbook.
-
-## 8. Grading rubric
-- Correctness 30 / Perf 30 / Operability 20 / Writeup 20.
+Deliver. Inbox, soak logs, backend comparison table, edge tests. Marks:
+oracle parity 12, soak plus snapshot proof 10, backend numbers 8.
+## Inbox extras
+- 200k script in CI.
+- Soak reader count fixed at 50.
+- Snapshot cost curve plotted.
+- Trace replay hit rate posted.
+- Splice crossover noted.
+- Empty-dequeue signal tested.
+- Eviction order audited.
+- Handle-guard test kept.

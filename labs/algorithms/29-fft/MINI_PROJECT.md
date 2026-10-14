@@ -1,83 +1,44 @@
-# MINI_PROJECT — Fast Fourier Transform
-> Implement + benchmark + visualize. Lab `29-fft`.
+# Mini-Project: Frequency Detector
 
 ## Goal
-- Build a runnable Java CLI that multiplies polynomials via iterative FFT (bit-reversal + butterfly) up to n=262144; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
 
-## Spec
-1. `lab.29_fft.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving butterfly + bit-reversal stages.
+Detect the dominant frequency bin of fixed 8-point test signals using the
+radix-2 FFT from this lab, verified against hand-computed spectra.
 
-## Starter code
-```java
-package lab.29_fft;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Inputs
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+- Signal A: constant [1,1,1,1,1,1,1,1] (all energy in bin 0).
+- Signal B: alternating [1,-1,1,-1,1,-1,1,-1] (all energy in bin 4).
+- No file input; magnitudes computed from complex outputs.
 
-## Visualization
-- For n<=16 print stage butterflies / twiddle factors / bit-reversed order.
-- Example (ASCII): `stage=2 rev=[0 4 2 6 ...] | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Steps
+
+1. Reuse the recursive radix-2 routine with interleaved complex arrays.
+2. Transform signal A; compute bin magnitudes from real/imag parts.
+3. Assert bin 0 magnitude is 8 and all other bins are below 1e-9.
+4. Transform signal B; compute bin magnitudes the same way.
+5. Assert bin 4 magnitude is 8 and all other bins are below 1e-9.
+6. Print both magnitude spectra as rounded integer rows.
+7. Roundtrip-check: inverse-transform A and compare within 1e-9.
+8. State the bin-to-frequency mapping rule in two sentences.
+
+## Acceptance criteria
+
+1. Signal A reports peak bin 0 with magnitude 8.
+2. Signal B reports peak bin 4 with magnitude 8.
+3. Off-peak bins all below 1e-9 on both signals.
+4. Both spectra printed as 8 rounded integers each.
+5. Roundtrip error on signal A below 1e-9 per sample.
+6. Mapping statement mentions sample rate over n explicitly.
+7. All output uses plain ASCII characters.
+
+## Grading note
+
+- Peak bin 0 for signal A and peak bin 4 for signal B, magnitude 8.
+- Off-peak bins below 1e-9 on both signals.
+- Roundtrip error below 1e-9 per sample on signal A.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for O(n log n).
 
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches O(n log n).
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add signal C [1,0,-1,0,1,0,-1,0] and predict its peak before running.
+- Halve the amplitude and confirm magnitudes scale linearly.

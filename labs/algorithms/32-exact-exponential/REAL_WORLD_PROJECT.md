@@ -1,88 +1,42 @@
 # REAL_WORLD_PROJECT — Exact Exponential Algorithms
-> Production use-case with metrics + prevention. Lab `32-exact-exponential`.
+> Exact route optimizer for ≤15 delivery stops with a heuristic fallback and a recorded optimality gap.
 
-## Use-case: VLSI layout, exact TSP routing, SAT-based verification
-- System: backend service handling large inputs where Exact Exponential Algorithms is on the hot path.
-- Why this algorithm: branch-and-reduce plus meet-in-the-middle gives O(1.3^n–2^n) exact answers which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Nightly planner receives up to 15 stops with a road-distance matrix from the routing provider.
+- Dispatcher UI shows the exact tour, its cost, and compute time; jobs over 15 stops route to the heuristic path automatically.
+- Held-Karp result cached by (stop set hash, matrix version).
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Exact Exponential) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Exact path: Held-Karp with bitmask DP, hard timeout of 120 s, memory cap sized from the O(n 2^n) table for n = 15.
+- Fallback path: nearest-neighbor plus 2-opt repair; reported gap = (fallback - exact)/exact on instances where both ran.
+- Cache keyed on sorted stop set; matrix updates invalidate by version.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Exact-solve p95 latency at n = 12 and n = 15 (thresholds from the MINI_PROJECT table, not invented here).
+- Fallback gap distribution (median and p95) over one month of mixed instances.
+- Timeout rate and cache hit rate.
+- Cost delta: exact tour distance vs previous manual plans, summed weekly.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- 16th stop slips into the exact path: input guard counts stops and redirects before allocating the dp table.
+- Asymmetric matrix from provider (one-ways): validation rejects non-square input; asymmetric instances take the fallback path only.
+- Timeout mid-solve: partial best-tour (best insertion found so far) returned with an `exact=false` flag.
+- Stale cache after road changes: matrix version mismatch forces recompute.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Timeout on n beyond reach | 504s | hard n-cap + heuristic fallback + queue |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Bound bug accepts suboptimal | silent error | verify vs brute force on small n nightly |
+## Rollout
+1. Shadow mode on historical stop sets; compare exact cost vs dispatched routes.
+2. Enable for depots with ≤12 typical stops; watch timeout and gap dashboards.
+3. Raise the cap to 15 after two clean weeks.
 
-## Cost note
-- Optimized variant (kernelization + memo, branching bounds) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. 4-city reference matrix solves to 80 through the full service path (API in, tour out).
+2. A 16-stop request is redirected to fallback with a logged reason, never OOMs.
+3. Timeout returns a flagged non-exact tour within the 120 s budget.
+4. Gap dashboard shows median and p95 fallback gap over real instances.
+5. Cache invalidation on matrix version change is covered by a test.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2015/ (MIT 6.046 — NP-hard/exact methods)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ForkJoinPool.html (Java ForkJoinPool — parallel branch-and-bound)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Verification workloads may gate releases; version solver + goldens.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Nodes pruned ratio | counter | tune branching rule |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Exact search is n-capped; autoscale async workers, not sync path.
+## Cost and contract notes
+- Exact-solve compute budget: cap cost per job from the MINI table (n=15 row) times cloud price per vCPU-second.
+- Dispatcher API: POST /tour with stop list returns (tour, cost, exact flag, ms); GET /tour/{id} replays the cached result.
+- Fallback gap reported per depot weekly; depots above the agreed gap get stop-count reviews, not solver blame.
+- Timeout responses always include the best tour found so far plus exact=false, never an empty body.

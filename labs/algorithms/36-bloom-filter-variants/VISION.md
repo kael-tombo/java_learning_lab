@@ -1,48 +1,41 @@
 # VISION — Bloom Filter Variants
-> Mastery path. Lab `36-bloom-filter-variants`.
+> Direction: from "maybe present" as a curiosity to budgeted false-positive engineering with measured rates.
 
 ## Where this sits
-- Bloom Filter Variants is one tool in the algorithms arsenal: k-hash bitsets with a no-false-negatives invariant.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+- Plain Bloom: 1 bit per position, no deletes, FPR = (1 - e^(-kn/m))^k, optimal k = (m/n) ln 2.
+- Counting: byte counters buy deletes at ~4-8x space. Cuckoo: two buckets plus relocation, deletes natively, strong at low FPR. Quotient: quotient/remainder slots, compact and cache-friendly.
+- The family answers set-membership under memory pressure; exact structures answer when memory allows.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(k) ops, m≈-n ln p/(ln2)^2 sizing memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (CDN membership checks, DB SSTable filters, malware URL lists).
+## 4-week direction
+- Week 1: hand-place apple/banana/cherry into 64 bits with double hashing; find mango's bits.
+- Week 2: finish MINI_PROJECT; complete the k-sweep table from real runs.
+- Week 3: write the variant-selection paragraph from measured trade-offs, not slogans.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard the FPR formula derivation sketch in 10 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Derive k_opt by minimizing the FPR expression (calculus sketch) without notes.
+- Explain delete-safety for counting vs plain from the counter/bit mechanics.
+- Size (m, k) for any (n, FPR budget) pair on demand.
 
-## How to know you are done
-- Explain k-hash setting + false-positive formula; counting/cuckoo deletion trade-offs without notes; derive sizing formula on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This lab does not implement cuckoo or quotient filters; selection knowledge, not implementations, is the goal.
+- No adversarial-hash or cryptographic analysis; seeds are operational, not security, controls.
+- Learned-index replacements are out of scope.
+
+## Pitfalls
+- Sizing m from hope instead of the formula, then discovering saturation in production.
+- Deleting from a plain Bloom filter and manufacturing false negatives.
+- Quoting theoretical FPR while never measuring the canary rate.
 
 ## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+- Pair with 34-data-stream-algorithms (Count-Min is the frequency cousin) and any caching lab for the negative-path speedup pattern.
+- Revisit whenever a hot path consults an exact store for mostly-absent keys.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Weekly drills
+- Recompute k_opt = (m/n) ln 2 for a fresh (m, n) pair in under 2 minutes.
+- Re-derive the FPR formula from the single-bit-set probability without notes.
+- Name the delete story (safe/unsafe/how) for plain, counting, cuckoo, quotient.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not deploy without the canary FPR measurement; theory alone is not a rate.
+- Do not delete from plain bit arrays; that path manufactures false negatives.

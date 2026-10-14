@@ -1,48 +1,40 @@
-# REAL_WORLD_PROJECT — Immutable & Persistent Data Structures
+# Undo Timeline and Audit Ledger on Persistent Structures
 
-Production use-case: **versioned document store with undo timeline**. Secondary: event-sourced ledger with auditable snapshots.
+Promise. A document store where every edit yields a new version and no
+version ever mutates; an event-sourced ledger where auditors can replay
+any prefix. Path copying gives O(log n) fresh nodes per update while
+old roots keep working - sharing is the feature, mutation the bug.
 
-## 1. Problem statement
-Serve structural sharing, versioning workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Versioned map. Persistent balanced map (path-copied nodes) for document
+fields: assoc returns a new root, dissoc returns a new root, lookup pins
+a version id. Structural sharing ratio measured: nodes shared vs fresh
+per 10k-edit script, quoted from instrumentation, not theory.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Undo caller. Editor timeline with branching: undo moves the pointer,
+new edits from a past version fork a branch instead of destroying the
+future. Branch integrity tested by interleaving edits across three
+branches and verifying each tip reads back exactly.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Ledger caller. Append-only event log with per-version content hashes;
+audit replay folds events from genesis to any version and must equal
+the stored snapshot at that version on all 5k prefixes. Hash mismatch
+fails the audit with the first divergent index.
 
-## 4. Metrics to report
+Sharing audit. A debug walk counts reachable nodes per version and
+shared nodes across versions; total allocation for 10k edits must sit
+far below 10k times tree size, with the measured factor published.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Misuse drills. Lookup at a pruned version (typed error), unbounded
+version growth (retention policy with pin API), hash tamper on one
+snapshot (audit names the version), concurrent readers across versions
+(no locks, no divergence).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Persistent_data_structure
-- https://pcollections.org/
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Close. Store, ledger, sharing numbers, audit log, retention note.
+Weighting: persistence guarantees 12, branch plus replay exactness 10,
+sharing evidence and misuse handling 8.
+## Retention sheet
+- Pin API for audit holds.
+- Default keeps 90 days.
+- Sharing ratio re-measured monthly.
+- Tamper drill each quarter.
+- Branch-tips hashed nightly.

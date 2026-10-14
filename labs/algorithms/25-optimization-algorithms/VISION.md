@@ -1,48 +1,44 @@
-# VISION — Optimization Algorithms
-> Mastery path. Lab `25-optimization-algorithms`.
+# Vision: Optimization Algorithms
 
-## Where this sits
-- Optimization Algorithms is one tool in the algorithms arsenal: hill climbing, gradient descent, simulated annealing.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+## Direction
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; GD O(1/eps) convex; SGD expected; SA convergence in limit memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (hyperparameter tuning, routing, portfolios).
+This lab covers continuous optimization at concept level: gradient descent as
+stepping against the slope, ternary-style bracketing for unimodal functions,
+and the vertex geometry of small linear programs. The practical skill is
+running each method by hand on a toy function and stating its cost and its
+failure mode.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## What to learn
 
-## How to know you are done
-- Explain monotone improvement (or controlled worsening) invariant without notes; derive GD O(1/eps) convex; SGD expected; SA convergence in limit on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+- Gradient descent: update rule, step-size tradeoff, linear convergence idea.
+- Unimodal bracketing: how two interior points shrink the search interval.
+- LP vertex geometry: optima of bounded LPs sit at feasible vertices.
+- Cost statements: per-iteration work and what drives iteration count.
+- Failure modes: overshoot, local valleys, unbounded or infeasible LPs.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Non-coverage
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+- This lab does not cover simplex tableaux or interior-point methods.
+- It does not cover duality theory; that belongs to the LP lab.
+- It does not cover stochastic gradients, momentum, or adaptive steps.
+- It does not cover constrained nonlinear programming or Lagrange theory.
+- All functions here are one- or two-dimensional teaching examples.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## How to use this lab
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
+Run the descent from MOCK_INTERVIEW Q1 with three step sizes and record
+which diverges, bracket the quadratic from Q2 starting at two widths, then
+verify the LP vertices of Q3 by solving the line intersections yourself.
 
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Pitfalls
+
+- Tuning the function instead of the step size when descent diverges.
+- Bracketing a multimodal function and trusting the valley found.
+- Reporting an LP optimum without checking vertex feasibility.
+
+## Done when
+
+- You can write the gradient update from memory and explain the step role.
+- You can state the 2/3 shrink factor of ternary bracketing.
+- You can list LP vertices from constraints and score them by hand.
+- You can name one failure mode per method with a concrete trigger.

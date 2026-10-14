@@ -1,88 +1,42 @@
 # REAL_WORLD_PROJECT — Searching Track
-> Production use-case with metrics + prevention. Track `searching`.
+> Account-lookup service: 200M-key read path with a hash fast path, sorted-snapshot fallback, and a miss-cost dashboard.
 
-## Use-case: version lookup, feature-flag targeting, capacity planning
-- System: backend service handling large inputs where searching is on the hot path.
-- Why this algorithm: half-open binary search gives O(log n) exact bounds which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Nightly snapshot builds a sorted key array plus an open-addressing hash index; lookups serve from memory-mapped files.
+- Query mix: 95 percent hits, 5 percent misses (enumeration probes); adversarial bursts of misses possible during scans.
+- Correctness anchor: every build verified against a sampled exact map before promotion.
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (searching) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Hash fast path with the load factor capped by build config; misses fall through to exponential search on the sorted array for range-neighbor answers.
+- Interpolation used only for the uniform timestamp secondary index, with a skew monitor that disables it automatically.
+- Negative-result cache (short TTL) absorbs miss bursts without re-probing the full structure.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Hit/miss p50/p99 latency split (never blended), miss-burst rate, negative-cache hit rate.
+- Load factor and probe-count distribution per build.
+- Interpolation skew monitor value with auto-disable events logged.
+- Build verification pass/fail gating promotion.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Miss-burst scan (enumeration): negative cache plus rate limiting; alert on 10x miss-rate deviation.
+- Skewed timestamp index silently degrades interpolation: monitor disables it and logs the switch to binary.
+- Snapshot corruption: build verification fails, previous snapshot keeps serving, page on two consecutive failures.
+- Hash DoS via crafted keys: keyed hash seed rotated per build; rotation event logged.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Unsorted index served | wrong bounds | sort-assert + build checksum |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Predicate flip on deploy | wrong capacity | shadow-compare old/new predicate |
+## Rollout
+1. Shadow-read production queries against the new index; compare answers and latencies.
+2. Serve 10 percent of reads; watch the hit/miss split dashboards.
+3. Full cutover with the previous snapshot retained one week for instant rollback.
 
-## Cost note
-- Optimized variants (branchless/Eytzinger for static) cut compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. Shadow week shows zero answer mismatches on sampled queries.
+2. Miss-burst chaos test stays within latency budget via the negative cache.
+3. Skew test disables interpolation automatically with a logged event.
+4. Corrupt-build test keeps the old snapshot serving.
+5. Rollback restores the previous snapshot within the documented time.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://algs4.cs.princeton.edu/11model/ (Princeton Algorithms — analysis model incl. binary search)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Arrays.html (Java Arrays — binarySearch contract)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Lookup keys may be user-linked; avoid logging raw keys.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Probes per query | histogram | alert on growth |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Sorted index ≈ n entries resident; shard beyond RAM.
+## Cost and contract notes
+- Snapshot build cost (sort + hash) amortized over nightly queries; build-time budget alert at 2x median.
+- Negative-cache memory capped separately; eviction logged so miss-burst accounting stays exact.
+- Timestamp-index skew monitor thresholds versioned with the index build, reviewed monthly.
+- Contract: lookup responses carry snapshot version and method (hash/exponential/interpolation) for latency attribution.

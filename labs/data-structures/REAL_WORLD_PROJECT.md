@@ -1,39 +1,39 @@
-# Data Structures Track — Real World Project
+# Data Structures Track - Real World Project
 
-## Goal
-Ship a production-flavored service around one track structure with SLOs,
-mirroring the per-lab REAL_WORLD_PROJECT.md format at larger scope.
+## Intent
+Produce one service with production habits around a single track
+structure, carrying explicit SLOs, at broader scope than a lab build.
 
-## Pick a lane (with home lab)
-- **Caching**: LRU (15) thumbnail/session cache with hit-rate SLO; LFU
-  variant comparison. Concurrent access via sharded locks.
-- **Indexing**: B-tree-style ordered index (09) or spatial grid/quadtree
-  (17) for geo-fence search; range/prefix benchmarks vs TreeMap.
-- **Streaming analytics**: Fenwick (13) live counters, Count-Min (27) heavy
-  hitters, HyperLogLog (26) distinct counts, MinHash (28) near-dup filter.
-- **Integrity & sync**: Merkle tree (22) file-sync proofs; Bloom filter
-  (10) pre-check cutting disk reads; persistent versions (20/34) for audit.
-- **Solvers & dynamic graphs**: dancing-links exact cover (32), rollback
-  DSU offline connectivity (23), link-cut dynamic forest (35).
+## Lanes (home lab in brackets)
+- **Caching** [15]: thumbnail/session LRU with a hit-rate SLO; compare
+  against an LFU variant. Shard locks for concurrent access.
+- **Indexing** [09/17]: ordered catalog index or geo-fence search over
+  a grid/quadtree; range and prefix timings beside TreeMap.
+- **Streaming** [13/26/27/28]: Fenwick live counters, Count-Min heavy
+  hitters, HyperLogLog distinct counts, MinHash near-dup filtering.
+- **Integrity** [10/20/22/34]: Merkle proofs for file sync, Bloom
+  pre-checks trimming disk reads, versioned structures for audit trails.
+- **Solvers** [23/32/35]: exact-cover scheduling, rollback-DSU offline
+  connectivity, link-cut dynamic forest queries.
 
-## Requirements
-- SLO sheet first: p50/p99 latency, throughput, memory cap, correctness
-  bar (exact vs stated error bound per structure).
-- Load generator + metrics (Micrometer/JFR or CSV + HDR-style summary).
-- JMH microbench of the hot path; heap/JOL memory accounting.
-- Ops runbook: deploy, alerts, rollback; chaos pass (empty, dup flood,
-  adversarial order, restart recovery).
+## Ship requirements
+- SLO sheet written first: latency distribution, throughput, memory
+  ceiling, and the exactness bar each structure owes (exact or bounded).
+- Workload driver plus operation log (CSV with nanos and sizes).
+- Hot-path microbench with warmup and medians; heap-based memory notes.
+- Ops page: start, alerts, rollback; hostile pass (empty input, dup
+  flood, adversarial order, restart recovery).
 
-## Milestones (2 weeks)
-W1: core + invariant checker + unit/property tests with oracle.
-W1 also: SLO sheet signed off; load generator skeleton running.
-W2: API + metrics + load test + deploy notes + demo script.
-W2 also: chaos pass recorded; runbook reviewed against live behavior.
+## Fortnight shape
+- Days 1-2: SLO sheet agreed; core plus invariant checks compiling.
+- Days 3-5: oracle-tested core; workload driver running seeded.
+- Days 6-8: serving surface, operation log, first load numbers.
+- Days 9-10: hostile pass recorded, ops page reviewed, demo rehearsed.
 
-## Suggested stack
-- Plain CLI or `com.sun.net.httpserver`; JMH for the hot path.
-- CSV metrics + HDR-style summary; JOL for memory accounting.
-- Seeded fixtures so every run in the report reproduces bit-for-bit.
+## Tooling hints
+- CLI or JDK built-in HTTP server; no frameworks needed.
+- CSV logs plus a summary script; heap deltas for memory.
+- Fixtures seeded so report numbers reproduce bit-for-bit.
 
-## Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+## Scoring
+- Correctness 12 / SLO evidence 10 / Operability 8. Ship at 24 or more.

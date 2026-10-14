@@ -1,48 +1,43 @@
-# VISION — Linear Programming (Simplex)
-> Mastery path. Lab `30-linear-programming`.
+# Vision: Linear Programming
 
-## Where this sits
-- Linear Programming (Simplex) is one tool in the algorithms arsenal: basic feasible solutions plus pivoting with duality certificates.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+## Direction
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; simplex exponential worst-case, polynomial expected memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (supply-chain optimization, portfolio allocation, production planning).
+This lab covers linear programming at concept level: vertex geometry of
+optima, the simplex idea of walking improving vertices, weak duality as a
+certificate, and the three solver statuses. The practical skill is solving a
+2-variable program by hand and certifying it with a dual point.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## What to learn
 
-## How to know you are done
-- Explain BFS + pivot rule + duality gap; complementary slackness without notes; derive expected-polynomial behavior on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+- Vertex geometry: bounded optima sit at feasible corners.
+- Simplex concept: move along improving edges until no improvement exists.
+- Weak duality: feasible dual values bound the primal optimum from above.
+- Statuses: optimal, infeasible, and unbounded with detection rules.
+- Formulation: objective plus linear constraints from a word problem.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Non-coverage
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+- This lab does not implement the simplex tableau or pivot selection.
+- It does not cover strong duality proofs or complementary slackness.
+- It does not cover interior-point methods or integer programming.
+- It does not cover sensitivity analysis or parametric programming.
+- No invented pivot traces appear here; programs are 2-variable only.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## How to use this lab
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
+Solve the Q1 program graphically on paper, certify the Q2 pair by checking
+both feasibility statements, then classify three programs of your own with
+the Q3 status routine before starting MINI_PROJECT.
 
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Pitfalls
+
+- Scoring only axis vertices and missing the slanted intersection.
+- Claiming optimal without a dual bound to back it.
+- Confusing unbounded (ray improves forever) with infeasible (empty set).
+
+## Done when
+
+- You can list and score all vertices of a 2-constraint program by hand.
+- You can write the dual of a 2-variable max program from memory.
+- You can classify any 2-variable program into the three statuses.
+- You can explain the simplex walk in two sentences without a tableau.

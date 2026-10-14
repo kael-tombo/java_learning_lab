@@ -1,48 +1,41 @@
 # VISION — Data Stream Algorithms
-> Mastery path. Lab `34-data-stream-algorithms`.
+> Direction: from storing streams to summarizing them — exact when small, bounded-error when huge.
 
 ## Where this sits
-- Data Stream Algorithms is one tool in the algorithms arsenal: sketch invariants with Count-Min, HyperLogLog, and reservoir sampling.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+- Streaming summaries trade exactness for O(1)-ish memory: sampling (reservoir), frequency (Misra-Gries, Count-Min, Count Sketch), distinct counting (HyperLogLog), and binary counting (Morris).
+- The error direction matters: MG undercounts, CM overcounts, reservoir is exact-uniform but partial.
+- Windowing (tumbling/sliding/decay) turns infinite streams into answerable questions.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(1/eps) space, mergeable sketches memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (ad-tech counting, network telemetry, trending topics).
+## 4-week direction
+- Week 1: hand-run reservoir on 1..10 with seed 42 until [6,2,8] is unsurprising; prove the k/i rule.
+- Week 2: finish MINI_PROJECT; write the MG shortfall argument from decrement rounds.
+- Week 3: size a CM sketch from (epsilon, delta) for a concrete key space and rate.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard est>=true proof for CM in 5 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- State each structure's guarantee and error direction from memory.
+- Derive the reservoir uniformity invariant by induction.
+- Choose MG vs CM vs exact map for a given (rate, memory, query) triple.
 
-## How to know you are done
-- Explain sketch linearity + mergeability; error bounds with (eps, delta) without notes; derive space bounds on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This lab does not implement HyperLogLog or the Morris counter (both are named, sketched, and left as extensions).
+- No sliding-window algorithms; all guarantees here assume whole-stream (landmark) windows.
+- Adversarial streams against fixed hashes are handled by seed rotation policy, not by new theory.
+
+## Pitfalls
+- Treating MG counts as exact; they are lower bounds, short by the decrement count.
+- Treating CM estimates as exact; collisions inflate, so capacity-plan from the overestimate side.
+- Forgetting the audit sampler; without exact samples, error claims are untestable.
 
 ## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+- Pair with 36-bloom-filter-variants (sister sketch family, opposite error direction) and 31-online-algorithms (one-pass decisions under uncertainty).
+- Revisit when any pipeline says "store everything first"; the sketch menu is the alternative.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Weekly drills
+- Prove the reservoir k/n invariant for arrivals n and n+1 aloud in under 3 minutes.
+- Bound an MG shortfall from the decrement-round count on a fresh example.
+- Size CM width/depth from an (epsilon, delta) pair without looking them up.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not quote MG counts as exact or CM estimates as exact; name the direction every time.
+- Do not ship a sketch without the exact-sampled audit that prices its error.

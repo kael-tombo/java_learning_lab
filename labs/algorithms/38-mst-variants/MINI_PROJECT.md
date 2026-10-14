@@ -1,83 +1,37 @@
 # MINI_PROJECT — MST Variants
-> Implement + benchmark + visualize. Lab `38-mst-variants`.
+> Build Kruskal, dense Prim, and second-best MST over one edge-list format, with cross-agreement checks.
 
-## Goal
-- Build a runnable Java CLI that computes MSTs via Kruskal, Prim, and Boruvka on graphs up to V=50k; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Edge-list file (`u v w` per line); reference graph with 7 edges from MOCK Q1 (expected MST weight 8, second-best 9).
+- Random graphs (n = 50/200/1000, fixed seed) for timing only.
 
-## Spec
-1. `lab.38_mst_variants.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving cut/cycle property choices.
+## Build steps
+1. Implement Kruskal with path-compressed union-find; verify mst_weight=8 with 4 edges on the reference graph.
+2. Implement dense O(V^2) Prim; verify prim_weight=8 on the same graph.
+3. Implement second-best MST by max-edge-on-path swaps over the Kruskal tree; verify second_best=9.
+4. Add `--check`: asserts both MST weights equal and every non-tree edge swap is evaluated; prints the swap table (added edge, removed edge, candidate).
+5. Time both MST methods on the random graphs and record median ms with machine/JDK noted.
 
-## Starter code
-```java
-package lab.38_mst_variants;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Reference graph prints weight 8 from both Kruskal and Prim.
+2. Second-best prints 9 with a swap table showing each candidate and the winning swap.
+3. `--check` fails loudly (nonzero exit) if the two weights ever disagree.
+4. Timing table has 3 sizes x 2 methods of measured medians, no invented cells.
+5. Union-find includes both path compression and union by rank/size, stated in a comment.
+6. Disconnected input is rejected with the component count, not silently spanned.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Which method wins at each size, and does the winner match the big-O prediction?
+2. For the winning swap in Q3, trace the cycle and name the removed edge.
+3. What changes if all weights tie (uniqueness and second-best definition)?
 
-## Visualization
-- For n<=16 print chosen edges / cut crossed / DSU sets.
-- Example (ASCII): `edge=(2-5,w=3) cut={0,1,2}|rest best=3 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Boruvka implementation (specified conceptually), dynamic MST, and directed arborescences.
+
+## Worked reference (verified outputs)
+- Reference graph prints mst_weight=8 edges=4 from Kruskal and prim_weight=8 from dense Prim.
+- Second-best prints 9; the swap table names the winning (added, removed, candidate) triple explicitly.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for O(E log V).
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches O(E log V).
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Implement Boruvka phases and compare phase counts against Kruskal's union steps on the random graphs.
+- Add edge-sensitivity: for each MST edge report the cheapest replacement (or none) from the swap data.

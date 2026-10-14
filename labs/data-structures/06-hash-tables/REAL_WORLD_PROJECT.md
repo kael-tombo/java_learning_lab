@@ -1,48 +1,38 @@
-# REAL_WORLD_PROJECT — Hash Tables
+# RFC: Dedup Ingest Cache with Hot-Key Sidecar
 
-Production use-case: **session store / dedup ingest cache**. Secondary: frequency-counter sidecar for hot keys.
+Status: draft for review. Problem: an event ingest pipe sees heavy
+duplicate deliveries and a small set of scorching keys; the backing
+store charges per read, so a memory cache must absorb both.
 
-## 1. Problem statement
-Serve O(1) put/get/delete with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 op latency, throughput (ops/s), max heap, correctness bar (exact vs HashMap oracle).
+Cache core. Keyed dedup table: insert returns seen/unseen, entries carry
+ingest timestamps, background sweep evicts past the horizon. Sizing rule
+follows expected distinct count times entry bytes with headroom for the
+load factor; the doc shows the arithmetic for 1M distinct ids.
 
-## 2. Architecture
-- Ingest: session events / dedup keys feeding the table.
-- Core: chained/open-addressed table behind a narrow interface.
-- Serve: lookup API + hit-rate metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Frequency sidecar. Parallel counter map tracks hits per key over a
+sliding window; keys crossing the hot threshold route to a pinned lane
+that sweep never evicts. Demotion happens one window at a time so a
+cooling key drains gracefully instead of flapping.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Hashing. 64-bit mixer over the raw id bytes; table size stays prime or
+power-of-two to match the probe scheme, documented once and frozen for
+the release. Resize doubles and rehashes; the RFC records pause times at
+500k entries so capacity planning is explicit.
 
-## 4. Metrics to report
+Consistency. Dedup answers must equal a HashSet oracle on 100k replayed
+events including duplicates, reorderings, and expiry boundaries. Hot-key
+classification must equal a brute-force window count on the same stream.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 op latency | define SLO | JMH / load test |
-| p99 op latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact vs HashMap oracle | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Overload. Ingest flood at 3x nominal: dedup stays exact, sweep keeps up
+or lags with a measured backlog metric, pinned lane hit rate is quoted
+separately from the general rate. Memory ceiling enforced by entry cap
+plus horizon shortening, in that order.
 
-## 5. Risks & mitigations
-- Hash flooding -> salted hashing / SipHash-style defense.
-- Resize pauses -> incremental rehash or pre-sizing.
-- Memory blowup -> load-factor caps + eviction.
-- Concurrency bugs -> striped locks + stress tests.
+Failure modes. Clock skew across producers (timestamps tolerated within
+a skew window), id format drift (quarantine file with samples), sweep
+stall (watchdog forces a full pass and pages), hash-flood keys (mixer
+evidence attached showing flat chains).
 
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html
-- https://en.wikipedia.org/wiki/Hash_table
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Decision requested. Chaining vs open addressing for the dedup table with
+data, and the hot threshold value with its false-pin cost. Marks: dedup
+exactness 12, hot-lane behavior 10, overload plus skew handling 8.

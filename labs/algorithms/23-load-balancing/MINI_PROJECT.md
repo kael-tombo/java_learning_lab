@@ -1,83 +1,43 @@
-# MINI_PROJECT — Load Balancing Algorithms
-> Implement + benchmark + visualize. Lab `23-load-balancing`.
+# Mini-Project: Dispatch Simulator
 
 ## Goal
-- Build a runnable Java CLI that solves consistent hashing ring; power-of-two-choices; weighted RR, benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
 
-## Spec
-1. `lab.23_load_balancing.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving capacity + affinity invariants; bounded imbalance w.h.p..
+Simulate three dispatch rules (round-robin, random with fixed seed, and
+least-connections) over one skewed arrival script and compare max load.
 
-## Starter code
-```java
-package lab.23_load_balancing;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Inputs
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+- 3 servers, 12 arrivals with fixed holding times below; seed 42 for random.
+- Holding times: [4, 1, 1, 2, 5, 1, 1, 3, 1, 2, 1, 4].
 
-## Visualization
-- For n<=16 print DP row / window [l,r) / decision path.
-- Example (ASCII): `l=2 r=7 window=[4 1 5] best=3 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Steps
+
+1. Model each server with an open-connection counter and release events.
+2. Implement round-robin: arrivals cycle s1, s2, s3 regardless of load.
+3. Implement random: pick uniformly with `new Random(42)`.
+4. Implement least-connections with earliest-server tie-break.
+5. Replay the 12 arrivals under each rule with the same holding times.
+6. Record peak concurrent connections per server per rule.
+7. Print a table of (rule, peak s1, peak s2, peak s3, max peak).
+8. State which rule minimized the max peak and by how much.
+
+## Acceptance criteria
+
+1. All three rules replay the identical 12-arrival, identical-hold script.
+2. Random rule uses seed 42 and prints the seed used.
+3. Table shows peaks for every server under every rule.
+4. Least-connections max peak is less than or equal to round-robin max peak.
+5. Release logic verified: after advancing the clock past the final release, every counter is zero.
+6. Winner statement cites the two max-peak numbers.
+7. All output uses plain ASCII characters.
+
+## Grading note
+
+- Winner decided by max-peak numbers only, not by prose.
+- Random rule must print the seed 42 it actually used.
+- Post-drain zero counters required for the release check.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for O(1)/O(log n) routing; 2-choice max load log log n.
 
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches O(1)/O(log n) routing; 2-choice max load log log n.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add a fourth rule: pick two at random, take the less loaded; compare peaks.
+- Skew the script harder (one 10-tick request) and re-run the comparison.

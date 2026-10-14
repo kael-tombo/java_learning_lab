@@ -1,48 +1,44 @@
-# VISION — Load Balancing Algorithms
-> Mastery path. Lab `23-load-balancing`.
+# Vision: Load Balancing
 
-## Where this sits
-- Load Balancing Algorithms is one tool in the algorithms arsenal: distribution of work across servers.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+## Direction
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(1)/O(log n) routing; 2-choice max load log log n memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (nginx/HAProxy, cloud autoscaling, sharding).
+This lab covers spreading load across servers: consistent hashing for stable
+key placement, rendezvous hashing for ring-free agreement, and
+least-connections for cost-aware dispatch. The practical skill is matching the
+method to the workload: stable membership favors rings, small pools favor
+rendezvous, uneven request costs favor least-connections.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## What to learn
 
-## How to know you are done
-- Explain capacity + affinity invariants; bounded imbalance w.h.p. without notes; derive O(1)/O(log n) routing; 2-choice max load log log n on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+- Consistent hashing: ring, virtual nodes, O(log V) lookup, minimal remap.
+- Rendezvous hashing: per-key scoring, O(N) lookup, no shared ring state.
+- Least-connections: open-count dispatch; beats round-robin on skew.
+- Measurement: remap fraction on membership change; max-to-mean load ratio.
+- Failure behavior: what each method does when one node leaves abruptly.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Non-coverage
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+- This lab does not cover L4/L7 proxy configuration or health checking.
+- It does not cover weighted round-robin tuning for production fleets.
+- It does not cover request hedging, retry budgets, or backoff policy.
+- It does not cover data replication or consistency after remapping.
+- Simulations here are single-process; no network or cluster is required.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## How to use this lab
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
+Implement the ring from MOCK_INTERVIEW Q1, the rendezvous scorer from Q2,
+and the least-connections loop from Q3. Then run MINI_PROJECT with a skewed
+key distribution and compare max-to-mean ratios across the three methods.
 
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Pitfalls
+
+- Using modulo hashing under membership churn.
+- Skipping virtual nodes and accepting ring imbalance.
+- Judging dispatch by mean load instead of max-to-mean ratio.
+
+## Done when
+
+- You can state each method's lookup cost and remap behavior from memory.
+- You can explain virtual nodes and why they smooth ring imbalance.
+- You can argue ring against rendezvous for a stated pool size.
+- You can show least-connections beating round-robin on one skewed trace.

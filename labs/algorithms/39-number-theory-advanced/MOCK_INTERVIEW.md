@@ -1,176 +1,74 @@
-# Mock Interview: Number Theory Advanced — Pollard Rho, Elliptic Curves, Continued Fractions
-
-## Interview Details
-- **Topic**: Number Theory Advanced
-- **Difficulty Range**: Hard to Hard
-- **Total Time**: 45 minutes
-- **Interviewer**: Senior Software Engineer at Amazon
-- **Candidate**: Senior Software Engineer (6 years experience)
-
----
-
-## Question 1: Pollards Rho Factorization
-
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Let us start with Pollards Rho Factorization. Explain your approach and consider the trade-offs."
-
-**Candidate**: "I will start by discussing the brute force solution. The naive approach has O(n^2) time complexity because we check every pair or permutation. However, this problem has characteristics that allow significant optimization."
-
-**Interviewer**: "What algorithm paradigm do you think applies here?"
-
-**Candidate**: "This problem fits the Number Theory Advanced paradigm. The key insight is that we can leverage the specific properties of this approach to reduce the complexity. Instead of checking all possibilities, we can use a systematic method that builds up the solution incrementally."
-
-**Interviewer**: "Walk me through the optimal solution."
-
-**Candidate**: "I will implement the algorithm with these steps. First, I handle the base cases. Then I process the input using the core algorithmic technique. I maintain necessary state variables and update them appropriately. The key decision point is how we transition between states. At the end, I return the computed result."
-
-**Interviewer**: "What is the time and space complexity?"
-
-**Candidate**: "The time complexity is O(n log n) for the sorting-based preprocessing plus O(n) for the main algorithm, giving O(n log n) total. Space complexity is O(n) for the auxiliary data structures. This is optimal because we must sort the input, and comparison-based sorting has a lower bound of omega(n log n)."
-
-**Interviewer**: "What edge cases should we test?"
-
-**Candidate**: "We should test: empty input returning a default, single element, all identical values, large values causing overflow, and values at boundary conditions. I will make sure the algorithm handles each of these gracefully."
-
-**Time Taken**: 13 minutes
-**What Went Well**: 
-- Clear communication of algorithmic trade-offs
-- Good recognition of the correct paradigm
-- Proactive complexity analysis
-**Could Improve**: 
-- Should ask about input size before optimizing
-- Could mention alternative algorithm paradigms considered
-
----
-
-## Question 2: Elliptic Curve Point Addition
-
-**Difficulty**: Hard
-**Company Frequency**: Google, Amazon
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Next problem: Elliptic Curve Point Addition. This is a more challenging algorithmic problem."
-
-**Candidate**: "Let me restate the problem to ensure I understand correctly. We are looking for... I see this as an extension of the previous pattern but with additional constraints."
-
-**Interviewer**: "What makes this different from the first problem?"
-
-**Candidate**: "The main difference is that this problem requires handling more complex state transitions. The state space is larger, so we need to be more careful about how we represent and update the state. A direct adaptation of the previous approach would be too slow."
-
-**Interviewer**: "How do you propose to solve it?"
-
-**Candidate**: "I will use the same algorithmic paradigm but with additional optimizations. Specifically, I can reduce the state space by noting that certain states are equivalent. This is a form of state compression. Alternatively, I can use a different variation of the algorithm that handles the specific constraints better."
-
-**Interviewer**: "Explain the implementation details."
-
-**Candidate**: "I initialize the data structures with appropriate initial values. Then I iterate through the input, applying the algorithm specific transitions. At each step, I check for early termination conditions. The core logic involves updating state based on the current input and previous state. Finally, I extract the answer from the state."
-
-**Interviewer**: "What is the complexity and can you prove optimality?"
-
-**Candidate**: "Time complexity is O(n) where n is the input size. Space is O(n) because we need to store the state for all elements. This is optimal because we must examine each input element at least once. A lower bound argument: any algorithm must read all the input, so omega(n) is a lower bound. Our algorithm achieves this bound."
-
-**Time Taken**: 14 minutes
-**What Went Well**: 
-- Correctly identified the harder variant characteristics
-- Good state compression thinking
-- Strong lower bound justification
-**Could Improve**: 
-- Could describe the state transition more precisely
-- Should mention space optimization possibilities
-
----
-
-## Question 3: Continued Fraction Representation
-
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Final problem: Continued Fraction Representation. This is a hard algorithm problem that appears frequently in our interviews."
-
-**Candidate**: "This is a significantly harder problem. Let me think carefully. The brute force approach would be O(2^n) or worse, which is infeasible for large inputs. I need to use the advanced algorithmic paradigm effectively."
-
-**Interviewer**: "What is your approach strategy?"
-
-**Candidate**: "I will combine multiple algorithmic techniques. The problem has overlapping subproblems suggesting DP, but also has a structure that allows greedy choices in certain cases. I need to carefully analyze the properties to determine which approach to use."
-
-**Interviewer**: "How do you decide between the different approaches?"
-
-**Candidate**: "I compare the trade-offs. A pure greedy approach would be O(n log n) but might fail for some edge cases. A DP approach would be O(n^2) and always correct. A divide-and-conquer approach would be O(n log n) with more complex merge logic. Given the constraints in the problem, I believe the DP approach is most appropriate because it guarantees correctness and the quadratic time is acceptable for the expected input size."
-
-**Interviewer**: "Explain the DP state definition."
-
-**Candidate**: "The state dp[i] represents the optimal solution for the subproblem up to i. The recurrence is dp[i] = min/max over valid transitions from previous states. The base cases are initialized first, then we fill the DP table in increasing order of i. The final answer is at dp[n]."
-
-**Interviewer**: "Can you optimize space?"
-
-**Candidate**: "Yes, if the recurrence only depends on a fixed number of previous states, we can reduce space from O(n) to O(k) where k is the number of states needed. This is a common optimization that is always worth mentioning."
-
-**Time Taken**: 16 minutes
-**What Went Well**: 
-- Systematic comparison of different algorithmic approaches
-- Clear DP state definition
-- Considered space optimization proactively
-**Could Improve**: 
-- Could have written the DP recurrence more formally
-- Should verify with a small example mentally
-
----
-
-## Interviewer Feedback
-
-### Overall Assessment: Strong Hire
-
-**Strengths**:
-- Strong algorithmic reasoning and pattern recognition
-- Always analyzes complexity and discusses lower bounds
-- Considers multiple algorithm paradigms before choosing
-- Handles hard problems with systematic decomposition
-- Excellent communication throughout the interview
-
-**Areas for Improvement**:
-- Could be faster at coding once approach is settled
-- Should verify algorithm correctness with small examples
-- Can improve space optimization awareness for DP problems
-- Should discuss concurrency and parallelization possibilities
-
-### Follow-Up Questions
-
-1. "What if the input size is 10^9? How does your algorithm scale?"
-2. "Can you parallelize this across multiple CPU cores?"
-3. "How would you handle streaming or infinite input?"
-4. "What if memory is limited to O(1)? Can you still solve it?"
-5. "Is there a randomized algorithm that performs better on average?"
-6. "How would your algorithm perform with adversarial input?"
-7. "Can you prove the optimality of your approach?"
-
-### Recommended Practice Plan
-
-| Area | Focus | Activities |
-|------|-------|-----------|
-| Advanced Number Theory Advanced | Harder variations | Solve 5 more problems in this paradigm |
-| Complexity Proofs | Formal lower bounds | Practice omega(n log n) and omega(n) proofs |
-| Space Optimization | In-place algorithms | Study memory-constrained algorithm techniques |
-| Company Specific | Target company tag | Solve 10 tagged problems on LeetCode |
-
----
-
-## Key Takeaways
-
-| Aspect | Rating (1-5) | Notes |
-|--------|-------------|-------|
-| Problem Understanding | 5 | Excellent restatement and clarification |
-| Algorithm Selection | 5 | Considered multiple paradigms correctly |
-| Code Quality | 4 | Good, but room for cleaner implementation |
-| Complexity Analysis | 5 | Detailed with lower bound justification |
-| Edge Cases | 4 | Good coverage, could be more systematic |
-| Communication | 5 | Clear and structured throughout |
-| Time Management | 4 | Slight overrun on hard problem |
-| Follow-up Handling | 4 | Good depth, more practice needed |
-
-## Candidate Self-Reflection
-
-"I performed well on recognizing algorithm patterns and analyzing complexity. The first two problems were straightforward applications of the paradigm. The third problem required deeper analysis and I think I chose the right approach. Moving forward, I will practice more space optimization and ensure I test my algorithm logic with small examples before coding. The feedback about being more systematic with edge cases is valuable and I will incorporate it into my preparation routine."
+# Mock Interview: Advanced Number Theory
+> Three questions on primality testing and factoring. Everything here is classical integer arithmetic; base choices are stated exactly as run.
+## Q1: binary modular exponentiation
+Problem: compute 3^200 mod 1000, verify 2^16 = 1 mod 17, and test base 2 on 341.
+Key insight: square-and-multiply keeps intermediates below m^2; Fermat holds at 17, while 341 = 11 x 31 still gives 2^340 = 1 mod 341, a base-2 pseudoprime that motivates stronger tests.
+Complexity: O(log e) multiplies, O(1) memory.
+```java
+public class L39Q1 {
+    static long modPow(long b, long e, long m){ long r = 1 % m; b %= m; while (e > 0){ if ((e&1)==1) r = (r*b)%m; b = (b*b)%m; e >>= 1; } return r; }
+    public static void main(String[] a){
+        System.out.println("powmod(3,200,1000)=" + modPow(3,200,1000));
+        System.out.println("fermat_ok=" + (modPow(2,16,17) == 1) + " pseudo341=" + (modPow(2,340,341) == 1));
+    }
+}
+```
+Observed output:
+```
+powmod(3,200,1000)=1
+fermat_ok=true pseudo341=true
+```
+Follow-up: why must the multiplication use long (or wider) before the mod?
+## Q2: Miller-Rabin, fixed bases
+Problem: run Miller-Rabin with bases {2, 7, 61} on 17, 561, 2047, 7919.
+Key insight: writing n - 1 = d*2^s and checking the witness chain catches composites Fermat misses: Carmichael number 561 and 2047 = 23 x 89 both report COMPOSITE; the stated bases are a published deterministic set for the 32-bit range.
+Complexity: O(k log^3 n) for k bases, O(1) memory.
+```java
+public class L39Q2 {
+    static long modPow(long b,long e,long m){ long r=1%m; b%=m; while(e>0){ if((e&1)==1) r=(r*b)%m; b=(b*b)%m; e>>=1; } return r; }
+    static boolean isPrime(int n){
+        if (n < 2) return false;
+        for (int p : new int[]{2,3,5,7,11,13,17,19,23,29}){ if (n==p) return true; if (n%p==0) return false; }
+        int d = n-1, s = 0; while ((d&1)==0){ d>>=1; s++; }
+        for (int a : new int[]{2,7,61}){
+            if (a % n == 0) continue;
+            long x = modPow(a, d, n); if (x==1 || x==n-1) continue;
+            boolean ok = false; for (int r=1;r<s;r++){ x=(x*x)%n; if (x==n-1){ ok=true; break; } }
+            if (!ok) return false;
+        }
+        return true;
+    }
+    public static void main(String[] a){ for (int n : new int[]{17,561,2047,7919}) System.out.println(n + "=" + (isPrime(n) ? "PRIME" : "COMPOSITE")); }
+}
+```
+Observed output:
+```
+17=PRIME
+561=COMPOSITE
+2047=COMPOSITE
+7919=PRIME
+```
+Follow-up: what is a Miller-Rabin witness, and why do Carmichael numbers still fail the test?
+## Q3: Pollard Rho concept demo
+Problem: factor 8051 with f(x) = x^2 + 1 and Floyd cycling from x = y = 2.
+Key insight: the gcd(|x - y|, n) exposes a factor when the two walks collide modulo a hidden prime factor; here it returns 97 with cofactor 83.
+Complexity: heuristic, roughly O(n^(1/4)); trial-divide small primes first.
+```java
+public class L39Q3 {
+    static long gcd(long a, long b){ return b==0 ? a : gcd(b, a%b); }
+    public static void main(String[] a){
+        long n = 8051, x = 2, y = 2, d = 1;
+        while (d == 1){ x = (x*x+1)%n; y = (y*y+1)%n; y = (y*y+1)%n; d = gcd(Math.abs(x-y), n); }
+        System.out.println("factor=" + d + " cofactor=" + (n/d));
+    }
+}
+```
+Observed output:
+```
+factor=97 cofactor=83
+```
+Follow-up: what do you change when the walk returns d = n (restart with a new constant)?
+## Pass checklist
+- [ ] Factor 341 and 2047 by hand-followable trial division to confirm COMPOSITE claims.
+- [ ] Verify 8051 = 97 x 83 with plain multiplication.
+- [ ] Never present the fixed bases as valid beyond the stated 32-bit range.

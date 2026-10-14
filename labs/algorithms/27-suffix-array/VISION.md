@@ -1,48 +1,43 @@
-# VISION — Suffix Array & LCP Array
-> Mastery path. Lab `27-suffix-array`.
+# Vision: Suffix Arrays
 
-## Where this sits
-- Suffix Array & LCP Array is one tool in the algorithms arsenal: prefix-doubling ranks plus Kasai LCP over all suffixes.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+## Direction
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(n log n) build, O(n) LCP, O(m log n) query memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (genome indexing, full-text search, plagiarism detection).
+This lab covers suffix arrays for substring search: doubling construction,
+Kasai's linear LCP pass, and binary-searched pattern counting. The practical
+skill is building the array on a small string by hand and stating each
+phase's cost without reaching for a library.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## What to learn
 
-## How to know you are done
-- Explain prefix-doubling ranks + Kasai LCP invariant; overlapping rank pairs without notes; derive O(n log n) build, O(n) LCP on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+- Suffix array: sorted starting positions; the sorted-substring index.
+- Doubling: pair-rank sorting with k doubling; O(n log n) with radix steps.
+- Kasai: text-order scan with carried match length; O(n) LCP.
+- Pattern query: contiguous match block via two binary searches.
+- LCP use: longest repeated substring is the maximum LCP value.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Non-coverage
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+- This lab does not cover suffix trees or suffix automata.
+- It does not cover induced sorting (SA-IS) or library-grade builders.
+- It does not cover Burrows-Wheeler transforms or FM-indexes.
+- It does not cover approximate matching or edit-distance search.
+- All strings here are short ASCII teaching examples.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## How to use this lab
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
+Hand-sort the suffixes of "banana" before running Q1, trace Kasai's h value
+per position for Q2, then count three patterns of your own with Q3's
+bisector. Finish with MINI_PROJECT's repeated-substring finder.
 
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Pitfalls
+
+- Printing LCP values in text order instead of SA order.
+- Searching patterns with one binary bound instead of two.
+- Forgetting the separator when concatenating multiple strings.
+
+## Done when
+
+- You can write the SA of a 6-character string without notes.
+- You can explain why h carries over between Kasai iterations.
+- You can state the O(m log n) query bound and its assumption.
+- You can read longest repeats directly off an LCP array.

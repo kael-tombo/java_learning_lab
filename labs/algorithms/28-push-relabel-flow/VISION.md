@@ -1,48 +1,43 @@
-# VISION — Push-Relabel & Min-Cost Flow
-> Mastery path. Lab `28-push-relabel-flow`.
+# Vision: Push-Relabel Max Flow
 
-## Where this sits
-- Push-Relabel & Min-Cost Flow is one tool in the algorithms arsenal: height labels plus excess flow with saturating/non-saturating pushes.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+## Direction
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(V^3) generic, highest-label faster memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (logistics networks, bipartite assignment, airline scheduling).
+This lab covers flow networks through push-relabel: preflow initialization,
+push and relabel operations, discharge of active nodes, and the O(V^3) bound
+for the generic scheme. The practical skill is running the method on a small
+graph and stating how it differs from augmenting-path methods.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## What to learn
 
-## How to know you are done
-- Explain height labels + excess flow; no residual edge goes downhill without notes; derive O(V^3) generic bound on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+- Preflow: saturate source edges; neighbors hold excess, conservation waits.
+- Heights: source starts at n; push moves excess one level downhill.
+- Relabel: lift a stuck active node above its lowest residual neighbor.
+- Generic bound: O(V^3); gap heuristic and highest-label speed practice.
+- Max-flow min-cut: reachable set in the final residual defines the cut.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Non-coverage
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+- This lab does not cover capacity scaling or costed flows.
+- It does not cover dynamic trees or other advanced implementations.
+- It does not cover multi-commodity flow or NP-hard variants.
+- It does not cover/fix a production network optimizer; graphs are tiny.
+- No invented pivot traces: every number here comes from a verified run.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## How to use this lab
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
+Trace the preflow values from MOCK_INTERVIEW Q3 by hand, run the full
+push-relabel of Q2 against the Edmonds-Karp baseline of Q1, then confirm
+both report 5 on the test graph before starting MINI_PROJECT.
 
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Pitfalls
+
+- Forgetting reverse edges in the residual breaks both methods silently.
+- Reading excess at the source as flow; only the sink excess counts.
+- Relabeling without checking all residual neighbors first.
+
+## Done when
+
+- You can state the preflow invariant and the height rule from memory.
+- You can discharge one active node on paper without notes.
+- You can name the O(V^3) bound and one practical improvement.
+- You can extract the min cut from a residual graph.

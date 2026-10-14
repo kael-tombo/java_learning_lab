@@ -1,48 +1,36 @@
-# REAL_WORLD_PROJECT — HyperLogLog (Cardinality Estimation)
+# Distinct-Visitor Counter on HyperLogLog
 
-Production use-case: **distinct-visitor counter for an analytics pipeline**. Secondary: Redis-PFCOUNT-compatible sketch benchmark.
+Ledger. An analytics pipe counts distinct visitors per day over 50M
+events where exact counting would keep every id in memory. HyperLogLog
+answers in kilobytes with a known error: standard error 1.04/sqrt(m),
+so m = 16384 registers give about 0.81 percent. That formula is the
+contract; everything below tests it.
 
-## 1. Problem statement
-Serve probabilistic distinct counting workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Sketch core. 64-bit hash split into index bits and rank bits (leading
+zeros of the remainder plus one); registers keep maxima; harmonic-mean
+estimate with small-range linear counting and large-range correction.
+Estimate must sit inside the stated error band on 20 seeded trials.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Redis-compatible caller. PFCOUNT-style add/count/merge over daily
+sketches; union of seven dailies must match a fresh sketch over the
+concatenated stream within error. Merge path tested on 10 day-pairs.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Cardinality ladder. Exact HashSet vs sketch at 1k, 100k, 10M distinct:
+relative error recorded per rung, memory recorded per rung (sketch flat
+at 12 KB for m = 16384 while exact grows linearly). The crossover where
+exact stops fitting is computed and stated.
 
-## 4. Metrics to report
+Adversarial notes. Poor hash (sequential ids with weak mixer) built on
+purpose to show bias; duplicate-heavy stream (sketch must not drift);
+single-visitor stream (small-range correction checked); empty sketch
+(zero estimate, specified).
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
-
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/HyperLogLog
-- https://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Hand in. Sketch, daily-merge CLI, ladder table with errors and bytes,
+bias demo, 20-trial error histogram. Marks: error-band agreement 12,
+merge correctness 10, ladder plus adversarial honesty 8.
+## Error diary
+- 20-trial histogram archived.
+- Ladder rerun after hash changes.
+- Bias demo kept runnable.
+- m = 16384 default justified.
+- Daily-merge check in CI.

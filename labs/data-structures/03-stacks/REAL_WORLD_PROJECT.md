@@ -1,50 +1,44 @@
-# REAL_WORLD_PROJECT — Stacks (LIFO) (`03-stacks`)
-> Ship a production-flavored use-case of stacks with metrics. ~6–10 hours.
+# RFC: ArrayStack Service for Undo, Evaluation, and DFS
 
-## Problem statement
-Build a small but honest service/CLI around `ArrayStack` for: call stacks, undo, expression evaluation, DFS frontier.
-Examples: autocomplete API (trie), priority scheduler (heap), ordered index with range scan (BST/balanced tree),
-deduplicating ingest cache (hash), graph route planner (graphs), disk-pre-check layer (bloom), ring buffer pipeline (queue/stack).
+Status: proposed. Scope: one module, no frameworks, CLI plus optional
+loopback HTTP. This note specifies behavior precisely enough that two
+implementations could interoperate on the snapshot format.
 
-## Functional requirements
-1. CLI or HTTP endpoint: `put/get/delete` (or domain equivalent: `schedule/pop`, `insert/suggest`, `add/mightContain`).
-2. Persistence or snapshot: load/save to file (JSON/CSV/serialized); reload preserves correctness.
-3. Config: capacity / threshold / k,m / comparator / seed exposed via flags or properties file.
-4. Observability: log operation latencies (avg/p50/p99), hit/miss or FPR estimate, resize/rotation counts, memory.
-5. Correctness: oracle cross-check on a sample workload (vs `HashMap`/`TreeMap`/`PriorityQueue` as appropriate).
+Background. The lab needs a LIFO core shared by three callers: an editor
+undo stack, a bracket/expression evaluator, and an explicit DFS frontier
+for graph search. One ArrayStack backs all three behind a narrow push /
+peek / pop / depth interface with a fixed ceiling.
 
-## Non-functional targets (measure and report)
-| Metric | Target (toy-prod) | How to measure |
-|---|---|---|
-| Throughput | ≥10k ops/s single-thread on 100k dataset | benchmark harness, warmup, 5 runs median |
-| p99 latency | <1 ms point op on laptop | HDR-ish histogram or sorted samples |
-| Memory | report bytes/elem (Runtime/JOL) | before/after load snapshot |
-| Correctness | 0 mismatches vs oracle on 10k random ops | oracle test log |
-| Resilience | graceful empty/full/degraded (incl. bloom FPR) behavior | chaos script: empty, dup flood, adversarial order |
+Requests and replies. The CLI accepts push, pop, peek, depth, clear, and
+save/load verbs; the evaluator accepts a single expression string and
+returns either a value or the position of the first mismatch. DFS accepts
+an adjacency file plus a start node and streams visit order to stdout.
 
-## Architecture sketch
-```
-client -> Service (ArrayStack + policy) -> snapshot file
-              |-> metrics log (CSV: op, nanos, size, aux)
-              |-> oracle checker (sampled, off-path)
-```
-Keep it single-module; no frameworks required (`com.sun.net.httpserver` or plain CLI is fine).
+Capacity policy. The stack is bounded (default 64k frames). Push past the
+ceiling rejects with a diagnostic naming the caller and current depth;
+the evaluator maps that to a depth-exceeded error at the offending token.
 
-## Milestones
-1. Slice 1 (2h): domain model + `ArrayStack` wired, CLI works on tiny fixture.
-2. Slice 2 (2–3h): persistence + config + edge handling (empty/dup/null/adversarial).
-3. Slice 3 (2–3h): metrics + benchmark script + chart.
-4. Hardening (1–2h): oracle test, chaos script, 1-page ops note (deploy, monitor, rollback).
+Correctness contract. Pop on empty, peek on empty, and unbalanced input
+are specified errors with stable messages. Evaluator results must match
+a recursive reference on 5k generated expressions. DFS preorder must
+match the recursive oracle on 200 generated graphs.
 
-## Deliverables
-- `src/` implementation + `README` run instructions (java version, commands).
-- `metrics.csv` + chart + 1-page report (targets vs actuals, bottleneck, next scaling step).
-- Postmortem: one real bug found via oracle/chaos, invariant violated, fix.
+Durability. Save writes depth plus frames oldest-first as CSV; load
+rejects truncated files and restores exact depth. Undo history persists
+only when the caller opts in, so crash recovery never resurrects stale
+edits by surprise.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Oracle Java docs — `ArrayStack` counterpart guarantees: https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html
-- Reference survey / encyclopedia entry for stacks: https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
-Verify version-specific behavior against your JDK (run `java -version`) before citing numbers.
+Observability. Each run appends op, depth-after, and nanos to a local
+CSV. The report quotes push/pop cost, max depth seen, evaluator mismatch
+rate (target zero), and DFS divergence count (target zero).
 
-## Evaluation
-- Works end-to-end from cold start (3 pts) · Metrics honest + reproducible (3) · Edge/chaos handled (2) · Report + postmortem depth (2). Ship ≥7/10.
+Rejected alternatives. Unbounded growth was rejected because undo memory
+then tracks session length. Linked nodes were rejected for the evaluator
+hot loop after measuring pointer-chase cost against the array version.
+
+Acceptance. Cold-start demo runs undo, one evaluation, and one DFS from
+flags alone. Oracle logs attached. Chaos script covers empty pop, full
+push, truncated snapshot, and adversarial nesting (10k deep brackets).
+
+Judgment. Contract coverage across the three callers: 12. Oracle parity
+plus snapshot round-trip: 10. Depth policy and chaos behavior: 8.

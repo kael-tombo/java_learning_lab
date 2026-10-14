@@ -1,83 +1,37 @@
 # MINI_PROJECT — Graph Algorithms Deep Track
-> Implement + benchmark + visualize. Track `graph-algorithms-deep`.
+> Core-plus-advanced graph kit: shortest paths (Dijkstra/Bellman-Ford/Floyd), SCC, bridges/articulation, LCA, and max flow with cross-verified oracles.
 
-## Goal
-- Build a runnable Java CLI that runs MST + Dijkstra + Dinic + matching on graphs to V=50k; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Fixed 6-node weighted graph (documented in code) with a negative edge but no negative cycle; disconnected pair for component tests.
+- Random graphs (n = 100/1k, fixed seeds) for timing; small flow network with known max flow 23-style reference (state the exact reference value in code from your hand computation).
 
-## Spec
-1. `lab.graph_algorithms_deep.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving settled/residual/matching invariants.
+## Build steps
+1. Implement Dijkstra (binary heap, O(E log V)) and Bellman-Ford (O(VE)); assert agreement on non-negative instances, Bellman-Ford alone on the negative edge.
+2. Implement Floyd-Warshall O(V^3) with path reconstruction on the fixed graph; cross-check all-pairs against repeated Dijkstra.
+3. Implement Tarjan SCC (or Kosaraju, labeled) plus bridges/articulation via discovery/low times; verify on the fixed graph by hand-counted components.
+4. Implement LCA by binary lifting; verify 200 queries against naive climbing.
+5. Implement Edmonds-Karp (O(VE^2)) max flow; verify the reference value and min-cut edge set.
 
-## Starter code
-```java
-package lab.graph_algorithms_deep;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Dijkstra/Bellman-Ford agreement test passes on all non-negative instances; negative-edge instance solved by Bellman-Ford with distances hand-verified.
+2. Floyd all-pairs matches repeated Dijkstra on the fixed graph with one reconstructed path shown.
+3. SCC/bridge/articulation outputs match hand counts recorded in the test file.
+4. LCA agrees with naive climbing on all 200 queries.
+5. Max-flow value matches the hand-computed reference with the min cut listed.
+6. Timing table (100/1k) from real runs with machine/JDK noted; heap-vs-array Dijkstra choice justified from the numbers.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Where does Bellman-Ford's extra cost show, and what does it buy (negative edges + cycle detection)?
+2. Which fixed-graph vertex is an articulation point, and which edge is a bridge — why?
+3. How does Edmonds-Karp time scale from your two sizes, and what would Dinic change?
 
-## Visualization
-- For n<=16 print dist labels / levels / match pairs.
-- Example (ASCII): `dist=[0 4 7] match={0-1} flow=12 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Dinic/push-relabel implementations (see 28-push-relabel-flow), dynamic graph algorithms, and geometric graphs.
+
+## Hand-verified anchors
+- Fixed-graph distances hand-verified, including the negative edge that only Bellman-Ford may touch.
+- Articulation points, bridges, SCC count, and max-flow value with min cut all recorded from hand computation first.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating layered/dense worst-cases.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches theory.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Implement Dinic with level graphs and compare flow time against Edmonds-Karp on a layered network.
+- Add Johnson's algorithm (reweight + Dijkstra) and verify all-pairs against Floyd on the negative-edge graph.

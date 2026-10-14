@@ -1,83 +1,37 @@
 # MINI_PROJECT — Bloom Filter Variants
-> Implement + benchmark + visualize. Lab `36-bloom-filter-variants`.
+> Build plain, counting, and sized Bloom filters plus an empirical-vs-formula FPR report.
 
-## Goal
-- Build a runnable Java CLI that implements classic/counting/cuckoo filters over up to n=1M keys with measured FPR; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Word list file (one token per line, e.g. 10k dictionary words) and a disjoint query file of 5k absent words.
+- Parameters m (bits), k (hashes); reference point m=1000, n=100, k=7 with FPR ~0.008194 and k_opt 6.93.
 
-## Spec
-1. `lab.36_bloom_filter_variants.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving no-false-negatives + FPR formula.
+## Build steps
+1. Implement plain Bloom with double hashing; verify member queries true and count false positives on the absent file.
+2. Compute the theoretical FPR (1 - e^(-kn/m))^k and k_opt = (m/n) ln 2; print beside the measured rate.
+3. Implement counting Bloom (byte counters); demonstrate insert/delete/query with the lab a/b sequence.
+4. Sweep k in {3, 5, 7, 10} at fixed m/n and table measured vs theoretical FPR.
+5. Document when to pick counting (deletes needed), cuckoo (deletes plus lower space at low FPR), quotient (cache-friendly local table) in one paragraph each.
 
-## Starter code
-```java
-package lab.36_bloom_filter_variants;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Plain filter reports zero false negatives on all inserted words.
+2. Reference point prints fpr=0.008194 and k_opt=6.93.
+3. Counting demo reproduces a=false b=true after delete (lab sequence).
+4. Sweep table has 4 rows of (k, measured, theoretical) from real runs.
+5. Variant-choice paragraph covers all three alternatives with a distinct selection reason each.
+6. Hash seeds are fixed and documented so the measured rates reproduce exactly.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Where does measured FPR deviate most from theory across the sweep, and why?
+2. What saturates first as n grows past design capacity: memory or the FPR budget?
+3. How many bits per counter does your counting variant need before overflow risk?
 
-## Visualization
-- For n<=16 print bitset / hashes per key / measured FPR.
-- Example (ASCII): `bits=001011 FPR=0.021 theory=0.019 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Cuckoo/quotient implementations (specified, not built), scalable auto-growing filters, and adversarial-hash analysis.
+
+## Worked reference (verified outputs)
+- Reference point m=1000, n=100, k=7 prints fpr=0.008194 with k_opt=6.93; the sweep must bottom out near k=7.
+- Counting demo prints a=false b=true after the delete; plain filter reports zero false negatives on members.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating hash-collision worst-case.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches O(k) theory.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Build a minimal cuckoo filter (2 buckets, kick-out cap) and compare measured FPR at equal bytes.
+- Add a saturation experiment: grow n to 5x design and plot measured FPR against theory.

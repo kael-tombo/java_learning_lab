@@ -1,83 +1,37 @@
 # MINI_PROJECT — Advanced Number Theory
-> Implement + benchmark + visualize. Lab `39-number-theory-advanced`.
+> Build a classical primality-and-factoring bench: binary modPow, fixed-base Miller-Rabin, and Pollard Rho, with every verdict checkable.
 
-## Goal
-- Build a runnable Java CLI that runs Miller-Rabin primality plus Pollard Rho factoring plus CRT combine on 64-bit ints; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Integer list file; must include 17, 561, 2047, 7919, and 8051.
+- Bases fixed to {2, 7, 61} for all Miller-Rabin runs (documented as the run's stated scope: correct over the 32-bit range).
 
-## Spec
-1. `lab.39_number_theory_advanced.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving witness loops + Rho cycle detection.
+## Build steps
+1. Implement binary modular exponentiation on long; verify powmod(3,200,1000)=1 and 2^16=1 mod 17.
+2. Demonstrate the Fermat gap: 2^340=1 mod 341 with 341=11x31, one line of commentary on why Fermat alone misleads.
+3. Implement Miller-Rabin with the fixed bases; verify 17=PRIME, 561=COMPOSITE, 2047=COMPOSITE, 7919=PRIME.
+4. Implement Pollard Rho (f(x)=x^2+1, Floyd) with trial division by small primes first; verify 8051=97x83.
+5. Emit one verdict line per input (`n=... verdict=... witness_or_factor=...`) and a scope note stating the base set and range.
 
-## Starter code
-```java
-package lab.39_number_theory_advanced;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. modPow outputs match 1, true/true exactly as in the lab snippet.
+2. Miller-Rabin verdicts match all four reference classifications.
+3. Pollard Rho prints factor=97 cofactor=83 for 8051; trial division comes first in code order.
+4. 341 is shown factored (11x31) next to its pseudoprime equation, never presented as prime.
+5. Scope note states the {2,7,61} bases and the 32-bit range limit explicitly.
+6. Multiplication overflow guard (long intermediates, non-negative mod) is covered by a comment plus one edge test at the int boundary.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Why does 561 fool base 2 Fermat but fall to Miller-Rabin? Trace the witness chain.
+2. What input shape makes Pollard Rho return d=n, and what is the exact restart rule?
+3. Where does trial division stop and Rho take over in your pipeline, and why there?
 
-## Visualization
-- For n<=16 print witnesses / Rho tortoise-hare / CRT residues.
-- Example (ASCII): `witnesses=[2 3 5] rho-gcd=7 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Proof of the deterministic base set, ECM/quadratic sieve, and any production-crypto certification claim.
+
+## Worked reference (verified outputs)
+- modPow prints powmod(3,200,1000)=1 with fermat_ok=true pseudo341=true; 341 shown factored as 11x31 beside it.
+- Miller-Rabin prints 17=PRIME, 561=COMPOSITE, 2047=COMPOSITE, 7919=PRIME; Rho prints factor=97 cofactor=83.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating prime-gap / Carmichael worst-case.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches polylog theory.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add perfect-power precheck before Rho and demonstrate it on 3^8 = 6561.
+- Add a round-count policy for inputs above 32 bits with the count logged per verdict.

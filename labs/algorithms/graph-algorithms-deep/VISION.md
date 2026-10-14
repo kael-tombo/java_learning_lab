@@ -1,48 +1,42 @@
 # VISION — Graph Algorithms Deep Track
-> Mastery path. Track `graph-algorithms-deep`.
+> Direction: from BFS/DFS fluency to the full toolkit — paths, components, ancestors, cuts — each with its oracle.
 
 ## Where this sits
-- Graphs power networks, schedules, assignments: MST, paths, flows, matchings, orders.
-- Master it and neighboring tracks get 2× easier (shared invariants + proof templates).
+- Shortest paths: Dijkstra O(E log V) for non-negative, Bellman-Ford O(VE) with negatives and cycle detection, Floyd O(V^3) all-pairs, DAG O(V+E).
+- Structure: SCC (Tarjan/Kosaraju), bridges/articulation (discovery/low), LCA (binary lifting O(log n) queries).
+- Flow: Ford-Fulkerson idea, Edmonds-Karp O(VE^2), Dinic and push-relabel for scale (see lab 28).
+- MST material lives in 38-mst-variants; this track consumes it, not rebuild it.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; Dijkstra/MST/flow bounds memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (routing, logistics, timetabling).
+## 4-week direction
+- Week 1: hand-run Dijkstra, Bellman-Ford, and lowlink on the fixed graph until all outputs are reproducible cold.
+- Week 2: finish MINI_PROJECT; cross-verify every method against its oracle (repeated Dijkstra, naive climbing, hand counts).
+- Week 3: break each method once (negative edge into Dijkstra, disconnected LCA query, oversized flow) and record the honest behavior.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard discovery/low timing in 10 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- State each method's bound plus the input condition it requires (non-negative, DAG, size).
+- Run lowlink by hand on a fresh small graph and name bridges correctly.
+- Choose Dijkstra vs Bellman-Ford vs Floyd vs DAG-shortest for a given (graph, query) pair.
 
-## How to know you are done
-- Explain settled-labels + residual duality without notes; derive O(E log V) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This track does not implement Dinic or push-relabel (used via labeled paths, built in lab 28).
+- No dynamic/connectivity-offline algorithms beyond naming (sqrt decomposition, divide-and-conquer offline).
+- Geometric and planar specializations are out of scope.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Pitfalls
+- Running Dijkstra on negative edges and trusting the output.
+- Quoting flow values without the min cut that certifies them.
+- Forgetting version pins on snapshots and hierarchies that queries depend on.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Adjacent tracks
+- Pair with 38-mst-variants for cut thinking and 28-push-relabel-flow for flow at scale.
+- Revisit after any network incident; the discovery/low and min-cut checklists are the postmortem.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## Weekly drills
+- Run discovery/lowlink on a fresh 6-node graph and name bridges correctly.
+- Restate Dijkstra's precondition and show the negative-edge counterexample.
+- Write Edmonds-Karp's bound from the shortest-augmenting-path argument.
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not run Dijkstra where Bellman-Ford is required; check edge signs first.
+- Do not quote flow without the certifying cut.

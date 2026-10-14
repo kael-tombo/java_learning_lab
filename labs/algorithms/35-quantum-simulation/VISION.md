@@ -1,48 +1,41 @@
-# VISION — Quantum Algorithm Simulation
-> Mastery path. Lab `35-quantum-simulation`.
+# VISION — Classical Simulation of Quantum Circuits
+> Direction: from mystique to bookkeeping — a simulator is a 2^n-vector machine, and the wall is memory, not cleverness.
 
 ## Where this sits
-- Quantum Algorithm Simulation is one tool in the algorithms arsenal: state-vectors plus unitary gates with amplitude invariants.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+- Classical state-vector simulation stores 2^n complex amplitudes and applies unitaries by direct update: exact, general, and memory-walled near a few dozen qubits.
+- Around it: stabilizer simulation (Clifford circuits in polynomial time), tensor networks (good for shallow/local circuits), and hardware execution, which this track does not cover.
+- The durable lesson is cost accounting: bytes per amplitude times 2^n, before any gate runs.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(2^n) classical simulation cost memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (quantum chemistry prototyping, QAOA research, cryptography impact analysis).
+## 4-week direction
+- Week 1: hand-apply H to |0> and H+CNOT to |00>; reproduce both lab outputs on paper.
+- Week 2: finish MINI_PROJECT; memorize the byte table for n = 10/20/30/40.
+- Week 3: add one gate (e.g. Z or CZ) and one 3-qubit check (GHZ probabilities 0.5/0.../0.5).
+- Week 4: REAL_WORLD_PROJECT review; whiteboard the doubling argument in 5 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Explain unitarity as norm preservation with the Q1 numbers.
+- Explain entanglement operationally: Bell outcomes correlate, single-qubit factors do not exist for it.
+- Quote the memory figure for any n up to 60 from the doubling rule.
 
-## How to know you are done
-- Explain unitarity + measurement collapse; norm-preservation without notes; derive O(2^n) simulation cost on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This lab makes no claims about quantum hardware speed, advantage, roadmaps, or vendors.
+- No noise modeling, error correction, or variational algorithms beyond naming them as separate tracks.
+- Grover and QFT appear only as named circuits students may simulate at small n; no query-complexity proofs here.
+
+## Pitfalls
+- Presenting simulator timings as statements about quantum devices; they are statements about classical memory.
+- Forgetting the 16-bytes-per-amplitude constant when estimating (complex = 2 doubles).
+- Sampling without a recorded seed and calling the histogram a result.
 
 ## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+- Pair with 32-exact-exponential for exponential-cost budgeting discipline and 33-matrix-algorithms for the unitary-as-matrix mechanics.
+- Revisit before simulating anything above 25 qubits; the estimator gate comes first.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Weekly drills
+- Recompute the byte figure for n = 25 and n = 35 from the doubling rule.
+- Re-derive Bell probabilities from H then CNOT on paper in under 5 minutes.
+- Recite the classical-simulation-only scope sentence before demoing any result.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not let simulator numbers appear in any sentence about quantum devices.
+- Do not allocate before estimating; the estimator runs first by policy, not habit.

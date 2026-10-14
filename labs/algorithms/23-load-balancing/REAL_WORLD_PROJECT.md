@@ -1,85 +1,41 @@
-# REAL_WORLD_PROJECT — Load Balancing Algorithms
-> Production use-case with metrics + prevention. Lab `23-load-balancing`.
+# Real-World Project: Shard Assignment Evaluator
 
-## Use-case: nginx/HAProxy, cloud autoscaling, sharding
-- System: backend service handling large inputs where Load Balancing Algorithms is on the hot path.
-- Why this algorithm: distribution of work across servers gives O(1)/O(log n) routing; 2-choice max load log log n which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Load Balancing Algorithms) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A key-value service with 6 shards must add 2 more without reshuffling most
+keys. Build an evaluator that compares consistent hashing, rendezvous
+hashing, and modulo hashing on remap fraction and load balance.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `keys.txt`: one routing key per line (at least 5,000 keys).
+- `pool_before.txt`: one server name per line (6 names).
+- `pool_after.txt`: one server name per line (8 names, a superset).
+- Virtual-node count passed as a program argument.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
+## Steps
 
-## Cost note
-- Optimized variant (O(1)/O(log n) routing; 2-choice max load log log n) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Load keys and both pool files; reject empty pools or key sets.
+2. Implement modulo hashing as the baseline (hash key, mod pool size).
+3. Implement consistent hashing with the given virtual-node count.
+4. Implement rendezvous hashing with the documented weight function.
+5. Assign all keys under before and after pools for each method.
+6. Compute remap fraction and max-to-mean load ratio per method.
+7. Emit `evaluation.csv` with rows (method, remapped, ratio_before, ratio_after).
+8. Write a one-page recommendation naming the method and virtual-node count.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Modulo hashing remaps substantially more keys than the ring method.
+2. Ring remap fraction is within 10 points of the ideal 2/8 for uniform keys.
+3. Max-to-mean ratio is reported for every method on both pools.
+4. Rendezvous and ring agree that only a minority of keys move.
+5. Empty input files exit with a message instead of an exception trace.
+6. `evaluation.csv` contains all three methods with four numeric columns.
+7. All output uses plain ASCII characters.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+- Plain Java only, no external libraries; deterministic hash function.
+- Single-threaded run; 5,000 keys must finish in under 10 seconds.
+- Recommendation must cite measured numbers, not general claims.

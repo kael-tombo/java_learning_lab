@@ -1,45 +1,37 @@
-# REAL_WORLD_PROJECT — Queue & Stack Deep
+# Worker Pool and Gateway: Queues and Stacks at Depth
 
-Production use-case: **worker pool service** with a bounded priority queue and overflow policy. Secondary: a request-FIFO API gateway.
+Two services, one discipline. A worker pool drains a bounded priority
+queue with an overflow policy; an API gateway meters requests through a
+FIFO with rate limits; a stack-based validator screens payload syntax.
+Depth here means the failure behavior is specified before the code.
 
-## 1. Problem statement
-Serve submit/poll with p99 SLOs and bounded memory; handle backpressure.
+Pool lane. Priority queue (heap) with 4 workers, capacity 50k jobs,
+drop-oldest policy behind a flag (alternatives: block, drop-newest).
+Flood drill at 5x submit rate reconciles submitted = done + dropped +
+held, with per-priority completion counts proving starvation freedom.
 
-## 2. Architecture
-- Ingest: producers.
-- Core: bounded blocking queue + priority queue back-end.
-- Serve: submit API + metrics.
-- Persist: WAL or in-memory only.
+Gateway lane. FIFO with token-bucket admission; over-limit requests get
+429-style refusals counted separately from queue drops. Burst script
+(10x for 30 s) must show refusal counts matching the bucket math.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariants + property tests.
-W2: API + metrics + JMH + runbook + deploy notes.
+Validator lane. Bracket/expression screen over payloads with mismatch
+offsets; invalid jobs quarantine with the offset attached. Fuzzed with
+10k generated expressions against a recursive oracle.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 poll latency | SLO | JMH |
-| Throughput | ops/s | load gen |
-| Bounded memory | ≤ capacity | JOL |
-| Overflow policy | counted | metrics |
-| Recovery | < 5 s | restart drill |
+Depth probes. Worker death mid-batch (lease redelivery), gateway burst
+plus pool flood simultaneously (isolation: gateway SLO holds), snapshot
+reload of pending jobs (order preserved), stack depth attack (10k
+nesting rejected at the ceiling).
 
-## 5. Risks & prevention
-- Priority queue dies if you add blocking: use PriorityBlockingQueue only when unbounded is acceptable; else drive a bound from a counter.
-- Deadlock on unbounded blocking: set a capacity bound.
-- Iterator surprises: only use poll for order.
-
-## 6. Runbook
-- Alert on p99 and overflow count.
-- Rollback flag to FIFO ArrayBlockingQueue.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayDeque.html
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/PriorityQueue.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo + JMH + runbook.
-
-## 8. Grading rubric
-- Correctness 30 / Perf 30 / Operability 20 / Writeup 20.
+Pack. Both services, drill logs, reconciliation sheets, isolation note.
+Bar: reconciliation exactness 12, policy behavior under flood 10,
+isolation plus validator parity 8.
+## Depth extras
+- Flood reconciliation sheet kept.
+- Bucket math verified.
+- Validator oracle log green.
+- Lease redelivery tested.
+- Isolation drill quarterly.
+- Snapshot order proven.
+- Policy flag documented.
+- Starvation counts posted.

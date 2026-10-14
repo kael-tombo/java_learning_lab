@@ -1,83 +1,42 @@
-# MINI_PROJECT — Bit Manipulation (Advanced Tricks)
-> Implement + benchmark + visualize. Lab `26-bit-manipulation`.
+# Mini-Project: Flag Register
 
 ## Goal
-- Build a runnable Java CLI that solves parallel bit deposit/extract; DP over subsets O(3^n)/O(n2^n), benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
 
-## Spec
-1. `lab.26_bit_manipulation.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving subset iteration invariant (sub = (sub-1)&mask).
+Model an 8-bit device register with named bits and drive it through a fixed
+set-bit, clear-bit, toggle-bit, and test-bit script with printed state.
 
-## Starter code
-```java
-package lab.26_bit_manipulation;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Inputs
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+- Bits: 0 power, 1 ready, 2 error, 3 mode0, 4 mode1; bits 5-7 reserved zero.
+- Script: set power, set ready, set mode1, toggle ready, clear power.
 
-## Visualization
-- For n<=16 print DP row / window [l,r) / decision path.
-- Example (ASCII): `l=2 r=7 window=[4 1 5] best=3 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Steps
+
+1. Store the register as a single int masked to 8 bits after every op.
+2. Implement set, clear, toggle, and test using masks and shifts only.
+3. Run the 5-step script, printing the binary string after each step.
+4. Assert the final value equals bit 2 unset, mode1 set, rest as expected.
+5. Add popcount of the final register and print it.
+6. Attempt to set reserved bit 7; show the mask rejects it with a message.
+7. Print the mode field (bits 4-3) decoded as an integer 0-3.
+
+## Acceptance criteria
+
+1. Binary trace shows 5 states, each exactly 8 characters of 0/1.
+2. Final register value is 00010000 (decimal 16).
+3. Popcount of the final register prints 1.
+4. Reserved-bit write rejected with a message, register unchanged.
+5. Mode field decodes to 2 for the final state.
+6. No boolean array or string parsing used for bit storage.
+7. All output uses plain ASCII characters.
+
+## Grading note
+
+- Binary trace of 5 states, each exactly 8 characters, required.
+- Final 00010000 with mode field 2 and popcount 1.
+- Reserved-bit write must leave the register unchanged.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for popcount O(1) HW; subset DP O(n 2^n).
 
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches popcount O(1) HW; subset DP O(n 2^n).
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add an interrupt mask register and show combined pending calculation.
+- Decode the full register into a one-line status summary.

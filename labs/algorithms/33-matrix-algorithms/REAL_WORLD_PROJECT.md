@@ -1,88 +1,42 @@
 # REAL_WORLD_PROJECT — Matrix Algorithms
-> Production use-case with metrics + prevention. Lab `33-matrix-algorithms`.
+> Nightly feature-cross batch: blocked dense multiplication with tiled memory use, checksums, and a size guard.
 
-## Use-case: graphics transforms, ML training kernels, scientific simulation
-- System: backend service handling large inputs where Matrix Algorithms is on the hot path.
-- Why this algorithm: block decomposition plus Strassen recursion gives O(n^2.81) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Feature matrices (samples x features, up to 20k x 2k) land in object storage nightly; job computes the Gram matrix for the downstream trainer.
+- Job config sets tile size (default 256) and a max-n guard derived from worker memory.
+- Golden 3x3/2x2 pairs run as a preflight correctness gate before the big multiply.
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Matrix Algorithms) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Blocked (tiled) ijk multiply: tiles stream through L2-sized blocks; B tiles transposed once per job.
+- FLOP estimate 2n^3 quoted in the run log for capacity planning; wall time recorded per tile row for skew detection.
+- Checksum: row-sum invariant checked per output block against input row/column sums.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Job wall time and per-tile-row skew (max/mean) with alerts on 2x skew.
+- Checksum mismatch count (any nonzero pages immediately).
+- Memory high-water mark vs the max-n guard.
+- Preflight gate pass/fail (blocks the big job on failure).
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Input exceeding max-n: guard rejects before allocation with the byte estimate in the error.
+- Skewed tile rows (ragged last block): remainder tiles sized explicitly, never assumed uniform.
+- Silent corruption: checksum mismatch quarantines the output block and retries once, then fails the job.
+- NaN in features: pre-scan rejects the input with column index in the message.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Numerical instability (Strassen) | error drift | norm check + fallback to blocked naive |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Non-square/padded shape bug | wrong dims | shape guard + golden tests |
+## Rollout
+1. Run beside the existing pipeline on 7 nights of history; compare Gram outputs exactly.
+2. Cut over one model family; watch skew and memory dashboards.
+3. Expand tile tuning (128/256/512) from measured nights, not defaults.
 
-## Cost note
-- Optimized variant (blocked + Strassen crossover, O(n^2.81)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. Preflight gate reproduces the lab 3x3 product and the Strassen 2x2 check before every big run.
+2. Oversize input is rejected with a byte estimate, verified by a test submitting n = guard + 1.
+3. Checksum catches a deliberately flipped output block in a chaos test.
+4. Tile-skew dashboard shows max/mean per job run.
+5. Rollback is the previous job definition version, runnable in one command.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/ (MIT 6.006 — divide and conquer incl. matrix multiply)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ForkJoinPool.html (Java ForkJoinPool — parallel block multiply)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Model weights may be proprietary; protect artifacts + access logs.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| GFLOPS achieved | counter | compare vs roofline |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Dense n×n doubles ≈ 8n² bytes per matrix; cap sync n.
+## Cost and contract notes
+- Capacity plan from 2n^3 FLOPs per Gram job; worker count derived from the previous week's median wall time plus 30 percent headroom.
+- Preflight gate (lab 3x3 + Strassen 2x2) runs as a blocking CI step on the job image; failure blocks the nightly schedule.
+- Output blocks carry row-sum checksums in sidecar files retained 30 days for rerun disputes.
+- Contract: job manifest declares (n, tile, max-n guard); the scheduler rejects manifests above guard with the byte math attached.

@@ -1,176 +1,76 @@
-# Mock Interview: Scheduling Algorithms — FCFS, SJF, Round Robin, EDF
+# Mock Interview: Scheduling Algorithms
 
-## Interview Details
-- **Topic**: Scheduling Algorithms
-- **Difficulty Range**: Medium to Hard
-- **Total Time**: 45 minutes
-- **Interviewer**: Senior Software Engineer at Amazon
-- **Candidate**: Senior Software Engineer (6 years experience)
+## Q1: Select the maximum set of non-overlapping intervals
 
----
+Key insight: sort by finish time and take each job starting after the last accepted end; earliest finish leaves the most room, optimal by exchange.
+Complexity: O(n log n) time for the sort, O(n) space; sorting by start time instead fails on one-long-versus-many-short inputs.
 
-## Question 1: Task Scheduler (LC 621)
+```java
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+public class IntervalSchedulingDemo {
+    public static void main(String[] a) {
+        int[][] jobs = {{1, 4}, {3, 5}, {0, 6}, {5, 7}, {8, 9}, {5, 9}};
+        Arrays.sort(jobs, Comparator.comparingInt(j -> j[1])); // earliest finish first
+        List<String> picks = new ArrayList<>();
+        int lastEnd = -1;
+        for (int[] j : jobs) if (j[0] >= lastEnd) { picks.add("[" + j[0] + "," + j[1] + "]"); lastEnd = j[1]; }
+        System.out.println(picks + " count=" + picks.size());
+    }
+}
+```
 
-**Difficulty**: Medium
-**Company Frequency**: Meta, Amazon
-**Time Allotted**: 15 minutes
+Output:
 
-**Interviewer**: "Let us start with Task Scheduler (LC 621). Explain your approach and consider the trade-offs."
+```text
+[[1,4], [5,7], [8,9]] count=3
+```
 
-**Candidate**: "I will start by discussing the brute force solution. The naive approach has O(n^2) time complexity because we check every pair or permutation. However, this problem has characteristics that allow significant optimization."
+## Q2: Test EDF feasibility for periodic tasks
 
-**Interviewer**: "What algorithm paradigm do you think applies here?"
+Key insight: with period equal to deadline, earliest-deadline-first on one processor meets all deadlines exactly when total utilization is at most 1.
+Complexity: O(n) time, O(1) space; fixed-priority rate-monotonic has a stricter bound and can fail sets EDF passes.
 
-**Candidate**: "This problem fits the Scheduling Algorithms paradigm. The key insight is that we can leverage the specific properties of this approach to reduce the complexity. Instead of checking all possibilities, we can use a systematic method that builds up the solution incrementally."
+```java
+public class EdfDemo {
+    public static void main(String[] a) {
+        int[] c = {1, 2, 2}, p = {4, 6, 8}; // execution times, periods (= deadlines)
+        double u = 0;
+        for (int i = 0; i < c.length; i++) u += (double) c[i] / p[i];
+        System.out.println("util=" + u + " feasible=" + (u <= 1.0));
+    }
+}
+```
 
-**Interviewer**: "Walk me through the optimal solution."
+Output:
 
-**Candidate**: "I will implement the algorithm with these steps. First, I handle the base cases. Then I process the input using the core algorithmic technique. I maintain necessary state variables and update them appropriately. The key decision point is how we transition between states. At the end, I return the computed result."
+```text
+util=0.8333333333333333 feasible=true
+```
 
-**Interviewer**: "What is the time and space complexity?"
+## Q3: Greedily balance jobs across identical machines
 
-**Candidate**: "The time complexity is O(n log n) for the sorting-based preprocessing plus O(n) for the main algorithm, giving O(n log n) total. Space complexity is O(n) for the auxiliary data structures. This is optimal because we must sort the input, and comparison-based sorting has a lower bound of omega(n log n)."
+Key insight: place each job on the least-loaded machine; never worse than 2 - 1/m times optimal makespan on m machines.
+Complexity: O(n m) scan form, O(n log m) with a heap; total work and longest job both lower-bound the optimum.
 
-**Interviewer**: "What edge cases should we test?"
+```java
+import java.util.Arrays;
+public class ListSchedulingDemo {
+    public static void main(String[] a) {
+        int[] jobs = {5, 4, 4, 3, 3, 2}, load = {0, 0}; // 2 identical machines
+        for (int j : jobs) {
+            int pick = load[1] < load[0] ? 1 : 0; // least-loaded machine
+            load[pick] += j;
+        }
+        System.out.println("loads=" + Arrays.toString(load) + " makespan=" + Math.max(load[0], load[1]));
+    }
+}
+```
 
-**Candidate**: "We should test: empty input returning a default, single element, all identical values, large values causing overflow, and values at boundary conditions. I will make sure the algorithm handles each of these gracefully."
+Output:
 
-**Time Taken**: 13 minutes
-**What Went Well**: 
-- Clear communication of algorithmic trade-offs
-- Good recognition of the correct paradigm
-- Proactive complexity analysis
-**Could Improve**: 
-- Should ask about input size before optimizing
-- Could mention alternative algorithm paradigms considered
-
----
-
-## Question 2: CPU Scheduling Simulation
-
-**Difficulty**: Hard
-**Company Frequency**: Oracle, Microsoft
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Next problem: CPU Scheduling Simulation. This is a more challenging algorithmic problem."
-
-**Candidate**: "Let me restate the problem to ensure I understand correctly. We are looking for... I see this as an extension of the previous pattern but with additional constraints."
-
-**Interviewer**: "What makes this different from the first problem?"
-
-**Candidate**: "The main difference is that this problem requires handling more complex state transitions. The state space is larger, so we need to be more careful about how we represent and update the state. A direct adaptation of the previous approach would be too slow."
-
-**Interviewer**: "How do you propose to solve it?"
-
-**Candidate**: "I will use the same algorithmic paradigm but with additional optimizations. Specifically, I can reduce the state space by noting that certain states are equivalent. This is a form of state compression. Alternatively, I can use a different variation of the algorithm that handles the specific constraints better."
-
-**Interviewer**: "Explain the implementation details."
-
-**Candidate**: "I initialize the data structures with appropriate initial values. Then I iterate through the input, applying the algorithm specific transitions. At each step, I check for early termination conditions. The core logic involves updating state based on the current input and previous state. Finally, I extract the answer from the state."
-
-**Interviewer**: "What is the complexity and can you prove optimality?"
-
-**Candidate**: "Time complexity is O(n) where n is the input size. Space is O(n) because we need to store the state for all elements. This is optimal because we must examine each input element at least once. A lower bound argument: any algorithm must read all the input, so omega(n) is a lower bound. Our algorithm achieves this bound."
-
-**Time Taken**: 14 minutes
-**What Went Well**: 
-- Correctly identified the harder variant characteristics
-- Good state compression thinking
-- Strong lower bound justification
-**Could Improve**: 
-- Could describe the state transition more precisely
-- Should mention space optimization possibilities
-
----
-
-## Question 3: Earliest Deadline First Scheduler
-
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Final problem: Earliest Deadline First Scheduler. This is a hard algorithm problem that appears frequently in our interviews."
-
-**Candidate**: "This is a significantly harder problem. Let me think carefully. The brute force approach would be O(2^n) or worse, which is infeasible for large inputs. I need to use the advanced algorithmic paradigm effectively."
-
-**Interviewer**: "What is your approach strategy?"
-
-**Candidate**: "I will combine multiple algorithmic techniques. The problem has overlapping subproblems suggesting DP, but also has a structure that allows greedy choices in certain cases. I need to carefully analyze the properties to determine which approach to use."
-
-**Interviewer**: "How do you decide between the different approaches?"
-
-**Candidate**: "I compare the trade-offs. A pure greedy approach would be O(n log n) but might fail for some edge cases. A DP approach would be O(n^2) and always correct. A divide-and-conquer approach would be O(n log n) with more complex merge logic. Given the constraints in the problem, I believe the DP approach is most appropriate because it guarantees correctness and the quadratic time is acceptable for the expected input size."
-
-**Interviewer**: "Explain the DP state definition."
-
-**Candidate**: "The state dp[i] represents the optimal solution for the subproblem up to i. The recurrence is dp[i] = min/max over valid transitions from previous states. The base cases are initialized first, then we fill the DP table in increasing order of i. The final answer is at dp[n]."
-
-**Interviewer**: "Can you optimize space?"
-
-**Candidate**: "Yes, if the recurrence only depends on a fixed number of previous states, we can reduce space from O(n) to O(k) where k is the number of states needed. This is a common optimization that is always worth mentioning."
-
-**Time Taken**: 16 minutes
-**What Went Well**: 
-- Systematic comparison of different algorithmic approaches
-- Clear DP state definition
-- Considered space optimization proactively
-**Could Improve**: 
-- Could have written the DP recurrence more formally
-- Should verify with a small example mentally
-
----
-
-## Interviewer Feedback
-
-### Overall Assessment: Strong Hire
-
-**Strengths**:
-- Strong algorithmic reasoning and pattern recognition
-- Always analyzes complexity and discusses lower bounds
-- Considers multiple algorithm paradigms before choosing
-- Handles hard problems with systematic decomposition
-- Excellent communication throughout the interview
-
-**Areas for Improvement**:
-- Could be faster at coding once approach is settled
-- Should verify algorithm correctness with small examples
-- Can improve space optimization awareness for DP problems
-- Should discuss concurrency and parallelization possibilities
-
-### Follow-Up Questions
-
-1. "What if the input size is 10^9? How does your algorithm scale?"
-2. "Can you parallelize this across multiple CPU cores?"
-3. "How would you handle streaming or infinite input?"
-4. "What if memory is limited to O(1)? Can you still solve it?"
-5. "Is there a randomized algorithm that performs better on average?"
-6. "How would your algorithm perform with adversarial input?"
-7. "Can you prove the optimality of your approach?"
-
-### Recommended Practice Plan
-
-| Area | Focus | Activities |
-|------|-------|-----------|
-| Advanced Scheduling Algorithms | Harder variations | Solve 5 more problems in this paradigm |
-| Complexity Proofs | Formal lower bounds | Practice omega(n log n) and omega(n) proofs |
-| Space Optimization | In-place algorithms | Study memory-constrained algorithm techniques |
-| Company Specific | Target company tag | Solve 10 tagged problems on LeetCode |
-
----
-
-## Key Takeaways
-
-| Aspect | Rating (1-5) | Notes |
-|--------|-------------|-------|
-| Problem Understanding | 5 | Excellent restatement and clarification |
-| Algorithm Selection | 5 | Considered multiple paradigms correctly |
-| Code Quality | 4 | Good, but room for cleaner implementation |
-| Complexity Analysis | 5 | Detailed with lower bound justification |
-| Edge Cases | 4 | Good coverage, could be more systematic |
-| Communication | 5 | Clear and structured throughout |
-| Time Management | 4 | Slight overrun on hard problem |
-| Follow-up Handling | 4 | Good depth, more practice needed |
-
-## Candidate Self-Reflection
-
-"I performed well on recognizing algorithm patterns and analyzing complexity. The first two problems were straightforward applications of the paradigm. The third problem required deeper analysis and I think I chose the right approach. Moving forward, I will practice more space optimization and ensure I test my algorithm logic with small examples before coding. The feedback about being more systematic with edge cases is valuable and I will incorporate it into my preparation routine."
+```text
+loads=[11, 10] makespan=11
+```

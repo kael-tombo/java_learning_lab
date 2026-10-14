@@ -1,88 +1,42 @@
 # REAL_WORLD_PROJECT — Advanced String Algorithms
-> Production use-case with metrics + prevention. Lab `40-string-algorithms-advanced`.
+> Log-threat scanner: Aho-Corasick multi-pattern service over rotated logs with KMP single-pattern fallback and a pattern-Staging pipeline.
 
-## Use-case: IDS signature scanning, DNA motif search, log grep at scale
-- System: backend service handling large inputs where Advanced String Algorithms is on the hot path.
-- Why this algorithm: automaton simulation plus failure links gives O(n+m+z) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Log shipper streams app logs in 64 MB rotated chunks; pattern set (200-2000 literals) versioned in config.
+- Staging: new patterns run in count-only mode for 7 days before blocking mode; single urgent pattern can use KMP fast path within the hour.
+- Match records carry (pattern version, chunk id, byte offset) for audit replay.
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (String Matching) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Aho-Corasick automaton built per pattern version at deploy; build time and state count logged and alerted on 2x growth.
+- Scanner streams chunks without loading whole files; overlapping-chunk boundary window re-scans the seam (documented width).
+- KMP fast path for single-pattern emergencies bypasses automaton rebuild.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Scan throughput MB/s per version and automaton build time/state count.
+- Match rate per pattern (new-pattern staging dashboard) and false-positive-free verification (literals only).
+- Seam re-scan byte overhead percentage.
+- Missed-match canary: injected canary lines per chunk must all be reported.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Pattern-set explosion (20k regex-like literals submitted): version guard caps literal count and total length; excess goes to a second staged automaton, never silently dropped.
+- Chunk-seam miss: seam window sized from the longest pattern; canary lines straddle seams to prove coverage.
+- Automaton build spike blocks deploys: build runs async with the previous version serving until the new one verifies.
+- Case/encoding mismatch: patterns normalized to the same case/encoding as the stream at build time, with the normalization logged.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Regex-catastrophe analogue (many patterns) | p99 spike | pattern budget + automaton compile cache |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Encoding mismatch (UTF-8 vs bytes) | missed hits | normalize + byte-level golden tests |
+## Rollout
+1. Count-only mode on historical chunks; diff matches vs the existing grep pipeline until zero unexplained delta.
+2. Blocking mode for the top-20 stable patterns; staging continues for the rest.
+3. Full pattern set live with canary coverage on every chunk.
 
-## Cost note
-- Optimized variant (compiled automaton, O(n+m+z)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. ushers reference ({he,she,his} -> she@1, he@2) verifies through the service scanner path.
+2. Canary lines, including seam-straddling ones, are all reported in a chaos test.
+3. Pattern-cap test: oversized set is staged, not dropped, with an alert.
+4. Deploy with a broken pattern version keeps serving the previous automaton (test included).
+5. Rollback pins the previous automaton version in one config change.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://algs4.cs.princeton.edu/53substring/ (Princeton Algorithms — substring search)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/regex/Pattern.html (Java regex Pattern — baseline/comparison for matchers)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- IDS/log content may hold secrets; redact before logging matches.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Matches per MB | histogram | capacity planning |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Automaton ≈ states × alphabet; cap pattern count per compile.
+## Cost and contract notes
+- Scanning priced per GB per pattern-version; automaton build cost amortized over chunks per version lifetime.
+- Staging dashboards show per-pattern match rates for 7 days before any blocking promotion.
+- Chunk storage retained 14 days so match offsets stay replayable for incident review.
+- Contract: pattern versions immutable once published; emergency single-pattern path uses KMP with its own audit flag.

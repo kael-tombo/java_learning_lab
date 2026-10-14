@@ -1,48 +1,38 @@
-# REAL_WORLD_PROJECT — Trie (Prefix Tree)
+# Search-Engine Prefix Service, Told End to End
 
-Production use-case: **search-engine autocomplete + IP longest-prefix match**. Secondary: contact-list prefix search in a mobile app.
+The setting is a small search engine whose box must suggest completions
+as each character lands, backed by a second life as a contact-list
+prefix search in the companion mobile demo. One prefix tree serves both.
 
-## 1. Problem statement
-Serve prefix search, autocomplete, ip routing workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Ingest starts with 80k head queries plus 40k contacts, each carrying a
+weight from historical clicks or call frequency. Insertion order is
+shuffled to prove the structure does not depend on it; a timing note
+records the build rate.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Lookup is two verbs. Complete(prefix) returns the top completions with
+weights; longestMatch(address) walks address bits for the routing demo.
+Both run in O(L) key length, and the narrative pauses on the consequence:
+doubling the lexicon barely moves latency while lengthening keys does.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Ranking gets its own chapter. Frequencies decay weekly so stale queries
+sink; the decay job is idempotent and the writeup shows one query
+falling out of the top eight across two decay passes. Ties break by
+recency, documented with an example.
 
-## 4. Metrics to report
+Deletion is a quiet hero. Removing a word prunes only orphaned nodes;
+shared prefixes stay intact. A 5k-delete script runs against a brute
+force oracle that rescans the lexicon after every batch.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+The memory chapter compares child layouts honestly: map children vs
+array children at three lexicon sizes with heap deltas quoted. The
+cheaper layout wins the default, the dearer stays behind a flag.
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Trie
-- https://xlinux.nist.gov/dads/HTML/trie.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+The closing drill corrupts inputs: empty string, emoji prefix, 2k-char
+paste, address with no matching prefix. Each returns the specified miss
+answer. Scoring: completion parity 12, decay plus delete behavior 10,
+memory candor and miss handling 8.
+## Demo script
+- Type p-r-e live; show top eight.
+- Delete a shared-prefix word.
+- Paste the 2k-char edge case.
+- Show decay across two passes.

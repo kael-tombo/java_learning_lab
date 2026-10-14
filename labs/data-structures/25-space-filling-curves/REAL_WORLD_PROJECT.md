@@ -1,48 +1,37 @@
-# REAL_WORLD_PROJECT — Space-Filling Curves (Z-order / Hilbert)
+# Tile-Server Index on Z-Order and Hilbert Curves
 
-Production use-case: **tile-server spatial index for map rendering**. Secondary: LSM-friendly geo-key layout benchmark.
+Map room. A tile server renders map tiles from 2M geo points; range
+queries over tiles must hit contiguous key spans so an LSM store scans
+sequentially. Z-order (Morton) and Hilbert encodings turn 2-D locality
+into 1-D order - the lab measures which curve keeps neighbors together.
 
-## 1. Problem statement
-Serve locality-preserving 1-d mapping workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Encoding bench. Morton interleave vs Hilbert index for 1M points: build
+time, bytes per key, and neighbor-preservation score (fraction of
+8-neighbor pairs within a key window of 64). Hilbert should cluster
+better; the report shows by how much on uniform vs clustered data.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Tile caller. Bounding-box tile fetch translated to curve-interval scans
+with edge refinement (false positives from curve jumps filtered by exact
+box test). Recall must equal brute force on 2k tiles; the win metric is
+disk seeks avoided, counted from the interval plan.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+LSM caller. Geo-key layout benchmark: point inserts in curve order vs
+random order into an SSTable-like sorted run; compaction read-amp and
+scan speed compared. Curve order should compact and scan friendlier -
+measured, with the margin quoted.
 
-## 4. Metrics to report
+Precision file. Bit-depth choice (16 vs 21 vs 31 per axis) with error
+bounds stated; points near the antimeridian and poles handled by
+documented rule; curve-jump false positives counted per tile query.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Ship. Encoders, tile service, layout bench, preservation scores, edge
+rule note. Bar: encoding correctness vs brute force 12, locality scores
+with data 10, precision plus jump handling 8.
+## Curve scoreboard
+- Preservation score per dataset.
+- Bit depth 21 default.
+- Jump false-positive rate posted.
+- Antimeridian rule tested.
+- Layout margins updated.
+Publish the preservation winner with margins.
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Z-order_curve
-- https://en.wikipedia.org/wiki/Hilbert_curve
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.

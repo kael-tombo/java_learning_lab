@@ -1,48 +1,41 @@
 # VISION — DP Deep Track
-> Mastery path. Track `dp-deep`.
+> Direction: from flat tables to structured state — trees, digits, masks — plus one optimization earned by proving its precondition.
 
 ## Where this sits
-- DP is the highest-yield pattern: prefixes, intervals, trees, digits, optimizations.
-- Master it and neighboring tracks get 2× easier (shared invariants + proof templates).
+- Tree DP exploits acyclicity twice (DP up, reroot down); digit DP exploits positional structure with tight/loose flags; bitmask DP pays 2^n deliberately at small n.
+- D&C and Knuth optimizations trade the monotonicity/quadrangle proof for a complexity drop; without the proof they are just bugs.
+- Profile DP and alien tricks extend the menu for grid and cardinality-constrained variants.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; knapsack/LCS/LIS bounds memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (allocation, alignment, planning).
+## 4-week direction
+- Week 1: hand-run tree independent-set DP both directions on the 7-node tree.
+- Week 2: finish MINI_PROJECT; verify digit DP against brute force below 10^5 yourself.
+- Week 3: implement the chosen optimization with its violation test; watch the test catch a broken precondition on a crafted input.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard reroot messaging in 10 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Write tree-DP recurrences plus reroot combination from memory.
+- State digit-DP state (pos, tight, started, property) and why each dimension exists.
+- Quote the exact precondition for your optimization and the test that guards it.
 
-## How to know you are done
-- Explain optimal substructure + order invariant without notes; derive O(mn)/O(nW) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This track does not build profile/plug DP or alien-trick solvers; triggers and shapes are named, implementations deferred.
+- No FPTAS construction; approximation lives in 25-optimization-algorithms.
+- Bitmask DP filings defer to 32-exact-exponential for the full budgeting treatment.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Pitfalls
+- Applying D&C/Knuth optimization without the monotonicity proof; fast wrong answers.
+- Forgetting the started flag in digit DP and miscounting leading zeros.
+- Rerooting with the wrong combination direction; verify every root against brute force.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Adjacent tracks
+- Pair with dynamic-programming for core tables and 32-exact-exponential for bitmask budgeting.
+- Revisit before optimizing any transition; the precondition proof comes first.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## Weekly drills
+- Recombine one reroot step by hand on the 7-node tree with messages labeled.
+- Restate your optimization's precondition verbatim and describe the violation test.
+- Write digit-DP state dimensions and justify each (tight, started, property).
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not optimize transitions on unproven monotonicity; the violation test is mandatory.
+- Do not forget the started flag; leading-zero bugs are the classic digit-DP failure.

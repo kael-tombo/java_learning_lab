@@ -1,83 +1,37 @@
 # MINI_PROJECT — Sorting Track
-> Implement + benchmark + visualize. Track `sorting`.
+> Benchmark suite across six sorting methods plus quickselect, on random, sorted, reverse, and heavy-dupe inputs to n=1M.
 
-## Goal
-- Build a runnable Java CLI that benchmarks Hoare vs 3-way vs JDK sort vs quickselect to n=10M; emits CSV + ASCII visualization.
+## Inputs
+- Generators with fixed seeds: uniform random, sorted, reverse, organ-pipe, and 3-value dupes; sizes 10k/100k/1M.
+- Methods: insertion, mergesort (stable), heapsort, quicksort (median-of-3 + insertion cutoff), 3-way quicksort, JDK Arrays.sort, quickselect for k=n/2.
 
-## Spec
-1. `lab.sorting.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving partition regions.
+## Build steps
+1. Implement each method over int[] with a shared swap/compare counter harness.
+2. Verify every output against Arrays.sort on 200 seeded small arrays (correctness gate before timing).
+3. Time median-of-3 runs per (method, distribution, size); record ms and comparison counts in results.csv.
+4. Plot ASCII bars per distribution showing where quicksort degrades and where 3-way wins on dupes.
+5. Document stability (mergesort stable; heapsort/quicksort not) with a paired-key test proving it.
 
-## Starter code
-```java
-package lab.sorting;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Correctness gate passes 200/200 before any timing row is recorded.
+2. results.csv has the header method,dist,n,ms,comparisons with all 7x5x3 combinations filled from real runs.
+3. Heavy-dupes column shows 3-way quicksort beating plain quicksort (state the measured factor, whatever it is).
+4. Sorted-input column shows insertion sort near-linear behavior with the comparison count to prove it.
+5. Stability test demonstrates mergesort keeping paired-key order while heapsort does not (or documents the observed outcome).
+6. Write-up states the Omega(n log n) comparison lower bound and which methods meet it in expectation.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Which distribution most punishes median-of-3 quicksort, and what does the comparison count show?
+2. At what n does insertion sort lose to mergesort on random input on your machine?
+3. Why does 3-way partitioning collapse the dupe case to near-linear?
 
-## Visualization
-- For n<=16 print regions per partition step.
-- Example (ASCII): `[<1 0][=2 2][?] i=4 [>5] | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- External sorting, parallel sorts, and string/radix sorts (named as follow-ups with trigger sizes).
+
+## Reference behavior to reproduce
+- Correctness gate first: 200/200 seeded arrays identical to Arrays.sort before any timing cell counts.
+- Expected qualitative results: 3-way wins heavy-dupes, insertion wins tiny/sorted, quicksort median-of-3 needs the adversarial test to justify its cutoff.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating sorted/dupes/organ-pipe cases.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches E[O(n log n)].
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add dual-pivot quicksort (JDK-style) and place it in the results table from real runs.
+- Add a comparison-count ceiling test that fails any method exceeding 2x its expected count on random input.

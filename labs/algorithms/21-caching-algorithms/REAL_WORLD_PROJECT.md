@@ -1,85 +1,41 @@
-# REAL_WORLD_PROJECT — Caching Algorithms (LRU / LFU / Belady)
-> Production use-case with metrics + prevention. Lab `21-caching-algorithms`.
+# Real-World Project: Cache Eviction Simulator
 
-## Use-case: CDNs, CPU caches, DB buffer pools
-- System: backend service handling large inputs where Caching Algorithms (LRU / LFU / Belady) is on the hot path.
-- Why this algorithm: eviction policies under capacity constraints gives O(1) hit/miss for LRU/LFU; competitive ratios (LRU k-competitive) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Caching Algorithms (LRU / LFU / Belady)) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A service keeps a fixed-size in-memory cache of upstream query results.
+Operators must decide between LRU and LFU eviction and size the cache from
+evidence instead of defaults. Build a simulator that replays request traces
+against both policies and reports miss ratios per capacity.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `trace.csv`: one requested key per line (integers or short strings).
+- `capacities.txt`: one integer capacity per line, e.g. 10, 50, 100, 500.
+- A config flag selecting policies to run: LRU, LFU, or both.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
+## Steps
 
-## Cost note
-- Optimized variant (O(1) hit/miss for LRU/LFU; competitive ratios (LRU k-competitive)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Parse the trace into an ordered key list; validate non-empty input.
+2. Implement LRU (hash map plus access-ordered list) with O(1) hit cost.
+3. Implement LFU (hash map plus frequency table, deterministic tie-break).
+4. Implement Belady OPT as the reference lower bound on faults.
+5. For each capacity, replay the full trace under each policy; count faults.
+6. Emit `report.csv` with rows (policy, capacity, requests, faults, miss_ratio).
+7. Print an ASCII miss-ratio curve per policy across capacities.
+8. Write a one-page sizing note: chosen policy, capacity, and measured cost.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Simulator runs on a 100k-line trace in under 30 seconds on one core.
+2. `report.csv` contains every (policy, capacity) combination requested.
+3. OPT miss ratio is less than or equal to LRU and LFU on every capacity.
+4. LRU and LFU replayed faults match hand-computed faults on a 20-line fixture.
+5. ASCII curves render with plain characters and labeled axes.
+6. Sizing note names the winning policy with miss-ratio numbers cited.
+7. Invalid input (missing file, capacity zero or negative) exits with a message.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+- Plain Java only, no external libraries; deterministic single-threaded run.
+- Memory use bounded by trace size plus O(capacity) cache state.
+- All printed output uses plain ASCII characters.

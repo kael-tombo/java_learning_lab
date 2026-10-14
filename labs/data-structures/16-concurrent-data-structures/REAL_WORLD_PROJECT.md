@@ -1,48 +1,41 @@
-# REAL_WORLD_PROJECT — Concurrent Data Structures
+# Soak Plan: Metrics Registry and Crawler Queue Under Threads
 
-Production use-case: **high-throughput metrics registry (LongAdder + CHM)**. Secondary: lock-free work queue for a crawler pool.
+Target. A metrics registry (counters, gauges, histograms) fed by 16
+writer threads plus a lock-free work queue feeding 8 crawler workers.
+The plan proves linearizable behavior first, then measures scaling, in
+that order - numbers without a correctness story are rejected.
 
-## 1. Problem statement
-Serve lock-free, striped, copy-on-write workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Registry design. LongAdder counters per metric, ConcurrentHashMap from
+name to cell, striped histogram cells merged on read. No global lock on
+the write path; reads tolerate merging across stripes with a documented
+staleness bound of one collection interval.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Queue design. Michael-Scott style linked queue (or a bounded
+array-backed ring with CAS head/tail - decision logged with rationale)
+for crawl URLs, backpressure via fixed capacity plus a drop counter.
+Enqueue/dequeue pairs reconciled: produced = consumed + dropped + held.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Correctness harness. Linearizability spot-checks on 2-thread
+interleavings with a recorded schedule; then a chaos soak (4 producers,
+4 consumers, 200k items) asserting no loss, no duplication, and counter
+totals equal to per-thread sums.
 
-## 4. Metrics to report
+Scaling runs. Writer threads 1/2/4/8/16 at fixed work per thread; the
+report plots throughput and states where contention flattens the curve.
+LongAdder vs synchronized-counter A/B included so the mechanism earns
+its place with data.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Hazard list. ABA on head pointer (tagged/generational fix), false
+sharing on hot cells (padding note with measurement), queue drain race
+at shutdown (poison-pill protocol), registry key explosion (cardinality
+cap with eviction rule).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/package-summary.html
-- https://en.wikipedia.org/wiki/Non-blocking_algorithm
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Sign-off. Harness logs, soak reconciliation, scaling plot data, hazard
+register with fixes. Weighting: harness rigor 12, soak reconciliation
+10, scaling candor 8.
+## Soak matrix
+- Threads: 1, 2, 4, 8, 16.
+- Same work per thread each run.
+- Reconcile produced vs consumed.
+- Plot flattening point explicitly.
+- Keep poison-pill shutdown tested.

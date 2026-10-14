@@ -1,48 +1,41 @@
 # VISION — Advanced Number Theory
-> Mastery path. Lab `39-number-theory-advanced`.
+> Direction: from "probably prime" as a feeling to verdicts with stated bases, logged rounds, and checkable factors.
 
 ## Where this sits
-- Advanced Number Theory is one tool in the algorithms arsenal: modular invariants plus Miller-Rabin plus Pollard Rho plus CRT.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+- Fermat's little theorem gives a cheap but foolable test (pseudoprimes like 341, Carmichael numbers like 561).
+- Miller-Rabin strengthens it with the square-root-of-unity check along n-1 = d*2^s; fixed base sets make it deterministic over bounded ranges (32-bit with the lab's stated set).
+- Pollard Rho factors via Floyd-cycle gcd collisions in roughly n^(1/4) heuristic time, after trial division clears small factors.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; polylog primality/factor steps memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (RSA keygen, coding checksums, competitive programming crypto).
+## 4-week direction
+- Week 1: hand-verify 2^16 mod 17 and the 341 pseudoprime equation; factor both 341 and 2047 by trial division.
+- Week 2: finish MINI_PROJECT; trace the Miller-Rabin witness chain for 561 on paper.
+- Week 3: run Rho on three semiprimes of your choice and log time-to-first-factor vs digit count.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard why Carmichael numbers fail Miller-Rabin despite fooling Fermat.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Define pseudoprime, witness, and Carmichael number precisely without notes.
+- State the lab's base set and its range limit verbatim, and what happens outside it.
+- Factor any sub-6-digit composite with the pipeline (trial division then Rho) on demand.
 
-## How to know you are done
-- Explain Euler/Fermat reductions + witness loops; CRT reconstruction without notes; derive polylog bounds on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This lab does not certify anything for production cryptography; use an approved library and its primality guarantees.
+- No proofs of deterministic base sets and no sieve/ECM internals beyond naming and trigger conditions.
+- Side-channel and constant-time concerns are out of scope.
+
+## Pitfalls
+- Quoting Miller-Rabin results without the bases and range; a verdict without scope is folklore.
+- Skipping trial division before Rho and paying full random-walk cost on smooth numbers.
+- Using screening verdicts to generate real key material.
 
 ## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+- Pair with 32-exact-exponential for search-and-bound discipline and 26-bit-manipulation for the mod-arithmetic mechanics.
+- Revisit before trusting any primality verdict whose bases you cannot name.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Weekly drills
+- Factor 341 and 2047 by trial division from memory of method, not of answer.
+- Write n-1 = d*2^s for 561 and 2047 and trace one Miller-Rabin base each.
+- Recite the lab base set with its range limit verbatim.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not generalize the fixed bases past 32 bits; outside needs its own analysis.
+- Do not feed screening verdicts into real key generation, ever.

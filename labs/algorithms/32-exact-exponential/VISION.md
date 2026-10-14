@@ -1,48 +1,41 @@
 # VISION — Exact Exponential Algorithms
-> Mastery path. Lab `32-exact-exponential`.
+> Direction: from fearing exponentials to budgeting them precisely — right algorithm, right n, measured cutoff.
 
 ## Where this sits
-- Exact Exponential Algorithms is one tool in the algorithms arsenal: branch-and-reduce plus inclusion-exclusion plus meet-in-the-middle.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+- Exact exponential methods (Held-Karp O(n^2 2^n), inclusion-exclusion, branch-and-bound, meet-in-the-middle O(2^(n/2))) solve NP-hard problems optimally at small n.
+- They sit between polynomial algorithms (which cannot do these problems) and heuristics (which cannot certify optimality).
+- The core skill is resource budgeting: time bound, space bound, and the n where each method stops.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(1.3^n–2^n) branching bounds memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (VLSI layout, exact TSP routing, SAT-based verification).
+## 4-week direction
+- Week 1: hand-run Held-Karp on the 4-city matrix; reproduce 80 without code.
+- Week 2: finish MINI_PROJECT; fill the timing table from real runs and find both crossovers.
+- Week 3: add one branch-and-bound lower bound (MST bound for TSP) and measure pruned nodes.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard Held-Karp state definition in 5 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Write the Held-Karp recurrence and both bounds (time/space) from memory.
+- Explain why brute force dies near n = 12 while Held-Karp reaches ~20, with the arithmetic.
+- Size the dp table in bytes for any n on demand.
 
-## How to know you are done
-- Explain branch-and-reduce + measure-and-conquer; branching-vector recurrences without notes; derive O(1.3^n) style bound on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This lab does not teach approximation algorithms (Christofides, PTAS) or heuristic search (simulated annealing, genetic).
+- No claim about average-case hardness; bounds here are worst-case.
+- Quantum speedups for these problems are out of scope (see 35-quantum-simulation for simulation cost only).
+
+## Pitfalls
+- Quoting O(n^2 2^n) without the O(n 2^n) memory twin; memory is usually the binding constraint.
+- Testing only on random matrices; structured instances (clustered cities) behave differently under branch-and-bound.
+- Confusing theHeld-Karp lower bound (1-tree) with the exact DP of the same name.
 
 ## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+- Pair with 25-optimization-algorithms for the heuristic side and 39-number-theory-advanced for another exact-search flavor.
+- Revisit before any "just brute force it" production decision; the timing table is the permit office.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Weekly drills
+- Write dp[mask][u] and both Held-Karp bounds from memory in under 5 minutes.
+- Size the dp table in bytes for n = 16, 20, 24 without a calculator step skipped.
+- Name the stopper resource (time vs RAM) for brute force, Held-Karp, and meet-in-the-middle.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not run exact search without a timeout and a fallback consumer for the timeout path.
+- Do not quote time bounds while ignoring the memory twin; RAM binds first here.

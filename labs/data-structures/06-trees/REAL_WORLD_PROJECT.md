@@ -1,50 +1,39 @@
-# REAL_WORLD_PROJECT — Trees (Traversal & Structure) (`06-trees`)
-> Ship a production-flavored use-case of trees with metrics. ~6–10 hours.
+# Memo: Tree Traversals Powering an Org-Chart API
 
-## Problem statement
-Build a small but honest service/CLI around `TreeOps` for: parsers, file indexing, org charts, game trees.
-Examples: autocomplete API (trie), priority scheduler (heap), ordered index with range scan (BST/balanced tree),
-deduplicating ingest cache (hash), graph route planner (graphs), disk-pre-check layer (bloom), ring buffer pipeline (queue/stack).
+To: lab reviewers. From: trees group. Subject: shipping a traversal
+service that doubles as the structural foundation for later index labs.
 
-## Functional requirements
-1. CLI or HTTP endpoint: `put/get/delete` (or domain equivalent: `schedule/pop`, `insert/suggest`, `add/mightContain`).
-2. Persistence or snapshot: load/save to file (JSON/CSV/serialized); reload preserves correctness.
-3. Config: capacity / threshold / k,m / comparator / seed exposed via flags or properties file.
-4. Observability: log operation latencies (avg/p50/p99), hit/miss or FPR estimate, resize/rotation counts, memory.
-5. Correctness: oracle cross-check on a sample workload (vs `HashMap`/`TreeMap`/`PriorityQueue` as appropriate).
+What we ship. An org-chart API over a general tree (n-ary, parent
+pointers): headcount rollups, chain-of-command paths, level listings,
+and lowest-common-manager queries. A binary-tree module rides along for
+expression trees and traversal drills.
 
-## Non-functional targets (measure and report)
-| Metric | Target (toy-prod) | How to measure |
-|---|---|---|
-| Throughput | ≥10k ops/s single-thread on 100k dataset | benchmark harness, warmup, 5 runs median |
-| p99 latency | <1 ms point op on laptop | HDR-ish histogram or sorted samples |
-| Memory | report bytes/elem (Runtime/JOL) | before/after load snapshot |
-| Correctness | 0 mismatches vs oracle on 10k random ops | oracle test log |
-| Resilience | graceful empty/full/degraded (incl. bloom FPR) behavior | chaos script: empty, dup flood, adversarial order |
+Traversal inventory. Preorder for reporting lines, postorder for rollup
+aggregation, level-order for org rendering, inorder reserved for the
+binary side. Every traversal ships iterative and recursive forms with an
+agreement test between them on 500 generated trees.
 
-## Architecture sketch
-```
-client -> Service (TreeOps + policy) -> snapshot file
-              |-> metrics log (CSV: op, nanos, size, aux)
-              |-> oracle checker (sampled, off-path)
-```
-Keep it single-module; no frameworks required (`com.sun.net.httpserver` or plain CLI is fine).
+Depth policy. Iterative forms are the production path; recursion is the
+oracle. A 100k-deep chain fixture proves the iterative walker survives
+where call stacks give up, and the memo records the measured depth at
+which the recursive form fails on the lab JVM.
 
-## Milestones
-1. Slice 1 (2h): domain model + `TreeOps` wired, CLI works on tiny fixture.
-2. Slice 2 (2–3h): persistence + config + edge handling (empty/dup/null/adversarial).
-3. Slice 3 (2–3h): metrics + benchmark script + chart.
-4. Hardening (1–2h): oracle test, chaos script, 1-page ops note (deploy, monitor, rollback).
+Query semantics. Subtree size in O(subtree) via postorder memoization,
+manager path in O(depth) via parent links, LCA via ancestor marking.
+All three cross-checked against brute force on small orgs.
 
-## Deliverables
-- `src/` implementation + `README` run instructions (java version, commands).
-- `metrics.csv` + chart + 1-page report (targets vs actuals, bottleneck, next scaling step).
-- Postmortem: one real bug found via oracle/chaos, invariant violated, fix.
+Change handling. Reorg operations (reparent subtree, insert report,
+remove leaf) maintain parent/child counts; a structural audit walks the
+tree verifying every child's parent pointer and every size field.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Oracle Java docs — `TreeOps` counterpart guarantees: https://docs.oracle.com/javase/8/docs/api/javax/swing/tree/TreeNode.html
-- Reference survey / encyclopedia entry for trees: https://en.wikipedia.org/wiki/Tree_traversal
-Verify version-specific behavior against your JDK (run `java -version`) before citing numbers.
+Second caller. Expression-tree evaluator over the binary module with
+inorder/preorder/postorder print forms; evaluation must match direct
+computation on 2k random expressions.
 
-## Evaluation
-- Works end-to-end from cold start (3 pts) · Metrics honest + reproducible (3) · Edge/chaos handled (2) · Report + postmortem depth (2). Ship ≥7/10.
+Evidence pack. Traversal agreement log, depth-survival note, audit
+output on a 50k-node org, evaluator parity log. Weighting: traversal
+correctness 12, reorg audit strength 10, depth and evaluator proof 8.
+## Review prompts
+- Walk one reparent by hand.
+- Quote the chain depth survived.
+- Name the recursion limit found.

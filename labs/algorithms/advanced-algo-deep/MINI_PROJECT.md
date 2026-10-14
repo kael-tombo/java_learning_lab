@@ -1,83 +1,37 @@
 # MINI_PROJECT — Advanced Algorithms Deep Track
-> Implement + benchmark + visualize. Track `advanced-algo-deep`.
+> Capstone sampler across labs 31-40: one runnable per paradigm (online ratio, exact search, fast multiply, sketch, simulation wall, FPR sizing, coloring bracket, MST swap, MR verdict, Aho scan) wired into a single report.
 
-## Goal
-- Build a runnable Java CLI that runs one solver per sub-lab (TSP bit-DP, Miller-Rabin, Aho-Corasick, hull, Karger, greedy cover); benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- The ten reference inputs from labs 31-40 MOCK questions (trace, 4-city matrix, 3x3 pair, stream 1..10, H|0> circuit, m/n/k point, reference graph, 7-edge graph, {17,561,2047,7919,8051}, ushers set).
+- One shared runner that executes all ten and collects (paradigm, output, ms) rows.
 
-## Spec
-1. `lab.advanced_algo_deep.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving per-domain invariant.
+## Build steps
+1. Re-implement (or import with citation) the ten reference snippets behind a uniform `solve()` interface.
+2. Run the full battery; assert the ten reference outputs (faults 10/7 trio numbers, cost 80, product rows, [6,2,8], Bell probs, fpr 0.008194, 3 colors/clique 3, MST 8/9, MR verdicts, she@1 he@2).
+3. Add one extension per paradigm: marking step, MST-bound prune, transposed timing, windowed sketch, GHZ-3 check, k-sweep row, DSATUR run, Boruvka phases, Rho factor, Z-algorithm cross-check.
+4. Emit a single markdown report table plus per-paradigm notes on what limited each method.
+5. Record total runtime and the slowest paradigm with its input size.
 
-## Starter code
-```java
-package lab.advanced_algo_deep;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. All ten reference outputs reproduce exactly through the shared runner.
+2. Report table has ten rows with (paradigm, output, ms, limiter) filled from the real run.
+3. At least six of the ten extensions run with outputs shown (the rest documented as deferred with reasons).
+4. Limiter column names the binding constraint per paradigm (memory wall, FPR budget, n ceiling, etc.).
+5. No paradigm shells out to an external solver; everything runs in-process.
+6. The report states which two paradigms degrade fastest with n and shows the numbers.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Which paradigms certify optimality, which bound error, and which only measure it?
+2. Where do two paradigms overlap on one problem (e.g. exact vs heuristic TSP)?
+3. What single input-size doubling hurts most, per the limiter column?
 
-## Visualization
-- For n<=16 print domain state (mask row / witnesses / automaton / hull stack).
-- Example (ASCII): `mask=1011 best=9 | witnesses=[2 3] | hull=[(0,0)(2,1)] | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- New theory; this is a synthesis and measurement track. Approximation algorithms appear as named context (Christofides 3/2 for metric TSP, Karger randomized min-cut) with pointers, not implementations.
+
+## Battery reference outputs
+- All ten reference outputs byte-identical through the shared runner; any drift fails the battery loudly.
+- Limiter column filled per paradigm from the run (n ceiling, FPR, bytes, ms) — no limiter, no row.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating per-domain worst-case.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches theory per domain.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add an 11th paradigm card (e.g. simulated annealing for TSP) with reference output and limiter, following the same schema.
+- Add cross-paradigm duel inputs where two methods solve one problem (exact vs heuristic TSP at n=12).

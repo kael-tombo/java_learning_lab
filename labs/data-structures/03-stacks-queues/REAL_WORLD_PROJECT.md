@@ -1,48 +1,38 @@
-# REAL_WORLD_PROJECT — Stacks & Queues
+# Runbook: Bounded Job Queue with Overflow Policy
 
-Production use-case: **bounded job queue with overflow policy for a worker pool**. Secondary: bracket/expression evaluator CLI.
+Service: worker-pool job queue fronted by a bounded FIFO, with a LIFO
+scratch stack for expression/bracket checks in job payloads. This page is
+the operator-facing contract: what the queue guarantees, what it drops,
+and how to tell which happened.
 
-## 1. Problem statement
-Serve enqueue/dequeue with backpressure at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 op latency, throughput (ops/s), max queue depth, correctness bar (FIFO order proof).
+Normal operation. Producers enqueue jobs; workers dequeue FIFO. Depth,
+enqueue rate, dequeue rate, and overflow drops export as counters each
+second. A depth watermark at 80 percent pages before the ceiling bites.
 
-## 2. Architecture
-- Ingest: producers submitting jobs to the bounded queue.
-- Core: ArrayDeque/ring queue behind a narrow interface.
-- Serve: dequeue API + depth metrics + health.
-- Persist: overflow spill file where durability matters.
+Policies. Three overflow modes ship behind a flag: block with timeout,
+drop-newest with a counter, drop-oldest with a counter. The default is
+drop-newest; mode changes require a restart and are logged at boot.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Stack sidecar. Payloads carrying bracketed expressions pass through an
+ArrayStack validator; invalid payloads park in a quarantine file with the
+failure offset. The queue never blocks on validation longer than its
+per-job budget; overruns count as validation timeouts.
 
-## 4. Metrics to report
+Alerts. Fire when p99 wait-in-queue crosses the posted threshold for five
+minutes, when drops exceed 0.1 percent of enqueues, or when the
+validator quarantine grows faster than drains.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 op latency | define SLO | JMH / load test |
-| p99 op latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact FIFO vs oracle | property tests |
-| Availability | drain time on shutdown | chaos/restart drill |
+Failure table. Worker stall: depth climbs, watermark pages, oldest jobs
+age out per retention. Producer flood: drops increment, no OOM because
+the bound holds. Restart mid-drain: snapshot of pending ids reloads and
+requeues; in-flight jobs are redelivered at most once per worker lease.
 
-## 5. Risks & mitigations
-- Overflow loss -> drop-newest/oldest policy + spill.
-- Consumer stall -> depth alerts + autoscale hook.
-- Memory blowup -> bounded caps + backpressure.
-- Concurrency bugs -> SPSC/MPSC discipline + stress tests.
+Recovery drills. Kill a worker mid-batch and confirm redelivery. Flood
+with 5x producers for 60 seconds and confirm the drop counter matches
+enqueues minus dequeues minus depth delta. Corrupt the snapshot and
+confirm boot refuses with a named error instead of partial state.
 
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html
-- https://en.wikipedia.org/wiki/Queue_(abstract_data_type)
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Release proof. Attach the counters log from the flood drill, quarantine
+samples from the bracket suite, and a restart log showing restored depth.
+Mark: queue semantics under flood 12, validator quarantine quality 10,
+restart fidelity 8.

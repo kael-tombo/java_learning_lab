@@ -1,83 +1,38 @@
 # MINI_PROJECT — Exact Exponential Algorithms
-> Implement + benchmark + visualize. Lab `32-exact-exponential`.
+> Build a tiny exact solver kit: Held-Karp TSP, brute-force cross-check, and subset enumeration, with the measured crossover points.
 
-## Goal
-- Build a runnable Java CLI that solves vertex-cover/TSP exactly via branch-and-bound plus meet-in-the-middle up to n=40; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- 4-city distance matrix from MOCK_INTERVIEW Q1 (expected optimum 80).
+- Random symmetric matrices for n = 8..16 generated with a fixed seed.
+- 5-vertex edge list from MOCK Q3 (expected 12 independent sets, alpha 3).
 
-## Spec
-1. `lab.32_exact_exponential.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving branch-and-reduce + lower-bound pruning.
+## Build steps
+1. Implement Held-Karp over dp[mask][u] with O(n 2^n) memory; print the optimum for the 4-city matrix.
+2. Implement permutation brute force for n <= 10 and assert equality with Held-Karp on identical inputs.
+3. Implement subset-mask enumeration counting independent sets and tracking alpha.
+4. Time all three on n = 8, 10, 12 (brute force only to n = 10) and record wall ms in a table.
+5. Document the largest n each method handles on your machine and which resource (time vs memory) stops it first.
 
-## Starter code
-```java
-package lab.32_exact_exponential;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. 4-city matrix prints heldkarp_cost=80 and bruteforce_cost=80.
+2. 5-vertex graph prints independent_sets=12 and alpha=3.
+3. Timing table has rows for n = 8, 10, 12 with all three applicable cells filled from real runs.
+4. Held-Karp uses an int bitmask (document the n <= 25 practical ceiling from the O(n 2^n) table).
+5. The write-up names the stopper resource per method (CPU for brute force, RAM for Held-Karp).
+6. No method shells out to a library solver; all search code is in the submission.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. At what n does Held-Karp overtake brute force by 10x on your machine?
+2. How much memory does the dp table need at n = 20 in bytes, computed not guessed?
+3. Which lower bound would you add first to turn brute force into branch-and-bound?
 
-## Visualization
-- For n<=16 print search tree / bounds / pruned branches.
-- Example (ASCII): `node=7 lb=12 ub=15 prune=no | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Heuristic TSP (2-opt, Lin-Kernighan), approximation guarantees, and parallel solvers.
+
+## Worked reference (verified outputs)
+- 4-city matrix prints heldkarp_cost=80 and bruteforce_cost=80; the two methods must agree on every shared input.
+- 5-vertex edge list prints independent_sets=12 alpha=3; alpha=3 is witnessed by vertices {1,2,4}.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for branching bound.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches branching bound.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add an MST (1-tree style) lower bound to the brute-force search and count pruned nodes at n=12.
+- Implement meet-in-the-middle subset sum and record the n where it beats Held-Karp-style DP on memory.

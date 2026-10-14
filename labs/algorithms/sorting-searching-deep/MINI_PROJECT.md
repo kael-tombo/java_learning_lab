@@ -1,83 +1,37 @@
-# MINI_PROJECT — Sorting & Searching Deep Track
-> Implement + benchmark + visualize. Track `sorting-searching-deep`.
+# MINI_PROJECT — Sorting and Searching Deep Track
+> Advanced selection and integer-key structures: worst-case-linear select, suffix-array doubling, k-way external merge, and van Emde Boas on bounded universes.
 
-## Goal
-- Build a runnable Java CLI that benchmarks all sort families + search/select/string matchers to n=10M; emits CSV + ASCII visualization.
+## Inputs
+- Adversarial arrays for quickselect (organ-pipe + crafted pivots), random texts to 100k chars for suffix work, and integer sets in universe U = 2^16 for vEB.
+- External-merge spill files: 4 sorted runs of 250k ints each on disk.
 
-## Spec
-1. `lab.sorting_searching_deep.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving partition/bound/automaton invariants.
+## Build steps
+1. Implement median-of-medians select (groups of 5) and verify against sorting on 500 seeded arrays including adversarial ones.
+2. Implement suffix-array doubling (O(n log n)) and verify banana -> [5,3,1,0,4,2] plus agreement with naive sorting on random strings.
+3. Implement 4-way external merge over the spill files with a heap; verify byte-equality with in-memory sort.
+4. Implement a small van Emde Boas layout over U = 2^16 (or a documented y-fast-trie-style simplification, labeled as such) and verify member/successor against TreeSet.
+5. Record time and comparison/op counts per method with machine/JDK noted.
 
-## Starter code
-```java
-package lab.sorting_searching_deep;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Median-of-medians agrees with sorting on all 500 arrays; adversarial quickselect-killer input included in the set.
+2. Doubling suffix array matches naive order on all random-string tests including banana.
+3. External merge output is byte-identical to in-memory sort of the concatenated runs.
+4. vEB successor queries match TreeSet on 10k seeded operations (or the labeled simplification documents its exact deviation).
+5. Results table states measured time plus operation counts; no bound quoted without its measurement beside it.
+6. Write-up states select Omega(n) (must read all input) vs the O(n) worst-case median-of-medians guarantee.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. How large is the median-of-medians constant vs sorting at n = 10k on your runs?
+2. Which doubling round dominates suffix-array time, and why?
+3. At what run size does external merge beat in-memory sort on your machine (or why never, if RAM suffices)?
 
-## Visualization
-- For n<=16 print partitions / probes / pi table.
-- Example (ASCII): `part=[<][=][>] probes=4 pi=[0 1 0] | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Full y-fast tries, fusion trees, and cache-oblivious sorting (named with papers-level pointers, not built).
+
+## Oracle agreements to reproduce
+- Banana must reproduce sa [5,3,1,0,4,2] through the doubling implementation, not just the naive one.
+- Median-of-medians must survive the quickselect-killer input with linear scaling while plain quickselect degrades.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating per-family worst-cases.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches theory per family.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Implement SA-IS or prefix-doubling with radix phases and compare build time against plain doubling.
+- Add a cache-miss counter (perf-based, documented as machine-specific) for the select methods.

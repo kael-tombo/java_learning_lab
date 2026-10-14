@@ -1,88 +1,43 @@
 # REAL_WORLD_PROJECT — Data Structures Track
-> Production use-case with metrics + prevention. Track `data-structures`.
+> Feature-flag evaluation engine: trie-matched flag keys, Fenwick-metered rollout exposure, union-find cohort dedup, and a heap-scheduled experiment queue.
 
-## Use-case: social-graph services, routing tables, leaderboards, autocomplete
-- System: backend service handling large inputs where graphs/trees are on the hot path.
-- Why these structures: adjacency + BFS/DSU + heap/trie give O(V+E)/O(log n)/O(L) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Flag definitions (key patterns with wildcards) versioned in config; evaluation requests carry (user id, attributes, timestamp).
+- Exposure metering counts evaluations per flag per hour for billing and guardrails.
+- Experiment queue schedules A/B ramp steps by priority with rescheduling on guardrail trips.
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (data-structures) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Trie matches flag-key patterns with prefix counts for the admin UI (how many flags share a prefix).
+- Fenwick tree over hourly buckets answers sliding exposure sums in O(log n) for guardrail checks.
+- Union-find dedups overlapping cohort definitions so users in two cohorts count once in shared analyses.
+- Binary heap schedules ramp steps; guardrail trip re-inserts the step with backoff.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Evaluation p99 latency with per-structure breakdown (trie match, exposure sum, cohort find).
+- Exposure-guard trip rate and heap reschedule counts.
+- Cohort-dedup merge rate (how often overlap is actually found).
+- Config-version adoption lag across serving nodes.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Wildcard explosion (pattern matching everything): compile-time pattern audit rejects over-broad wildcards with the match count.
+- Exposure-counter overflow at high QPS: 64-bit counters with a documented rotation policy, never silent wrap.
+- Cohort merge storm (everyone overlaps): union-find stays near-constant, but the analysis falls back to sampled counting with a logged event.
+- Stale flag config on some nodes: version header on evaluations; lagging nodes flagged in the adoption dashboard.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Deep-graph recursion crash | 500s | iterative traversal + depth guard |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Stale graph snapshot | wrong paths | versioned snapshot + refresh cadence |
+## Rollout
+1. Shadow-evaluate production traffic; compare decisions vs the legacy if/else engine exactly.
+2. Serve internal flags live; guardrails armed on exposure sums.
+3. Full migration with the experiment queue driving ramps.
 
-## Cost note
-- Optimized variants (list adjacency, DSU, heap) cut compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. Shadow week shows zero decision mismatches on sampled evaluations.
+2. Over-broad wildcard test is rejected at compile time with the match count.
+3. Exposure guard trips and reschedules a ramp step in the chaos test.
+4. Cohort overlap test counts shared users once (verified on a hand-built case).
+5. Rollback pins the legacy engine back within the documented time.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://algs4.cs.princeton.edu/41undirected/ (Princeton Algorithms — graph processing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayDeque.html (Java ArrayDeque — traversal queues/stacks)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Social/location graphs are sensitive; minimize + encrypt.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Traversal depth | histogram | guard regressions |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Adjacency ≈ V+E entries; cap sync V, queue huge graphs.
+## Cost and contract notes
+- Evaluation latency budget split per structure so regressions attribute correctly (trie vs Fenwick vs find).
+- Exposure-guard trips costed in delayed experiment value; backoff parameters versioned with flags.
+- Config-adoption lag SLO per node cohort; laggards paged after the documented window.
+- Contract: evaluation responses carry flag-config version for reproducibility of billing disputes.

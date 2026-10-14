@@ -1,48 +1,41 @@
 # VISION — Matrix Algorithms
-> Mastery path. Lab `33-matrix-algorithms`.
+> Direction: from triple loops to thinking in exponents, tiles, and memory traffic.
 
 ## Where this sits
-- Matrix Algorithms is one tool in the algorithms arsenal: block decomposition plus Strassen recursion plus LU/QR invariants.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+- Dense multiplication spans naive O(n^3), Strassen O(n^2.81), and near-optimal research exponents; production runs blocked O(n^3) because constants and cache behavior dominate.
+- Matrix powers connect to recurrences (Fibonacci), graph path counts, and Markov steps via exponentiation by squaring.
+- The same tiling ideas recur in convolution, attention, and scientific codes.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; naive O(n^3), Strassen O(n^2.81) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (graphics transforms, ML training kernels, scientific simulation).
+## 4-week direction
+- Week 1: hand-multiply the lab 3x3 pair; reproduce all three rows without code.
+- Week 2: finish MINI_PROJECT; measure the transpose effect at n = 512 yourself.
+- Week 3: work the Strassen recombination formulas until each of the 7 products is justified.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard the cutover reasoning in 10 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Derive F(n) from M^n on demand and compute fib20 = 6765 by powering.
+- Explain the Strassen exponent log2 7 from the 7-multiplication recurrence.
+- Predict whether transpose-then-multiply helps for a given size, then verify.
 
-## How to know you are done
-- Explain block recursion + crossover point; seven-multiplication identity without notes; derive O(n^2.81) via Master theorem on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This lab does not cover sparse formats, iterative eigensolvers, or distributed (Cannon/SUMMA) multiplication.
+- No claim that a better exponent is always faster in practice; crossover analysis is mandatory.
+- Numerical stability of fast algorithms is named but not derived here.
+
+## Pitfalls
+- Benchmarking without warmup and reporting noise as signal.
+- Assuming Strassen wins at textbook sizes; measure the crossover on your hardware.
+- Ignoring remainder tiles when n is not a multiple of the tile size.
 
 ## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+- Pair with 29-fft for the transform side of fast algorithms and 25-optimization-algorithms for the trainer that consumes Gram matrices.
+- Revisit when a multiply job gets slow; the tile/transpose checklist transfers to any dense kernel.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Weekly drills
+- Recompute one row of the lab 3x3 product by hand in under 3 minutes.
+- Recombine the 7 Strassen products into C11..C22 from the formulas without peeking.
+- State the exponent log2 7 ~= 2.81 and the two overheads that delay the crossover.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not adopt a fast algorithm on exponent alone; crossover first, deploy second.
+- Do not benchmark without warmup, median-of-runs, and machine/JDK labels.

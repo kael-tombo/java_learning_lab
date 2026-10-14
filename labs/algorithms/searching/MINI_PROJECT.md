@@ -1,83 +1,38 @@
 # MINI_PROJECT — Searching Track
-> Implement + benchmark + visualize. Track `searching`.
+> Search-method shootout on sorted arrays, hash tables, and BSTs: binary, exponential, interpolation, hash lookup, and tree search with hit/miss splits.
 
-## Goal
-- Build a runnable Java CLI that benchmarks linear vs binary vs interpolation vs exponential search to n=10M; emits CSV + ASCII visualization.
+## Inputs
+- Sorted int arrays (n = 10k/100k/1M, fixed seeds) plus 50/50 present/absent query batches of 10k keys.
+- Uniform vs skewed (zipf-like) query distributions to stress interpolation search honestly.
+- Hash table at load factors 0.5/0.75/0.95 with open addressing; BST built by random insertions.
 
-## Spec
-1. `lab.searching.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving [lo,hi) shrinkage.
+## Build steps
+1. Implement binary search (half-open intervals), exponential search (range-find then binary), and interpolation search with a division-by-zero guard.
+2. Build the hash table with documented probe counting and the BST with height tracking.
+3. Time 10k-query batches split into hit Avg and miss Avg per (method, n, distribution); record comparisons/probes alongside ms.
+4. Demonstrate interpolation collapse on skewed keys (report the measured probe inflation, whatever it is).
+5. Document the load-factor effect: probe counts at 0.5 vs 0.95 from real runs.
 
-## Starter code
-```java
-package lab.searching;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. All methods return identical hit/miss answers to Arrays.binarySearch on the same batches (or document the deliberate semantic difference).
+2. Results table has hit and miss columns separately; no blended averages hiding miss cost.
+3. Interpolation guard test (constant-slope segment) passes without division errors.
+4. Load-factor table shows probe growth from real runs at all three factors.
+5. BST height recorded per n beside the measured search time (no height claim without the number).
+6. Write-up states binary O(log n), interpolation expected O(log log n) under uniformity, hash expected O(1), BST O(h).
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Where does exponential search beat plain binary, in cache terms?
+2. How far does skew push interpolation from its uniform-case bound?
+3. At what load factor does open addressing stop being worth it on your runs?
 
-## Visualization
-- For n<=16 print lo/hi/mid per probe.
-- Example (ASCII): `lo=0 hi=8 mid=4 a[mid]=7 -> lo=5 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Full-text and fuzzy search, learned indexes, and concurrent hash tables (each named with its trigger).
+
+## Hit/miss numbers to reproduce
+- Binary search on 1M ints must land near 20 comparisons per query; record yours beside the theory.
+- Expected qualitative results: interpolation shines on uniform and inflates on skew; open addressing degrades past 0.9 load.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating skewed/rotated worst-cases.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches O(log n).
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add jump search (block size sqrt(n)) and place its measured comparisons between linear and binary.
+- Add a Bloom prefilter in front of the miss batch and measure skipped probes vs filter cost.

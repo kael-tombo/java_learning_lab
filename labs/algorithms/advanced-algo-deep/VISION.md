@@ -1,48 +1,42 @@
 # VISION — Advanced Algorithms Deep Track
-> Mastery path. Track `advanced-algo-deep`.
+> Direction: from knowing ten algorithms to governing them — guarantees, limiters, fallbacks, and the paperwork that makes them real.
 
 ## Where this sits
-- This track surveys 8 advanced domains: bit tricks, number theory, string automata, geometry, combinatorics, parallelism, randomness, approximation.
-- Master it and neighboring tracks get 2× easier (shared invariants + proof templates).
+- Exact methods (Held-Karp, branch-and-bound, BK clique, KMP/Aho) certify answers within measured n ceilings.
+- Bounded-error methods (sketches, Bloom sizing, competitive ratios, Miller-Rabin with stated bases) trade certainty for scale with priced error.
+- Empirical methods (Strassen crossover, heuristic TSP, simulator timing) answer only through measurement on the target machine.
+- Approximation context: Christofides 3/2 for metric TSP and Karger randomized min-cut as named results with pointers; LP rounding as named technique.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; one bound per domain memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (crypto, GIS, CDN, scheduling).
+## 4-week direction
+- Week 1: reproduce all ten reference outputs through one runner; fill the limiter column from real runs.
+- Week 2: finish MINI_PROJECT with six extensions running and four honestly deferred.
+- Week 3: write paradigm cards for two past production incidents (what guarantee was assumed vs held).
+- Week 4: REAL_WORLD_PROJECT review; defend two accept/reject decisions from limiter data in 15 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Classify any proposal as exact/bounded-error/empirical with its limiter on sight.
+- Quote all ten reference outputs and their binding constraints from memory.
+- Run the battery green on a fresh machine and explain any drift found.
 
-## How to know you are done
-- Explain one invariant per sub-lab without notes; derive one bound on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This track proves no new theorems; it operationalizes labs 31-40 plus named approximation results.
+- Quantum execution, learned indexes, and parallel solvers appear as named neighbors, not content.
+- No claim that the ten paradigms cover everything; the card template has an explicit other row.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Pitfalls
+- Filing cards without measurements; the battery exists to prevent exactly this.
+- Confusing bounded-error with exact when the error budget is merely small.
+- Letting reference drift go uninvestigated; green must mean green.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Adjacent tracks
+- This track sits above labs 31-40 and beside 25-optimization-algorithms (heuristics/approximation) — it governs, they compute.
+- Revisit quarterly with the calibration data; the board is only as good as its last claims-vs-measured review.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## Weekly drills
+- Recite all ten reference outputs with limiters from memory, two paradigms per day.
+- Classify a fresh proposal (exact/bounded/empirical) in under 5 minutes with fallback named.
+- Re-derive one bound per week on rotation (Strassen exponent, FPR optimum, Held-Karp table).
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not accept cards without measurements; the battery is the gate, not decoration.
+- Do not let drift slide; investigate every red cell the same day.

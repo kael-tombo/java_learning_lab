@@ -1,48 +1,43 @@
-# VISION — Bit Manipulation (Advanced Tricks)
-> Mastery path. Lab `26-bit-manipulation`.
+# Vision: Bit Manipulation
 
-## Where this sits
-- Bit Manipulation (Advanced Tricks) is one tool in the algorithms arsenal: SWAR, bit DP, succinct structures.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+## Direction
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; popcount O(1) HW; subset DP O(n 2^n) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (DP over subsets (TSP Held-Karp), chess bitboards, codecs).
+This lab covers integer bit tricks: masks and shifts for field access,
+popcount for density, and XOR cancellation for lone-element problems. The
+practical skill is reaching for the one-line identity first and stating its
+guard conditions (sign, zero, width) before using it.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## What to learn
 
-## How to know you are done
-- Explain subset iteration invariant (sub = (sub-1)&mask) without notes; derive popcount O(1) HW; subset DP O(n 2^n) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+- Mask and shift: isolate, set, clear, and test individual bits.
+- Kernighan popcount: O(set bits) counting and when tables beat it.
+- XOR identities: x^x=0, x^0=x; pair cancellation and range XOR.
+- Power-of-two test: x & (x-1) == 0 with the positivity guard.
+- Width care: int versus long shifts, sign extension on right shift.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Non-coverage
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+- This lab does not cover floating-point bit layouts.
+- It does not cover SIMD, bitset libraries, or compression codecs.
+- It does not cover cryptography or hash-function design.
+- It does not cover arbitrary-precision arithmetic internals.
+- All examples fit in 32-bit ints with stated guards.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## How to use this lab
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
+Reproduce the three MOCK_INTERVIEW programs from memory, then extend Q3 with
+a bit-reversal routine and verify it against string reversal on 16 values.
+Finish with MINI_PROJECT's flag-register exercise.
 
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Pitfalls
+
+- Dropping the positivity guard on the power-of-two test.
+- Shifting ints by 32 or more and meeting modular shift behavior.
+- Using XOR cancellation where counts, not parity, decide.
+
+## Done when
+
+- You can write popcount, lone-element, and power-of-two from memory.
+- You can state the guard each trick needs without prompting.
+- You can explain why XOR order never matters for cancellation.
+- You can predict shift results for negative ints correctly.

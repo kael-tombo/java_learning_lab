@@ -1,48 +1,40 @@
-# REAL_WORLD_PROJECT — DSU with Rollbacks (Persistent/Undoable Union-Find)
+# Offline Connectivity Judge on Undoable Union-Find
 
-Production use-case: **offline dynamic-connectivity judge (add/remove edges)**. Secondary: versioned network partition simulator.
+Docket. A judge receives a timeline of edge additions AND removals plus
+connectivity questions at named instants - the classic offline dynamic
+connectivity problem. Persistent answers come from a rollback DSU walked
+over a segment tree of edge lifespans.
 
-## 1. Problem statement
-Serve offline dynamic connectivity workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Rollback DSU. Union by size without path compression (compression would
+break undo); every mutation pushes an inverse record on an op stack.
+Snapshot returns the stack height; rollback pops to it. Union, find
+(O(log n) via tree height bound), snapshot, and rollback are the whole
+surface.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Lifespan engine. Each edge's alive interval is added to segment-tree
+nodes covering it; a DFS applies node edges, answers queries at leaves,
+then rolls back. Query answers must equal a brute-force per-instant BFS
+oracle on 300 generated timelines.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Partition simulator. Second caller: scripted network partitions
+applied and reverted in nesting order; nested rollback correctness
+checked by interleaving three partition scopes and verifying each level
+restores exactly.
 
-## 4. Metrics to report
+Depth audit. Union tree height tracked; the log-height bound is shown
+measured, and a test asserts find cost stays within it at 100k unions.
+Op-stack memory quoted per 10k unions so the undo cost is explicit.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Misuse file. Rollback past a snapshot (typed error), query with no
+active edges (specified empty answer), edge removed before added
+(ingest rejects with line number), snapshot leak across timelines
+(fresh DSU per case, enforced).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Disjoint-set_data_structure
-- https://cp-algorithms.com/data_structures/disjoint_set_union.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Deliver. DSU, lifespan engine, simulator, oracle logs, height data.
+Marks: rollback exactness 12, timeline parity 10, bound plus misuse 8.
+## Judge log
+- Timelines versioned with answers.
+- Oracle rerun on every change.
+- Height bound asserted in CI.
+- Nested-scope test kept green.
+- Op-stack memory quoted.

@@ -1,85 +1,41 @@
-# REAL_WORLD_PROJECT — Game Theory Algorithms (Minimax / Grundy)
-> Production use-case with metrics + prevention. Lab `22-game-theory`.
+# Real-World Project: Tournament Rules Analyzer
 
-## Use-case: chess engines, auctions, mechanism design
-- System: backend service handling large inputs where Game Theory Algorithms (Minimax / Grundy) is on the hot path.
-- Why this algorithm: zero-sum games, equilibria, combinatorial games gives minimax O(b^d), alpha-beta O(b^(d/2)) best; solving Nash PPAD which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Game Theory Algorithms (Minimax / Grundy)) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A club runs a small deterministic board-game tournament and wants to check
+whether its starting positions and payoff table favor one side. Build an
+analyzer that evaluates game trees under optimal play and checks payoff
+matrices for pure equilibria.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `tree.txt`: leaf payoffs left to right plus depth, e.g. `depth 3` then 8 ints.
+- `payoffs.csv`: rows `row_move,col_move,row_payoff,col_payoff` for a 2x2 game.
+- A flag selecting analysis: `minimax`, `nash`, or `both`.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
+## Steps
 
-## Cost note
-- Optimized variant (minimax O(b^d), alpha-beta O(b^(d/2)) best; solving Nash PPAD) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Parse the tree file; validate leaf count equals 2^depth.
+2. Evaluate the minimax value with max to move at the root.
+3. Re-evaluate with alpha-beta; record node visits for both runs.
+4. Parse the payoff matrix; validate exactly four cells present.
+5. Test each cell for mutual best response; list equilibria found.
+6. Emit `analysis.txt` with the game value, visit counts, and equilibria.
+7. Print which side the tree favors and by how many payoff points.
+8. Write a two-paragraph rules note: fair or biased, with numbers cited.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Minimax and alpha-beta values agree on every accepted tree file.
+2. Alpha-beta visit count is less than or equal to the full node count.
+3. Analyzer lists (1,1) as the equilibrium for the dilemma matrix in Q3.
+4. Malformed input (wrong leaf count, missing cell) exits with a message.
+5. `analysis.txt` contains value, both visit counts, and equilibrium list.
+6. Rules note cites the computed value and at least one equilibrium.
+7. All output uses plain ASCII characters.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+- Plain Java only, no external libraries; single-threaded deterministic run.
+- Depth capped at 12 to keep full enumeration feasible.
+- No heuristic evaluation; leaves are exact payoffs only.

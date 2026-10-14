@@ -1,38 +1,41 @@
-# Data Structures Track — Vision
+# Data Structures Track - Vision
 
-## Where this track goes
-From array indexing to link-cut trees: 35 labs that turn "knows the name"
-into "can implement, analyze, and operate it." Each lab pairs interview
-preparation (MOCK_INTERVIEW.md) with a production-flavored build
-(REAL_WORLD_PROJECT.md) so concepts transfer to real systems.
+## Direction
+Thirty-five labs carry builders from array indexing to link-cut trees,
+turning name recognition into implement, analyze, and operate. Interview
+readiness (MOCK_INTERVIEW.md) pairs with a production-style build
+(REAL_WORLD_PROJECT.md) in each lab so ideas survive contact with real
+workloads.
 
-## The arc
-- Labs 01-08 build fluency: dynamic arrays, pointer surgery on lists,
-  stack/queue discipline, tree traversals, graph search (BFS/DFS/topo),
-  hash table internals, heap patterns (top-K, median), trie prefix search.
-- Labs 09-20 build judgment: balanced trees and when B-trees win on disk,
-  Bloom sizing by formula, DSU for connectivity, segment vs Fenwick vs
-  sparse-table range queries, skip lists, LRU eviction, concurrent maps
-  and queues, spatial indexes, ring buffers, persistent versions.
-- Labs 21-35 build depth: open-addressing variants, Merkle proofs, undoable
-  DSU for offline connectivity, locality tricks (unrolled lists, Morton codes,
-  cache-oblivious layouts), cardinality/frequency/similarity sketches,
-  vEB integer structures, ropes, exact-cover search, treaps, versioned
-  segment trees, dynamic-forest link-cut trees.
+## The progression
+- Labs 01-08 build fluency: growable arrays, list pointer surgery,
+  stack and queue discipline, traversal habits, graph search (BFS, DFS,
+  topo order), hash internals, heap patterns (top-K, median), prefix
+  search on tries.
+- Labs 09-20 build judgment: balanced trees and the disk case for
+  B-trees, Bloom sizing from its formula, connectivity via DSU, range
+  options (segment vs Fenwick vs sparse table), skip lists, LRU policy,
+  concurrent maps and queues, spatial indexes, ring buffers, versioned
+  structures.
+- Labs 21-35 build depth: open-addressing designs, Merkle proofs,
+  undoable DSU for offline questions, locality craft (unrolled lists,
+  Morton codes, oblivious layouts), sketch trio (cardinality, frequency,
+  similarity), vEB integer search, ropes, exact-cover solving, treaps,
+  versioned segment trees, dynamic forests.
 
-## How success looks
-A graduate sizes an LRU by hit-rate SLO, picks Fenwick over a segment tree
-for prefix sums, reaches for a sketch with a stated error budget instead of
-unbounded memory, and can whiteboard path copying, lazy propagation, cuckoo
-displacement, or Merkle inclusion proofs with correct complexities.
+## Graduate profile
+A finisher sizes a cache from a hit-rate SLO, picks Fenwick for pure
+prefix traffic, reaches for a sketch with a written error budget over
+unbounded memory, and can derive path copying, lazy propagation, cuckoo
+displacement, or Merkle inclusion cost from first principles.
 
-## Non-goals
-Not a cookbook of memorized solutions: every claim ties to an invariant you
-can state, a complexity you can derive, and a snippet you can run. Not
-coverage for its own sake: exotic structures earn their labs by real uses
-(maps, caches, indexes, sync proofs, solvers) documented per lab.
+## Boundaries
+This track is not memorized solutions: each claim links to an invariant
+stated in words, a complexity derived on paper, and behavior observed in
+a run. Exotic structures justify their labs through deployed uses -
+caches, indexes, sync proofs, solvers - named in each lab.
 
-## Maintenance
-Keep snippets compiling under `javac --release 21`, outputs observed (never
-guessed), prose ASCII-clean in code output, and each file within 30-80
-content lines. When the JDK changes behavior relied upon, update the lab.
+## Upkeep
+Snippets compile under `javac --release 21` with observed outputs, code
+output stays plain ASCII, and every doc holds 30-80 content lines. When
+JDK behavior shifts under a lab, the lab gets updated.

@@ -1,38 +1,40 @@
-# Data Structures Track — Mini Project
+# Data Structures Track - Mini Project
 
-## Goal
-Build one small system combining at least three structures from different
-lab groups (e.g. trie + heap + Bloom filter, or segment tree + DSU + LRU).
+## Aim
+Combine at least three structures from separate lab families into one
+small working system (examples: trie + heap + Bloom filter, or segment
+tree + DSU + LRU).
 
-## Suggested builds (pick one)
-1. **Search box service**: trie autocomplete, LRU for hot suggestions,
-   Bloom pre-filter over the document id set. Measure suggest p99.
-2. **Leaderboard service**: skip list or balanced tree for ranking, Fenwick
-   tree for score distribution, HyperLogLog for unique-player counts.
-3. **Network lab**: union-find for connectivity, graph BFS for routes,
-   Merkle tree over snapshots for tamper-evident history.
-4. **Editor backend**: rope or unrolled-list buffer, persistent versions for
-   undo, rolling hash (Rabin-Karp style) for search.
+## Build options (choose one)
+1. **Suggest box**: trie completions, LRU over hot prefixes, Bloom
+   membership over document ids. Quote suggestion latency at p99.
+2. **Rankings**: skip list or balanced tree for order, Fenwick tree for
+   score histograms, HyperLogLog for distinct-player estimates.
+3. **Net lab**: union-find for connectivity, BFS for paths, Merkle tree
+   over snapshots for tamper-evident state.
+4. **Text backend**: rope or unrolled-list buffer, versioned roots for
+   undo, Rabin-Karp-style rolling search.
 
-## Requirements
-- Narrow interfaces per structure; swap one implementation without
-  touching callers (e.g. segment tree vs Fenwick for prefix sums).
-- Seeded workload generator plus an oracle cross-check (TreeMap/HashMap/
-  sorted brute force) with zero mismatches on 10k operations.
-- Metrics log (CSV: op, nanos, size) and a one-page report: target vs
-  actual, bottleneck, next scaling step.
+## Build rules
+- One narrow interface per structure; swapping an implementation (say
+  Fenwick for segment tree on prefix sums) must not touch callers.
+- Seeded workload plus oracle comparison (HashMap / TreeMap / brute
+  force): zero divergences across 10k operations.
+- CSV operation log (op, nanos, size) feeding a one-page outcome note:
+  goal vs measured, bottleneck, next scale move.
 
-## Constraints
-- Single module, no frameworks; `com.sun.net.httpserver` or CLI is fine.
-- Pure-Java, deterministic seeds, reproducible runs.
-- 30-80 line discipline applies to docs; code stays readable over clever.
+## Limits
+- One module, zero frameworks; plain CLI or the JDK built-in HTTP
+  server covers serving needs.
+- Pure Java with fixed seeds so reruns reproduce exactly.
+- Docs stay within 30-80 content lines; clarity beats cleverness.
 
-## Milestones (~8 hours)
-1. Slice 1 (2h): domain model + two structures wired, CLI works on fixture.
-2. Slice 2 (3h): third structure + persistence + config flags.
-3. Slice 3 (2h): metrics + benchmark + chart.
-4. Hardening (1h): oracle test, edge/chaos pass, ops note.
+## Hour plan (~8 hours)
+1. First slice (2h): domain model plus two structures, CLI on fixture.
+2. Second slice (3h): third structure, file persistence, config flags.
+3. Third slice (2h): operation log, benchmark run, result chart.
+4. Hardening (1h): oracle pass, hostile-input pass, short ops note.
 
-## Grading
-- Works end-to-end from cold start (3 pts) - Metrics honest + reproducible
-  (3) - Edge/chaos handled (2) - Report depth (2). Ship >= 7/10.
+## Scoring
+- Cold-start end-to-end run (3 pts) - honest reproducible numbers (3)
+  - hostile inputs covered (2) - report quality (2). Pass at 7 or more.

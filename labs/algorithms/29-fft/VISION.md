@@ -1,48 +1,44 @@
-# VISION — Fast Fourier Transform
-> Mastery path. Lab `29-fft`.
+# Vision: FFT
 
-## Where this sits
-- Fast Fourier Transform is one tool in the algorithms arsenal: butterfly plus roots-of-unity divide and conquer.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+## Direction
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(n log n) time and space memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (signal processing, polynomial multiplication, audio analysis).
+This lab covers the fast Fourier transform at use level: bit-reversal
+ordering, radix-2 Cooley-Tukey combine with twiddle factors, inverse via
+negated angles, and convolution through pointwise multiplication. The
+practical skill is running a 4-point transform by hand and stating the
+O(n log n) bound against naive O(n^2).
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## What to learn
 
-## How to know you are done
-- Explain butterfly + roots-of-unity recursion; bit-reversal permutation without notes; derive O(n log n) via Master theorem on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+- Bit-reversal: why iterative radix-2 starts from permuted input.
+- Combine step: even/odd halves joined with twiddle-factor weights.
+- Inverse: negated-angle transform plus 1/n scaling, verified by roundtrip.
+- Convolution theorem: time convolution equals frequency multiplication.
+- Padding: zero-pad to a power of two covering the full result length.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Non-coverage
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+- This lab does not cover number-theoretic transforms or finite fields.
+- It does not cover 2D transforms or image-processing pipelines.
+- It does not cover windowing, leakage, or spectral estimation practice.
+- It does not cover FFTW-style planning or vectorized implementations.
+- All signals here are 4-8 point teaching vectors with exact spectra.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## How to use this lab
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
+Hand-reverse 3-bit indices before running Q1, verify the [1,1,1,1] spectrum
+of Q2 against a naive DFT sum, then check the convolution of Q3 by direct
+multiplication before trusting the transform path.
 
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Pitfalls
+
+- Forgetting the 1/n scale after the inverse transform.
+- Circular wraparound when padding is shorter than the true result.
+- Rounding noise mistaken for signal; round only for display.
+
+## Done when
+
+- You can write the 8-index bit-reversal from memory.
+- You can state the combine formula and the twiddle role.
+- You can convert a convolution into transform-multiply-invert steps.
+- You can name both padding rules (power of two, result length).

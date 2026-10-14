@@ -1,48 +1,41 @@
-# REAL_WORLD_PROJECT — Circular (Ring) Buffers
+# Jitter Buffer and Telemetry Ring on Fixed Rings
 
-Production use-case: **audio-stream jitter buffer / telemetry ring**. Secondary: Disruptor-style SPSC event pipeline.
+Brief. Audio playback stutters when packets arrive unevenly; the
+telemetry service drops history when its log grows unbounded. Both get
+fixed-capacity rings: overwrite-oldest for audio continuity, backpressure
+for telemetry with a drop counter. No allocation on the steady path.
 
-## 1. Problem statement
-Serve bounded spsc queues, streaming i/o workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Ring mechanics. Power-of-two capacity with index masking, monotonic
+head/tail sequence counters (never bare indices) so full vs empty is
+exact and wrap bugs are detectable. Push/pop O(1); batch drain for the
+consumer side. SPSC first, then an MPSC variant with CAS tail - the two
+are separate classes with separate tests.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Audio caller. Jitter buffer holding 200 ms of frames; late packets count
+as lost, underruns increment a gap counter, overruns overwrite oldest
+with an overrun counter. A scripted jitter trace (recorded interarrival
+distribution) must yield identical gap/overrun counts across runs.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Telemetry caller. Sensor ring of 64k samples with snapshot reads for
+the dashboard; readers never block writers, torn reads prevented by
+sequence fencing. Snapshot contents verified against a locked model on
+10k randomized interleavings.
 
-## 4. Metrics to report
+Pipeline caller. Disruptor-style SPSC event pipe chaining two stages;
+end-to-end order must equal input order on 100k events with zero drops
+at 1x speed, and drops reconciled exactly at 4x overspeed.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Failure cards. Reader outruns writer (empty signal, not stale data),
+writer laps reader in overwrite mode (overrun counted, newest intact),
+torn snapshot attempt (sequence retry, counted), capacity not power of
+two (constructor rejects).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Circular_buffer
-- https://www.boost.org/doc/libs/1_82_0/doc/html/circular_buffer.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Evidence. Trace replays, interleave logs, overspeed reconciliation,
+fencing proof. Scoring: ring exactness 12, caller replay fidelity 10,
+hazard coverage 8.
+## Trace library
+- Jitter trace A: mild wander.
+- Jitter trace B: storm burst.
+- Overspeed 4x case recorded.
+- Interleave seed list kept.
+- Gap counts must reproduce exactly.

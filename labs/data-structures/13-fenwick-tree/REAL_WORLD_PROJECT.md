@@ -1,48 +1,38 @@
-# REAL_WORLD_PROJECT — Fenwick Tree (Binary Indexed Tree)
+# RFC: Live Counters and Order Statistics on a Fenwick Tree
 
-Production use-case: **live inversion / leaderboard counting service**. Secondary: frequency-table order-statistics engine.
+Status: draft. Question before the group: for prefix-sum-heavy traffic,
+should the leaderboard service use a Fenwick tree rather than the
+segment tree of lab 12, trading generality for half the memory and
+shorter code.
 
-## 1. Problem statement
-Serve prefix sums, inversions, order statistics workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Structure. BIT array of length n+1 with least-significant-bit stepping;
+add(i, delta) and prefix(i) each touch O(log n) cells. Range sum is two
+prefix calls. Memory is one array of n+1 longs - roughly half the 4n
+segment layout - and the RFC asks reviewers to confirm the measured
+halving at 1M counters.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Counting service. Live event counters with per-category prefix queries
+and rank drinks: how many events at or below score X, kth percentile by
+binary lifting on the tree in O(log n). Percentile answers checked
+against a sorted-array oracle on 50k samples.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Inversion caller. Streaming inversion counts over match results verify
+the tree on a second shape: process from the right, query prefix below
+current, add current. Totals must equal the O(n^2) oracle on 8k inputs.
 
-## 4. Metrics to report
+Build note. O(n) construction from a frequency array is specified and
+timed against n insertions; both paths must yield identical trees.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Limits, stated plainly. No range-min/max, no range-add without a second
+tree, indices start at 1 (the RFC mandates a guard translating 0-based
+callers). Each limit gets a test proving the failure is loud.
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Fenwick_tree
-- https://cp-algorithms.com/data_structures/fenwick.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Decision requested. Fenwick vs segment tree for prefix-only traffic,
+with the memory and code-size numbers attached. Marks: prefix proof 12,
+inversion plus percentile parity 10, limit tests 8.
+## Decision log
+- Prefix-only traffic confirmed first.
+- Memory halving measured, not assumed.
+- 1-based guard reviewed twice.
+- Second-tree need ruled out in writing.
+- Verdict dated and signed.

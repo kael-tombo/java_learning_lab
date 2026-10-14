@@ -1,48 +1,39 @@
-# REAL_WORLD_PROJECT — LRU Cache (HashMap + Doubly-Linked List)
+# Thumbnail Cache Postmortem-First: LRU with a Hit-Rate SLO
 
-Production use-case: **HTTP response / thumbnail cache for a web service**. Secondary: database query-result cache with hit-rate SLO.
+Opening incident (simulated). The image service paged at 03:12 because
+origin fetches tripled; the thumbnail cache had silently shrunk to a
+15 percent hit rate after a deploy changed key normalization. This lab
+rebuilds that cache so the failure cannot recur quietly.
 
-## 1. Problem statement
-Serve o(1) get/put with eviction workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Cache core. HashMap from key to doubly-linked node plus head/tail
+sentinels; get promotes to head, put inserts at head and evicts from
+tail. Both verbs are O(1) worst case and the audit asserts list length
+equals map size after every batch in test mode.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+SLO contract. Hit rate at or above 80 percent on the replayed week of
+traffic at 64k entries; p99 get under the posted budget on the lab
+machine; zero stale serves past TTL. A dashboard tracks hit rate in
+5-minute buckets so normalization drift pages within one bucket.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Second caller. Database query-result cache reusing the same core with a
+smaller cap and per-query TTLs; stale-hit count must be zero on the
+replay with clock skew injected.
 
-## 4. Metrics to report
+Eviction proof. A scripted access pattern with known Belady-optimal
+behavior bounds the hit rate from above; the LRU result is quoted as a
+fraction of optimal, and the writeup names the pattern class (scan,
+loop, hot set) where LRU degrades.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Failure rehearsal. Key-normalization change replayed (hit-rate alarm
+must fire), thundering herd on one cold key (single-flight flag), full
+restart (warmup from snapshot vs cold, both timed).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Cache_replacement_policies
-- https://docs.oracle.com/javase/8/docs/api/java/util/LinkedHashMap.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Close-out. Cache, replay harness, SLO dashboard data, alarm drill log,
+snapshot warmup note. Scoring: O(1) plus audit strength 12, SLO proof
+on replay 10, incident drills 8.
+## On-call card
+- Hit-rate alarm at 75 percent.
+- Normalization diff check weekly.
+- Warmup snapshot age limit: one day.
+- Single-flight flag always on.
+- Postmortem linked from dashboard.

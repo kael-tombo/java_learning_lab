@@ -1,85 +1,41 @@
-# REAL_WORLD_PROJECT — Scheduling Algorithms
-> Production use-case with metrics + prevention. Lab `24-scheduling-algorithms`.
+# Real-World Project: Room Booking Maximizer
 
-## Use-case: OS schedulers, CI queues, job shops
-- System: backend service handling large inputs where Scheduling Algorithms is on the hot path.
-- Why this algorithm: ordering jobs under constraints gives SJF optimal avg wait; EDF optimal uniprocessor; multiprocessor NP-hard which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Scheduling Algorithms) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A venue receives room requests as (start, end) pairs and wants the largest
+conflict-free subset plus a machine-style plan for two overflow rooms. Build
+a tool that computes the greedy selection and checks it against brute force.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `requests.csv`: rows `id,start,end` with integer hours, at least 30 rows.
+- Machine count 2 for the overflow-room extension.
+- A flag selecting `single` room or `overflow` analysis.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
+## Steps
 
-## Cost note
-- Optimized variant (SJF optimal avg wait; EDF optimal uniprocessor; multiprocessor NP-hard) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Parse and validate rows: end after start, no negative times.
+2. Sort requests by end time; greedily accept non-overlapping ones.
+3. Record the accepted set and its count.
+4. Brute-force all subsets (inputs capped at 20 rows for this check) and
+   confirm the greedy count equals the brute-force maximum.
+5. For overflow mode, list-schedule all requests onto 2 rooms greedily.
+6. Report per-room load and the makespan with both lower bounds cited.
+7. Emit `schedule.txt` with accepted ids, counts, loads, and makespan.
+8. Write a two-paragraph operations note on when a request must be refused.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Greedy count matches brute-force maximum on the capped fixture.
+2. Accepted set verified pairwise conflict-free by the checker.
+3. Overflow loads cover every request exactly once across 2 rooms.
+4. Makespan is at least ceil(total/2) and at least the longest request.
+5. Invalid rows (end before start) are rejected with a message.
+6. `schedule.txt` contains ids, counts, loads, makespan, and bounds.
+7. All output uses plain ASCII characters.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+- Plain Java only, no external libraries; deterministic single run.
+- Brute-force check limited to 20 rows; greedy handles the full file.
+- Times are integers; no date parsing or time-zone handling.

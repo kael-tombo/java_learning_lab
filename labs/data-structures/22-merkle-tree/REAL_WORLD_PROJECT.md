@@ -1,48 +1,39 @@
-# REAL_WORLD_PROJECT — Merkle Trees
+# File-Sync Integrity Checker on Merkle Proofs
 
-Production use-case: **file-sync integrity checker (rsync-style block proofs)**. Secondary: transparency-log / audit-trail verifier.
+Story. Two replicas of a 10k-file dataset must converge over a slow
+link without re-sending everything. Block hashes roll up into a Merkle
+root; differing subtrees pinpoint changed blocks, and inclusion proofs
+of O(log n) hashes let either side verify a block against the root.
 
-## 1. Problem statement
-Serve tamper-evident inclusion proofs workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Tree build. Files chunked to 64 KB blocks, leaves SHA-256 hashed, pairs
+up to the root with odd-leaf duplication documented. Root for the
+fixture is published in the repo so any tampering with the fixture is
+itself detectable.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Sync protocol. Exchange roots; on mismatch, descend to disagreeing
+children and sync only those leaves. The counted win is bytes sent vs
+full copy on scripted change sets (1 percent, 10 percent, 50 percent of
+blocks touched).
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Proof duties. prove(block) returns sibling hashes plus direction bits;
+verify(block, proof, root) recomputes upward. Proofs checked against an
+independent verifier on 5k random blocks; proof size must equal tree
+depth exactly.
 
-## 4. Metrics to report
+Transparency caller. Append-only audit log where each entry's inclusion
+is provable against the published root; auditors sample 1k entries and
+all verify. Second-preimage caution documented: domain-separated leaf
+vs interior hashing.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Tamper drills. Flip one byte in a block (root changes, proof path
+names the leaf), reorder two chunks (root changes), truncate the proof
+(verify rejects), swap leaf/interior roles (domain tags reject).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Merkle_tree
-- https://bitcoin.org/bitcoin.pdf
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Hand in. Tree, sync CLI, verifier, byte-saving table, tamper logs.
+Scoring: proof exactness 12, sync savings counted 10, tamper handling 8.
+## Sync ledger
+- Root published per release.
+- Change-set sizes: 1, 10, 50 percent.
+- Bytes-saved table updated.
+- Tamper drill monthly.
+- Verifier version pinned.

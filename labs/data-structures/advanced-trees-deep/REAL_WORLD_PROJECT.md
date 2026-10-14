@@ -1,44 +1,37 @@
-# REAL_WORLD_PROJECT — Advanced Trees (Deep)
+# Ordered Index Service with a Prefix Module: Deep Cut
 
-Production use-case: **an ordered index service** — leaderboard / time-series snapshot queries. Secondary: a prefix-search module on top of tries.
+Charter. A leaderboard and snapshot-query service over 1M scored entries
+needs rank, range, and as-of-version reads; a prefix-search module adds
+name completion. This deep lab layers balanced-tree fluency (AVL and
+red-black behind one interface) with trie completion and a B-tree disk
+note.
 
-## 1. Problem statement
-Serve add/remove/query with a target p99 latency; pick the structure via SLOs. SLOs: p99 latency, throughput, memory.
+Index core. Both balanced variants serve put/get/delete/rank/select/
+range with O(log n) worst-case behavior; a 60k-op fuzz vs TreeMap must
+show zero mismatches. Sorted 100k ingest proves heights stay logarithmic
+where the plain BST chained - height series attached.
 
-## 2. Architecture
-- Ingest: mutation stream.
-- Core: pluggable OrderedSet interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot / WAL.
+Snapshot reads. Version-stamped queries answered from retained roots
+(path copying in miniature); a read at version V must equal a rebuilt
+map at V on 200 sampled versions. Retention cap with pin API documented.
 
-## 3. Implementation plan (2 weeks)
-W1: interface + one backend + parity tests.
-W2: pluggable backends + JMH + runbook + deploy notes.
+Prefix module. Trie completion over 100k names with frequency ranking;
+suggestion sets vs brute-force scan oracle. Longest-prefix spot checks
+included for the routing-flavored demo.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 op latency | SLO | JMH |
-| Throughput | ops/s | load gen |
-| Memory | O(n) overhead | JOL |
-| Invariant holds | 100% tests | parity checker |
-| Recovery | < 5 s | restart drill |
+Disk note. B-tree fan-out arithmetic for a 4 KB page (order, height at
+10M keys, seeks per lookup) worked on paper and cited as the reason the
+in-memory tree is not the on-disk answer.
 
-## 5. Risks & prevention
-- Wrong structure for workload → run SLO-driven pick table.
-- Invariant drift → parity tests vs TreeMap.
-- Worst-case splay latency → cap or provide fallback.
-
-## 6. Runbook
-- Alert on p99 drift; rollback flag to TreeMap.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/TreeMap.html
-- https://en.wikipedia.org/wiki/Red%E2%80%93black_tree
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo + JMH + runbook.
-
-## 8. Grading rubric
-- Correctness 30 / Perf 30 / Operability 20 / Writeup 20.
+Comparison close. AVL vs red-black read/write split at 200k keys with
+rotation counts; trie memory per key; B-tree paper math. Scoring: fuzz
+parity 12, snapshot exactness 10, comparison plus paper math 8.
+## Deep-cut extras
+- Sorted-100k height plot attached.
+- 200 version samples verified.
+- Rotation counts tabled.
+- B-tree page math checked.
+- Fuzz seed list published.
+- Completion oracle log kept.
+- Retention cap posted.
+- Variant verdict dated.

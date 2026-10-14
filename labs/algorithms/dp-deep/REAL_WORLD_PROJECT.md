@@ -1,88 +1,42 @@
 # REAL_WORLD_PROJECT — DP Deep Track
-> Production use-case with metrics + prevention. Track `dp-deep`.
+> Territory-realignment service: tree-DP districting over an adjacency tree with digit-DP quota validation and bitmask-DP exact checks on small zones.
 
-## Use-case: resource allocation, sequence alignment, capacity planning
-- System: backend service handling large inputs where DP is on the hot path.
-- Why this algorithm: optimal substructure plus tabulation gives exact optima within O(nW)/O(mn) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Zone adjacency graph (spanning tree extracted per run) with population per node; district count K and population tolerance band.
+- Quota rules expressed as digit/property constraints on district codes validated by digit DP.
+- Small zones (<= 14 units) solved exactly by bitmask DP as the correctness anchor for the heuristic on large zones.
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (dp-deep) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Tree DP partitions the spanning tree into K balanced connected districts; rerooting pass scores all-root variants for the capital-placement subquery.
+- Digit-DP validator checks every emitted district code against quota rules before publish.
+- Large-zone heuristic (local swaps from the tree-DP start) must match bitmask-DP optima on all small-zone nightly checks.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Population imbalance (max deviation from ideal) per published plan.
+- Heuristic-vs-exact agreement rate on small zones (must stay 100 percent).
+- Validator rejection rate with rule-level breakdown.
+- Runtime vs node count for next-census capacity planning.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Non-tree adjacency (cycles from new roads): spanning-tree extraction logged with dropped edges listed; plan notes the approximation.
+- Infeasible tolerance band: solver reports the nearest feasible band instead of an empty plan.
+- Validator rule change mid-cycle: versioned rules; plans embed the rule version.
+- Heuristic drift on small zones: nightly exact check pages on first mismatch and freezes publishing.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Pseudo-poly blowup (W huge) | OOM/slow | cap W + greedy fallback + queue |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Stale weights/prices | suboptimal plans | version inputs + re-solve trigger |
+## Rollout
+1. Re-district last census data; compare imbalance vs the adopted plan.
+2. Publish one advisory (non-binding) plan with the agreement dashboard.
+3. Binding use with frozen rules and the exact-check gate armed.
 
-## Cost note
-- Optimized variants (compression, Knuth/D&C) cut compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. 7-node reference tree solves through the service path matching brute force.
+2. Small-zone nightly check compares heuristic vs bitmask DP with zero tolerance.
+3. Infeasible-band test returns the nearest feasible band, not an empty plan.
+4. Rule-version test rejects stale-rule plans at publish time.
+5. Rollback restores the previous published plan with its rule version intact.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/ (MIT 6.006 — dynamic programming lectures)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Arrays.html (Java Arrays — table utilities for DP)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Allocation decisions affect customers; log rationale for audit.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Table memory | gauge | alert on blowup |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Table ≈ states × bytes; cap sync size, queue the rest.
+## Cost and contract notes
+- Plan reviews costed per cycle; exact-check compute on small zones is the cheapest insurance in the pipeline.
+- Imbalance deviations priced per district against the tolerance band for public reporting.
+- Rule-version changes trigger revalidation billing; plans embed versions so reruns are comparable.
+- Contract: published plans carry (snapshot hash, rule version, imbalance, agreement receipt).

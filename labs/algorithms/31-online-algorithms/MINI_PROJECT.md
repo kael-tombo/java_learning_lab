@@ -1,83 +1,37 @@
 # MINI_PROJECT — Online Algorithms
-> Implement + benchmark + visualize. Lab `31-online-algorithms`.
+> Build a paging + rent-or-buy simulator that reports faults and competitive ratios on fixed traces.
 
-## Goal
-- Build a runnable Java CLI that simulates paging (LRU/marking) and ski-rental on request traces up to n=100k; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Request trace file: one integer page id per line, e.g. `0 1 2 3 0 1 4 0 1 2 3 4` (12 requests).
+- Cache capacity `k` (default 3) and ski-rental pair (buy price, rent rate).
 
-## Spec
-1. `lab.31_online_algorithms.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving competitive ratio vs offline OPT accounting.
+## Build steps
+1. Implement LRU with an access-order map, FIFO with a queue, and offline OPT by Belady MIN (evict the page used farthest in the future).
+2. On the 12-request reference trace with k=3, print per-algorithm fault counts and the ratio faults(LRU)/faults(OPT).
+3. Implement the ski-rental rule: rent until cumulative rent reaches the buy price, then buy; print strategy cost vs OPT for trip lengths 4 and 14 at buy=100, rent=10.
+4. Add a `--trace` flag reading arbitrary traces and a `--k` flag; emit one CSV row per run: `algo,k,faults,ratio`.
+5. Write a short note explaining why no online paging algorithm beats k-competitiveness in general.
 
-## Starter code
-```java
-package lab.31_online_algorithms;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Reference trace reproduces faults(LRU)=10 and faults(OPT)=7 with k=3.
+2. Ski-rental output shows strategy=200 vs OPT=100 (ratio 2.0) for the 14-day trip and 40 vs 40 for the 4-day trip.
+3. FIFO, LRU, OPT all run from the same trace parser with no duplicated eviction logic per algorithm file.
+4. CSV output has exactly the header `algo,k,faults,ratio` and one row per algorithm.
+5. The note states the k lower bound for deterministic paging in one paragraph without hand-waving.
+6. `java` run completes on a 100k-request generated trace within the machine's memory (streaming read, no full-trace buffering beyond OPT's needs).
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Which request pattern maximizes the LRU/OPT gap on your tests, and why?
+2. At what trip length does rent-then-buy switch from renting to buying, as a formula of buy/rent?
+3. What breaks in OPT when the full trace is not known ahead (streaming setting)?
 
-## Visualization
-- For n<=16 print cache state / faults vs OPT / rent-vs-buy ledger.
-- Example (ASCII): `faults=5 OPT=3 ratio=1.67 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Randomized paging (marking) and the k-server problem; adversarial-trace generation beyond one example.
+
+## Worked reference (verified outputs)
+- Ski-rental at buy=100, rent=10: 14-day trip prints strategy=200 opt=100 ratio=2.0; 4-day trip prints cost=40.
+- LRU capacity 2 on put(1),put(2),get(1),put(3): prints get1=10 get2=-1 get3=30 with keys=[1, 3].
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for k-competitive paging.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches expected competitive behavior.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add the marking algorithm and compare its faults against LRU on the same traces.
+- Generate one adversarial trace per algorithm that attains at least 80 percent of the k bound.

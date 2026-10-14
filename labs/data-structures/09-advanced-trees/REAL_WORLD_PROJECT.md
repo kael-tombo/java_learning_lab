@@ -1,48 +1,39 @@
-# REAL_WORLD_PROJECT — Advanced Trees (AVL / Red-Black / B-Tree)
+# ADR-04: Balanced Index and Reservation Map
 
-Production use-case: **ordered index with range scan for a catalog**. Secondary: interval map for reservation windows.
+Context. The plain BST lab showed sorted ingest collapsing to chains.
+The catalog needs an ordered index that survives adversarial order, and
+the booking side needs an interval map for reservation windows.
 
-## 1. Problem statement
-Serve balanced insert/lookup/range-scan with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 op latency, throughput (ops/s), max heap, correctness bar (exact vs TreeMap oracle).
+Decision. Ship an AVL tree for the catalog index (strict balance, cheap
+reads) with a red-black variant behind the same interface for comparison,
+and a B-tree sketch for the disk note. Intervals ride an augmented
+balanced map keyed by start with max-end augmentation.
 
-## 2. Architecture
-- Ingest: catalog writes feeding the balanced tree.
-- Core: AVL/red-black tree with rotation counters behind a narrow interface.
-- Serve: range-scan API + height metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Consequences for reads. Point lookup, range scan, floor/ceiling stay
+O(log n) worst case on both variants; the report publishes height series
+for random vs sorted ingest proving the bound holds where the BST fell.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Consequences for writes. Rotations counted per insert batch; AVL should
+rotate more but stand shorter than red-black on update-heavy mixes. The
+comparison workload (50/50 reads/writes, 200k keys) states which variant
+wins reads and which wins writes with measured margins.
 
-## 4. Metrics to report
+Interval duties. Insert window, delete window, query overlapping, find
+free gap of length D. Overlap answers checked against a linear scan
+oracle on 5k randomized windows; gap search checked by construction.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 op latency | define SLO | JMH / load test |
-| p99 op latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact vs TreeMap oracle | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Alternatives rejected. Skip lists (covered in lab 14, cited not built);
+plain BST with shuffle-only mitigation (rejected: input order is not
+ours to control); database offload (rejected: this lab is the index).
 
-## 5. Risks & mitigations
-- Rotation bugs -> color/height invariant audits.
-- Adversarial order -> rotation-count metric.
-- Memory blowup -> node budget + caps.
-- Concurrency bugs -> narrow sync + stress tests.
+Validation. Rotation audit (balance factors recomputed from scratch),
+fuzz vs TreeMap with zero mismatches on 60k ops, crash-load of sorted
+100k proving height stays logarithmic.
 
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/AVL_tree
-- https://en.wikipedia.org/wiki/Red%E2%80%93black_tree
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Marks: bound evidence on hostile order 12, variant comparison honesty
+10, interval oracle parity 8.
+## Follow-ups
+- B-tree page math on real hardware.
+- Delete-heavy comparison run.
+- Interval stress at 50k windows.
+- File results under adr-04.

@@ -1,46 +1,40 @@
-# REAL_WORLD_PROJECT — Persistent Segment Trees (34)
+# Time-Travel Analytics on Persistent Segment Trees
 
-Production use-case: **time-travel analytics over an event log** (query any historical snapshot in O(log n)). Secondary: MVCC-friendly counter service.
+Archive. An event log of 1M counter updates must answer: what was the
+range sum at 3 PM Tuesday - any Tuesday, any minute. Persistent segment
+trees keep every version queryable in O(log n) time with O(log n) fresh
+nodes per update, sharing the rest with the previous root.
 
-## 1. Problem statement
-Support "as-of-version" range queries over append-heavy numeric streams with bounded per-update cost. SLOs: p99 query latency, memory per update, version retention policy.
+Version mechanics. Point update clones the O(log n) path and reuses all
+other nodes; version roots indexed by timestamp in an append-only array.
+Range query pins a version id and walks that root alone. Version count
+times log n bounds total allocation - the report quotes measured nodes
+per update at three log sizes.
 
-## 2. Architecture
-- Ingest: append/update commands with version stamps.
-- Core: persistent segment tree behind a versioned interface.
-- Serve: as-of query API + metrics + health.
-- Persist: root table + node pool (GC old roots per retention).
+Analytics caller. Range sums and range maxima over arbitrary historical
+windows; 5k queries across 200 pinned versions diffed against per
+version naive arrays. Every answer must match; a single mismatch names
+the version, range, and both values.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariants + property tests vs naive snapshot baseline.
-W2: API + metrics + JMH + retention/GC drill + deploy notes.
+MVCC-style caller. Counter service with snapshot reads under a write
+stream: readers pin versions, writers advance. A scripted interleave of
+10k writes and 2k reads must show each read matching its pinned version
+exactly - no torn history.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 as-of query | SLO-driven | JMH |
-| Memory per update | O(log n) | JOL |
-| Version retention | configurable | policy test |
-| Throughput | updates/s | load gen |
-| Correctness | matches snapshot model | property tests |
+Retention file. Version pruning policy (keep hourly beyond a week, pin
+API for audits); pruned-version queries return a typed gone error, never
+a wrong answer. Memory before/after a prune cycle quoted.
 
-## 5. Risks & prevention
-- Node-pool growth unbounded → retention window + root GC.
-- Version-tree confusion → version IDs monotonic; query validates version exists.
-- Pointer-sharing bugs after deletes → never mutate shared nodes.
+Corruption rehearsal. Update applied to a stale root (branch rule
+invoked or rejected - documented), query at future version (rejected),
+root array truncation simulation (gone errors, counted).
 
-## 6. Runbook
-- Alert on node-pool heap pressure; force old-root eviction.
-- Rollback: materialized snapshots for small datasets.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Persistent_data_structure
-- https://cp-algorithms.com/data_structures/segment_tree.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-
-## 8. Grading rubric
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Deliver. Tree, analytics CLI, MVCC harness, oracle logs, retention
+note. Marks: version-query parity 12, snapshot isolation proof 10,
+retention plus rejection handling 8.
+## Version atlas
+- Hourly pins beyond a week.
+- Gone-error semantics tested.
+- Prune cycle memory quoted.
+- Stale-root rule documented.
+- Replay check in CI.

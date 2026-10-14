@@ -1,48 +1,41 @@
 # VISION — Sorting Track
-> Mastery path. Track `sorting`.
+> Direction: from "call sort()" to choosing the method from the distribution — and proving the choice with counts.
 
 ## Where this sits
-- Quicksort is divide-and-conquer canon: partitions, randomization, selection.
-- Master it and neighboring tracks get 2× easier (shared invariants + proof templates).
+- Comparison sorting bottoms out at Omega(n log n); quicksort (avg O(n log n), worst O(n^2)), mergesort (O(n log n), stable), heapsort (O(n log n), in-place) each buy something different.
+- Special structure buys more: nearly-sorted favors insertion O(n), dupes favor 3-way, small k selection is quickselect avg O(n).
+- Non-comparison methods (counting/radix O(n+w)) apply when keys are bounded integers.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; E[O(n log n)] memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (ranking, data prep, analytics).
+## 4-week direction
+- Week 1: hand-trace Hoare partition and the 3-way regions until the invariants are statable cold.
+- Week 2: finish MINI_PROJECT; fill every results.csv cell from real runs.
+- Week 3: break quicksort with an adversarial input, then fix it two ways (random pivot, 3-way) and measure both.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard the lower-bound argument in 5 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- State each method's time/space/stability triple from memory.
+- Predict the winner for a given (size, distribution, stability need) and verify by running.
+- Derive Omega(n log n) via the decision-tree argument without notes.
 
-## How to know you are done
-- Explain 3-way regions without notes; derive average bound on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This track does not cover external sorting internals (used as a path, not built), parallel sorting networks, or string sorting (see 40-string-algorithms-advanced).
+- Radix/counting sorts are specified with trigger conditions, not benchmarked here.
+- No claim that one method wins everywhere; the suite exists because none does.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Pitfalls
+- Benchmarking only random input; sorted and dupe cases decide production behavior.
+- Forgetting stability until tie order corrupts a downstream join.
+- Quoting average bounds as guarantees on adversarial feeds.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Adjacent tracks
+- Pair with searching for the lookup side and sorting-searching-deep for selection and external construction.
+- Revisit after any production sort incident; the distribution checklist is the postmortem template.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## Weekly drills
+- State the 3-way regions and the Hoare invariant cold, then trace one partition by hand.
+- Re-derive Omega(n log n) from the decision-tree count in under 5 minutes.
+- Name the stability of all six methods plus quickselect without hesitation.
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not benchmark random input only; sorted, reverse, and dupe cases are mandatory columns.
+- Do not adopt an unstable sort where tie order feeds a downstream join.

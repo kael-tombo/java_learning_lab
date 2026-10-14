@@ -1,48 +1,41 @@
-# REAL_WORLD_PROJECT — Linked Lists
+# O(1)-Splice Playlist Service on a Doubly-Linked List
 
-Production use-case: **O(1)-splice playlist / task-queue service**. Secondary: undo-history chain with bounded memory.
+Stage 1 - intent. A playlist/task-queue server where blocks of songs or
+jobs move between queues by relinking nodes, never by copying arrays.
+A companion undo chain reuses the same node type with a bounded depth.
 
-## 1. Problem statement
-Serve insert/remove/splice at known positions with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 splice latency, throughput (ops/s), max heap, correctness bar (exact order vs oracle).
+Stage 2 - operations. The list exposes push-front, push-back, detach
+(node handle), splice-after, splice-range, and in-place reversal of a
+segment. Detach plus splice-after give O(1) block moves once the handles
+are known; indexed access is deliberately absent from the API.
 
-## 2. Architecture
-- Ingest: task/playlist events feeding the list.
-- Core: singly/doubly linked list behind a narrow interface.
-- Serve: reorder API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Stage 3 - handles. Iterators act as stable cursors into the queue. Move
+operations consume handles, and using a detached handle after its move
+fails loudly instead of corrupting the chain.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Stage 4 - undo. Every mutation pushes an inverse record (relink pair)
+onto a bounded undo chain; depth 64 by default. Popping undo replays the
+inverse and drops the redo tail, so memory cannot grow with history.
 
-## 4. Metrics to report
+Stage 5 - persistence. Queues serialize as ordered id sequences with
+cursor bookmarks; reload rebuilds nodes and revalidates count parity.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 splice latency | define SLO | JMH / load test |
-| p99 splice latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact vs ArrayList oracle | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Stage 6 - verification. A scripted workload (enqueue 20k, 5k splices,
+2k reversals, undo bursts) runs against an ArrayDeque oracle that models
+the same queue order; any divergence prints the op index and both orders.
 
-## 5. Risks & mitigations
-- Lost-node corruption -> rotor/invariant audits.
-- Traversal degradation -> doubly-linked + tail pointer.
-- Memory blowup -> bounded caps + node pooling.
-- Concurrency bugs -> narrow sync + stress tests.
+Stage 7 - numbers worth quoting. Time a 10k-node block move against the
+equivalent ArrayList remove/add pair, count allocations per splice, and
+record undo memory at full depth.
 
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/javase/8/docs/api/java/util/LinkedList.html
-- https://en.wikipedia.org/wiki/Linked_list
-Confirm API/limit numbers against the live docs before quoting them in reviews.
+Stage 8 - breakage rehearsal. Splice a range onto itself, detach the head
+and tail in one batch, undo past the first record, reload a snapshot with
+a missing id; each must end in a clean error, never a silent cycle.
 
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
+Stage 9 - ship list. Implementation, workload script, oracle log showing
+zero order mismatches, snapshot round-trip proof, one-page writeup naming
+the workload where splicing beats array shifting and where it loses.
 
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Stage 10 - review bar. Splice correctness under Randomized trials: 12.
+Undo boundedness plus snapshot fidelity: 10. Honest splice-vs-shift
+comparison with measured times: 8.

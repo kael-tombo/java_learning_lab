@@ -1,48 +1,41 @@
-# VISION — Graph Coloring & Clique
-> Mastery path. Lab `37-graph-coloring-clique`.
+# VISION — Graph Coloring and Cliques
+> Direction: from coloring-by-feel to bracketed answers — a lower bound from cliques, an upper bound from a real coloring, and the gap stated aloud.
 
 ## Where this sits
-- Graph Coloring & Clique is one tool in the algorithms arsenal: DSATUR ordering plus branch-and-bound color/clique bounds.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+- Greedy uses at most Delta+1 colors; order decides how close to optimal. Welsh-Powell (degree order) is the cheap upgrade; DSATUR (saturation order) the next step.
+- Bron-Kerbosch enumerates maximal cliques; max-clique size omega lower-bounds chromatic number chi. 3-colorability is NP-complete, so brackets beat exactness at scale.
+- Register allocation, timetabling, and frequency assignment are the same picture with different labels.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; greedy Δ+1 guarantee, exponential exact memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (exam timetabling, register allocation, fraud-ring detection).
+## 4-week direction
+- Week 1: hand-color the reference graph in order 0..4 and in degree order; reproduce both outputs.
+- Week 2: finish MINI_PROJECT; run all four test graphs and fill the bracket table.
+- Week 3: find an order that makes greedy strictly worse than WP on some graph; keep it as a regression test.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard omega <= chi and the Delta+1 bound in 10 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Prove the Delta+1 bound from the greedy rule without notes.
+- Explain why the reference graph has chi exactly 3 (clique below, coloring above).
+- Choose greedy vs WP vs exact search for a given (n, density, deadline) triple.
 
-## How to know you are done
-- Explain DSATUR + clique coloring bounds; MaxSAT-style pruning without notes; derive greedy Δ+1 guarantee on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This lab does not implement DSATUR, branch-and-bound coloring, or pivoted BK (named as next steps with reasons).
+- No approximation-ratio theorems; the bracket is empirical per instance.
+- Perfect-graph theory is referenced, not developed.
+
+## Pitfalls
+- Reporting colors without the clique bound; a number without a bracket is marketing.
+- Assuming degree order is optimal; it is a heuristic with known failures.
+- Letting BK run exact on dense 500-vertex graphs; guard and label substitutions.
 
 ## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+- Pair with 38-mst-variants for the exchange-argument proof style and 32-exact-exponential for BK as exponential enumeration done right.
+- Revisit before hand-coloring any conflict problem; the bracket habit replaces optimism.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Weekly drills
+- Prove Delta+1 from the greedy rule aloud in under 2 minutes.
+- Reproduce both reference colorings and the clique {0,1,2} from memory.
+- State omega <= chi and apply it to pin chi on a fresh small graph.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not publish colors without the clique bound on the same page.
+- Do not run exact clique search on dense large graphs without a guard and a labeled fallback.

@@ -1,48 +1,38 @@
-# REAL_WORLD_PROJECT — Union-Find / Disjoint Set Union (DSU)
+# Connectivity Pipeline: Kruskal MST plus Accounts-Merge on DSU
 
-Production use-case: **Kruskal MST + percolation / network connectivity**. Secondary: accounts-merge / entity resolution pipeline.
+Two jobs share one disjoint-set union. Overnight, Kruskal's algorithm
+lays minimum-spanning-tree edges over the datacenter fabric. By day, an
+accounts-merge pipeline resolves which user records belong to one human.
 
-## 1. Problem statement
-Serve connectivity, kruskal, dynamic components workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Union-find core. Parent array with union by size and path halving; every
+operation costs effectively alpha(n), the inverse Ackermann function,
+which stays below 5 for any input that fits on hardware. A component
+counter and max-size tracker ride along for free.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Kruskal side. Edges sort once, then union in order, skipping pairs
+already connected. The MST weight must equal a Prim-computed reference
+on every fixture; the report quotes edge-sort time separately so the
+DSU share of the runtime is visible, not guessed.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Accounts side. Records sharing an email or phone union into entities;
+each entity emits a canonical id plus member list. The oracle is a
+quadratic pairwise comparison on 5k records; entity sets must match
+exactly, including singleton accounts nobody merges.
 
-## 4. Metrics to report
+Scale fixtures. Percolation grid 500x500 (open sites union with open
+neighbors, percolation = top row joined to bottom), network fabric with
+50k nodes / 200k candidate edges, account file with 100k records.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Breakage set. Self-union, duplicate union, find on unknown element,
+Kruskal fed a disconnected graph (forest output specified), accounts
+with empty contact fields (never merge on blanks).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Disjoint-set_data_structure
-- https://algs4.cs.princeton.edu/15uf/
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Deliver. DSU, both callers, fixture generators, oracle logs, timing
+split (sort vs union), one-page entity-resolution note. Credit: MST
+parity 12, merge exactness 10, percolation plus misuse handling 8.
+## Lab ledger
+- MST weight matched on all fixtures.
+- Entity sets byte-identical to oracle.
+- Percolation threshold noted.
+- Sort-vs-union split published.
+- Blanks-never-merge test kept.

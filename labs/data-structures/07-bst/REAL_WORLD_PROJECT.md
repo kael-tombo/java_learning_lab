@@ -1,94 +1,39 @@
-# REAL_WORLD_PROJECT — Binary Search Trees (`07-bst`)
-> Ship a production-flavored use-case of BST with metrics. ~6–10 hours.
+# Design: Catalog Range Index on a Plain BST
 
-## Problem statement
-Build a small but honest service/CLI around `BST` for: ordered maps, ranges, leaderboards, in-memory indexes.
-Examples: autocomplete API (trie), priority scheduler (heap), ordered index with range scan (BST/balanced tree),
-deduplicating ingest cache (hash), graph route planner (graphs), disk-pre-check layer (bloom), ring buffer pipeline (queue/stack).
+Goal. An ordered product index supporting point lookup, insertion,
+deletion, and range scans, built first as an unbalanced BST so the
+degeneration lessons are earned before balanced trees arrive.
 
-## Functional requirements
-1. CLI or HTTP endpoint: `put/get/delete` (or domain equivalent: `schedule/pop`, `insert/suggest`, `add/mightContain`).
-2. Persistence or snapshot: load/save to file (JSON/CSV/serialized); reload preserves correctness.
-3. Config: capacity / threshold / k,m / comparator / seed exposed via flags or properties file.
-4. Observability: log operation latencies (avg/p50/p99), hit/miss or FPR estimate, resize/rotation counts, memory.
-5. Correctness: oracle cross-check on a sample workload (vs `HashMap`/`TreeMap`/`PriorityQueue` as appropriate).
+Interface. put, get, delete, floor, ceiling, rank, select, range(lo,hi),
+plus height and size. Delete handles all three cases (leaf, single
+child, two children via successor swap) with a dedicated test per case.
 
-## Non-functional targets (measure and report)
-| Metric | Target (toy-prod) | How to measure |
-|---|---|---|
-| Throughput | ≥10k ops/s single-thread on 100k dataset | benchmark harness, warmup, 5 runs median |
-| p99 latency | <1 ms point op on laptop | HDR-ish histogram or sorted samples |
-| Memory | report bytes/elem (Runtime/JOL) | before/after load snapshot |
-| Correctness | 0 mismatches vs oracle on 10k random ops | oracle test log |
-| Resilience | graceful empty/full/degraded (incl. bloom FPR) behavior | chaos script: empty, dup flood, adversarial order |
+Ordering core. The invariant is strict: left keys < node < right keys.
+A checker walks the tree with min/max bounds after every 100th mutation
+in test mode; any violation aborts the run with the offending key path.
 
-## Architecture sketch
-```
-client -> Service (BST + policy) -> snapshot file
-              |-> metrics log (CSV: op, nanos, size, aux)
-              |-> oracle checker (sampled, off-path)
-```
-Keep it single-module; no frameworks required (`com.sun.net.httpserver` or plain CLI is fine).
+Degeneration study. Three ingest orders (random, ascending, descending)
+at 100k keys each. Random should hold height near a small multiple of
+log2(n); sorted orders will chain toward O(n). The report publishes all
+three height series and the resulting get-latency ratios.
 
-## Milestones
-1. Slice 1 (2h): domain model + `BST` wired, CLI works on tiny fixture.
-2. Slice 2 (2–3h): persistence + config + edge handling (empty/dup/null/adversarial).
-3. Slice 3 (2–3h): metrics + benchmark script + chart.
-4. Hardening (1–2h): oracle test, chaos script, 1-page ops note (deploy, monitor, rollback).
+Range scans. Implemented as bounded inorder with early exit; cost scales
+with matches plus O(log n) descent on random data. Scans are verified
+against a sorted ArrayList oracle on 2k random ranges.
 
-## Deliverables
-- `src/` implementation + `README` run instructions (java version, commands).
-- `metrics.csv` + chart + 1-page report (targets vs actuals, bottleneck, next scaling step).
-- Postmortem: one real bug found via oracle/chaos, invariant violated, fix.
+Deletion audit. After each delete batch, inorder must still emit sorted
+order and size must reconcile: size equals inserts minus deletes. A
+fuzzer runs 30k mixed ops with the checker enabled and zero tolerance.
 
-## Load & chaos scripts (concrete)
-```bash
-# load: 100k mixed ops, 80% read / 15% write / 5% delete, seeded for replay
-java -cp out Load --n 100000 --seed 42 --mix 80/15/5 --csv metrics.csv
-# chaos: empty pops, duplicate floods, sorted/adversarial order, snapshot-kill-reload
-java -cp out Chaos --scenario empty,duplicates,adversarial,crash-reload
-```
-Acceptance: 0 oracle mismatches, p99 within target, reload preserves all readable state.
+Known limits. Worst-case O(n) height on adversarial order is documented
+with the measured collapse, and the handoff note names the balanced
+successor (lab 09) with the rotation idea in one paragraph.
 
-## Operations note (write this before calling it done)
-1. Deploy: single jar + properties file; log rotation for metrics.csv; JVM flags recorded.
-2. Monitor: alert on p99 breach, resize-storm (resizes/min), FPR drift (bloom), height growth (trees).
-3. Rollback: previous snapshot file versioned (`snap-YYYYMMDD-HHmm`); reload is idempotent.
-4. Capacity: state the dataset size where this design stops working and what replaces it
-   (e.g., hash → sharded/Redis; tree → B-tree/DB index; heap → partitioned scheduler;
-   trie → FST/Dawg; bloom → scaled stacked filters; queue → durable broker).
-
-## Cost & scaling sketch
-- Estimate bytes/elem from your measurement; extrapolate to 10× and 100× data.
-- Name the first bottleneck (GC pauses, resize stalls, probe chains, tree height, bit density)
-  and the cheapest fix that moves it 10× (batching, pre-sizing, better hash, balance, larger m, ring→broker).
-- One paragraph: build-vs-buy — when you would replace `BST` with managed infra and why.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- Oracle Java docs — `BST` counterpart guarantees: https://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html
-- Reference survey / encyclopedia entry for BST: https://en.wikipedia.org/wiki/Binary_search_tree
-Verify version-specific behavior against your JDK (run `java -version`) before citing numbers.
-
-## Evaluation
-- Works end-to-end from cold start (3 pts) · Metrics honest + reproducible (3) · Edge/chaos handled (2) · Report + postmortem depth (2). Ship ≥7/10.
-
-## Appendix A — test matrix (all must pass)
-| # | Case | Oracle / check |
-|---|---|---|
-| T1 | empty get/pop/peek | throws documented exception, state unchanged |
-| T2 | single-element round trip | size 0→1→0, invariant holds at each step |
-| T3 | duplicate + null policy | matches documented policy, no silent corruption |
-| T4 | resize/rebalance boundary | all elements reachable after threshold crossing |
-| T5 | 10k random ops vs oracle | 0 mismatches on size/contains/iteration |
-| T6 | snapshot-kill-reload | reloaded state equals pre-kill readable state |
-| T7 | adversarial order | degrades gracefully, recovers with documented fix |
-| T8 | iterator under mutation | fail-fast fires, no silent wrong iteration |
-
-## Appendix B — example 1-page report skeleton
-```
-Dataset: 100k keys, mix 80/15/5 | JDK 17, laptop, 5-run median, warmed up
-Throughput: 42k ops/s | p50 8µs p99 310µs | bytes/elem 48 | resizes 4 | aux (max-chain 3 / height 18 / FPR 0.8%)
-Target check: throughput PASS, p99 PASS, memory noted, oracle 0 mismatches, chaos 4/4 graceful.
-Bottleneck: resize pauses at 2^N boundaries dominate p99 → pre-size to 2× expected n.
-Next step: shard by hash prefix when n > 10M or move index to LSM/B-tree.
-```
+Ship. Index, fuzzer, height series, oracle logs, handoff note. Marks:
+invariant enforcement 12, delete-case coverage 10, degeneration honesty
+8.
+## Handoff paragraph
+- Sorted ingest chains; attach the plot.
+- Next lab adds rotations.
+- Keep the fuzzer seed list.
+- Archive height series with dates.

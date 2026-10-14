@@ -1,44 +1,38 @@
-# REAL_WORLD_PROJECT — Data Structures Advanced
+# Telemetry Service with Sketches and Tagged Snapshots
 
-Production use-case: **telemetry service** computing rolling counters, membership probes, and integrity-tagged snapshots. Secondary: pattern search over a text corpus.
+Brief. A telemetry pipeline computes rolling counters, membership
+probes, and integrity-tagged snapshots over 10M daily events, plus
+pattern search over a text corpus as the second track. Four structures
+split the work; each earns its slot with a measurement.
 
-## 1. Problem statement
-Handle a mixed stream of range queries, membership probes, and integrity-tagged events with p99 SLOs.
+Counter lane. Fenwick tree over per-minute buckets for prefix sums and
+sliding windows; answers vs naive prefix array on 5k windows. Update
+and query both O(log n), shown with timing vs bucket count.
 
-## 2. Architecture
-- Ingest: telemetry consumers.
-- Core: Fenwick/segment tree/Bloom/Merkle behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: WAL + periodic snapshot.
+Membership lane. Bloom filter fronting the event-id store sized by
+FPR = (1 - e^(-kn/m))^k; observed FPR on 200k absent ids beside the
+formula value. Disk lookups avoided counted on a mostly-absent replay.
 
-## 3. Implementation plan (2 weeks)
-W1: core + parity tests.
-W2: API + metrics + JMH + restart drill + deploy notes.
+Integrity lane. Merkle root over hourly snapshot batches; auditors
+verify sampled blocks with O(log n) proofs against the published root.
+One tamper drill (flipped byte) must change the root and name the leaf.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 query latency | SLO | JMH |
-| Throughput | updates/s | load gen |
-| Bloom FPR | < 1% | sampled |
-| Parity with baseline | 100% | property test |
-| Recovery | < 5 s | restart |
+Search lane. KMP/Boyer-Moore pattern search over a 50 MB corpus vs
+naive scan; matches must equal the naive set exactly, timing quoted per
+algorithm at three pattern lengths.
 
-## 5. Risks & prevention
-- Fenwick overflow → use long and checked adds.
-- Segment-tree lazy loss → push on visit; test with random updates.
-- Bloom false-positive surge → size for capacity with margin; monitor FPR.
+Ops page. Sketch sizing sheet, snapshot cadence, proof-serving latency,
+corpus index note, and the failure rules (saturated filter alarm, stale
+snapshot version error, empty-pattern rejection).
 
-## 6. Runbook
-- Alerts on parity mismatch and FPR drift; rollback flags to baseline structures.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Fenwick_tree
-- https://en.wikipedia.org/wiki/Bloom_filter
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo + JMH + runbook.
-
-## 8. Grading rubric
-- Correctness 30 / Perf 30 / Operability 20 / Writeup 20.
+Marks: counter parity 12, filter-plus-proof agreement 10, search
+exactness with timings 8.
+## Service extras
+- Sizing sheet with formula values.
+- Snapshot cadence posted.
+- Proof latency measured.
+- Corpus version pinned.
+- Filter alarm threshold set.
+- Tamper drill logged.
+- Pattern timings tabled.
+- Failure rules reviewed.

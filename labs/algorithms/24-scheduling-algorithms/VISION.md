@@ -1,48 +1,44 @@
-# VISION — Scheduling Algorithms
-> Mastery path. Lab `24-scheduling-algorithms`.
+# Vision: Scheduling Algorithms
 
-## Where this sits
-- Scheduling Algorithms is one tool in the algorithms arsenal: ordering jobs under constraints.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+## Direction
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; SJF optimal avg wait; EDF optimal uniprocessor; multiprocessor NP-hard memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (OS schedulers, CI queues, job shops).
+This lab covers three scheduling views: greedy interval selection for
+maximizing throughput on one resource, EDF with its utilization test for
+periodic deadlines, and list scheduling with its makespan guarantee for
+parallel machines. The practical skill is stating each rule, its bound, and
+when the bound applies.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## What to learn
 
-## How to know you are done
-- Explain feasibility / priority invariants; exchange arguments without notes; derive SJF optimal avg wait; EDF optimal uniprocessor; multiprocessor NP-hard on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+- Interval scheduling: earliest-finish greedy is optimal; O(n log n).
+- Exchange argument: why earliest finish can always replace a later pick.
+- EDF: feasible on one processor exactly when utilization is at most 1.
+- Makespan: total work and longest job both lower-bound the optimum.
+- List scheduling: greedy least-loaded gives the 2 - 1/m guarantee.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Non-coverage
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+- This lab does not cover multiprocessor real-time schedulability theory.
+- It does not cover priority inversion, locks, or resource sharing.
+- It does not cover stochastic scheduling or queueing theory.
+- It does not cover OS scheduler internals or thread-pool tuning.
+- All inputs here are fixed arrays; no live workload tracing is required.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## How to use this lab
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
+Implement the interval greedy from MOCK_INTERVIEW Q1, the utilization test
+from Q2, and the list scheduler from Q3. Then run MINI_PROJECT on a room
+booking dataset and verify the greedy count against brute force.
 
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Pitfalls
+
+- Sorting intervals by start time and losing optimality.
+- Testing EDF feasibility with rate-monotonic bounds.
+- Citing makespan without stating both lower bounds first.
+
+## Done when
+
+- You can prove interval optimality with the exchange argument out loud.
+- You can state the EDF utilization test and its exact condition.
+- You can name both makespan lower bounds before computing anything.
+- You can state the list-scheduling bound and what LPT changes.

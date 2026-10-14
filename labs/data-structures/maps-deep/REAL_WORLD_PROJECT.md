@@ -1,45 +1,38 @@
-# REAL_WORLD_PROJECT — Maps Deep
+# Session Store Field Test: Picking the Map per Workload
 
-Production use-case: **session store / cache service** choosing the right map backend per workload. Secondary: a Bloom front-filter to cut disk reads.
+Question log. A session store serves 500k sessions under three shapes:
+write-heavy login storms, read-heavy validation, and scan-heavy admin
+exports. HashMap, LinkedHashMap, TreeMap, and EnumMap each take the
+shape they suit; a Bloom front-filter cuts disk reads for unknown
+tokens. The deliverable is a selection guide with numbers, not a single
+winner.
 
-## 1. Problem statement
-Serve put/get/remove with p99 SLOs and consistent iteration semantics where needed.
+Storm lane. 100k logins in 60 scripted seconds into a HashMap-backed
+store with TTL sweep; insert rate and sweep lag recorded. Correctness vs
+a synchronized reference model on the same event script.
 
-## 2. Architecture
-- Ingest: application requests.
-- Core: pluggable Map backend (HashMap/TreeMap/LinkedHashMap/CHM).
-- Serve: KV API + metrics.
-- Persist: snapshot / WAL.
+Validation lane. 1M token checks with 30 percent unknown tokens; Bloom
+front-filter sized by the textbook formula absorbs the unknowns before
+the map or disk is touched. Disk reads avoided counted exactly; observed
+FPR quoted beside the formula value.
 
-## 3. Implementation plan (2 weeks)
-W1: core + parity tests.
-W2: API + metrics + JMH + runbook + deploy notes.
+Export lane. Ordered session dump via TreeMap/LinkedHashMap insertion
+vs sort-at-export A/B with timings at 100k/500k sessions. Access-order
+LinkedHashMap also backs a 10k-entry LRU proof with hit-rate numbers.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 op latency | SLO | JMH |
-| Throughput | ops/s | load gen |
-| Iteration order correctness | matches spec | property tests |
-| Memory | O(n) | JOL |
-| Bloom FPR (if used) | < 1% | sampled |
+EnumMap corner. Fixed-field session attributes benchmarked against
+HashMap; the per-get saving quoted at 1M reads.
 
-## 5. Risks & prevention
-- Long chains → widen capacity; watch load factor.
-- TreeMap slow writes → move to HashMap if ordering isn't used.
-- CHM iteration surprises → document weakly-consistent semantics.
-
-## 6. Runbook
-- Alerts on p99 and on unexpected ordering in iteration consumers.
-- Rollback flag to HashMap backend.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/HashMap.html
-- https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ConcurrentHashMap.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo + JMH + runbook.
-
-## 8. Grading rubric
-- Correctness 30 / Perf 30 / Operability 20 / Writeup 20.
+Failure page. Token format drift (quarantine with samples), sweep stall
+under storm (watchdog metric), filter saturation alarm, export during
+storm (snapshot isolation rule). Guide marks: lane parity 12, filter
+math agreement 10, failure handling 8.
+## Selection guide extras
+- Storm rate numbers posted.
+- Filter FPR beside formula.
+- Export A/B timings tabled.
+- EnumMap saving quoted.
+- Drift quarantine sampled.
+- Sweep watchdog tested.
+- Snapshot rule documented.
+- Guide version dated.

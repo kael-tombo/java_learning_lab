@@ -1,46 +1,39 @@
-# REAL_WORLD_PROJECT — Treaps (33)
+# Ephemeral Range Store on Treaps, with Persistent Cousin
 
-Production use-case: **ephemeral key-value range store** behind a game-server leaderboard or social feed. Secondary: persistent treap for undo stacks.
+Depot. A game-server leaderboard and social feed need an ordered
+key-value store that appears, serves a burst, and vanishes - no disk,
+no recovery story, just fast range ops. Randomized treaps give expected
+O(log n) insert/delete/split/merge with short code; a persistent
+variant serves undo stacks as the second act.
 
-## 1. Problem statement
-Randomized ordered map serving add/erase/range with expected O(log n) under adversarial arrival orders. SLOs: p99 op latency, throughput, memory.
+Treap core. Random priorities with heap order plus BST key order; split
+by key and merge by priority compose insert, delete, and range extract.
+Expected depth logarithmic - the report shows the measured depth
+histogram at 200k keys against the log curve, seed published.
 
-## 2. Architecture
-- Ingest: mutation commands.
-- Core: treap behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: in-memory snapshot/WAL of keys.
+Leaderboard caller. Score updates, rank queries, top-K windows, range
+extracts for page views; all answers diffed against a sorted-list
+oracle on 30k scripted ops. Split/merge power the page slices directly.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariants + property tests vs TreeMap model.
-W2: API + metrics + JMH + deploy notes.
+Feed caller. Time-ordered posts with range pulls and mid-feed deletes;
+cursor pagination verified stable across concurrent-shaped (scripted)
+deletes.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 op latency | SLO-driven | JMH |
-| Throughput | ops/s | load gen |
-| Memory | O(n) keys | JOL |
-| Height distribution | ~ 2 ln n | histogram |
-| Correctness | matches model | property tests |
+Persistent cousin. Path-copied insert/delete returning new roots for
+undo stacks; old versions readable mid-session. Sharing ratio measured
+like lab 20 in miniature; 5k-version walk proves old reads never shift.
 
-## 5. Risks & prevention
-- Weak/duplicate priorities → use full 64-bit Random + uniqueness tiebreak.
-- Rotation bugs → property tests comparing to TreeMap on randomized sequences.
-- Adversarial key patterns are fine (randomized), but watch integer overflow in priorities — see prevention above.
+Priority audit. Heap property verified by full walk after fuzz batches;
+degenerate-priority injection (fixed seed of equal priorities) must keep
+key order correct even as balance degrades - reported, with the depth
+cost quoted.
 
-## 6. Runbook
-- Alert on latency regressions; fallback to TreeMap flag.
-- Rollback: swap implementation behind the same interface.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Treap
-- https://web.stanford.edu/class/cs166/
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-
-## 8. Grading rubric
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Hand in. Both treaps, callers, depth data, oracle logs, audit output.
+Weighting: split/merge correctness 12, caller parity 10, persistence
+plus audit 8.
+## Depth watch
+- Histogram vs log curve.
+- Seed published.
+- Priority audit in CI.
+- Equal-priority probe kept.
+- Sharing ratio quoted.

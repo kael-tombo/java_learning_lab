@@ -1,83 +1,38 @@
 # MINI_PROJECT — Data Structures Track
-> Implement + benchmark + visualize. Track `data-structures`.
+> One harness, eight structures: dynamic array, linked list, hash map, BST/AVL, binary heap, union-find, trie, Fenwick tree — each with an oracle test and an operation-count report.
 
-## Goal
-- Build a runnable Java CLI that benchmarks BFS vs DFS, DSU vs BFS-connectivity, and heap vs sort on graphs up to V=100k; emits CSV + ASCII visualization.
+## Inputs
+- Seeded operation scripts (insert/delete/query mixes, 10k/100k ops) shared across structures where applicable.
+- Adversarial scripts: sorted insertions for BST, hash-collision keys for the map, decrease-key mix for the heap.
 
-## Spec
-1. `lab.data_structures.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving traversal/heap/DSU invariants.
+## Build steps
+1. Implement dynamic array (growth factor 2, amortized O(1)) and linked list; compare indexed-access and middle-insertion timings.
+2. Implement hash map (chaining, rehash at 0.75) with probe/chain stats; verify against java.util.HashMap on 50k ops.
+3. Implement BST then AVL rotations; verify sorted-insertion heights (BST degenerates, AVL stays logarithmic) with heights printed.
+4. Implement binary heap with decrease-key via index map; verify against sorting on 10k extracts.
+5. Implement union-find (path compression + union by rank), trie (insert/prefix-count), Fenwick (point-update/range-sum); verify each against a naive oracle.
+6. Record operation counts and ms per (structure, script) with machine/JDK noted.
 
-## Starter code
-```java
-package lab.data_structures;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Every structure passes its oracle comparison (HashMap, sorting, naive array/sets) on all scripts.
+2. BST-vs-AVL height table on sorted insertions shows the degeneration gap from real runs.
+3. Hash stats show max chain length at load 0.75 vs 0.95 from real runs.
+4. Heap extract order matches sorted order on all seeds including the decrease-key mix.
+5. Union-find, trie, and Fenwick each have a dedicated oracle test file with hand-checkable small cases.
+6. Write-up states each central bound (amortized array O(1), hash expected O(1), AVL O(log n), heap O(log n), union-find alpha(n), Fenwick O(log n)).
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Where does the linked list beat the array, and where does it lose 100x?
+2. What does the AVL rotation count look like on sorted vs random insertions?
+3. At what op mix does the heap index map pay for itself?
 
-## Visualization
-- For n<=16 print BFS layers / DSU sets / heap array.
-- Example (ASCII): `dist=[0 1 1 2] sets={0,1,2}|{3} heap=[3 5 8] | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Red-black deletion internals (AVL suffices here), B-trees, lock-free structures, and persistent data structures (each named with triggers).
+
+## Oracle baselines to reproduce
+- Sorted-insertion heights: BST degenerating toward n while AVL stays near log2(n), both printed from your runs.
+- Hash max-chain at 0.75 vs 0.95 load recorded; heap extracts matching sorted order on every seed.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating star/chain worst-cases.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches O(V+E)/O(log n).
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add red-black insertion (or document precisely where AVL was chosen instead and why).
+- Add a B-tree page simulation (fan-out 128) and compare range-scan cost against the BST.

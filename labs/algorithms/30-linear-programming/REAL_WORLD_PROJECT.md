@@ -1,88 +1,40 @@
-# REAL_WORLD_PROJECT — Linear Programming (Simplex)
-> Production use-case with metrics + prevention. Lab `30-linear-programming`.
+# Real-World Project: Production Mix Planner
 
-## Use-case: supply-chain optimization, portfolio allocation, production planning
-- System: backend service handling large inputs where Linear Programming (Simplex) is on the hot path.
-- Why this algorithm: BFS plus pivoting with duality gives expected-polynomial solves which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Linear Programming) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A workshop makes two products with per-unit profit and shared machine-hour
+caps. Management wants the profit-maximizing mix with a certificate. Build a
+planner that enumerates vertices and pairs the answer with a dual bound.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `program.txt`: objective line plus at most 4 constraint lines, e.g.
+  `max 2x + 3y`, `x + 2y <= 8`, `3x + y <= 9`, `x >= 0`, `y >= 0`.
+- Coefficients are plain decimals; strict inequalities are rejected.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Degenerate cycling | non-termination | Bland's rule + perturbation |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Infeasible/unbounded model | solver exception | presolve + meaningful 422 error |
+## Steps
 
-## Cost note
-- Optimized variant (Bland + presolve) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Parse the objective and constraints; reject malformed lines by number.
+2. Compute all pairwise boundary intersections for the 2 variables.
+3. Keep intersections satisfying every constraint within 1e-9.
+4. Score each feasible vertex; recommend the best with its value.
+5. Construct the dual program and exhibit one feasible dual point.
+6. Show the dual value equals the recommended primal value (gap zero).
+7. Detect empty vertex sets (infeasible) and improving rays (unbounded).
+8. Emit `mix.txt` with vertices, recommendation, dual point, and gap.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://ocw.mit.edu/courses/15-053-optimization-methods-in-management-science-spring-2013/ (MIT OCW — optimization methods incl. LP)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html (Java SE API — BigDecimal for exact tableau arithmetic)
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Reference program (max 2x+3y, x+2y<=8, 3x+y<=9) recommends x=2.0, y=3.0 value 13.0.
+2. Every listed vertex satisfies all constraints within tolerance.
+3. Dual point feasible with value equal to the recommendation.
+4. Infeasible fixture reports INFEASIBLE with no recommendation.
+5. Unbounded fixture reports UNBOUNDED with no recommendation.
+6. Malformed lines exit with a message naming the line number.
+7. All output uses plain ASCII characters.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Financial/supply-chain models are business-sensitive; audit access.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Pivot count per solve | histogram | alert on blowup |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Tableau memory ≈ m×n doubles; cap sync size, queue the rest.
+- Plain Java only, no external libraries; 2 variables only.
+- Tolerance 1e-9 documented in the file header comment.
+- No simplex code required; enumeration plus duality is the method.

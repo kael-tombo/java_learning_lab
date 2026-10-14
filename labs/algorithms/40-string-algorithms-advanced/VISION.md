@@ -1,48 +1,41 @@
 # VISION — Advanced String Algorithms
-> Mastery path. Lab `40-string-algorithms-advanced`.
+> Direction: from one-pattern search to one-pass multi-pattern scanning plus suffix structures for substring questions.
 
 ## Where this sits
-- Advanced String Algorithms is one tool in the algorithms arsenal: automata (Aho-Corasick/KMP) plus Z plus suffix-automaton invariants.
-- Master it and neighboring labs get 2× easier (shared invariants + proof templates).
+- KMP gives O(n+m) single-pattern search via the border (prefix) function; the fallback chain is the whole idea.
+- Aho-Corasick lifts KMP to many patterns in O(n+m+z) with failure links and output inheritance; the standard multi-literal engine.
+- Suffix arrays (+LCP), suffix automata (<=2n states), and Ukkonen's linear-time SA construction answer substring/enumeration questions around them.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; O(n+m+z) multi-pattern search memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (IDS signature scanning, DNA motif search, log grep at scale).
+## 4-week direction
+- Week 1: hand-build pi for ababaca and the trie+fail links for {he,she,his}; reproduce all lab outputs on paper.
+- Week 2: finish MINI_PROJECT; complete the 50-pair cross-check against naive search.
+- Week 3: sort banana's suffixes by hand and derive each LCP entry; then run the log scan.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard the Aho scan loop with output inheritance in 10 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Derive pi[i] from borders and run the KMP search loop from memory.
+- Explain failure links as longest-suffix-that-is-a-trie-prefix with the she/he example.
+- Choose KMP vs Aho vs suffix array for a given (patterns, text size, query type) triple.
 
-## How to know you are done
-- Explain prefix-function / goto-fail/output links; automaton simulation without notes; derive O(n+m+z) bound on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This lab does not build regex engines, approximate matchers, or compressed indexes (FM-index named only).
+- Linear-time SA construction (SA-IS) and Ukkonen's algorithm are conceptual references, not implementations here.
+- Suffix automaton construction is described, not built; its state bound is quoted exactly.
+
+## Pitfalls
+- Dropping overlapping matches; the ushers case exists to prevent exactly this.
+- Rescanning text characters on mismatch; the fallback links are the fix, use them.
+- Ignoring chunk seams in streaming scans; boundaries need explicit overlap.
 
 ## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+- Pair with 27-suffix-array for deeper suffix structures and 36-bloom-filter-variants for pre-filtering match candidates.
+- Revisit when a scanner slows down; the fallback-link and seam checklists come first.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Weekly drills
+- Rebuild pi for ababaca from borders in under 3 minutes.
+- Rebuild the {he,she,his} failure links and re-derive she@1 he@2.
+- Sort banana's suffixes and recompute each LCP entry by hand.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
-
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not ship a scanner that drops overlapping matches; ushers is the regression test.
+- Do not ignore chunk seams; size the overlap from the longest pattern.

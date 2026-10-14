@@ -1,88 +1,42 @@
 # REAL_WORLD_PROJECT — Dynamic Programming Track
-> Production use-case with metrics + prevention. Track `dynamic-programming`.
+> Freight-loading planner: 0/1 knapsack packing per truck with edit-distance address dedup and LIS-based delay analysis on arrival sequences.
 
-## Use-case: capacity planning, pricing ladders, path counting
-- System: backend service handling large inputs where memoized/tabulated DP is on the hot path.
-- Why this algorithm: states×cost tables give exact optima with predictable latency which meets SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## System and inputs
+- Parcel feed per depot (weight, volume, value, address text); truck capacity (weight + volume dual constraint handled by nested or scalarized capacity, documented).
+- Address book for dedup via edit-distance threshold; arrival-time sequences per route for delay-trend analysis.
+- Planner output per truck: pack list, fill rate, leftovers with reasons (overweight, oversize, low value density).
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (dynamic-programming) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+## Design
+- Knapsack DP per truck at capped W (scalarized capacity units); instances above the cap fall back to value-density greedy with the gap logged.
+- Address dedup pre-pass clusters near-duplicates (edit distance <= 2 on normalized text) so one parcel does not ship twice.
+- LIS over on-time arrival flags per route surfaces the longest improving run for the weekly ops review.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Metrics
+- Fill rate per truck (weight and volume) with targets from the baseline month.
+- Greedy-fallback rate and its value gap vs DP on shadow instances.
+- Dedup precision sampled weekly (human review of 100 flagged pairs).
+- Planner runtime vs parcel count for next-depot capacity planning.
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+## Failure modes
+- Capacity-unit blowup (W 100x after unit change): cap guard diverts to greedy with an alert, never OOMs.
+- Dual-constraint infeasibility masked by scalarization: volume overflow check post-packs; violations replan with adjusted scalarization.
+- Dedup false merge (distinct addresses within distance 2): review queue plus apartment/suite-number guard rule.
+- Stale address book: versioned book with weekly refresh; planner embeds the book version in outputs.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| State explosion (big W/n) | OOM/slow | cap + compression + queue |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Stale price/capacity inputs | suboptimal plans | version inputs + re-solve trigger |
+## Rollout
+1. Shadow-plan one depot for a month; compare fill rate and leftovers vs human packers.
+2. Live-plan one depot with the fallback armed; review dedup precision weekly.
+3. Roll out per depot with capacity caps tuned from measured runtimes.
 
-## Cost note
-- Optimized variants (tabulation + compression) cut compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+## Acceptance criteria
+1. Reference knapsack instance solves through the service path with the documented optimum.
+2. Cap-guard test diverts an oversized instance to greedy with a logged gap.
+3. Dedup test merges true duplicates and spares the guarded distinct pair.
+4. Volume-overflow test triggers replan with adjusted scalarization.
+5. Rollback restores the previous planner version with identical outputs on the reference set.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/ (MIT 6.006 — DP lectures)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/HashMap.html (Java HashMap — memo backing)
-
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
-
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
-
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Planning outputs affect spend; audit + approval path for big changes.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Memo hit rate | gauge | tune state design |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Table ≈ states × bytes; cap sync size, queue the rest.
+## Cost and contract notes
+- Planner runtime per depot sized from the parcel-count table; depots above the cap get pre-split feeds.
+- Greedy-fallback value gap reported weekly in dollars of unfilled capacity, keeping the fallback honest.
+- Dedup review labor (100 pairs/week) costed into the project; precision below target pauses auto-merge.
+- Contract: pack lists embed address-book version and capacity-unit definition so plans stay comparable.

@@ -1,48 +1,38 @@
-# REAL_WORLD_PROJECT — Spatial Data Structures (R-tree / QuadTree / k-d tree)
+# Geo-Fence Search and Collision Broad-Phase, Side by Side
 
-Production use-case: **geo-fence / points-of-interest search service**. Secondary: collision broad-phase for a 2-D game engine.
+Two spatial callers, one lab. A points-of-interest service answers
+radius and bounding-box queries over 500k venues; a 2-D game engine
+needs broad-phase collision pairs per frame over 20k moving bodies.
 
-## 1. Problem statement
-Serve nearest-neighbor + range search workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Index lineup. Uniform grid for the dense downtown tiles, quadtree for
+the uneven suburbs, k-d tree for nearest-venue queries. Each index sits
+behind one spatial interface (insert, move, radius, box, nearest) so
+the harness swaps them per workload with a flag.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Geo-fence queries. Radius search must return exactly the brute-force
+set on 2k random queries; box search likewise. Nearest-venue answers
+checked against linear scan on 5k queries. Average cost near O(log n)
+per structure is shown with timing vs dataset size, not asserted.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Collision caller. Uniform grid with cell size tied to max body radius;
+each frame emits candidate pairs, narrow phase confirms. Pair recall
+must be 100 percent against O(n^2) on 2k bodies; the quoted win is
+candidate count reduction, counted exactly per frame.
 
-## 4. Metrics to report
+Movement stress. 10k bodies teleported across the map per tick (index
+churn worst case); update cost quoted separately from query cost so a
+structure that queries fast but updates slowly cannot hide.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Edge plots. Points on tile borders (ownership rule documented), zero
+radius query, box covering the whole map, duplicate coordinates, bodies
+larger than one cell (multi-cell registration rule).
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/R-tree
-- https://postgis.net/documentation/
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Hand in. Three indexes, both callers, oracle agreement logs, churn
+numbers, border-rule note. Marks: query exactness 12, collision recall
+plus candidate math 10, movement and border handling 8.
+## Map fixtures
+- Downtown dense tile set pinned.
+- Suburb uneven set pinned.
+- Border-point cases enumerated.
+- Teleport churn script versioned.
+- Recall must read 100 percent.

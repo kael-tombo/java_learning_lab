@@ -1,176 +1,80 @@
-# Mock Interview: MST Variants — Boruvek, Steiner Tree, Dynamic MST
-
-## Interview Details
-- **Topic**: MST Variants
-- **Difficulty Range**: Medium to Hard
-- **Total Time**: 45 minutes
-- **Interviewer**: Senior Software Engineer at Amazon
-- **Candidate**: Senior Software Engineer (6 years experience)
-
----
-
-## Question 1: Minimum Cost to Connect Points (LC 1584)
-
-**Difficulty**: Medium
-**Company Frequency**: Meta, Amazon, Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Let us start with Minimum Cost to Connect Points (LC 1584). Explain your approach and consider the trade-offs."
-
-**Candidate**: "I will start by discussing the brute force solution. The naive approach has O(n^2) time complexity because we check every pair or permutation. However, this problem has characteristics that allow significant optimization."
-
-**Interviewer**: "What algorithm paradigm do you think applies here?"
-
-**Candidate**: "This problem fits the MST Variants paradigm. The key insight is that we can leverage the specific properties of this approach to reduce the complexity. Instead of checking all possibilities, we can use a systematic method that builds up the solution incrementally."
-
-**Interviewer**: "Walk me through the optimal solution."
-
-**Candidate**: "I will implement the algorithm with these steps. First, I handle the base cases. Then I process the input using the core algorithmic technique. I maintain necessary state variables and update them appropriately. The key decision point is how we transition between states. At the end, I return the computed result."
-
-**Interviewer**: "What is the time and space complexity?"
-
-**Candidate**: "The time complexity is O(n log n) for the sorting-based preprocessing plus O(n) for the main algorithm, giving O(n log n) total. Space complexity is O(n) for the auxiliary data structures. This is optimal because we must sort the input, and comparison-based sorting has a lower bound of omega(n log n)."
-
-**Interviewer**: "What edge cases should we test?"
-
-**Candidate**: "We should test: empty input returning a default, single element, all identical values, large values causing overflow, and values at boundary conditions. I will make sure the algorithm handles each of these gracefully."
-
-**Time Taken**: 13 minutes
-**What Went Well**: 
-- Clear communication of algorithmic trade-offs
-- Good recognition of the correct paradigm
-- Proactive complexity analysis
-**Could Improve**: 
-- Should ask about input size before optimizing
-- Could mention alternative algorithm paradigms considered
-
----
-
-## Question 2: Steiner Tree Approximation
-
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Next problem: Steiner Tree Approximation. This is a more challenging algorithmic problem."
-
-**Candidate**: "Let me restate the problem to ensure I understand correctly. We are looking for... I see this as an extension of the previous pattern but with additional constraints."
-
-**Interviewer**: "What makes this different from the first problem?"
-
-**Candidate**: "The main difference is that this problem requires handling more complex state transitions. The state space is larger, so we need to be more careful about how we represent and update the state. A direct adaptation of the previous approach would be too slow."
-
-**Interviewer**: "How do you propose to solve it?"
-
-**Candidate**: "I will use the same algorithmic paradigm but with additional optimizations. Specifically, I can reduce the state space by noting that certain states are equivalent. This is a form of state compression. Alternatively, I can use a different variation of the algorithm that handles the specific constraints better."
-
-**Interviewer**: "Explain the implementation details."
-
-**Candidate**: "I initialize the data structures with appropriate initial values. Then I iterate through the input, applying the algorithm specific transitions. At each step, I check for early termination conditions. The core logic involves updating state based on the current input and previous state. Finally, I extract the answer from the state."
-
-**Interviewer**: "What is the complexity and can you prove optimality?"
-
-**Candidate**: "Time complexity is O(n) where n is the input size. Space is O(n) because we need to store the state for all elements. This is optimal because we must examine each input element at least once. A lower bound argument: any algorithm must read all the input, so omega(n) is a lower bound. Our algorithm achieves this bound."
-
-**Time Taken**: 14 minutes
-**What Went Well**: 
-- Correctly identified the harder variant characteristics
-- Good state compression thinking
-- Strong lower bound justification
-**Could Improve**: 
-- Could describe the state transition more precisely
-- Should mention space optimization possibilities
-
----
-
-## Question 3: Dynamic MST Deletion
-
-**Difficulty**: Hard
-**Company Frequency**: Google, Amazon
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Final problem: Dynamic MST Deletion. This is a hard algorithm problem that appears frequently in our interviews."
-
-**Candidate**: "This is a significantly harder problem. Let me think carefully. The brute force approach would be O(2^n) or worse, which is infeasible for large inputs. I need to use the advanced algorithmic paradigm effectively."
-
-**Interviewer**: "What is your approach strategy?"
-
-**Candidate**: "I will combine multiple algorithmic techniques. The problem has overlapping subproblems suggesting DP, but also has a structure that allows greedy choices in certain cases. I need to carefully analyze the properties to determine which approach to use."
-
-**Interviewer**: "How do you decide between the different approaches?"
-
-**Candidate**: "I compare the trade-offs. A pure greedy approach would be O(n log n) but might fail for some edge cases. A DP approach would be O(n^2) and always correct. A divide-and-conquer approach would be O(n log n) with more complex merge logic. Given the constraints in the problem, I believe the DP approach is most appropriate because it guarantees correctness and the quadratic time is acceptable for the expected input size."
-
-**Interviewer**: "Explain the DP state definition."
-
-**Candidate**: "The state dp[i] represents the optimal solution for the subproblem up to i. The recurrence is dp[i] = min/max over valid transitions from previous states. The base cases are initialized first, then we fill the DP table in increasing order of i. The final answer is at dp[n]."
-
-**Interviewer**: "Can you optimize space?"
-
-**Candidate**: "Yes, if the recurrence only depends on a fixed number of previous states, we can reduce space from O(n) to O(k) where k is the number of states needed. This is a common optimization that is always worth mentioning."
-
-**Time Taken**: 16 minutes
-**What Went Well**: 
-- Systematic comparison of different algorithmic approaches
-- Clear DP state definition
-- Considered space optimization proactively
-**Could Improve**: 
-- Could have written the DP recurrence more formally
-- Should verify with a small example mentally
-
----
-
-## Interviewer Feedback
-
-### Overall Assessment: Strong Hire
-
-**Strengths**:
-- Strong algorithmic reasoning and pattern recognition
-- Always analyzes complexity and discusses lower bounds
-- Considers multiple algorithm paradigms before choosing
-- Handles hard problems with systematic decomposition
-- Excellent communication throughout the interview
-
-**Areas for Improvement**:
-- Could be faster at coding once approach is settled
-- Should verify algorithm correctness with small examples
-- Can improve space optimization awareness for DP problems
-- Should discuss concurrency and parallelization possibilities
-
-### Follow-Up Questions
-
-1. "What if the input size is 10^9? How does your algorithm scale?"
-2. "Can you parallelize this across multiple CPU cores?"
-3. "How would you handle streaming or infinite input?"
-4. "What if memory is limited to O(1)? Can you still solve it?"
-5. "Is there a randomized algorithm that performs better on average?"
-6. "How would your algorithm perform with adversarial input?"
-7. "Can you prove the optimality of your approach?"
-
-### Recommended Practice Plan
-
-| Area | Focus | Activities |
-|------|-------|-----------|
-| Advanced MST Variants | Harder variations | Solve 5 more problems in this paradigm |
-| Complexity Proofs | Formal lower bounds | Practice omega(n log n) and omega(n) proofs |
-| Space Optimization | In-place algorithms | Study memory-constrained algorithm techniques |
-| Company Specific | Target company tag | Solve 10 tagged problems on LeetCode |
-
----
-
-## Key Takeaways
-
-| Aspect | Rating (1-5) | Notes |
-|--------|-------------|-------|
-| Problem Understanding | 5 | Excellent restatement and clarification |
-| Algorithm Selection | 5 | Considered multiple paradigms correctly |
-| Code Quality | 4 | Good, but room for cleaner implementation |
-| Complexity Analysis | 5 | Detailed with lower bound justification |
-| Edge Cases | 4 | Good coverage, could be more systematic |
-| Communication | 5 | Clear and structured throughout |
-| Time Management | 4 | Slight overrun on hard problem |
-| Follow-up Handling | 4 | Good depth, more practice needed |
-
-## Candidate Self-Reflection
-
-"I performed well on recognizing algorithm patterns and analyzing complexity. The first two problems were straightforward applications of the paradigm. The third problem required deeper analysis and I think I chose the right approach. Moving forward, I will practice more space optimization and ensure I test my algorithm logic with small examples before coding. The feedback about being more systematic with edge cases is valuable and I will incorporate it into my preparation routine."
+# Mock Interview: MST Variants
+> Three questions on minimum spanning trees. State the cut property before coding.
+## Q1: Kruskal with union-find
+Problem: MST of a 5-vertex 7-edge graph by ascending edge weight with path-compressed union-find.
+Key insight: the cut property certifies each added edge: the lightest edge crossing any cut belongs to some MST, and union-find detects the cycles.
+Complexity: O(E log E) time, O(V) memory.
+```java
+import java.util.*;
+public class L38Q1 {
+    public static void main(String[] a){
+        int[][] e = {{0,1,4},{0,2,3},{1,2,1},{1,3,2},{2,3,4},{3,4,2},{2,4,5}};
+        Arrays.sort(e, (x,y) -> x[2]-y[2]);
+        int[] p = {0,1,2,3,4}; int w = 0, used = 0;
+        for (int[] x : e){ int r1=find(p,x[0]), r2=find(p,x[1]); if (r1 != r2){ p[r1]=r2; w += x[2]; used++; } }
+        System.out.println("mst_weight=" + w + " edges=" + used);
+    }
+    static int find(int[] p, int x){ return p[x]==x ? x : (p[x]=find(p,p[x])); }
+}
+```
+Observed output:
+```
+mst_weight=8 edges=4
+```
+Follow-up: why does sorting dominate the running time?
+## Q2: Prim dense version
+Problem: grow the MST from vertex 0 with the O(V^2) Prim loop on the same graph.
+Key insight: Prim maintains the lightest connection from the grown tree outward, which is the same cut argument from the tree side; weight 8 matches Kruskal.
+Complexity: O(V^2) time, O(V) memory; heap version is O(E log V).
+```java
+public class L38Q2 {
+    public static void main(String[] a){
+        int n = 5, INF = 999, total = 0;
+        int[][] w = {{0,4,3,INF,INF},{4,0,1,2,INF},{3,1,0,4,5},{INF,2,4,0,2},{INF,INF,5,2,0}};
+        boolean[] in = new boolean[n]; int[] d = {0,INF,INF,INF,INF};
+        for (int i = 0; i < n; i++){
+            int u = -1; for (int v = 0; v < n; v++) if (!in[v] && (u == -1 || d[v] < d[u])) u = v;
+            in[u] = true; total += d[u];
+            for (int v = 0; v < n; v++) d[v] = Math.min(d[v], w[u][v]);
+        }
+        System.out.println("prim_weight=" + total);
+    }
+}
+```
+Observed output:
+```
+prim_weight=8
+```
+Follow-up: when is the heap version actually faster?
+## Q3: second-best MST
+Problem: reuse the weight-8 tree and evaluate every non-tree edge as a swap.
+Key insight: adding a non-tree edge creates one cycle, and swapping out its heaviest tree edge gives the best tree using that edge; the minimum over swaps is 9.
+Complexity: O(E*V) with BFS per swap, O(V + E) memory.
+```java
+import java.util.*;
+public class L38Q3 {
+    public static void main(String[] a){
+        int[][] mst = {{1,2,1},{1,3,2},{3,4,2},{0,2,3}}; // weight 8, matches Q1/Q2 output
+        Map<Integer,List<int[]>> t = new HashMap<>();
+        for (int i = 0; i < 5; i++) t.put(i, new ArrayList<>());
+        for (int[] x : mst){ t.get(x[0]).add(new int[]{x[1],x[2]}); t.get(x[1]).add(new int[]{x[0],x[2]}); }
+        int second = 999;
+        for (int[] x : new int[][]{{0,1,4},{2,3,4},{2,4,5}}) second = Math.min(second, 8 + x[2] - maxEdge(t, x[0], x[1]));
+        System.out.println("second_best=" + second);
+    }
+    static int maxEdge(Map<Integer,List<int[]>> t, int s, int d){
+        int[] par = new int[5], pw = new int[5]; boolean[] vis = new boolean[5];
+        Queue<Integer> q = new ArrayDeque<>(); q.add(s); vis[s] = true; par[s] = -1;
+        while (!q.isEmpty()){ int u = q.poll(); for (int[] nb : t.get(u)) if (!vis[nb[0]]){ vis[nb[0]] = true; par[nb[0]] = u; pw[nb[0]] = nb[1]; q.add(nb[0]); } }
+        int mx = 0; for (int c = d; c != s; c = par[c]) mx = Math.max(mx, pw[c]); return mx;
+    }
+}
+```
+Observed output:
+```
+second_best=9
+```
+## Pass checklist
+- [ ] Confirm both algorithms report weight 8 on the same graph.
+- [ ] Trace one swap in Q3: added edge, cycle, removed edge.
+- [ ] State the cut property in one sentence from memory.

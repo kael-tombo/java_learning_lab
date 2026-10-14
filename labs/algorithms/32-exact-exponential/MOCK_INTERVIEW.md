@@ -1,176 +1,76 @@
-# Mock Interview: Exact Exponential Algorithms — Meet-in-the-Middle, Inclusion-Exclusion
-
-## Interview Details
-- **Topic**: Exact Exponential Algorithms
-- **Difficulty Range**: Hard to Hard
-- **Total Time**: 45 minutes
-- **Interviewer**: Senior Software Engineer at Amazon
-- **Candidate**: Senior Software Engineer (6 years experience)
-
----
-
-## Question 1: Meet-in-the-Middle for Subset Sum
-
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Let us start with Meet-in-the-Middle for Subset Sum. Explain your approach and consider the trade-offs."
-
-**Candidate**: "I will start by discussing the brute force solution. The naive approach has O(n^2) time complexity because we check every pair or permutation. However, this problem has characteristics that allow significant optimization."
-
-**Interviewer**: "What algorithm paradigm do you think applies here?"
-
-**Candidate**: "This problem fits the Exact Exponential Algorithms paradigm. The key insight is that we can leverage the specific properties of this approach to reduce the complexity. Instead of checking all possibilities, we can use a systematic method that builds up the solution incrementally."
-
-**Interviewer**: "Walk me through the optimal solution."
-
-**Candidate**: "I will implement the algorithm with these steps. First, I handle the base cases. Then I process the input using the core algorithmic technique. I maintain necessary state variables and update them appropriately. The key decision point is how we transition between states. At the end, I return the computed result."
-
-**Interviewer**: "What is the time and space complexity?"
-
-**Candidate**: "The time complexity is O(n log n) for the sorting-based preprocessing plus O(n) for the main algorithm, giving O(n log n) total. Space complexity is O(n) for the auxiliary data structures. This is optimal because we must sort the input, and comparison-based sorting has a lower bound of omega(n log n)."
-
-**Interviewer**: "What edge cases should we test?"
-
-**Candidate**: "We should test: empty input returning a default, single element, all identical values, large values causing overflow, and values at boundary conditions. I will make sure the algorithm handles each of these gracefully."
-
-**Time Taken**: 13 minutes
-**What Went Well**: 
-- Clear communication of algorithmic trade-offs
-- Good recognition of the correct paradigm
-- Proactive complexity analysis
-**Could Improve**: 
-- Should ask about input size before optimizing
-- Could mention alternative algorithm paradigms considered
-
----
-
-## Question 2: Inclusion-Exclusion Principle
-
-**Difficulty**: Hard
-**Company Frequency**: Google, Amazon
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Next problem: Inclusion-Exclusion Principle. This is a more challenging algorithmic problem."
-
-**Candidate**: "Let me restate the problem to ensure I understand correctly. We are looking for... I see this as an extension of the previous pattern but with additional constraints."
-
-**Interviewer**: "What makes this different from the first problem?"
-
-**Candidate**: "The main difference is that this problem requires handling more complex state transitions. The state space is larger, so we need to be more careful about how we represent and update the state. A direct adaptation of the previous approach would be too slow."
-
-**Interviewer**: "How do you propose to solve it?"
-
-**Candidate**: "I will use the same algorithmic paradigm but with additional optimizations. Specifically, I can reduce the state space by noting that certain states are equivalent. This is a form of state compression. Alternatively, I can use a different variation of the algorithm that handles the specific constraints better."
-
-**Interviewer**: "Explain the implementation details."
-
-**Candidate**: "I initialize the data structures with appropriate initial values. Then I iterate through the input, applying the algorithm specific transitions. At each step, I check for early termination conditions. The core logic involves updating state based on the current input and previous state. Finally, I extract the answer from the state."
-
-**Interviewer**: "What is the complexity and can you prove optimality?"
-
-**Candidate**: "Time complexity is O(n) where n is the input size. Space is O(n) because we need to store the state for all elements. This is optimal because we must examine each input element at least once. A lower bound argument: any algorithm must read all the input, so omega(n) is a lower bound. Our algorithm achieves this bound."
-
-**Time Taken**: 14 minutes
-**What Went Well**: 
-- Correctly identified the harder variant characteristics
-- Good state compression thinking
-- Strong lower bound justification
-**Could Improve**: 
-- Could describe the state transition more precisely
-- Should mention space optimization possibilities
-
----
-
-## Question 3: Fast Subset Convolution
-
-**Difficulty**: Hard
-**Company Frequency**: Google
-**Time Allotted**: 15 minutes
-
-**Interviewer**: "Final problem: Fast Subset Convolution. This is a hard algorithm problem that appears frequently in our interviews."
-
-**Candidate**: "This is a significantly harder problem. Let me think carefully. The brute force approach would be O(2^n) or worse, which is infeasible for large inputs. I need to use the advanced algorithmic paradigm effectively."
-
-**Interviewer**: "What is your approach strategy?"
-
-**Candidate**: "I will combine multiple algorithmic techniques. The problem has overlapping subproblems suggesting DP, but also has a structure that allows greedy choices in certain cases. I need to carefully analyze the properties to determine which approach to use."
-
-**Interviewer**: "How do you decide between the different approaches?"
-
-**Candidate**: "I compare the trade-offs. A pure greedy approach would be O(n log n) but might fail for some edge cases. A DP approach would be O(n^2) and always correct. A divide-and-conquer approach would be O(n log n) with more complex merge logic. Given the constraints in the problem, I believe the DP approach is most appropriate because it guarantees correctness and the quadratic time is acceptable for the expected input size."
-
-**Interviewer**: "Explain the DP state definition."
-
-**Candidate**: "The state dp[i] represents the optimal solution for the subproblem up to i. The recurrence is dp[i] = min/max over valid transitions from previous states. The base cases are initialized first, then we fill the DP table in increasing order of i. The final answer is at dp[n]."
-
-**Interviewer**: "Can you optimize space?"
-
-**Candidate**: "Yes, if the recurrence only depends on a fixed number of previous states, we can reduce space from O(n) to O(k) where k is the number of states needed. This is a common optimization that is always worth mentioning."
-
-**Time Taken**: 16 minutes
-**What Went Well**: 
-- Systematic comparison of different algorithmic approaches
-- Clear DP state definition
-- Considered space optimization proactively
-**Could Improve**: 
-- Could have written the DP recurrence more formally
-- Should verify with a small example mentally
-
----
-
-## Interviewer Feedback
-
-### Overall Assessment: Strong Hire
-
-**Strengths**:
-- Strong algorithmic reasoning and pattern recognition
-- Always analyzes complexity and discusses lower bounds
-- Considers multiple algorithm paradigms before choosing
-- Handles hard problems with systematic decomposition
-- Excellent communication throughout the interview
-
-**Areas for Improvement**:
-- Could be faster at coding once approach is settled
-- Should verify algorithm correctness with small examples
-- Can improve space optimization awareness for DP problems
-- Should discuss concurrency and parallelization possibilities
-
-### Follow-Up Questions
-
-1. "What if the input size is 10^9? How does your algorithm scale?"
-2. "Can you parallelize this across multiple CPU cores?"
-3. "How would you handle streaming or infinite input?"
-4. "What if memory is limited to O(1)? Can you still solve it?"
-5. "Is there a randomized algorithm that performs better on average?"
-6. "How would your algorithm perform with adversarial input?"
-7. "Can you prove the optimality of your approach?"
-
-### Recommended Practice Plan
-
-| Area | Focus | Activities |
-|------|-------|-----------|
-| Advanced Exact Exponential Algorithms | Harder variations | Solve 5 more problems in this paradigm |
-| Complexity Proofs | Formal lower bounds | Practice omega(n log n) and omega(n) proofs |
-| Space Optimization | In-place algorithms | Study memory-constrained algorithm techniques |
-| Company Specific | Target company tag | Solve 10 tagged problems on LeetCode |
-
----
-
-## Key Takeaways
-
-| Aspect | Rating (1-5) | Notes |
-|--------|-------------|-------|
-| Problem Understanding | 5 | Excellent restatement and clarification |
-| Algorithm Selection | 5 | Considered multiple paradigms correctly |
-| Code Quality | 4 | Good, but room for cleaner implementation |
-| Complexity Analysis | 5 | Detailed with lower bound justification |
-| Edge Cases | 4 | Good coverage, could be more systematic |
-| Communication | 5 | Clear and structured throughout |
-| Time Management | 4 | Slight overrun on hard problem |
-| Follow-up Handling | 4 | Good depth, more practice needed |
-
-## Candidate Self-Reflection
-
-"I performed well on recognizing algorithm patterns and analyzing complexity. The first two problems were straightforward applications of the paradigm. The third problem required deeper analysis and I think I chose the right approach. Moving forward, I will practice more space optimization and ensure I test my algorithm logic with small examples before coding. The feedback about being more systematic with edge cases is valuable and I will incorporate it into my preparation routine."
+# Mock Interview: Exact Exponential Algorithms
+> Three questions on paying exponential cost only when n is small. Name the DP state before coding.
+## Q1: Held-Karp TSP
+Problem: optimal tour of 4 cities with the fixed distance matrix in the snippet.
+Key insight: dp[mask][u] = cheapest path from city 0 visiting exactly the cities of mask and ending at u; Held-Karp fills this over all 2^n subsets.
+Complexity: O(n^2 2^n) time, O(n 2^n) memory.
+```java
+public class L32Q1 {
+    public static void main(String[] a){
+        int[][] d = {{0,10,15,20},{10,0,35,25},{15,35,0,30},{20,25,30,0}};
+        int n = 4, N = 1 << n, INF = 999999, ans = INF;
+        int[][] dp = new int[N][n];
+        for (int i = 0; i < N; i++) for (int j = 0; j < n; j++) dp[i][j] = INF;
+        dp[1][0] = 0;
+        for (int m = 1; m < N; m++) for (int u = 0; u < n; u++){
+            if ((m & (1<<u)) == 0 || dp[m][u] == INF) continue;
+            for (int v = 0; v < n; v++) if ((m & (1<<v)) == 0) dp[m|(1<<v)][v] = Math.min(dp[m|(1<<v)][v], dp[m][u]+d[u][v]);
+        }
+        for (int u = 1; u < n; u++) ans = Math.min(ans, dp[N-1][u]+d[u][0]);
+        System.out.println("heldkarp_cost=" + ans);
+    }
+}
+```
+Observed output:
+```
+heldkarp_cost=80
+```
+Follow-up: when does inclusion-exclusion beat Held-Karp on memory?
+## Q2: brute-force cross-check
+Problem: enumerate all 3! = 6 permutations of the same 4-city instance and confirm the optimum.
+Key insight: the factorial baseline certifies the DP on tiny n and shows why it dies near n = 12 while Held-Karp survives to about n = 20.
+Complexity: O(n!) time, O(n) memory.
+```java
+public class L32Q2 {
+    static int best = Integer.MAX_VALUE;
+    static int[][] d = {{0,10,15,20},{10,0,35,25},{15,35,0,30},{20,25,30,0}};
+    public static void main(String[] a){ perm(new int[]{1,2,3}, 0); System.out.println("bruteforce_cost=" + best); }
+    static void perm(int[] p, int i){
+        if (i == p.length){ best = Math.min(best, d[0][p[0]]+d[p[0]][p[1]]+d[p[1]][p[2]]+d[p[2]][0]); return; }
+        for (int j = i; j < p.length; j++){ int t=p[i];p[i]=p[j];p[j]=t; perm(p,i+1); t=p[i];p[i]=p[j];p[j]=t; }
+    }
+}
+```
+Observed output:
+```
+bruteforce_cost=80
+```
+Follow-up: how does branch-and-bound prune this search with an MST lower bound?
+## Q3: subset enumeration for independent sets
+Problem: count all independent sets of a 5-vertex graph by testing every subset mask.
+Key insight: a mask is independent iff no vertex shares the mask with a neighbor bitmask; the scan is O(n 2^n) and yields both the count and alpha.
+Complexity: O(n 2^n) time, O(n) memory.
+```java
+public class L32Q3 {
+    public static void main(String[] a){
+        int n = 5, count = 0, best = 0;
+        int[] nb = new int[n];
+        for (int[] x : new int[][]{{0,1},{0,2},{1,3},{2,3},{3,4}}){ nb[x[0]] |= 1<<x[1]; nb[x[1]] |= 1<<x[0]; }
+        for (int s = 0; s < (1<<n); s++){
+            boolean ok = true;
+            for (int v = 0; v < n; v++) if ((s & (1<<v)) != 0 && (s & nb[v]) != 0){ ok = false; break; }
+            if (ok){ count++; best = Math.max(best, Integer.bitCount(s)); }
+        }
+        System.out.println("independent_sets=" + count + " alpha=" + best);
+    }
+}
+```
+Observed output:
+```
+independent_sets=12 alpha=3
+```
+Follow-up: sketch meet-in-the-middle for subset sum in O(2^(n/2)).
+## Pass checklist
+- [ ] Match heldkarp_cost against bruteforce_cost on the same matrix.
+- [ ] State the space bound that caps Held-Karp around n = 20-25.
+- [ ] Explain why branch-and-bound needs a valid lower bound to prune.

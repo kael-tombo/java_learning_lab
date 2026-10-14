@@ -1,48 +1,42 @@
 # VISION — Data Structures Track
-> Mastery path. Track `data-structures`.
+> Direction: from using collections to choosing them — bounds, constants, and the adversarial input that separates the two.
 
 ## Where this sits
-- Graphs + trees underpin every algorithms track: traversal, order, priority, intervals, prefixes.
-- Master it and neighboring tracks get 2× easier (shared invariants + proof templates).
+- Sequences: dynamic arrays (amortized O(1), cache-friendly) vs linked lists (O(1) splicing, pointer-chasing reads).
+- Associative: hash maps (expected O(1), load-factor discipline) vs balanced trees (O(log n), ordered).
+- Priority: binary heaps O(log n) with decrease-key via index maps. Connectivity: union-find at inverse-Ackermann.
+- Prefix/sums: tries for strings, Fenwick/segment trees for O(log n) range queries.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; BFS/DFS O(V+E), heap O(log n) memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (routing, leaderboards, autocomplete).
+## 4-week direction
+- Week 1: implement dynamic array, hash map, and BST from scratch with oracle tests; record heights and chains.
+- Week 2: finish MINI_PROJECT; complete the BST-vs-AVL degeneration table from real runs.
+- Week 3: adversarial week — sorted insertions, collision keys, decrease-key mixes — and fix each fallout.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard any structure's core invariant in 5 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- State each structure's central bound plus the assumption or discipline behind it.
+- Predict array-vs-list and hash-vs-tree winners for a given access mix, then verify.
+- Diagnose a degeneration (tall tree, long chain, slow heap) from stats alone.
 
-## How to know you are done
-- Explain BFS layers + DSU compression + heap order without notes; derive O(V+E) on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This track does not build B-trees, lock-free structures, or persistent data structures; each is named with the scale or concurrency trigger that earns it.
+- Cache-oblivious layouts are referenced, not implemented.
+- Language-stdlib internals (e.g. HashMap treeification) are reading material, not lab work.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Pitfalls
+- Treating expected O(1) hashing as worst-case; adversaries and load factors exist.
+- Skipping the oracle tests; structure bugs are silent data corruption.
+- Ignoring constants: O(log n) with pointer chasing can lose to O(n) scans at small n.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Adjacent tracks
+- Pair with sorting/searching for the algorithm consumers and databases tracks for the on-disk structures.
+- Revisit when a collection "feels slow"; stats first (height, chain, probes), then judgment.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## Weekly drills
+- State one invariant per structure (heap order, AVL balance, trie prefix, Fenwick LSB) cold.
+- Recompute amortized array cost via the doubling-credit argument.
+- Diagnose a planted degeneration from stats alone (no source peeking).
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not use a structure whose invariant you cannot state; oracles catch what memory misses.
+- Do not ignore constants at small n; measure before theorizing.

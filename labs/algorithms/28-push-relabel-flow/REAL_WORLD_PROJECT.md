@@ -1,88 +1,40 @@
-# REAL_WORLD_PROJECT — Push-Relabel & Min-Cost Flow
-> Production use-case with metrics + prevention. Lab `28-push-relabel-flow`.
+# Real-World Project: Evacuation Route Checker
 
-## Use-case: logistics networks, bipartite assignment, airline scheduling
-- System: backend service handling large inputs where Push-Relabel & Min-Cost Flow is on the hot path.
-- Why this algorithm: height labels plus excess flow gives O(V^3) generic which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Push-Relabel & Min-Cost Flow) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A venue models corridors as a flow network (rooms as nodes, door rates as
+capacities) and needs the max exit throughput plus the bottleneck cut. Build
+a checker that computes both with two independent methods.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `network.csv`: rows `from,to,capacity` with non-negative integer rates.
+- Source node id and sink node id passed as program arguments.
+- Node count capped at 50 for the matrix representation.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Negative-cost cycle in min-cost mode | infinite loop | Bellman-Ford init + cycle cancel guard |
+## Steps
 
-## Cost note
-- Optimized variant (gap + highest-label, O(V^3) generic) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Parse rows; reject negative capacities and unknown endpoint ids.
+2. Build the capacity matrix; confirm source differs from sink.
+3. Compute max flow with Edmonds-Karp (BFS augmenting paths).
+4. Compute max flow with generic push-relabel (preflow plus discharge).
+5. Assert both methods report the same value; abort loudly on mismatch.
+6. Extract the min cut: BFS the final residual from the source side.
+7. Emit `evacuation.txt` with flow value, cut edges, and cut capacity.
+8. Write a two-paragraph note naming the bottleneck doors by id.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://algs4.cs.princeton.edu/64maxflow/ (Princeton Algorithms — maxflow/mincut)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayDeque.html (Java ArrayDeque — queue disciplines for discharge)
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Both methods agree on every accepted network including the reference.
+2. Reference graph (this lab's test edges) reports flow 5 and cut 5.
+3. Cut edges listed with capacities summing exactly to the flow value.
+4. Disconnected source and sink yields flow 0 with an empty cut note.
+5. Negative capacity rows exit with a message naming the row.
+6. `evacuation.txt` contains value, cut edges, capacity, and method note.
+7. All output uses plain ASCII characters.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Logistics data may include customer locations; minimize retention, encrypt.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Push/relabel counts | counter | diagnose heuristic wins |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Dense graphs: memory ≈ E×(cap+rev) edges; cap V for sync path.
+- Plain Java only, no external libraries; deterministic single run.
+- Matrix form documented with the 50-node cap in the file header.
+- No framing of results beyond what both methods confirm.

@@ -1,83 +1,37 @@
 # MINI_PROJECT — Matrix Algorithms
-> Implement + benchmark + visualize. Lab `33-matrix-algorithms`.
+> Build a multiply-and-verify kit: naive O(n^3), Strassen 2x2 check, and Fibonacci-by-power, plus a timing note with no invented numbers.
 
-## Goal
-- Build a runnable Java CLI that multiplies matrices via blocked naive plus Strassen up to n=1024; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Fixed 3x3 pair from MOCK Q1 and fixed 2x2 pair from MOCK Q2.
+- Random float matrices n = 128, 256, 512 with a fixed seed for timing only.
 
-## Spec
-1. `lab.33_matrix_algorithms.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving block recursion + crossover choice.
+## Build steps
+1. Implement ijk naive multiply; verify the 3x3 product rows [30,24,18] / [84,69,54] / [138,114,90].
+2. Implement the 7-product Strassen step for 2x2 blocks; assert equality with naive on the fixed pair ([[36,41],[64,73]]).
+3. Implement 2x2 binary matrix exponentiation; verify fib20 = 6765 from M^20[0][1].
+4. Time naive at n = 128/256/512 (3 runs each, report median ms) and record machine + JDK in the table.
+5. Write the crossover note: why Strassen's lower exponent does not win at small n (recursion overhead, temporaries, cache effects).
 
-## Starter code
-```java
-package lab.33_matrix_algorithms;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. 3x3 product rows match exactly as listed above.
+2. Strassen 2x2 output matches naive entry-by-entry on the fixed pair.
+3. fib20 prints 6765 from the powered matrix, not from a loop.
+4. Timing table shows median of 3 runs per size with machine/JDK noted; no cells copied from elsewhere.
+5. Crossover note names at least two concrete overheads (temporaries, recursion base case).
+6. All arithmetic in double or long is documented with the choice justified in one line each.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. How does transposing B before the ijk loop change your n=512 time, and why?
+2. What is the temporary-memory cost of one Strassen level vs one naive level?
+3. Where does exponentiation-by-squaring beat linear iteration for recurrences?
 
-## Visualization
-- For n<=16 print block tiles / recursion depth / crossover decision.
-- Example (ASCII): `n=8 depth=2 crossover=64 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Full recursive Strassen to arbitrary n, sparse formats (CSR), and eigensolvers.
+
+## Worked reference (verified outputs)
+- 3x3 product prints rows [30, 24, 18], [84, 69, 54], [138, 114, 90]; any loop-order change must reproduce them.
+- Strassen 2x2 prints [[36,41],[64,73]] matching naive; fib20 prints 6765 from the powered matrix.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for O(n^3)/O(n^2.81).
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches O(n^3)/O(n^2.81).
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add a transposed-B variant and report the n=512 delta with cache-miss reasoning.
+- Implement blocked multiply with tile 128/256 and show the best tile per size from real runs.

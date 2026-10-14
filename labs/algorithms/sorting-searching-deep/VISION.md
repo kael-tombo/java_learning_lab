@@ -1,48 +1,42 @@
-# VISION — Sorting & Searching Deep Track
-> Mastery path. Track `sorting-searching-deep`.
+# VISION — Sorting and Searching Deep Track
+> Direction: from textbook sorts to structures with stronger guarantees — linear select, external construction, and universe-bounded speed.
 
 ## Where this sits
-- Sort + search + select + string matching: the data-prep and lookup core.
-- Master it and neighboring tracks get 2× easier (shared invariants + proof templates).
+- Selection needs Omega(n) reads; median-of-medians attains O(n) worst case where quickselect only averages it.
+- Suffix arrays turn substring search into binary search; doubling builds in O(n log n), linear methods exist past this track.
+- Integer keys in bounded universes admit O(log log U) via van Emde Boas thinking; external merge moves sorting past RAM.
+- Each method answers a different bottleneck: adversarial pivots, substring queries, memory walls, universe structure.
 
-## Novice → Practitioner → Expert
-- Novice (this week): trace by hand; code skeleton with hints; n log n / log n bounds memorized.
-- Practitioner (this month): bug-free in 20 min; fuzz vs brute force; benchmark plot.
-- Expert (this quarter): teach proof; pick optimal variant under constraints; ship production use (analytics, log search, ranking).
+## 4-week direction
+- Week 1: hand-run median-of-medians on 15 elements; reproduce the pivot choice without code.
+- Week 2: finish MINI_PROJECT; verify every structure against its naive oracle (sort, TreeSet, in-memory sort).
+- Week 3: push one input past RAM (external merge) and one past quickselect comfort (adversarial select); record both.
+- Week 4: REAL_WORLD_PROJECT review; whiteboard the O(log log U) recursion idea in 10 minutes.
 
-## 4-week plan
-- Wk1: THEORY + E1–E3 daily 30 min; flashcards 10/day.
-- Wk2: E4–E5 + QUIZ; benchmark n=1k→1M; write decision rule.
-- Wk3: MINI_PROJECT end-to-end; peer review; blog the invariant.
-- Wk4: REAL_WORLD_PROJECT design doc + mock interview (30 min whiteboard).
+## Done criteria
+- Explain why median-of-medians groups of 5 give linearity (the 30/70 split sketch) without notes.
+- Build a suffix array by doubling on a fresh word and verify against naive order.
+- Choose naive vs doubling vs linear SA construction for a given (n, alphabet, memory) triple.
 
-## How to know you are done
-- Explain partition + bound + automaton invariants without notes; derive bounds on demand.
-- Solve unseen variant in 25 min with tests.
-- Name 3 pitfalls + regressions before running code.
+## Non-coverage
+- This track does not implement linear-time SA (SA-IS), fusion trees, or full y-fast tries; each is named with its trigger and complexity.
+- Cache-oblivious algorithms are referenced, not benchmarked.
+- No claim that vEB wins outside bounded universes with real constants; TreeSet comparisons stay in the report.
 
-## Adjacent labs
-- Pair with complexity-analysis, recursion, and one related lab from INDEX.md.
-- Revisit after 30/90 days (spaced repetition via FLASHCARDS.md).
+## Pitfalls
+- Hiding a simplification (e.g. of vEB) without labeling it; oracles catch lies, labels prevent them.
+- Benchmarking select only on random pivots; adversaries are the point of the guarantee.
+- Forgetting the memory cap that justifies external merge; without a cap the comparison is theater.
 
-## Career signal
-- Interviewers listen for invariant-first explanation + complexity proof.
-- Portfolio: link MINI_PROJECT benchmark chart + REAL_WORLD_PROJECT metrics.
+## Adjacent tracks
+- Pair with sorting for foundations and 40-string-algorithms-advanced for the substring-query applications.
+- Revisit when guarantees matter more than averages: adversaries, memory walls, bounded universes.
 
-## Anti-roadmap (what NOT to do)
-- Do not memorize code without the invariant; it fails on variants.
-- Do not skip benchmarks; asymptotics hide constants that matter in prod.
-- Do not jump to advanced variants before the base case is automatic.
+## Weekly drills
+- Re-run median-of-medians on 15 elements and recompute the 30/70 split sketch.
+- Rebuild banana's suffix array by doubling (not naive sort) on paper.
+- State the vEB recurrence T(U) = T(sqrt(U)) + O(1) and solve it to O(log log U).
 
-## Weekly drills (20 min each)
-- Day 1: rewrite core from memory + 3 edge tests.
-- Day 2: 10 flashcards + 5 quiz questions out loud.
-- Day 3: one proof (Master case or amortized sketch) on paper.
-- Day 4: benchmark one size; explain one anomaly.
-- Day 5: read one production incident; map to prevention table.
-
-## Milestones and exit interview prep
-- M1: whiteboard trace in 8 min with invariant stated first.
-- M2: live-code solution with tests in 20 min.
-- M3: design-doc review: metrics, rollout, rollback in 10 min.
-- Keep a one-page cheat sheet; rewrite it monthly from memory.
+## Anti-roadmap
+- Do not present a simplified structure under the full name; label deviations.
+- Do not benchmark select on random data only; the killer input is the exam.

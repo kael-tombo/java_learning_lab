@@ -1,88 +1,40 @@
-# REAL_WORLD_PROJECT — Suffix Array & LCP Array
-> Production use-case with metrics + prevention. Lab `27-suffix-array`.
+# Real-World Project: Log Template Miner
 
-## Use-case: genome indexing, full-text search, plagiarism detection
-- System: backend service handling large inputs where Suffix Array & LCP Array is on the hot path.
-- Why this algorithm: prefix-doubling ranks plus Kasai LCP gives O(n log n) build, O(n) LCP which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Suffix Array & LCP Array) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A service writes thousands of near-duplicate log lines. Operators want the
+most repeated substrings to turn into alert templates. Build a miner that
+finds top repeated substrings via suffix array plus LCP.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `logs.txt`: one log line per line, ASCII, at most 200 lines.
+- Minimum substring length k passed as a program argument.
+- Concatenation uses a separator character absent from the input.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Stale index after corpus update | missed matches | versioned index + rebuild watermark |
+## Steps
 
-## Cost note
-- Optimized variant (O(n log n) build, O(n) LCP) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Read all lines; pick a separator not present in any line.
+2. Join lines with the separator into one text; record line boundaries.
+3. Build the suffix array with the doubling method from this lab.
+4. Compute the LCP array with Kasai's method.
+5. Discard LCP entries below k or spanning a separator boundary.
+6. Rank surviving entries by (length, occurrence count) descending.
+7. Emit `templates.txt` with the top 10 substrings and their counts.
+8. Write a two-paragraph note mapping the top 3 to alert rules.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://algs4.cs.princeton.edu/42digraph/ (Princeton Algorithms — string/digraph material)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Arrays.html (Java Arrays — sort/binarySearch used by SA queries)
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Reference fixture reports "ana" with count 2 for input "banana", k=2.
+2. No reported template contains the separator character.
+3. Counts verified by brute-force substring search on the fixture.
+4. Top-10 list sorted by length then count, both descending.
+5. Missing input file exits with a message, not a stack trace.
+6. `templates.txt` contains substring, length, and count per row.
+7. All output uses plain ASCII characters.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Genomics data: treat sequences as sensitive; encrypt at rest, audit access.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Index build time | histogram | alert on regression |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- Index memory ≈ 4–8 bytes/char × n plus LCP; size heap accordingly.
+- Plain Java only, no external libraries; deterministic single run.
+- Joined text capped at 100k characters with a documented error past it.
+- Separator choice printed so results are reproducible.

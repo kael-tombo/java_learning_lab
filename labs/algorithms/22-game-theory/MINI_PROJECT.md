@@ -1,83 +1,42 @@
-# MINI_PROJECT — Game Theory Algorithms (Minimax / Grundy)
-> Implement + benchmark + visualize. Lab `22-game-theory`.
+# Mini-Project: Tic-Tac-Toe Minimax Solver
 
 ## Goal
-- Build a runnable Java CLI that solves minimax + alpha-beta; Nash via best-response; Sprague-Grundy XOR, benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
 
-## Spec
-1. `lab.22_game_theory.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving alpha/beta bounds always bracket true value.
+Write a minimax solver for tic-tac-toe that returns the game value of any
+legal board for the player to move, with alpha-beta counting node visits.
 
-## Starter code
-```java
-package lab.22_game_theory;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Inputs
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+- Hard-coded test boards below; X is the max player, O the min player.
+- Board A (empty), Board B: X to move and win in one, Board C: drawn full.
 
-## Visualization
-- For n<=16 print DP row / window [l,r) / decision path.
-- Example (ASCII): `l=2 r=7 window=[4 1 5] best=3 | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Steps
+
+1. Represent the board as a 9-char array with X, O, and blank cells.
+2. Write win detection for rows, columns, and both diagonals.
+3. Write move generation listing every blank cell index.
+4. Implement minimax returning +1 (X wins), -1 (O wins), 0 (draw).
+5. Wrap with alpha-beta and a shared visit counter; compare values.
+6. Evaluate boards A, B, and C; print value plus visits for each.
+7. Print the winning move index found on board B.
+
+## Acceptance criteria
+
+1. Empty board evaluates to 0 (draw under optimal play).
+2. Board B evaluates to +1 and the printed move wins immediately.
+3. Full drawn board evaluates to 0 with zero moves generated.
+4. Alpha-beta values match plain minimax on all three boards.
+5. Visit counts printed for both methods on each board.
+6. Win detection covers all 8 lines, verified by unit-style asserts.
+7. All output uses plain ASCII characters.
+
+## Grading note
+
+- Board values 0, +1, 0 with the winning move index all required.
+- Alpha-beta must agree with minimax on every board tested.
+- Visit counts printed for both methods on each board.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for minimax O(b^d), alpha-beta O(b^(d/2)) best; solving Nash PPAD.
 
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches minimax O(b^d), alpha-beta O(b^(d/2)) best; solving Nash PPAD.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add move ordering (center first) and report the visit-count change.
+- Print the principal variation: the move sequence of optimal play.

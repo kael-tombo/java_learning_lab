@@ -1,83 +1,37 @@
 # MINI_PROJECT — DP Deep Track
-> Implement + benchmark + visualize. Track `dp-deep`.
+> Advanced DP forms: tree DP with rerooting, digit DP, bitmask DP, plus one optimized transition (divide-and-conquer or Knuth) with the monotonicity condition stated.
 
-## Goal
-- Build a runnable Java CLI that solves knapsack + LCS + LIS across sizes up to 100k; benchmarks scaling, and emits a chart-ready CSV + ASCII visualization.
+## Inputs
+- Random trees (n = 100/1k/10k) for tree DP; digit queries counting numbers <= 10^12 with a digit property; bitmask TSP instances n <= 14 shared with 32-exact-exponential.
+- Reference: tree independent-set size on a fixed 7-node tree verified against brute force; digit count verified against brute force below 10^5.
 
-## Spec
-1. `lab.dp_deep.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving optimal substructure + order.
+## Build steps
+1. Implement tree DP (max independent set) with one rerooting pass for all-root answers; verify against brute force on the 7-node tree.
+2. Implement digit DP (tight/loose, positional memo) for a stated property (e.g. digit-sum divisible by 7); verify against brute force below 10^5.
+3. Implement bitmask DP (Held-Karp reuse allowed with citation) for n <= 14 and cross-check vs the 32-lab outputs.
+4. Implement one optimized transition: divide-and-conquer DP optimization with the quadrangle/monotonicity condition written out, or Knuth with its quadrangle + monotonicity preconditions.
+5. Record time and state counts per method; state the precondition each optimization depends on.
 
-## Starter code
-```java
-package lab.dp_deep;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. Tree DP matches brute force on the 7-node tree for every root after rerooting.
+2. Digit DP matches brute force below 10^5 and answers the 10^12 query within the time budget from a single run.
+3. Bitmask DP agrees with the 32-lab reference optimum (80) on the shared 4-city matrix.
+4. Optimization section states the monotonicity/quadrangle precondition verbatim and includes a test that would fail if it were violated.
+5. State-count table (not just time) recorded per method from real runs.
+6. All memo keys documented with their exact meaning (pos/tight/started or mask/last).
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Where does rerooting save the naive O(n^2) re-solve, in messages passed?
+2. Which digit-DP dimension (tight, sum mod, started) dominates state count?
+3. What breaks in D&C optimization if opt-index monotonicity fails?
 
-## Visualization
-- For n<=16 print DP rows / tails / interval splits.
-- Example (ASCII): `dp=[0 2 5 7] tails=[1 2 4] | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Profile/plug DP and alien-trick Lagrangian methods (named with triggers), and full FPTAS constructions.
+
+## Exact-match anchors
+- 7-node tree DP must match brute force for every root after the reroot pass, not just root zero.
+- Digit DP below 10^5 must match brute force exactly before the 10^12 answer counts.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating worst-case for each DP family.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches theory.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add profile DP for domino tilings on small widths with the state encoding documented.
+- Add monotone-queue optimization for a bounded-knapsack instance and state its window condition.

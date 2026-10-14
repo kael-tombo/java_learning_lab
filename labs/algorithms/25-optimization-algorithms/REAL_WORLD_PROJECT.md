@@ -1,85 +1,41 @@
-# REAL_WORLD_PROJECT — Optimization Algorithms
-> Production use-case with metrics + prevention. Lab `25-optimization-algorithms`.
+# Real-World Project: Budget Allocation Helper
 
-## Use-case: hyperparameter tuning, routing, portfolios
-- System: backend service handling large inputs where Optimization Algorithms is on the hot path.
-- Why this algorithm: hill climbing, gradient descent, simulated annealing gives GD O(1/eps) convex; SGD expected; SA convergence in limit which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Optimization Algorithms) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A team splits a fixed budget between two channels with linear returns and
+linear caps (spend limits, headcount limits). Build a helper that enumerates
+the feasible vertices and recommends the allocation with the best return.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `program.txt`: objective coefficients and constraints, one per line, e.g.
+  `max 3x + 2y`, `x + y <= 4`, `2x + y <= 6`, `x >= 0`, `y >= 0`.
+- All coefficients are plain decimals; at most 4 constraints.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Overflow / mod bug | wrong answer | exact arithmetic + golden tests |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
+## Steps
 
-## Cost note
-- Optimized variant (GD O(1/eps) convex; SGD expected; SA convergence in limit) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Parse the objective and each constraint; reject malformed lines.
+2. Compute all pairwise intersections of the constraint boundary lines.
+3. Keep points satisfying every constraint (with 1e-9 tolerance).
+4. Score each feasible vertex with the objective function.
+5. Detect infeasibility (no feasible vertex) and report it plainly.
+6. Detect unboundedness by checking whether the feasible set is open along
+   an improving direction; report it instead of a fake optimum.
+7. Emit `allocation.txt` with vertices, scores, and the recommendation.
+8. Write a two-paragraph note stating the chosen mix and its return.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/java/javase/17/docs/api/index.html
-- https://algs4.cs.princeton.edu/home/
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Reference program recommends x=2.0, y=2.0 with value 10.0.
+2. Every listed vertex satisfies all constraints within tolerance.
+3. Infeasible fixture reports infeasible with no recommended point.
+4. Unbounded fixture reports unbounded with no recommended point.
+5. Scores recomputed by the checker match the emitted scores.
+6. Malformed input lines exit with a message naming the line.
+7. All output uses plain ASCII characters.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Crypto lab: never roll own primitives in prod; use JCA plus audits.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
+- Plain Java only, no external libraries; 2 variables only.
+- Tolerance 1e-9 documented in the file header comment.
+- No simplex implementation required; enumeration is the method.

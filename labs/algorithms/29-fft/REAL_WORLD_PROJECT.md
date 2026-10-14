@@ -1,88 +1,40 @@
-# REAL_WORLD_PROJECT — Fast Fourier Transform
-> Production use-case with metrics + prevention. Lab `29-fft`.
+# Real-World Project: Signal Smoother
 
-## Use-case: signal processing, polynomial multiplication, audio analysis
-- System: backend service handling large inputs where Fast Fourier Transform is on the hot path.
-- Why this algorithm: butterfly plus roots-of-unity recursion gives O(n log n) which meets latency SLO.
-- Scope: input validation → solve → cache → observe → rollback.
+## Problem
 
-## Architecture
-```
-Client → API (validate + auth) → Solver service (Fast Fourier Transform) → Cache (memo/short-TTL)
-  → Metrics (latency/hit-rate/error) → Alerting → Rollback switch (feature flag)
-```
-- Stateless solver; scale horizontally; cache frequent subproblems.
-- Async for n > threshold; sync fast-path for small n.
+A sensor emits short noisy bursts sampled at 8 points. Operators want a
+smoothed burst via convolution with a fixed [1,2,1] kernel. Build a smoother
+that convolves with FFT and cross-checks against the naive sum.
 
-## Metrics (SLOs)
-| Metric | Target | Alert |
-|---|---|---|
-| p95 solve latency | < 200 ms at n=10k | > 300 ms 5 min |
-| Error rate | < 0.1% | > 0.5% |
-| Cache hit rate | > 70% | < 50% |
-| Memory per request | < 64 MB | > 128 MB |
-| Correctness fuzz | 100% vs oracle nightly | any mismatch pages |
+## Inputs
 
-## Prevention (keep production safe)
-- Validate: null/empty/size caps (reject n > max with 413 + async fallback).
-- Overflow: long/BigInteger + addExact guards; property tests on extremes.
-- DoS: timeouts + bulkheads; adversarial input rate-limited.
-- Correctness: nightly fuzz vs brute force; golden-file regression suite.
-- Rollout: feature flag + canary 1% → 25% → 100%; one-click rollback.
-- Observability: structured logs (n, mode, ms); dashboard + trace IDs.
+- `bursts.txt`: one burst per line, 8 comma-separated decimals.
+- Kernel fixed to [1,2,1]; divisor 4 applied after convolution.
+- Power-of-two length 16 assumed with zero padding documented.
 
-## Failure modes table
-| Failure | Symptom | Mitigation |
-|---|---|---|
-| Adversarial worst-case input | p99 spike | size cap + async queue + optimized variant |
-| Floating-point rounding | wrong convolution | round-trip check + NTT fallback for exactness |
-| OOM on huge n | restarts | streaming/rolling arrays + memory cap |
-| Cache stampede | thundering herd | singleflight + jittered TTL |
-| Non-power-of-two length | crash/pad bug | pad-to-pow2 + length guard |
+## Steps
 
-## Cost note
-- Optimized variant (iterative bit-reversal, O(n log n)) cuts compute ~2–10× vs naive; cache cuts repeat work.
-- Document instance size before/after with benchmark numbers from MINI_PROJECT.
+1. Parse each line into exactly 8 decimals; reject malformed rows.
+2. Zero-pad burst and kernel to length 16 (covers result length 10).
+3. Forward-transform both with the radix-2 routine from this lab.
+4. Pointwise-multiply the spectra and inverse-transform with 1/16 scaling.
+5. Recompute the same convolution naively in O(nk) as the oracle.
+6. Assert per-sample agreement within 1e-6 between FFT and naive paths.
+7. Emit `smoothed.csv` with one smoothed burst per line (10 values).
+8. Write a two-paragraph note on burst edges and kernel edge effects.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-fall-2011/ (MIT 6.006 — divide and conquer incl. FFT)
-- https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Math.html (Java Math — trig/complex primitives for twiddles)
+## Acceptance criteria
 
-## Rollout plan (step-by-step)
-1. Feature-flag solver; default OFF; shadow-mode logs only (1 day).
-2. Canary 1 percent with latency and error dashboards; auto-rollback on SLO breach.
-3. Ramp 25 percent to 100 percent over 3 days; freeze during peak traffic.
-4. Post-deploy: weekly fuzz plus monthly capacity review.
+1. Reference burst [1,0,0,0,0,0,0,0] smooths to [1,2,1] over 4 divisor.
+2. FFT and naive paths agree within 1e-6 on every accepted burst.
+3. Output rows hold exactly 10 values (8 + 3 - 1).
+4. Malformed rows exit with a message naming the line number.
+5. Divisor documented in the file header and applied exactly once.
+6. `smoothed.csv` contains one row per accepted input burst.
+7. All output uses plain ASCII characters.
 
-## Request and response contract
-- POST /solve with fields n, mode, payload returns 200 with answer, ms, traceId.
-- 413 when input too large (queued jobId returned); 400 on validation failure.
+## Constraints
 
-## Incident playbook
-- Pager fires on p95 over 300ms or errors over 0.5 percent: flip flag OFF, drain queue.
-- Triage: check deploy diff, adversarial traffic spike, cache hit drop.
-- Postmortem: add golden test plus update prevention table within 48h.
-
-## Alternatives considered
-- Naive brute force: simpler but misses SLO by 10-100x at scale.
-- Third-party library: faster to ship, but opaque failure modes plus license cost.
-- Precompute and cache-all: great hit rate until cardinality explodes; use TTL.
-
-## Compliance and security notes
-- Validate auth plus size caps; sanitize logs (no PII in payloads).
-- Audio/signal payloads may be user content; handle consent + retention.
-- Data retention: keep benchmarks, drop raw user payloads after 30 days.
-
-## Extended metrics appendix
-| Signal | Collection | Dashboard |
-|---|---|---|
-| JVM heap and GC pause | JFR and Micrometer | Grafana panel |
-| Queue depth async | counter | alert over 1000 |
-| Fuzz nightly result | CI badge | notify on fail |
-| Trace sampling | OpenTelemetry | tail-based sampling |
-| Rounding error max | histogram | alert on drift |
-
-## Sizing worksheet
-- Estimate QPS times p95 ms to get core count; add 30 percent headroom.
-- Document instance size before and after with MINI_PROJECT numbers.
-- FFT memory ≈ 16 bytes/complex × nextPow2(n); cap sync length.
+- Plain Java only, no external libraries; deterministic single run.
+- Lengths fixed at 8 and 3; padding rule stated, not configurable.
+- Naive oracle must stay in the submission, not a throwaway script.

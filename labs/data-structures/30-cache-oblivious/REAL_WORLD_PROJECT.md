@@ -1,46 +1,41 @@
-# REAL_WORLD_PROJECT — Cache-Oblivious Structures (30)
+# Read-Mostly Index That Ignores Cache Sizes
 
-Production use-case: **layout for a read-mostly in-memory index** scanned by heterogeneous clients (unknown cache sizes). Secondary: funnelsort microservice for log batches.
+Premise. A read-mostly in-memory index serves clients with unknown
+caches - phones, laptops, servers - so tuning to one block size is
+cheating. Van Emde Boas layout plus funnel-structured merging give
+optimal cache behavior at every level without knowing B. The second
+caller, a funnelsort batch job over log segments, proves the idea on
+writes too.
 
-## 1. Problem statement
-Minimize block transfers across unknown hardware tiers while keeping build simple. SLOs: p99 lookup latency across cache sizes, build time, footprint.
+Layout work. BST stored in vEB recursive layout: upper subtree then
+lower subtrees contiguously, so any subtree of size ~B lands in O(1)
+blocks. Search cost O(log_B n) memory transfers; the report demonstrates
+it with cache-miss counters (perf stat or instrumented simulator) vs a
+pointer-scattered tree at 1M keys.
 
-## 2. Architecture
-- Ingest: bulk loader of keys.
-- Core: vEB static layout or cache-oblivious search structure.
-- Serve: lookup API + metrics + health.
-- Persist: serialized layout.
+Index caller. Point lookup plus range scan over 500k catalog rows; miss
+counts and wall time compared against naive layout at three dataset
+sizes. The gap should widen with size - that widening is the headline
+chart.
 
-## 3. Implementation plan (2 weeks)
-W1: layout builder + iterator + property tests vs sorted array.
-W2: JMH bench across L1/L2/L3 regimes + deploy notes.
+Funnelsort caller. K-funnel merging of 64 sorted log runs into one;
+merger depth chosen so base merges fit any cache. Output verified sorted
+on 2M records; merge time compared against a binary-heap K-way merge.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p99 lookup | SLO-driven | JMH |
-| Build time | linearithmic | unit bench |
-| Footprint | ~ n keys | runtime.mem |
-| Cache misses proxy | lower than row-major | perf counters if available |
-| Throughput | lookups/s | load gen |
+Static discipline. Rebuilds are batched (log-structured deltas merged
+periodically); point updates between rebuilds live in a small auxiliary
+index with a stated merge cadence. Stale-read window documented.
 
-## 5. Risks & prevention
-- Implementation bias on one machine → test on multiple tiers; use rank-based validation.
-- Dynamic updates break static layout → use rebuild windows or cache-oblivious dynamic structures.
-- Naive recursion overhead → cutoff base cases (e.g. subtree ≤ 16 nodes).
+Hostile shapes. Adversarial access order (stride prime to block size),
+single-key hot loop (both layouts tie - reported honestly), tiny
+dataset where layout barely matters (reported, not hidden).
 
-## 6. Runbook
-- Alert on p99 regressions after deploy; keep row-major fallback flag.
-- Rollback: switch index layout at config flag.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Cache-oblivious_algorithm
-- https://ocw.mit.edu/courses/6-851-advanced-data-structures-spring-2012/
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-
-## 8. Grading rubric
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Hand in. Layout converter, index, funnel job, miss-counter logs, charts
+data. Marks: transfer analysis with counters 12, caller parity 10,
+honest small-case reporting 8.
+## Counter log
+- Miss counts per dataset size.
+- Small-case tie acknowledged.
+- Merge cadence posted.
+- Funnel depth choice recorded.
+- Charts regenerated per release.

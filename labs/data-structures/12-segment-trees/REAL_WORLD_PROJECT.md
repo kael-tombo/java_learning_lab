@@ -1,48 +1,40 @@
-# REAL_WORLD_PROJECT — Segment Trees (incl. Lazy Propagation)
+# Live Range Dashboard on a Lazy Segment Tree
 
-Production use-case: **real-time analytics range-sum dashboard**. Secondary: game leaderboard range-max queries.
+Incident framing. The analytics team refreshes a dashboard of range sums
+and range maxima over a 1M-cell event array while writes land between
+refreshes. A brute-force scan per refresh costs O(n); the segment tree
+answers both in O(log n) and applies range adds in O(log n) via lazy
+propagation. This build proves the gap with both implementations wired
+to the same query log.
 
-## 1. Problem statement
-Serve range query + range update workload at scale with a latency SLO and a memory budget.
-Define SLOs up front: p50/p99 latency, throughput (ops/s), max heap, correctness bar (exact vs error-bounded).
+Tree shape. Size 4n array layout over the event cells, each node holding
+sum and max plus a pending-add tag. Point set, range add, range sum, and
+range max all recurse to O(log n) nodes; push-down happens only on the
+visited path so untouched subtrees keep their tags.
 
-## 2. Architecture
-- Ingest: parsers/queues feeding the structure.
-- Core: this lab's structure behind a narrow interface.
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL where durability matters.
+Leaderboard caller. The same tree backs range-max queries for game
+divisions: best score on interval [l, r] with point updates on match
+end. Max answers must equal a linear scan oracle on 10k random ranges.
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests.
-W2: API + metrics (Micrometer/JFR) + load test (JMH) + deploy notes.
+Lazy audit. After every 500th operation in test mode, a full push-down
+plus leaf comparison against a naive array must agree exactly; a tag
+leak anywhere aborts the run with the node index.
 
-## 4. Metrics to report
+Duel harness. Identical query logs (70 percent queries, 30 percent
+updates) run against the tree and the brute force at n = 10k, 100k, 1M.
+The report publishes per-query nanos for both and the crossover size
+where the tree pulls ahead permanently.
 
-| Metric | Target | How measured |
-|---|---|---|
-| p50 query latency | define SLO | JMH / load test |
-| p99 query latency | define SLO | hdrhistogram |
-| Throughput | ops/s | load generator |
-| Memory | MB at N entries | JOL / heap dump |
-| Correctness | exact or error bound | property tests |
-| Availability | restart recovery time | chaos/restart drill |
+Rotten inputs. Empty range, inverted bounds, range covering the whole
+array, 100k consecutive adds to one cell (overflow policy documented),
+update-then-query at the boundary index.
 
-## 5. Risks & mitigations
-- Degenerate input -> randomization/rehash/rebalance.
-- Concurrency bugs -> narrow sync + stress tests.
-- Memory blowup -> bounded caps + eviction.
-- Silent corruption -> checksums + invariant audits.
-
-## 6. Field notes
-Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Segment_tree
-- https://cp-algorithms.com/data_structures/segment_tree.html
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Ship list. Tree, dashboard CLI, duel harness, lazy-audit log, crossover
+chart data. Marks: lazy correctness 12, oracle parity on both callers
+10, duel honesty including the region where brute force wins 8.
+## Audit rhythm
+- Push-down check every 500 ops.
+- Duel rerun on each change.
+- Crossover size re-measured quarterly.
+- Tag-leak abort message kept stable.
+- Leaderboard oracle always on.

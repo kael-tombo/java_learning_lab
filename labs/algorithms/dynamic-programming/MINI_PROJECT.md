@@ -1,83 +1,37 @@
 # MINI_PROJECT — Dynamic Programming Track
-> Implement + benchmark + visualize. Track `dynamic-programming`.
+> Core DP bench: LIS, LCS/edit distance, 0/1 knapsack, coin change, rod cutting, matrix chain, and DAG shortest paths with reconstruction.
 
-## Goal
-- Build a runnable Java CLI that compares memoized vs tabulated vs compressed DP on grid/coin workloads to n=100k; emits CSV + ASCII visualization.
+## Inputs
+- Fixed checks: LIS of [10,9,2,5,3,7,101,18] is 4; edit distance kitten->sitting is 3; knapsack (weights/values documented in code) verified against brute force at n <= 20.
+- Random strings (len 50/200) and knapsack instances (n=30/100, W scaled) with fixed seeds for timing.
 
-## Spec
-1. `lab.dynamic_programming.App` with flags: `--n 10000 --mode default|optimized --seed 42`.
-2. Generator: random + adversarial (sorted/reverse) inputs.
-3. Solver: both naive and optimized variants.
-4. Benchmark: n in [1k, 5k, 10k, 50k, 100k]; 5 warmups + 5 timed; report median ms.
-5. Output: `results.csv` (n,mode,ms,memKB) + ASCII bar chart to stdout.
-6. Visualize: tiny state dump for n<=16 (table/window/tree) proving memo-hit + order invariants.
+## Build steps
+1. Implement LIS two ways (O(n^2) DP and O(n log n) patience) and assert agreement on 300 seeded arrays.
+2. Implement LCS/edit-distance O(nm) with backpointer reconstruction; verify kitten->sitting = 3 with the alignment printed.
+3. Implement 0/1 knapsack O(nW) plus brute-force oracle for n <= 20; verify agreement on 100 instances.
+4. Implement coin change (min coins + count ways), rod cutting, matrix-chain O(n^3), and DAG shortest path O(V+E).
+5. Record time and table sizes; note where the O(nW) knapsack is pseudo-polynomial in one paragraph.
 
-## Starter code
-```java
-package lab.dynamic_programming;
-import java.util.*;
-public class App {
-    public static void main(String[] args) throws Exception {
-        Map<String,String> a = parse(args);
-        int n = Integer.parseInt(a.getOrDefault("n","10000"));
-        String mode = a.getOrDefault("mode","optimized");
-        long seed = Long.parseLong(a.getOrDefault("seed","42"));
-        int[] data = gen(n, seed);
-        for (int w = 0; w < 5; w++) Solution.solve(data.clone());
-        long t0 = System.nanoTime();
-        int ans = mode.equals("optimized") ? Solution.solve(data) : Solution.solve(data);
-        long ms = (System.nanoTime()-t0)/1_000_000;
-        System.out.printf("n=%d mode=%s ans=%d ms=%d%n", n, mode, ans, ms);
-        // TODO: loop over sizes, write results.csv, print ASCII bars.
-    }
-    static Map<String,String> parse(String[] args) {
-        Map<String,String> m = new HashMap<>();
-        for (String s : args) { String[] k = s.replaceFirst("^--","").split("=",2);
-            m.put(k[0], k.length>1?k[1]:"true"); }
-        return m;
-    }
-    static int[] gen(int n, long seed) {
-        Random r = new Random(seed); int[] a = new int[n];
-        for (int i=0;i<n;i++) a[i]=r.nextInt(n*2);
-        return a;
-    }
-}
-```
+## Acceptance criteria
+1. LIS=4 and edit-distance=3 reproduce exactly with reconstructions shown.
+2. Knapsack DP agrees with brute force on all 100 small instances.
+3. Patience LIS agrees with O(n^2) LIS on all 300 arrays.
+4. Matrix-chain prints the optimal parenthesization cost plus split table on the reference instance in code.
+5. Timing table covers strings 50/200 and knapsack 30/100 from real runs with table sizes recorded.
+6. Pseudo-polynomial paragraph correctly distinguishes n from W with a concrete bit-length example.
 
-## Benchmark table (fill in)
-| n | mode=default ms | mode=optimized ms | mem KB | notes |
-|---|---|---|---|---|
-| 1k |  |  |  |  |
-| 10k |  |  |  |  |
-| 100k |  |  |  |  |
-| adversarial 10k |  |  |  | worst-case check |
+## Analysis prompts
+1. Which DP table fills dominate runtime, and what does the shape say about cache behavior?
+2. Where does reconstruction cost show up relative to value computation?
+3. What breaks first if W grows 100x at fixed n (knapsack)?
 
-## Visualization
-- For n<=16 print memo hits / table rows / compressed row.
-- Example (ASCII): `hits=9 miss=7 row=[1 2 4 8] | invariant OK`.
-- Optional: emit Mermaid/CSV for external plotting.
+## Non-goals
+- Tree/digit/bitmask DP (dp-deep track), approximation schemes, and DP optimizations (Knuth/D&C) beyond naming.
+
+## Reference values to reproduce
+- LIS=4 with the subsequence named; edit-distance=3 with the alignment printed, not just the number.
+- Knapsack DP must match brute force on all 100 small instances before the timing table counts.
 
 ## Stretch
-- Add JMH microbenchmark; compare GC1 vs ParallelGC.
-- Add `--adversarial` flag generating deep-chain / max-amount cases.
-
-## Rubric
-- [ ] CLI runs; CSV produced. [ ] Table filled; scaling matches states×cost.
-- [ ] Visualization shows invariant. [ ] README snippet with chart pasted.
-
-## Detailed run log template
-| step | command | expected | observed |
-|---|---|---|---|
-| build | javac App Solution | clean compile |  |
-| smoke | java App n=100 optimized | ans printed |  |
-| bench | loop n=1k..100k | CSV rows |  |
-
-## Analysis prompts (answer in file)
-1. Where does the curve bend from flat (overhead-dominated) to slope (asymptote)?
-2. Which variant wins at each n and why (cache, alloc, branch)?
-3. What adversarial input maximizes ms, and does it match theory?
-4. What single change would halve memory with under 10 percent slowdown?
-
-## Submission checklist
-- [ ] results.csv committed. [ ] ASCII chart pasted. [ ] Anomaly explained.
-- [ ] Invariant visualization for n<=16 included.
+- Add space-optimized edit distance (two rows) with reconstruction via divide-and-conquer (Hirschberg), verified on the 200-length pair.
+- Add unbounded knapsack and document exactly which loop order changes and why.

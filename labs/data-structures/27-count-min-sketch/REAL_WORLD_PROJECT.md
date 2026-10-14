@@ -1,50 +1,40 @@
-# REAL_WORLD_PROJECT — Count-Min Sketch (27)
+# Autoscaler Counters on a Count-Min Sketch
 
-Production use-case: **high-cardinality frequency estimation in an event pipeline** (e.g. per-endpoint request counters feeding an autoscaler). Secondary: RedisBloom-compatible Count-Min benchmark.
+Control loop. An autoscaler reads per-endpoint request rates over 2M
+endpoints where exact counters would cost gigabytes. Count-Min gives
+one-sided estimates: never undercounts, overcounts bounded by
+epsilon * N with probability 1 - delta via w = ceil(e/eps) and
+d = ceil(ln(1/delta)) cells. The sizing sheet shows the arithmetic for
+eps = 0.001, delta = 0.01 before any code runs.
 
-## 1. Problem statement
-Estimate item frequencies over a firehose stream with a strict memory budget and bounded false inflation. SLOs: p50/p99 update latency, ops/s, max heap, error bound (ε with confidence δ).
+Sketch core. d rows of w counters, pairwise-independent row hashes;
+update touches d cells, estimate takes the row minimum. Heavy-hitter
+query lists keys whose estimate crosses threshold with a documented
+false-positive expectation.
 
-## 2. Architecture
-- Ingest: Kafka consumers feeding the sketch.
-- Core: sketch behind a narrow interface (add/estimate/merge).
-- Serve: query API + metrics + health.
-- Persist: snapshot/WAL of counters for restart continuity.
+Endpoint caller. Per-endpoint rates feeding scale-up decisions; a
+100k-endpoint replay compares sketch estimates against exact counts,
+recording max overestimate and decision agreement (scale/no-scale must
+match exact on 99 percent of endpoints at the chosen threshold).
 
-## 3. Implementation plan (2 weeks)
-W1: core + invariant checker + unit/property tests + merge commutativity test.
-W2: API + Micrometer/JFR metrics + JMH load test + deploy notes.
+Conservative-update variant. Increment only the minimal rows; the report
+A/Bs vanilla vs conservative on skewed traffic and quotes the
+overestimate reduction for top keys.
 
-## 4. Metrics to report
-| Metric | Target | How measured |
-|---|---|---|
-| p50 update latency | < 200 ns | JMH |
-| p99 update latency | < 1 µs | hdrhistogram |
-| Throughput | ≥ 1M ops/s | load generator |
-| Memory | ≤ 8 MB | JOL / heap dump |
-| Error bound | ≤ εN w.p. 1−δ | property test |
-| Restart recovery | < 5 s | chaos drill |
+RedisBloom-style caller. Compatible count/min/merge surface tested
+against the same replay; merge of two sketches over split streams must
+equal one sketch over the union within the error bound.
 
-## 5. Risks & prevention
-- Heavy-tail blowup → widen w, add heavy-hitter heap, monitor ε̂.
-- Hash-function bias → use seeded independent hashes; test uniformity.
-- Merge mismatch (w,d,seeds differ) → version the config; reject mismatched merges.
-- Clock/ordering assumptions → keep sketch commutative; never rely on order.
+Skew drills. Single hot endpoint (never underestimated), uniform spray
+(error bound checked), zipf traffic (heavy-hitter recall measured),
+counter saturation policy (width/overflow rule stated).
 
-## 6. Runbook
-- SLOs in Grafana; alert on p99 > 1 µs and estimate-vs-sampled-exact drift > 5%.
-- Rollback: revert to HashMap-based exact counter for small keysets.
-- On-call: check heap cap, reset sketch on config change.
-
-## Field notes — sourced (fetched Oct 2026 — verify before citing)
-- https://en.wikipedia.org/wiki/Count-min_sketch
-- https://redis.io/docs/data-types/probabilistic/
-Confirm API/limit numbers against the live docs before quoting them in reviews.
-
-## 7. Deliverables
-- Repo with tests + JMH bench + dashboard screenshot.
-- One-page ops runbook: SLOs, alerts, rollback.
-- Demo script with seeded load.
-
-## 8. Grading rubric
-- Correctness 30 / Perf vs SLO 30 / Operability 20 / Writeup 20.
+Evidence. Sizing sheet, replay table, A/B numbers, merge check, skew
+logs. Credit: bound agreement 12, decision fidelity 10, variant plus
+skew handling 8.
+## Threshold sheet
+- eps 0.001, delta 0.01 posted.
+- Decision agreement above 99 percent.
+- A/B rerun on traffic shifts.
+- Merge check in CI.
+- Saturation policy reviewed.
