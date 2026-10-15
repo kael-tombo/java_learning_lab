@@ -1,25 +1,40 @@
-﻿# Visual Guide: Model Training Pipelines
+﻿# Model Training Pipelines — Visual Guide
 
-## Conceptual Diagrams
+## The DAG
+```
+ingest --> validate --pass--> transform --> train --> evaluate --pass--> register
+                |                                                  |
+              fail                                               fail
+                v                                                  v
+           stop+page                                        record, no promote
+```
 
-### Diagram 1: Core Concept Flow
-`
-Input -> Preprocessing -> Core Algorithm -> Postprocessing -> Output
-`
+Observed healthy run: order=ingest->validate->transform->train->
+evaluate->register, gate_pass=true, stages=6.
 
-### Diagram 2: Algorithm Variants
-`
-Input -> Variant Selection -> [Stable | Fast | Precise] -> Result
-`
+## Validation snapshot (demo column)
+```
+values: 1.0 null 3.0 null 5.0 7.0 null 9.0 11.0 13.0
+nulls:  ###.......  3/10 = 0.3 > 0.25 -> drift_flag=true
+range:  [1.0, 13.0], non-negative -> schema_ok=true
+```
 
-## Function Behavior
-Visual representation showing how Model Training Pipelines transforms inputs to outputs with characteristic patterns.
+## Seed determinism
+```
+seed 42 run1: [2, 6, 3, 1, 4, 0, 7, 5]
+seed 42 run2: [2, 6, 3, 1, 4, 0, 7, 5]  equal
+seed 7  run3: different order           not equal
+```
 
-## Convergence Pattern
-Error decreases as iterations increase, following exponential decay for well-conditioned problems.
+## Tracking record shape
+```
+run: params{lr, depth} + metrics{scores} + code_hash + data_hash
+     + seed + timestamps -> artifact model:vN (immutable)
+config: lr=0.01|depth=6|seed=42|data=v3  hash=-1652323048
+```
 
-## Visual Learning Resources
-- Flowcharts for algorithm logic
-- Plots of convergence behavior
-- Heat maps of numerical stability regions
-- Comparison charts for algorithm variants
+## Retraining loop
+```
+schedule/data trigger --> same DAG, new dataset version
+metrics delta reflects data change (seeds pinned, code pinned)
+```

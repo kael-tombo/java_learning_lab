@@ -1,52 +1,40 @@
-﻿# Flashcards: Model Training Pipelines
+﻿# Model Training Pipelines — Flashcards
 
-## Front-Back Cards
+Q: Name the six standard DAG stages in order.
+A: Ingest, validate, transform, train, evaluate, register. Demo prints
+exactly this order with gate_pass=true.
 
-### Card 1
-**Front**: What is the definition of Model Training Pipelines?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: What does the validate gate do?
+A: Runs schema and statistical checks; on failure the run stops before
+transform and no model is produced.
 
-### Card 2
-**Front**: Key properties of Model Training Pipelines?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: Demo validation numbers?
+A: n=10, nulls=3, null_rate=0.3, threshold=0.25, drift_flag=true,
+range [1.0, 13.0], schema_ok=true.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: What makes retraining deterministic?
+A: Fixed seeds plus pinned code and data versions. Demo: seed 42 gives
+[2, 6, 3, 1, 4, 0, 7, 5] on both runs; seed 7 differs.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: What is an artifact registry?
+A: Immutable versioned storage for datasets, transforms, and models;
+reruns reference version ids, never mutable paths.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: Minimum experiment-tracking fields?
+A: Params, metrics, code hash, data hash, seed, timestamps, output
+artifact version. Missing any one breaks reproducibility.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: Demo config record?
+A: `lr=0.01|depth=6|seed=42|data=v3`, hash -1652323048.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: Why record failed runs?
+A: Negative results are data: they prevent repeated dead ends and show
+what was tried with which data and code.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: Where does randomness belong?
+A: In training under a recorded seed — never hidden inside transform,
+which must be a pure function of versioned inputs.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Model Training Pipelines algorithm: ________. **Answer**: O(n)
-
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
-
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
-
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: What does a stopped pipeline mean?
+A: A successful defense: validation caught bad data before it could
+become a bad model.

@@ -1,39 +1,33 @@
-﻿# Reflection: Model Training Pipelines
+﻿# Model Training Pipelines — Reflection
 
-## Self-Assessment Questions
+## What surprised you?
+That the most valuable pipeline component produces nothing: the gate
+that stops a run. Learners expect value from training; production gets
+its value from the runs that never happen because validation refused
+bad data.
 
-### Understanding
-1. Can I explain Model Training Pipelines to a non-mathematician?
-2. Do I understand when to use each variant?
-3. Can I identify numerical issues before they occur?
+## Check your understanding
+- Can you recompute the 0.3 null rate and explain why the flag trips
+  at threshold 0.25 but would clear at 0.35?
+- Can you explain why seed 42 repeating [2, 6, 3, 1, 4, 0, 7, 5] is a
+  correctness property, not a statistical one?
+- Can you list the five mandatory tracking fields and say which
+  question each answers?
 
-### Application
-1. Have I implemented the algorithm correctly?
-2. Can I modify for different use cases?
-3. Do I know how to test correctness and performance?
+## Connect to your own work
+Recall a time your results changed between reruns. Which of the three
+pins (seed, code, data) was missing? What would the incident have
+looked like with all three recorded?
 
-### Connection
-1. How does this connect to other math areas?
-2. How does it apply to my work/studies?
-3. What problems can I now solve?
+## What to do next
+- Convert one of your own scripts into the six-stage shape with an
+  explicit gate function that returns pass/fail plus reasons.
+- Add a tracking record writer to it; refuse to finish a run with any
+  field empty.
+- Read the Breck et al. rubric's data-validation checks and map each
+  to your gate function.
 
-## Learning Journal Prompts
-- Write a summary in your own words
-- Describe a situation where this would help
-- What questions remain?
-
-## Progress Tracking
-| Concept | Before | After | Confidence |
-|---------|--------|-------|-----------|
-| Core definition | | | |
-| Key theorems | | | |
-| Implementation | | | |
-| Numerical aspects | | | |
-| Applications | | | |
-
-## Goals for Mastery
-- [ ] Implement from memory
-- [ ] Explain to a peer
-- [ ] Apply to novel problems
-- [ ] Fix numerical issues
-- [ ] Teach others
+## One-sentence takeaway
+A training pipeline is a reproducibility machine: versioned inputs,
+gated checks, seeded compute, and registered outputs — so every number
+it produces can be explained and rerun.

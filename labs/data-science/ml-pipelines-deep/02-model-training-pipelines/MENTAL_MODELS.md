@@ -1,26 +1,26 @@
-﻿# Mental Models: Model Training Pipelines
+﻿# Model Training Pipelines — Mental Models
 
-## Conceptual Frameworks
+## 1. Assembly line with inspectors
+Each stage is a workstation; validation gates are inspectors with stop
+authority. A halted line is the system working, not failing — defects
+caught early never reach customers.
 
-### Model 1: The Machine
-Input -> processing gears -> output, with configurable parameters.
+## 2. Lab notebook that enforces itself
+Experiment tracking is the notebook a forgetful scientist wishes they
+kept: params, metrics, hashes written automatically, so "what did I
+run?" always has an answer.
 
-### Model 2: The Map
-Maps from input space to output space -- understanding the mapping predicts behavior.
+## 3. Same recipe, same dish
+Deterministic retraining means the recipe (code + config + seed) and
+ingredients (dataset version) fully determine the dish. Metric changes
+then implicate the ingredients, which is exactly what monitoring needs.
 
-### Model 3: The Conversation
-Input asks a question, computation processes it, output provides answer.
+## 4. Library catalog for models
+The registry is a catalog: every model has a call number (version) and
+a card (lineage). No card, no trust. Retention throws away drafts,
+never books that are checked out (deployed or audited).
 
-## Analogies
-
-### Cooking
-Ingredients (input) + Recipe (algorithm) + Techniques (operations) = Dish (output)
-
-### Navigation
-Start (initial) -> Route (algorithm) -> Destination (result)
-
-## Thinking Tools
-1. **First Principles**: Break down to fundamentals
-2. **Inversion**: Consider what would cause failure
-3. **Extreme Cases**: Test with extreme inputs
-4. **Analogy Transfer**: Map from familiar domains
+## 5. Smoke detector, not fireproofing
+Validation gates detect smoke (bad data) early; they do not make the
+house fireproof (models can still fail on good data). Both layers are
+needed, and this lab covers the detector half.

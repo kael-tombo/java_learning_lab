@@ -1,17 +1,14 @@
-﻿# Why It Exists: Model Training Pipelines
+﻿# Model Training Pipelines — Why It Exists
 
-## The Problem It Solves
-Before the formal development of Model Training Pipelines, practitioners relied on approximate methods with unknown error bounds, intuitive reasoning without rigor, and ad-hoc techniques that did not generalize across problems.
+Training pipelines exist because manual retraining does not survive
+contact with production. A notebook that worked once depends on the
+analyst's memory of which data, which code, and which seed — none of
+which is recorded. When metrics shift, nobody can say whether the data,
+the code, or chance moved them. When bad data arrives, nothing stops
+it from becoming a bad model.
 
-### The Solution
-Model Training Pipelines provides precise mathematical definitions, provably correct methods, error bounds and convergence guarantees, and a unified framework for diverse problems.
-
-## Design Rationale
-The formulation minimizes assumptions while maximizing applicability, enables rigorous analysis, supports efficient implementation, and provides clear error bounds.
-
-## Alternative Approaches
-1. **Empirical methods**: Less rigorous, harder to validate
-2. **Symbolic computation**: More precise but slower
-3. **Analog computation**: Less flexible, harder to scale
-
-The winning approach offers the best balance of rigor, efficiency, and flexibility.
+The staged pipeline replaces memory with mechanism: versioned inputs,
+gated validation, recorded seeds, and registered outputs. Each piece
+answers one audit question — what data, what checks, what code, what
+result — so retraining becomes an operation the team can run, monitor,
+and defend, instead of a ritual one person performs.

@@ -1,130 +1,40 @@
-﻿# Exercises: Model Training Pipelines
+﻿# Model Training Pipelines — Exercises
 
-## Theoretical Exercises
+## 1. Gate drill
+In PipelineDag, set the validate entry to false. Predict the printed
+order (stops before transform) and gate_pass (false). Edit, run, and
+confirm. Then restore to true.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Model Training Pipelines in your own words.
-**Answer**: Model Training Pipelines involves understanding how mathematical quantities change and relate under specific operations.
+## 2. Threshold arithmetic
+In DataValidation, change the threshold to 0.35. Predict drift_flag
+(0.3 > 0.35 is false, so flag clears) and run to confirm. Write one
+sentence on why thresholds are policy while the compute-compare-gate
+mechanism is standard.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Model Training Pipelines.
-**Answer**: The proof follows from the definitions and established theorems.
+## 3. Extra null
+Add a fourth null to the demo column (11 entries with 4 nulls gives
+rate 0.3636...). Compute by hand first, then run and confirm the flag
+and the new min/max.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Model Training Pipelines to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## 4. Seed swap
+In DeterministicRetrain, change both run1/run2 seeds to 99. Predict
+that same_seed_equal stays true while the order itself changes. Run and
+confirm, and record the new order.
 
-## Programming Exercises
+## 5. Tracking record completeness
+Take the config `lr=0.01|depth=6|seed=42|data=v3` and write the full
+run record with params, metrics, code hash, data hash, seed, and
+timestamps. Delete one field and explain exactly which reproducibility
+question becomes unanswerable.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Model Training Pipelines.
+## 6. Stage contract design
+Pick the transform stage and write its contract: inputs (dataset
+version, transform version), outputs (feature matrix version), success
+predicate (row count matches, null rates within bounds). State what a
+retry does and why it is safe.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
-
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
-
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
-
-## Challenge Problems
-
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
-
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
-
-## Solutions
-
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Model Training Pipelines
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Model Training Pipelines?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Model Training Pipelines?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+## 7. Threshold review drill
+The demo gate trips at 0.25 with an observed 0.3 rate. Write the
+quarterly review note: trips in the last 90 days, false-stop rate,
+and whether 0.25 still matches the data owner's tolerance. A gate
+without a review date is a guess that hardened into policy.

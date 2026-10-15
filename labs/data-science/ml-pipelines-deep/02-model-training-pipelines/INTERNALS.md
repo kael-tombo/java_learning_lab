@@ -1,29 +1,38 @@
-﻿# Internals: Model Training Pipelines Implementation
+﻿# Model Training Pipelines — Internals
 
-## Deep Dive into Implementation Details
+## Orchestrator mechanics
+The runner stores per-stage state (pending, running, passed, failed)
+and advances on pass events only. Retries re-execute a stage from its
+versioned inputs; stages must be pure functions of those inputs so
+retries converge to the same outputs.
 
-### Memory Layout
-Stack-allocated primitives for performance-critical sections, heap objects for larger structures.
+## Dataset versioning
+Ingest writes content-addressed snapshots: the version id derives from
+a hash of the query plus source state. Identical sources yield
+identical ids, which lets reruns skip ingest safely and lets audits
+resolve "which data" unambiguously.
 
-### Instruction Flow
-1. Method dispatch
-2. Input validation
-3. Normalization
-4. Core computation loop
-5. Convergence check
-6. Result post-processing
-7. Return
+## Tracker storage
+A relational table per run with columns for params (JSON), metrics
+(JSON), code hash, data hash, seed, timestamps, and artifact pointer.
+Queries like "all runs on dataset v3 with lr=0.01" are ordinary SQL —
+the tracker's value is completeness of fields, not query cleverness.
 
-### JIT Compilation
-The JIT compiler may apply inlining, loop unrolling, hoisting, and SIMD vectorization.
+## Registry mechanics
+Models are blobs in immutable storage keyed by version; metadata rows
+point at blobs plus lineage. Promotion is a pointer update (candidate
+to production), never a blob edit. Garbage collection deletes blobs
+with no references from deployed, audited, or recent-candidate sets.
 
-### Garbage Collection Impact
-- Temporary objects increase GC pressure
-- Object pooling reduces allocation rate
-- Primitive collections avoid boxing
+## Idempotence requirements
+Validate, transform, train, and evaluate must all be re-runnable with
+identical results given identical inputs. Randomness is allowed only
+through the recorded seed, which is part of the inputs.
 
-## Internals Checklist
-- [ ] Memory access pattern analyzed
-- [ ] Hot paths identified for optimization
-- [ ] GC impact measured
-- [ ] Thread safety verified
+## Promotion mechanics
+A candidate becomes production through a recorded decision: threshold
+comparison against the incumbent plus an approver identity. The
+pointer update is atomic in the registry; serving resolves the pointer
+at request time, so rollback is a second pointer update with its own
+record. Demotion keeps history — the audit trail shows every version
+that ever served, in order.

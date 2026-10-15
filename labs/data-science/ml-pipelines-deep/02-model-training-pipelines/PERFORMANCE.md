@@ -1,61 +1,34 @@
-﻿# Performance: Model Training Pipelines Implementation
+﻿# Model Training Pipelines — Performance
 
-## Performance Analysis
+## Where time goes
+Ingest and transform scale with data volume; training scales with data
+times passes times model size; evaluation is a single bounded pass over
+held-out data. Validation is cheap relative to training, which is why
+gating early saves the most expensive stages.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Throughput tactics
+- Partition ingest and transform by time/entity buckets; stages are
+  embarrassingly parallel across partitions.
+- Cache feature matrices by (dataset version, transform version) so
+  repeated experiments skip recomputation.
+- Parallelize hyperparameter trials as separate DAG branches sharing
+  one validated feature matrix.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Latency tactics
+- Keep the orchestrator's scheduling overhead small relative to stage
+  runtimes; batch tiny stages together.
+- Stream validation checks in one pass (counts, nulls, min/max) rather
+  than one scan per check — the demo computes nulls and range in a
+  single loop for this reason.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+## Cost control
+- Stop at the first failed gate; never train on data that failed
+  validation.
+- Cap trial budgets (max runs, max epochs) in the tracker config.
+- Retire stale feature caches and unpromoted artifacts on retention
+  schedules.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Model Training Pipelines Implementation
-
-## Code Smells and Improvements
-
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
-
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
-
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## No fabricated numbers
+This lab makes no throughput claims; sizing depends on hardware and
+data not present here. The structural guidance — gate early, cache
+features, parallelize trials — holds regardless of scale.

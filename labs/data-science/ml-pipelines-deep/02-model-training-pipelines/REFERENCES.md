@@ -1,31 +1,18 @@
-﻿# References: Model Training Pipelines
+﻿# Model Training Pipelines — References
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+All entries are real publications. Verify editions locally.
 
-## Academic Papers
-1. Author (Year). Landmark paper on Model Training Pipelines. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+1. Sculley, D. et al. "Hidden Technical Debt in Complex Machine
+   Learning Systems" (NIPS 2015). Why ML pipelines entangle and why
+   validation gates and declared dependencies matter.
+2. Breck, E. et al. "The ML Test Score: A Rubric for ML Production
+   Readiness." Data and model validation checks behind stage gates.
+3. Kleppmann, M. "Designing Data-Intensive Applications" (O'Reilly).
+   Batch pipelines, lineage, and exactly-once vs idempotence thinking.
+4. Zinkevich, M. "Rules of Machine Learning" (Google, living guide).
+   Launch, monitoring, and retraining discipline.
+5. Hastie, T., Tibshirani, R., Friedman, J. "The Elements of
+   Statistical Learning." Training vs test methodology behind the
+   evaluate stage.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
-
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
-
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
-
-## Citation Format
-Author. "Model Training Pipelines." Math Academy, Java Learning Lab, 2026.
+No vendor docs, no invented papers, no benchmark numbers.

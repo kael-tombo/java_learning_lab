@@ -1,45 +1,40 @@
-﻿# Architecture: Model Training Pipelines Implementation
+﻿# Model Training Pipelines — Architecture
 
-## System Design
+## Components
+1. Orchestrator: executes the DAG in order, enforces gates, retries
+   idempotent stages.
+2. Dataset store: immutable versioned snapshots with hashes.
+3. Transform registry: versioned feature code (shared with lab 01).
+4. Trainer: fits models from (features, config, seed).
+5. Evaluator: fixed metric suite on held-out data.
+6. Model registry: versioned models plus lineage records.
+7. Experiment tracker: params/metrics/hashes per run, queryable.
 
-The Model Training Pipelines implementation follows a layered architecture:
+## Data flow
+Trigger -> ingest (dataset v) -> validate (gate) -> transform
+(features) -> train (params) -> evaluate (scores) -> register
+(model v + lineage). The tracker observes every stage.
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Key interfaces
+- `runPipeline(trigger, datasetVersion)`: returns run record.
+- `validate(dataset)`: returns pass/fail plus per-check details.
+- `train(features, config, seed)`: returns params + metrics.
+- `register(model, lineage)`: returns immutable model version.
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+## Ordering guarantees
+Stages run in topological order; transform never sees unvalidated
+data because the runner halts at a failed gate. Retries are safe only
+for stages with deterministic outputs from versioned inputs.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Scaling notes
+Ingest and transform scale with data volume (partitioned batch work);
+training scales with model size times data passes; evaluation is one
+bounded pass. The tracker and registries are small metadata services
+that must stay available even when compute stages queue.
 
-## Design Patterns
-
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
-
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.modeltraining/
-â”œâ”€â”€ ModelTrainingPipelines.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Worked gate example
+Dataset v41 arrives with null rate 0.3 over the 0.25 policy: validate
+emits fail with per-check detail, the runner halts before transform,
+the tracker records a stopped run, and the owner is paged with the
+dataset version. No model, no metrics, no ambiguity — the halt is the
+correct output of the stage.

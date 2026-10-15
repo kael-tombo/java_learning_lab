@@ -1,33 +1,43 @@
-﻿# Common Mistakes: Model Training Pipelines
+﻿# Model Training Pipelines — Common Mistakes
 
-## Top 10 Common Mistakes
+## 1. Training on unvalidated data
+Skipping or softening the validate gate lets a 30%-null column like the
+demo's straight into the model. Gates must halt the run, not warn.
 
-### 1. Ignoring Edge Cases
-Failing to handle zero, negative, or extreme values.
+## 2. Unseeded shuffles
+An unrecorded shuffle makes every rerun a different experiment. The
+demo's seed-42 repeatability ([2, 6, 3, 1, 4, 0, 7, 5] twice) is the
+baseline; anything less is not an experiment.
 
-### 2. Assuming Exact Arithmetic
-Floating-point operations do not produce exact results.
+## 3. Mutable data paths
+Reading from "latest.csv" instead of a versioned snapshot means reruns
+measure different data. Pin dataset versions with hashes at ingest.
 
-### 3. Premature Optimization
-Optimize only after establishing correctness.
+## 4. Incomplete tracking records
+Logging metrics without code and data hashes produces numbers nobody
+can reproduce or audit. All five fields (params, metrics, code hash,
+data hash, seed) are mandatory per run.
 
-### 4. Algorithm Mismatch
-Using inappropriate algorithms for the input type.
+## 5. Validating samples instead of snapshots
+Checks on a hand-exported sample can pass while the pinned snapshot
+fails. Always validate the exact version the pipeline will train on.
 
-### 5. Ignoring Numerical Stability
-Unstable formulations amplify rounding errors.
+## 6. Tuning against the test set
+Repeatedly adjusting based on test scores leaks the test set into
+training decisions. Keep a validation split for iteration and touch
+test once per candidate (see lab 03).
 
-### 6. Incorrect Boundary Conditions
-Applying formulas outside valid domain.
+## 7. Registering everything as production
+Without candidate/production status separation, serving may resolve an
+arbitrary version. Promotion is an explicit, recorded decision.
 
-### 7. Missing Convergence Checks
-Iterative algorithms need proper termination criteria.
+## 8. Retrying non-idempotent stages
+Stages with side effects (unversioned writes, random unseeded draws)
+diverge on retry. Make every stage a pure function of versioned inputs
+plus the recorded seed.
 
-### 8. Thread Safety Assumptions
-Verify thread safety for concurrent usage.
-
-### 9. Insufficient Testing
-Test edge cases, not just happy paths.
-
-### 10. Documentation Decay
-Keep docs synchronized with implementation.
+## 9. Confusing fast with healthy
+A pipeline that always passes may have thresholds set so loose the
+gate cannot trip — the demo flag at 0.25 would never fire at 0.9.
+Review gate trip history quarterly: a gate that never trips is either
+unnecessary or miscalibrated, and both deserve an explicit decision.
