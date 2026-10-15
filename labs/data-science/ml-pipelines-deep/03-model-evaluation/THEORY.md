@@ -1,70 +1,74 @@
-﻿# Model Evaluation -- Theory
+﻿# Model Evaluation — Theoretical Foundation
 
-## 1. Introduction
+## Core Concept
 
-Model Evaluation is a fundamental concept in ML Pipelines Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+Evaluation answers one question honestly: **how will this model perform on
+data it has never seen?** Everything in this lab serves that question —
+metrics that measure the right thing, splits that prevent self-deception,
+and procedures that keep the test set out of every decision, including
+hyperparameter choices.
 
-## 2. Core Definitions
+## The Confusion Matrix and Its Children
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Model Evaluation rests on several key definitions and axioms that form the foundation of the theory.
+For binary classification, all count-based metrics derive from four
+numbers (TP, FP, TN, FN):
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+- **Precision** = TP/(TP+FP) — of predicted positives, how many were real.
+- **Recall** = TP/(TP+FN) — of real positives, how many were found.
+- **F1** = 2·P·R/(P+R) — harmonic mean; punishes lopsided tradeoffs
+  (a model with P=1.0, R=0.1 scores F1≈0.18, not 0.55).
+- **Accuracy** = (TP+TN)/all — misleading under imbalance (99% negatives
+  ⇒ 99% accuracy for a constant "no" classifier that finds nothing).
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+Rule: accuracy is reported only alongside prevalence; model selection on
+imbalanced data uses precision/recall/F1 or PR-AUC, never accuracy alone.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Model Evaluation:
+## Thresholds, ROC, and PR Curves
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+A scoring classifier plus a threshold makes a decision rule. Sweeping the
+threshold traces:
 
-### 2.3 Formal Framework
-The mathematical framework for Model Evaluation is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+- **ROC curve** (TPR vs FPR) and **ROC-AUC**: threshold-independent ranking
+  quality. AUC 0.5 = random, 1.0 = perfect separation.
+- **PR curve** (precision vs recall): preferred under class imbalance —
+  ROC-AUC flatters when negatives dominate because FPR dilutes in a huge
+  denominator.
 
-## 3. Mathematical Formulation
+The operating threshold is a *business* decision (cost of false positives
+vs false negatives), not a statistical one — tune it on validation, lock
+it, then measure once on test.
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## Proper Scoring Rules: Log-Loss and Brier
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+Hard 0/1 outcomes discard calibration — a model 99% sure and wrong is
+worse than one 51% sure and wrong, but accuracy treats them identically:
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+- **Log-loss** = −mean(y·log p + (1−y)·log(1−p)) — infinite penalty for
+  confident wrongness (clip predictions away from exactly 0/1).
+- **Brier score** = mean((p − y)²) — bounded, interpretable as mean
+  squared calibration error.
 
-### 3.3 Existence and Uniqueness
-A critical question in Model Evaluation is whether solutions exist and whether they are unique.
+Both are *proper*: the expected score is minimized by reporting true
+beliefs. Optimizing accuracy while ignoring calibration produces
+confident, wrong, undeployable probabilities.
 
-## 4. Important Theorems
+## Splits That Don't Lie
 
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
+- **Train/validation/test**: fit on train, decide everything (features,
+  hyperparameters, thresholds, early stopping) on validation, measure
+  *once* on test. Every reuse of test is leakage that compounds silently.
+- **Stratified K-fold**: each fold preserves class ratios — mandatory
+  under imbalance (a random fold of 1% positives can easily contain none).
+- **Temporal splits** for time-ordered data: train on the past, test on
+  the future. Shuffling time series lets the model train on the future.
+- **Preprocessing inside the fold**: scalers, imputers, and selectors fit
+  on train folds only. Fitting on full data before splitting leaks test
+  statistics into every training row.
 
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
+## Key Invariants
 
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Model Evaluation extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Model Evaluation requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Model Evaluation connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Model Evaluation provide the rigorous basis needed for correct computational implementation and real-world application.
+1. Report prevalence with accuracy, or don't report accuracy.
+2. Thresholds come from validation + costs, never from test.
+3. Test is measured once; every prior decision uses train/validation.
+4. Imbalanced data ⇒ PR curves and stratified folds.
+5. Calibration is measured (log-loss/Brier), not assumed from accuracy.
