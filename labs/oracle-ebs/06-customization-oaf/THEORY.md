@@ -125,6 +125,7 @@ Function security operates at **function** granularity, not page granularity.
 Every action the approver can take is a function.
 
 ```sql
+-- VERIFY (EBS factual accuracy): FND_FUNCTIONS table and FND_FUNCTION_SECURITY_PVT.create_function are unverified — confirm against the EBS documentation before executing.
 INSERT INTO fnd_functions
   (function_id, function_name, description)
 VALUES (fnd_function_security_pvt.create_function(
@@ -139,6 +140,7 @@ Now the controller checks:
 
 ```java
 public void approve() {
+  // VERIFY (EBS factual accuracy): ADFContext is an ADF-framework API; OAF controllers normally use OAPageContext/OAApplicationModule, and SecurityConstants.VIEW_SENSITIVE_APPLICATION is unverified — confirm the intended framework and API before executing.
   if (! ADFContext.getCurrentInstance().getSecurityContext()
         .isAuthorized(SecurityConstants.VIEW_SENSITIVE_APPLICATION)) {
     throw new OAException(OracleExceptionBean...)  // reject
@@ -175,6 +177,7 @@ otherwise — and the next approver never sees it.
 ### Correct approach
 
 ```java
+// VERIFY (EBS factual accuracy): WorkflowWFQuery/WorkflowContext/completeApprove/completeReject are illustrative pseudo-APIs — confirm the real Oracle Workflow Java APIs before executing.
 // Find the active workflow item
 WorkflowItemKey itemKey = WorkflowWFQuery.queryOpenItemByEntity(
     "oracle.ap.apps.ar.ApprovalWorkflowEntity", invoiceKey, db);
@@ -189,6 +192,7 @@ WorkflowResult result = ctx.getWorkflowTask() != null
 
 `APPROVAL_WORKFLOW_FLAG` and friends in `AP_INVOICES_ALL` are then updated by
 **the workflow itself**, not by your code. Single source of truth.
+<!-- VERIFY (EBS factual accuracy): WORKFLOW_ITEM_ACTIVITY table and the AP_INVOICES_ALL.APPROVAL_WORKFLOW_FLAG column (see Principle 5) are unverified — confirm both against the target instance before executing or citing. -->
 
 ## Principle 6: Reason codes must be structured, not free text
 

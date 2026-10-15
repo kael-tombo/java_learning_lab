@@ -6,6 +6,7 @@
 ---------------------------------------------------------------
 
 -- 1a. Top-10 SKUs by usage value (the ABC head)
+-- VERIFY: confirm MTL_TRANSACTION_LT_ACCOUNT (and TRANSACTION_COST) exists in the target instance before executing.
 SELECT msib.segment1 AS item, msib.description,
        SUM(NVL(mtln.transaction_quantity,0) * NVL(mtln.transaction_cost,0)) AS usage_value
 FROM   mtl_system_items_b msib

@@ -44,3 +44,4 @@ log on every tier prints DB credentials. The audit query on
 SOD-conflict query turns "trust me" into evidence; `fnd_profile.save(...,
 'SITE')` + `COMMIT` is the remediation, and the drift-report program makes
 it stick.
+<!-- VERIFY (EBS factual accuracy): FND_PROFILE_OPTION_VALUES_HISTORY table and the FND_HIDE_DB_PASSWORD profile option name are unverified — confirm both exist in the target instance before executing or citing. -->

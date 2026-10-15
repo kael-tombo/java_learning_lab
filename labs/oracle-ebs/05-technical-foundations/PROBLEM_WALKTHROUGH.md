@@ -1,4 +1,4 @@
-﻿# Problem Walkthrough: Custom PL/SQL Concurrent Program with EBS APIs
+# Problem Walkthrough: Custom PL/SQL Concurrent Program with EBS APIs
 
 ## Problem Statement
 

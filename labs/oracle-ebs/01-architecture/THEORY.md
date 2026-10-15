@@ -20,7 +20,7 @@ Oracle EBS R12.2 uses a **split-tier architecture** separating the application t
 │   Node 1      │    │   Node 2      │    │   Node 3      │
 │   (US Prim)   │    │   (EMEA)      │    │   (APAC)      │
 │  HTTP/Forms   │    │  HTTP/Forms   │    │  HTTP/Forms   │
-│  OAF/OC4J     │    │  OAF/OC4J     │    │  OAF/OC4J     │
+│  OAF/WLS      │    │  OAF/WLS      │    │  OAF/WLS      │
 │  CM (Report)  │    │  CM (Interface)│   │  CM (Batch)   │
 │  Admin (Act)  │    │  Admin (Pas)  │    │  Admin (Pas)  │
 └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
@@ -49,13 +49,13 @@ Oracle EBS R12.2 uses a **split-tier architecture** separating the application t
 
 ## Application Tier Services
 
-Each node runs Oracle HTTP Server (OHS), Forms, OAF (OC4J), Concurrent Manager, and Admin Server. **Specialization** prevents resource contention:
+Each node runs Oracle HTTP Server (OHS), Forms, OAF (WebLogic), Concurrent Manager, and Admin Server. **Specialization** prevents resource contention:
 
 | Service | Node 1 (US) | Node 2 (EMEA) | Node 3 (APAC) |
 |---------|-------------|---------------|---------------|
 | OHS | Primary | Primary | Primary |
 | Forms | 50 processes | 30 processes | 20 processes |
-| OAF/OC4J | 40 threads | 25 threads | 15 threads |
+| OAF/WLS | 40 threads | 25 threads | 15 threads |
 | Concurrent Manager | Std + 6 Specialized | Std + 3 Specialized | Std + 3 Specialized |
 | Admin Server | **Active** | Passive | Passive |
 
@@ -75,6 +75,7 @@ Members: node1:9001, node2:9001, node3:9001
 ```
 Method: Least Connections
 Persistence: Cookie (OA7_sesid)
+<!-- VERIFY (EBS factual accuracy): OA7_sesid as the OAF session-cookie name is unverified — confirm against the instance's WebLogic/OHS session configuration before citing. -->
 Monitor: HTTP /OA_HTML/AppsLogin
 Members: node1:8000, node2:8000, node3:8000
 ```
@@ -145,6 +146,7 @@ WHERE name IN ('transport lag', 'apply lag');
 Prevents month-end close contention by isolating workloads:
 
 ```sql
+-- VERIFY (EBS factual accuracy): FND_CONCURRENT_QUEUE_PUB package/procedure signatures are unverified — confirm against the EBS documentation before executing; concurrent managers are normally administered via the Administer Concurrent Managers form.
 -- Report Manager (heavy SQL, long-running)
 FND_CONCURRENT_QUEUE_PUB.CREATE_QUEUE(
     p_queue_name => 'REPORT_MANAGER_NODE1',
@@ -220,7 +222,7 @@ JTF_CONNECTION_POOL_SIZE=200
 JTF_MAX_CONNECTIONS=500
 JTF_CONNECTION_TIMEOUT=30000
 
-# Concurrent Manager threads
+# Concurrent Manager threads (VERIFY: FND_CONC_* variable names are unverified for R12.2 default.env — confirm before use)
 FND_CONC_MIN_THREADS=20
 FND_CONC_MAX_THREADS=100
 
@@ -268,6 +270,7 @@ done
 SELECT node_name, COUNT(*) AS session_count,
        AVG(elapsed_time_seconds) AS avg_session_time
 FROM fnd_forms_sessions
+<!-- VERIFY (EBS factual accuracy): FND_FORMS_SESSIONS table/columns are unverified — confirm the object exists in the target instance before executing. -->
 WHERE last_connect_date > SYSDATE - 1/24
 GROUP BY node_name ORDER BY session_count DESC;
 ```
@@ -292,6 +295,7 @@ SELECT apps_node,
        AVG(response_time_ms) AS avg_ms,
        PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY response_time_ms) AS p95_ms
 FROM fnd_oaf_response_times
+<!-- VERIFY (EBS factual accuracy): FND_OAF_RESPONSE_TIMES is unverified — no such standard EBS table is known; confirm the object exists in the target instance before executing. -->
 WHERE measurement_time > SYSDATE - 1/24
 GROUP BY apps_node;
 ```

@@ -58,7 +58,7 @@ D. It reduces the finding count more
 
 ---
 
-**6:** Order remediation by what?
+**6.** Order remediation by what?
 
 A. Alphabetical user name
 B. User count, easiest first
@@ -93,7 +93,7 @@ D. A ticket number
 
 ---
 
-**9:** Why is `FND_HIDE_DB_PASSWORD='N'` the highest priority finding?
+**9.** Why is `FND_HIDE_DB_PASSWORD='N'` the highest priority finding?
 
 A. It is easy to fix
 B. It exposes the DB password, enabling direct schema access that bypasses

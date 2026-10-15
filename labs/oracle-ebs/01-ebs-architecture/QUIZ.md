@@ -108,7 +108,7 @@ D. RAC load balancing is misconfigured
 
 A. TCP port check
 B. ICMP ping
-B. HTTP 200 on the application login path
+C. HTTP 200 on the application login path
 
 <details><summary>Answer</summary><b>C</b> — TCP-only checks pass while a JVM is hung. Health checks must be application-level.</details>
 

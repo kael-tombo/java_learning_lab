@@ -38,7 +38,7 @@ Answer: B
 
 ## Question 5
 What does CEMLI stand for?
-A. Configuration Extension Modification Localization Integration
+A. Customization Extension Modification Localization Integration
 B. Core Enterprise Management Library Interface
 C. Central EBS Module Language Integration
 D. Custom Enterprise Middleware Localization Interface
@@ -53,6 +53,7 @@ C. FND_PROFILE
 D. FND_USER
 
 Answer: A
+<!-- VERIFY (EBS factual accuracy): FND_MOBS as the VPD/MOAC view is unverified — confirm the object name against the EBS Security Guide before citing. -->
 
 ## Question 7
 The concurrent manager phase Running indicates?

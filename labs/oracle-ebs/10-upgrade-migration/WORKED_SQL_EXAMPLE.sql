@@ -6,6 +6,7 @@
 ---------------------------------------------------------------
 
 -- 1a. Readiness gate: expect ZERO rows before prod
+-- VERIFY: confirm DBA_OBJECTS exposes EDITION_NAME in the target DB version; otherwise query DBA_OBJECTS_AE.
 SELECT object_name, object_type, owner, status
 FROM   dba_objects
 WHERE  owner LIKE 'XX%'
@@ -62,10 +63,10 @@ WHERE  name IN ('Advanced Replication','Materialized View Rewrite',
 AND    currently_used = 'TRUE';
 
 -- 3b. LONG declarations in custom PL/SQL (all must become CLOB)
+-- NOTE: USER_SOURCE has no OWNER column; scope by object NAME if needed.
 SELECT name, type, line
 FROM   user_source
-WHERE  owner LIKE 'XX%'
-AND    UPPER(text) LIKE '% LONG%'
+WHERE  UPPER(text) LIKE '% LONG%'
 ORDER  BY name, line;
 
 -- 3c. Post-upgrade stats (run as SYSDBA after cutover)

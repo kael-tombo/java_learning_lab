@@ -74,6 +74,7 @@ SELECT fu.user_name, r1.responsibility_name duty_a, r2.responsibility_name duty_
  WHERE r1.responsibility_name = 'AP Supplier Maintenance'
    AND r2.responsibility_name = 'AP Payment Processing';
 ```
+<!-- VERIFY (EBS factual accuracy): FND_RESPONSIBILITIES / FND_USER_RESPONSIBILITIES table names and the RESPONSIBILITY_NAME column placement are unverified — standard EBS uses FND_RESPONSIBILITY (+_TL) and FND_USER_RESP_GROUPS*; confirm against the target instance before executing. -->
 
 The violation is a property of a **user's assignment set**, not of any single
 responsibility. Every one of the three responsibilities may be individually

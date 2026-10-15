@@ -101,7 +101,7 @@ D. Templates cannot group
 
 ---
 
-**10:** What does `WHERE TRUNC(due_date) <= :d` do to an index?
+**10.** What does `WHERE TRUNC(due_date) <= :d` do to an index?
 
 A. Nothing
 B. Disables it — the function is applied to the column, forcing a full scan

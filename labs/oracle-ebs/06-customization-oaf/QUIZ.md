@@ -34,7 +34,7 @@ D. Bind variables are faster to write
 
 ---
 
-**4**: What does VO layering buy you, besides organisation?
+**4.** What does VO layering buy you, besides organisation?
 
 A. Fewer classes
 B. Query count reduction — ~10× in the lab (41 queries → 4)

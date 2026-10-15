@@ -18,11 +18,11 @@ A: ADOP
 
 ## Card 5
 Q: Name the five CEMLI categories.
-A: Configuration, Extension, Modification, Localization, Integration
+A: Customization, Extension, Modification, Localization, Integration
 
 ## Card 6
 Q: Which package sets operating unit context?
-A: FND_GLOBAL
+A: MO_GLOBAL (SET_POLICY_CONTEXT)
 
 ## Card 7
 Q: What is the EBS app file system root?
@@ -39,6 +39,7 @@ A: MO_DEFAULT_ORG_ID
 ## Card 10
 Q: What view provides VPD MOAC filtering?
 A: FND_MOBS
+<!-- VERIFY (EBS factual accuracy): FND_MOBS as the VPD/MOAC view is unverified — confirm the object name against the EBS Security Guide before citing. -->
 
 ## Card 11
 Q: FND stands for?
@@ -46,7 +47,7 @@ A: Foundation
 
 ## Card 12
 Q: Where are concurrent request logs stored?
-A: FND_CONCURRENT_REQUESTS and 
+A: Request log and output files on the concurrent-processing node (viewed via the Concurrent Requests form); request metadata in FND_CONCURRENT_REQUESTS 
 
 ## Card 13
 Q: Name four profile levels.
@@ -67,6 +68,7 @@ A: SSO via Oracle Access Manager
 ## Card 17
 Q: EBS audit table prefix?
 A: FND_AUD_
+<!-- VERIFY (EBS factual accuracy): FND_AUD_ as the EBS audit-table prefix is unverified — confirm against the EBS Security/AuditTrail documentation before citing. -->
 
 ## Card 18
 Q: What enables online patching?

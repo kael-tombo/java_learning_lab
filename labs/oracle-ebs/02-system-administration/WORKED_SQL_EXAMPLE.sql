@@ -97,12 +97,14 @@ END;
 ---------------------------------------------------------------
 
 -- 3a. Who changed security profiles in the last 90 days?
+-- VERIFY: FND_PROFILE_OPTION_VALUES_HISTORY is an unverified table name — confirm it exists before executing.
 SELECT profile_option_name, user_name, old_value, new_value, change_date
 FROM   fnd_profile_option_values_history
 WHERE  change_date > SYSDATE - 90
 ORDER  BY change_date DESC;
 
 -- 3b. SOD violators (one row per user with the conflicting set)
+-- VERIFY: confirm FND_USER_RESP_GROUPS exposes RESPONSIBILITY_NAME directly; otherwise join RESPONSIBILITY_ID to FND_RESPONSIBILITY_TL.
 SELECT user_name,
        LISTAGG(responsibility_name, ', ')
          WITHIN GROUP (ORDER BY responsibility_name) AS conflicting_resps
@@ -112,6 +114,7 @@ GROUP  BY user_name
 HAVING COUNT(DISTINCT responsibility_name) > 1;
 
 -- 3c. Remediate the credential leak (sandbox first, then PROD w/ ticket)
+-- VERIFY: confirm FND_HIDE_DB_PASSWORD is a real profile option name in the target instance before executing.
 BEGIN
   fnd_profile.save('FND_HIDE_DB_PASSWORD', 'Y', 'SITE');
   COMMIT;  -- without this, the fix evaporates

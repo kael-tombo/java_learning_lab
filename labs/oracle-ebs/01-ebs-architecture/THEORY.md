@@ -6,6 +6,7 @@ A 2,000-user EBS 12.2 instance degrades sharply during month-end. Requests that
 normally complete in minutes take hours. The database reports 60% utilisation.
 The application tier reports 100% CPU. The Concurrent Manager log shows
 `JTF_QUEUE_LOCK` contention.
+<!-- VERIFY (EBS factual accuracy): JTF_QUEUE_LOCK as a specific lock/wait-event name is unverified — treat it as this lab's scenario label and confirm against V$EVENT_NAME and the EBS System Administrator's Guide before citing it as a real EBS object. -->
 
 This looks like a performance problem. It is actually a **tier diagnosis** — and
 the two utilisation numbers are the whole clue.

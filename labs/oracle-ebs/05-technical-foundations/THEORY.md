@@ -88,6 +88,7 @@ Direct DML into PO_HEADERS_ALL:
 ```
 
 `PO_REQ_CREATE_PUB.create_purchase_order`:
+<!-- VERIFY (EBS factual accuracy): PO_REQ_CREATE_PUB.create_purchase_order as the PO creation API is unverified — confirm the package/procedure name against the EBS Purchasing documentation before executing or citing. -->
 
 ```
   ✓ Validates inputs and returns structured errors
@@ -173,6 +174,7 @@ The obligation is twofold:
    or `MO_GLOBAL_OGS`/`FND_GLOBAL_OGS` APIs.
 2. **Write** with `mo_global_ogles.set_org_context` so triggers populate
    `org_id` correctly.
+<!-- VERIFY (EBS factual accuracy): fnd_global_apps_pr.get_org_id, MO_GLOBAL_OGS/FND_GLOBAL_OGS, and mo_global_ogles.set_org_context are unverified API names — the documented MOAC interface is MO_GLOBAL.SET_POLICY_CONTEXT; confirm these against the EBS documentation before executing or citing. -->
 
 ```sql
 l_org_id := fnd_global_apps_pr.get_org_id(101);  -- business unit

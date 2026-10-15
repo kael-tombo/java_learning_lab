@@ -57,7 +57,7 @@ D. A named lock
 
 ---
 
-**6:** Same external ID, different payload hash. What should happen?
+**6.** Same external ID, different payload hash. What should happen?
 
 A. Update the existing record
 B. Process again and overwrite
@@ -102,7 +102,7 @@ D. Email alerts
 
 ---
 
-**10:** Error rate is 0% and 4 of 400 opportunities produced no order. What is wrong?
+**10.** Error rate is 0% and 4 of 400 opportunities produced no order. What is wrong?
 
 A. Nothing — 0% error rate is correct
 B. Messages are being dropped silently; only volume agreement catches this
