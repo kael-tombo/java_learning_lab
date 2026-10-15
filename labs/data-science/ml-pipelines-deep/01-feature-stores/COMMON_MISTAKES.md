@@ -2,9 +2,10 @@
 
 ## 1. Naive latest-value join
 Taking the newest feature row regardless of label time leaks the
-future. The demo bias is 1.0 on a single row; on real data this
-systematically inflates validation scores. Always filter ts <= t first,
-then take the latest.
+future. In this lab's demo the leaked value is 0.95 against a correct
+as-of value of 0.2 — on real data the same mistake systematically
+inflates validation scores. Always filter ts <= t first, then take
+the latest.
 
 ## 2. Two copies of the transform
 A notebook function for training and a service function for serving
@@ -13,8 +14,10 @@ drift apart within weeks. The demo stale path differs by a constant
 
 ## 3. Silent zero-fill of missing features
 Filling "no history" with 0.0 conflates missing with a real zero and
-hides cold-start problems. The u2@12 NO_FEATURE case must route to a
-declared imputation whose default is logged and versioned.
+hides cold-start problems. A key with no snapshot at or before the
+event time must surface as an explicit unknown (like the demo's MISS
+path for unseen keys) or route to a declared imputation whose default
+is logged and versioned — never as a silent plausible-looking number.
 
 ## 4. Editing store rows by hand
 Patching a bad value in place destroys reproducibility: the log no
