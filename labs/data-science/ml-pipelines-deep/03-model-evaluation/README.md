@@ -1,76 +1,37 @@
-﻿# Model Evaluation
+﻿# Lab 03 — Model Evaluation
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Model Evaluation**, a cornerstone topic in ML Pipelines Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+## Goal
+Evaluate classifiers honestly: read a confusion matrix, compute
+precision/recall/F1 correctly, know when ROC-AUC misleads on imbalanced
+data, use proper scoring rules for probabilities, and split data so
+results mean what they claim.
 
-## Topics Covered
-- classification metrics accuracy/precision/recall/F1/ROC-AUC/PR-AUC/log loss, regression MAE/MSE/RMSE/MAPE/R2
+## Core ideas
+- Confusion matrix (TP/FP/TN/FN) as the source of all rate metrics.
+- Precision, recall, F1 (harmonic mean of the two).
+- ROC-AUC concept and PR curves for class imbalance.
+- Log-loss and Brier score as proper scoring rules (concept level).
+- Calibration: predicted probabilities matching observed frequencies.
+- Stratified K-fold: preserve class ratios across folds.
+- Train/val/test discipline and leakage via preprocessing.
+
+## What you do here
+1. Read THEORY.md for definitions and formulas.
+2. Study CODE_DEEP_DIVE.md: three runnable JDK-only programs.
+3. Work EXERCISES.md with hand recomputation first.
+4. Use FLASHCARDS.md and INTERVIEW.md to check recall.
 
 ## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+Java 21+, fractions and logarithms at high-school level, familiarity
+with train/test vocabulary.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Model Evaluation
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## File map
+22 notes: THEORY, HOW_IT_WORKS, ARCHITECTURE, INTERNALS, STEP_BY_STEP,
+VISUAL_GUIDE, CODE_DEEP_DIVE, EXERCISES, MATH_FOUNDATION, HISTORY,
+MENTAL_MODELS, WHY_IT_EXISTS, WHY_IT_MATTERS, PERFORMANCE, SECURITY,
+DEBUGGING, COMMON_MISTAKES, INTERVIEW, REFLECTION, REFERENCES,
+FLASHCARDS, README (this file).
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
-
-## Project Structure
-`
-modelevaluation/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/modelevaluation/ModelEvaluation.java
-    â””â”€â”€ test/java/com/mathlab/modelevaluation/ModelEvaluationTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Rule for this lab
+Every numeric claim is either a standard textbook fact or the observed
+output of a snippet compiled with `javac --release 21` and run.

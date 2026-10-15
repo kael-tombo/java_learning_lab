@@ -1,35 +1,37 @@
-﻿# Debugging: Model Evaluation Implementation
+﻿# Model Evaluation — Debugging
 
-## Common Bugs
+## Symptom: accuracy 0.99 but users report misses
+Likely class imbalance: a 1%-positive problem gives 0.99 to a constant
+negative predictor. Check the matrix: TP near 0 with high TN. Fix: lead
+with precision/recall/F1 and PR curves; set the operating threshold on
+validation for the business cost ratio, not 0.5.
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+## Symptom: validation great, test poor
+Likely test reuse (selection on test) or preprocessing leakage. Check:
+was preprocessing fit on train only? How many times was test scored
+during selection? Fix: lock test to one scoring per candidate; refit
+transforms on train and re-evaluate to measure the leakage gap.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Symptom: log-loss good but decisions bad
+Likely miscalibration: ranking is fine, probability magnitudes are off.
+Check calibration bins: predicted-q vs observed rate per bin. Fix:
+recalibrate (e.g. Platt/isotonic on validation) or threshold on
+validation rather than trusting raw 0.5.
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+## Symptom: fold scores swing wildly
+Likely small data without stratification, or leakage varying per fold.
+Check per-fold positive counts first (demo preserves 2/5 exactly when
+stratified). Fix: stratify; if spread persists, the point estimate is
+fragile — report the interval, not the mean.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Symptom: F1 prints 0.8000000000000002
+Not a bug: binary floating-point cannot represent 0.8 exactly. Check
+with fractions (4/5) to confirm. Fix: round for display; compare with
+tolerance in tests, never exact equality on doubles.
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
-
-## Debugging Techniques
-
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
-
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
-
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+## Debugging checklist
+1. Read the matrix before any rate.
+2. Verify split lineage and preprocessing fit scope.
+3. Compare against constant/majority baselines.
+4. Check calibration if probabilities drive decisions.
+5. Confirm fold composition before trusting the mean.

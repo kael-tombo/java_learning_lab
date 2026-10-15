@@ -1,33 +1,26 @@
-﻿# Why It Matters: Model Evaluation
+﻿# Model Evaluation — Why It Matters
 
-## Real-World Importance
+Promotion, rollback, and launch decisions all rest on evaluation
+numbers, so the numbers must mean what they claim. A team that leads
+with accuracy on 1%-positive data will ship a majority classifier and
+call it 99% accurate. A team that tunes on test will ship optimism and
+meet reality in production. A team that ignores calibration will feed
+good rankings into bad expected-value decisions.
 
-### 1. Scientific Computing
-Fundamental to simulations in physics, climate, and drug discovery.
-
-### 2. Engineering
-Every discipline relies on these foundations for design and analysis.
-
-### 3. Machine Learning and AI
-Core to model training, optimization, and inference.
-
-### 4. Financial Modeling
-Risk analysis, portfolio optimization, quantitative trading.
-
-### 5. Computer Graphics
-Rendering, animation, physics simulation.
-
-## Impact by Industry
-| Industry | Application | Impact |
-|----------|-------------|--------|
-| Healthcare | Imaging, drug discovery | Life-critical |
-| Finance | Risk modeling, trading | Economic |
-| Technology | ML/AI, search | Transformative |
-| Manufacturing | Design optimization | Efficiency |
-
-## Why Learn This?
-1. Foundational to modern technology
-2. Transferable across domains
-3. Durable knowledge
-4. Enables innovation
-5. High career value
+The demo numbers show the mechanics at small scale: 0.8s that are only
+interpretable beside the TP=4/FP=1/FN=1/TN=4 counts they came from, and
+a proper-score gap of 0.642 in log-loss between modest and confident
+forecasters on the same five labels. At production scale the same mechanics decide revenue,
+risk, and trust — which is why the discipline is non-negotiable, not
+academic. No metric in this lab is quoted without the counts behind it;
+that habit is the whole transferable skill. Teams that internalize it
+catch their own errors in review instead of production: the matrix
+gets pasted next to every F1, the prevalence next to every accuracy,
+the threshold next to every deployed decision rule. Reviewers learn
+to ask for the missing denominator the way code reviewers ask for
+the missing test — not as hostility, as hygiene. The alternative is
+the accuracy-led team from the first paragraph, shipping majority
+classifiers at 99% and learning about it from users. Between those
+two futures, the only difference is whether anyone insisted on the
+denominator before launch. This lab is that insistence, rehearsed
+until it is reflex.

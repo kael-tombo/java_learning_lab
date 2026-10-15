@@ -1,33 +1,37 @@
-﻿# Common Mistakes: Model Evaluation
+﻿# Model Evaluation — Common Mistakes
 
-## Top 10 Common Mistakes
+## 1. Leading with accuracy on imbalanced data
+Accuracy divides by all items, so rare positives barely register. The
+1%-positive majority classifier scores 0.99 while finding nothing. Lead
+with PR/F1 when positives are rare.
 
-### 1. Ignoring Edge Cases
-Failing to handle zero, negative, or extreme values.
+## 2. Reporting rates without the matrix
+Precision 0.8 with TP=4/FP=1 differs operationally from TP=800/FP=200.
+Same rate, different evidence. Always publish the four counts.
 
-### 2. Assuming Exact Arithmetic
-Floating-point operations do not produce exact results.
+## 3. Tuning on the test set
+Each test-guided decision spends test validity. After enough peeks the
+test set is a second validation set and reports optimism. Lock test to
+single scorings per candidate.
 
-### 3. Premature Optimization
-Optimize only after establishing correctness.
+## 4. Preprocessing leakage
+Fitting scalers, imputers, or selectors on all data before splitting
+lets test statistics into training. Fit on train, apply elsewhere —
+no exceptions for "unsupervised" steps.
 
-### 4. Algorithm Mismatch
-Using inappropriate algorithms for the input type.
+## 5. Trusting ROC-AUC alone on imbalance
+FPR's denominator (all negatives) makes bad positive detection look
+cheap. Pair ROC with PR whenever negatives dominate.
 
-### 5. Ignoring Numerical Stability
-Unstable formulations amplify rounding errors.
+## 6. Confusing sharp with calibrated
+Confident probabilities (near 0/1) feel accurate but may be
+systematically off. Check binned observed rates before using
+probabilities in expected-value math.
 
-### 6. Incorrect Boundary Conditions
-Applying formulas outside valid domain.
+## 7. Exact double equality in tests
+Asserting f1 == 0.8 fails on the observed ...002 representation noise.
+Compare with tolerance (e.g. |a-b| < 1e-9).
 
-### 7. Missing Convergence Checks
-Iterative algorithms need proper termination criteria.
-
-### 8. Thread Safety Assumptions
-Verify thread safety for concurrent usage.
-
-### 9. Insufficient Testing
-Test edge cases, not just happy paths.
-
-### 10. Documentation Decay
-Keep docs synchronized with implementation.
+## 8. Averaging folds without the spread
+Mean F1 across folds hides instability. Report min/max or standard
+deviation; a wide spread vetoes promotion regardless of the mean.

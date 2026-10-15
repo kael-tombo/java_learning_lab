@@ -1,36 +1,36 @@
-﻿# Interview: Model Evaluation
+﻿# Model Evaluation — Interview
 
-## Common Interview Questions
+## Q: Read this matrix: TP=4, FP=1, TN=4, FN=1. What do you report?
+A: Precision 4/5=0.8, recall 4/5=0.8, F1 0.8 (observed ...002 is fp
+noise), accuracy 8/10=0.8 — and I lead with the four counts, because
+the rates alone hide the evidence size.
 
-### Q1: Conceptual
-**Q**: Explain Model Evaluation and its importance in computing.
-**A**: Model Evaluation enables precise analysis of quantitative relationships, foundational for scientific computing and ML.
+## Q: When does accuracy mislead?
+A: On imbalanced data: 1% positives makes a constant-negative model
+99% accurate with recall 0. I switch to precision/recall/F1 and PR
+curves there.
 
-### Q2: Implementation
-**Q**: How to implement Model Evaluation in Java 21+?
-**A**: Input validation, core algorithm with stable numerics, convergence checking, error bounds.
+## Q: ROC-AUC vs PR — which and when?
+A: ROC-AUC grades ranking across thresholds; PR exposes weak positive
+detection when negatives dominate, since FPR divides by the huge
+negative count. Imbalanced problem: PR leads.
 
-### Q3: Numerical Analysis
-**Q**: What numerical issues arise?
-**A**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+## Q: What is a proper scoring rule?
+A: A probability score optimized in expectation by honest predictions.
+Log-loss (demo 0.23617 vs 0.69314 baseline) and Brier (0.055 vs 0.25)
+are the standards; both must beat the constant-0.5 reference.
 
-### Q4: Performance
-**Q**: How to optimize for large inputs?
-**A**: Algorithmic improvements, parallel processing, memory optimization, JVM tuning.
+## Q: Define calibration and why it matters.
+A: Predicted-q items are positive at rate q. Rankings can be good while
+magnitudes are off; any expected-value decision needs magnitudes right,
+so I check binned observed rates on held-out data.
 
-### Q5: System Design
-**Q**: Design a computation service.
-**A**: API design, concurrency model, error handling, monitoring, deployment.
+## Q: How do you split small imbalanced data?
+A: Stratified K-fold: round-robin per class keeps every fold at the
+overall ratio. Demo: 10 items, 4 positives, K=2 gives 5-item folds
+with exactly 2 positives each (rate 0.4 preserved).
 
-## Coding Challenge
-`java
-public double compute(double[] values) {
-    // O(n) time, O(1) space, handle edge cases
-    return 0.0;
-}
-`
-
-## Behavioral Questions
-1. Describe debugging a numerical issue
-2. How do you ensure code correctness?
-3. Approach to learning new math concepts?
+## Q: What is leakage via preprocessing?
+A: Fitting transforms on all data before splitting, letting test
+statistics into training. The fix is structural: fit on train only,
+apply the fitted object to val/test.

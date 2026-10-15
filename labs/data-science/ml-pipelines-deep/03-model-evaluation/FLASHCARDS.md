@@ -1,52 +1,43 @@
-﻿# Flashcards: Model Evaluation
+﻿# Model Evaluation — Flashcards
 
-## Front-Back Cards
+Q: The four confusion-matrix cells?
+A: TP label1/pred1, FP label0/pred1, TN label0/pred0, FN label1/pred0.
+Demo: 4/1/4/1.
 
-### Card 1
-**Front**: What is the definition of Model Evaluation?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: Precision and recall formulas?
+A: Precision = TP/(TP+FP) = 0.8; recall = TP/(TP+FN) = 0.8 on the demo.
 
-### Card 2
-**Front**: Key properties of Model Evaluation?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: F1 formula and demo value?
+A: F1 = 2PR/(P+R), harmonic mean of precision and recall; demo
+0.8000000000000002 (fp representation of 0.8).
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: Why harmonic instead of arithmetic mean?
+A: It punishes a weak side harder: P=1.0, R=0.2 gives F1 0.33, not 0.6.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: What does ROC-AUC measure?
+A: Ranking quality across all thresholds (1.0 perfect, 0.5 random) —
+not quality at the operating threshold.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: Why do PR curves lead on imbalanced data?
+A: FPR divides by the huge negative count and looks small; precision
+divides by predicted positives and exposes weak detection.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: Log-loss and Brier formulas?
+A: Log-loss = mean -[y log p + (1-y) log(1-p)]; Brier = mean (p-y)^2.
+Demo: 0.23617/0.055 vs 0.69314/0.25 baseline.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: What does "proper scoring rule" mean?
+A: Expected score is optimized by predicting true probabilities —
+honest uncertainty scores best.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: What is calibration?
+A: Predicted-q items are positive at rate q. Separate from sharpness
+(confident, spread predictions).
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Model Evaluation algorithm: ________. **Answer**: O(n)
+Q: Stratified K-fold in one sentence?
+A: Round-robin allocation per class so each fold keeps the overall
+class ratio; demo preserves 0.4 positives in both folds.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
-
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
-
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: The leakage-via-preprocessing rule?
+A: Fit preprocessing on train only; applying all-data-fitted
+transforms to val/test inflates scores.

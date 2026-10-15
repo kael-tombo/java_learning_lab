@@ -1,45 +1,32 @@
-﻿# Architecture: Model Evaluation Implementation
+﻿# Model Evaluation — Architecture
 
-## System Design
+## Components
+1. Splitter: stratified train/val/test and K-fold partitioner.
+2. Preprocessing fitter: fits transforms on train, applies elsewhere.
+3. Scorer: confusion matrix plus derived rates in one pass.
+4. Probability assessor: log-loss, Brier, calibration bins.
+5. Curve builder: ROC and PR curves over threshold sweeps.
+6. Reporter: matrix-first reports with baselines attached.
+7. Tracker sink: writes scores into the experiment record (lab 02).
 
-The Model Evaluation implementation follows a layered architecture:
+## Data flow
+Dataset version -> splitter (stratified) -> preprocessing (fit-train,
+apply-rest) -> model -> scorer/assessor/curves -> reporter -> tracker.
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Key interfaces
+- `split(data, k, stratify)`: returns fold assignments preserving
+  class ratios when stratified.
+- `confusion(y, p)`: returns (TP, FP, TN, FN).
+- `rates(TP, FP, TN, FN)`: returns precision, recall, F1, accuracy.
+- `probScores(y, probs)`: returns log-loss, Brier, calibration table.
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+## Ordering guarantees
+Preprocessing fits precede any use on val/test; test scoring follows
+validation decisions. The architecture enforces this by passing fitted
+transform objects forward, never refitting downstream.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
-
-## Design Patterns
-
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
-
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.modelevaluation/
-â”œâ”€â”€ ModelEvaluation.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Scaling notes
+Scoring is linear in n and trivially parallel; curve building sorts
+scores once (n log n). Calibration binning is one more linear pass.
+None of this dominates training cost, so there is no excuse for
+skipping it.

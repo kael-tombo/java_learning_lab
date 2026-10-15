@@ -1,130 +1,33 @@
-﻿# Exercises: Model Evaluation
+﻿# Model Evaluation — Exercises
 
-## Theoretical Exercises
+## 1. Recompute the matrix first
+Cover the observed output. From y={1,0,1,1,0,1,0,0,1,0} and
+p={1,0,0,1,0,1,1,0,1,0}, tally TP/FP/TN/FN by hand, then derive
+precision, recall, F1, accuracy. Uncover and compare with TP=4, FP=1,
+TN=4, FN=1 and the 0.8 line.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Model Evaluation in your own words.
-**Answer**: Model Evaluation involves understanding how mathematical quantities change and relate under specific operations.
+## 2. Asymmetric errors
+Change the last prediction from 0 to 1 (one extra FP). Recompute by
+hand: TP=4, FP=2, TN=3, FN=1, precision 4/6=0.6667, recall still 0.8.
+Run and confirm. State which error type moved and which metric noticed.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Model Evaluation.
-**Answer**: The proof follows from the definitions and established theorems.
+## 3. Baseline beating
+In LogLossBrier, replace probs with {0.6,0.4,0.6,0.4}. Predict whether
+log-loss still beats 0.69314 before running. Run, record both scores,
+and explain why weaker confidence moves scores toward baseline.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Model Evaluation to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## 4. Perfect vs constant
+Set probs to the labels exactly {1,0,1,0} (clipped). Predict log-loss
+near 0 and Brier 0. Run and confirm. Then set all to 0.5 and confirm
+the baseline pair (0.69314..., 0.25) reproduces.
 
-## Programming Exercises
+## 5. Break stratification
+Modify StratifiedKFold to take contiguous halves (0-4, 5-9) as folds.
+Count positives per fold by hand (fold0: 0, fold1: 4), run, and confirm.
+Write the one-sentence lesson about small imbalanced folds.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Model Evaluation.
-
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
-
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
-
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
-
-## Challenge Problems
-
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
-
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
-
-## Solutions
-
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Model Evaluation
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Model Evaluation?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Model Evaluation?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+## 6. Leakage audit
+Write the preprocessing order for a scaler + model: fit scaler on
+train, transform val/test, train, select on val, score test once. Then
+describe the exact violation in "fit scaler on all data, then split"
+and why it inflates scores.

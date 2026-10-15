@@ -1,81 +1,42 @@
-﻿# Math Foundation for Model Evaluation
+﻿# Model Evaluation — Math Foundation
 
-## Prerequisite Mathematics
+## 1. From counts to rates
+With TP=4, FP=1, TN=4, FN=1, n=10:
 
-This document reviews the mathematical prerequisites needed to study Model Evaluation effectively.
+  precision = 4/(4+1) = 0.8
+  recall = 4/(4+1) = 0.8
+  accuracy = (4+4)/10 = 0.8
+  F1 = 2(0.8)(0.8)/(0.8+0.8) = 1.28/1.6 = 0.8
 
-## 1. Algebra Review
+Observed f1 prints 0.8000000000000002 because 0.8 has no exact binary
+representation; the arithmetic is exact on the fractions.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Harmonic mean derivation
+For P, R > 0, F1 is the reciprocal of the mean of reciprocals:
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+  1/F1 = (1/P + 1/R)/2, so F1 = 2PR/(P+R)
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+Consequence: F1 <= min(P, R) proximity — halving one side roughly
+halves F1, while the arithmetic mean would only dip. That sensitivity
+is the reason F1 leads when both errors matter.
 
-## 2. Functions and Graphs
+## 3. Log-loss on the demo
+Items (y, p): (1,0.9), (0,0.1), (1,0.8), (0,0.4):
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+  -log(0.9) - log(0.9) - log(0.8) - log(0.6), all divided by 4
+  = 0.23617255159896325 (observed)
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+Constant 0.5 gives -log(0.5) = 0.6931471805599453 per item. The gap
+0.457 is the information the model's probabilities add.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 4. Brier on the demo
+Squared errors: 0.01, 0.01, 0.04, 0.16; mean = 0.22/4 = 0.055
+(observed). Constant 0.5 gives 0.25 per item, mean 0.25. Brier is in
+probability-squared units; differences read directly as squared-error
+improvements.
 
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+## 5. Why stratification preserves rates
+With class sizes n0, n1 and K folds, round-robin gives each fold
+floor or ceil of n_c/K items of class c. Demo: 6/2 = 3 negatives and
+4/2 = 2 positives per fold exactly, so both folds hold rate 2/5 = 0.4
+equal to the overall 4/10. Deviations are at most one item per class.
