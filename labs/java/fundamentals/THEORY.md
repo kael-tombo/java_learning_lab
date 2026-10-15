@@ -38,14 +38,14 @@ Java has 8 primitive types (not objects):
 | `long` | 64-bit | -2⁶³ to 2⁶³-1 | 0L |
 | `float` | 32-bit | ~±3.4×10³⁸ | 0.0f |
 | `double` | 64-bit | ~±1.7×10³⁰⁸ | 0.0d |
-| `boolean` | 1-bit | true/false | false |
+| `boolean` | JVM-dependent | true/false | false |
 | `char` | 16-bit | Unicode 0 to 65,535 | '\u0000' |
 
 ### Literals
 
 ```java
 int i = 42;
-long l = 42L;           // L suffix required
+long l = 42L;           // L suffix marks a long literal
 float f = 3.14f;        // f suffix required
 double d = 3.14;        // default double
 char c = 'A';           // single quotes
@@ -55,7 +55,7 @@ String s = "hello";     // String is not primitive!
 
 ---
 
-## 2. Variables & Scope
+## 3. Variables & Scope
 
 ### Declaration & Initialization
 
@@ -92,7 +92,7 @@ public class ScopeExample {
 
 ---
 
-## 3. Operators
+## 4. Operators
 
 ### Arithmetic
 ```java
@@ -128,7 +128,7 @@ int right = a >> 1; // 3 (0011)
 
 ---
 
-## 4. Control Flow
+## 5. Control Flow
 
 ### if-else
 ```java
@@ -169,7 +169,7 @@ do { } while (condition);
 
 ---
 
-## 5. Methods
+## 6. Methods
 
 ### Signature
 ```java
@@ -203,7 +203,7 @@ void modify(List<String> list) {
 
 ---
 
-## 6. Arrays
+## 7. Arrays
 
 ```java
 // Declaration & initialization
@@ -225,7 +225,7 @@ for (int x : arr) { }  // for-each
 
 ---
 
-## 6. Strings
+## 8. Strings
 
 ```java
 String s1 = "hello";
@@ -252,7 +252,7 @@ String.join(",", list);
 
 ---
 
-## 8. Basic OOP Concepts
+## 9. Basic OOP Concepts
 
 ### Class Definition
 ```java
@@ -282,12 +282,14 @@ public class Person {
 |----------|-------|---------|----------|-------|
 | `public` | ✓ | ✓ | ✓ | ✓ |
 | `protected` | ✓ | ✓ | ✓ | ✗ |
-| (default) | ✓ | ✓ | ✗ | ✗ |
+| (default) | ✓ | ✓ | ✓* | ✗ |
 | `private` | ✓ | ✗ | ✗ | ✗ |
+
+\* A subclass in the same package can access default members; a subclass in a different package cannot.
 
 ---
 
-## 9. Basic Exception Handling
+## 10. Basic Exception Handling
 
 ```java
 try {
@@ -308,7 +310,7 @@ try (FileReader fr = new FileReader("file.txt")) {
 
 ---
 
-## 10. Packages & Imports
+## 11. Packages & Imports
 
 ```java
 package com.example.app;
@@ -323,7 +325,7 @@ package com.company.project.module;
 
 ---
 
-## 10. Essential APIs Quick Reference
+## 12. Essential APIs Quick Reference
 
 | Task | Class/Method |
 |------|-------------|
@@ -339,7 +341,7 @@ package com.company.project.module;
 
 ---
 
-## 10. Common Pitfalls
+## 13. Common Pitfalls
 
 | Pitfall | Correct Approach |
 |---------|-----------------|

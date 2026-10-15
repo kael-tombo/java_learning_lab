@@ -5,7 +5,7 @@ This lab demonstrates the practical application of the PECS principle and the li
 ## 💻 Pure Java Implementation
 
 ```java file="labs/java/fundamentals/generics/SOLUTION/GenericsPecsDemo.java"
-package java.fundamentals.generics;
+package fundamentals.generics;
 
 import java.util.ArrayList;
 import java.util.List;

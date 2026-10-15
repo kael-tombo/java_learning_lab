@@ -1,6 +1,6 @@
 # Exercises — Java Fundamentals (fundamentals)
 
-8 hands-on drills on syntax, OOP, JVM, classpath. Run with JDK 17+; Maven for deps.
+6 hands-on drills on syntax, OOP, JVM, classpath. Run with JDK 17+; Maven for deps.
 
 ## Ex 1: Warm-up: explore types & operators
 Goal: demonstrate types & operators in the context of java fundamentals.

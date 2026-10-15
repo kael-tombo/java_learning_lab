@@ -5,7 +5,7 @@ This lab provides pure Java examples that definitively prove Java is Pass-By-Val
 ## 💻 Pure Java Implementation
 
 ```java file="labs/java/fundamentals/pass-by-value/SOLUTION/PassByValueDemo.java"
-package java.fundamentals.passbyvalue;
+package fundamentals.passbyvalue;
 
 /**
  * A demonstration of Java's strict Pass-By-Value semantics.
