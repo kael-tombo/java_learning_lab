@@ -1,29 +1,34 @@
-﻿# Internals: Feature Stores Implementation
+﻿# Feature Stores — Internals
 
-## Deep Dive into Implementation Details
+## Offline layout
+Partition by (time bucket, entity hash). Rows immutable, compressed
+columnar blocks. As-of joins become per-entity range scans with a
+ts <= t predicate plus a take-latest reduction. Late events append;
+compaction never rewrites values, only reorganizes files.
 
-### Memory Layout
-Stack-allocated primitives for performance-critical sections, heap objects for larger structures.
+## Online layout
+Hash-sharded KV: key entity id, value serialized vector plus per-field
+ts. Reads apply TTL per field at lookup. Writes are upserts guarded by
+ts comparison, making retries safe.
 
-### Instruction Flow
-1. Method dispatch
-2. Input validation
-3. Normalization
-4. Core computation loop
-5. Convergence check
-6. Result post-processing
-7. Return
+## Materializer mechanics
+Tail the offline commit log in order. For each (entity, ts, value),
+compare with the stored ts; write only if newer. Batch writes per
+shard; checkpoint offsets so restarts resume without duplicates
+(output idempotent regardless).
 
-### JIT Compilation
-The JIT compiler may apply inlining, loop unrolling, hoisting, and SIMD vectorization.
+## Registry storage
+Small relational tables: definitions, versions, code hashes, owners,
+TTLs, backfill receipts. Every training build writes a lineage record
+linking dataset id to version set. Small but load-bearing: loss of this
+metadata is loss of reproducibility.
 
-### Garbage Collection Impact
-- Temporary objects increase GC pressure
-- Object pooling reduces allocation rate
-- Primitive collections avoid boxing
-
-## Internals Checklist
-- [ ] Memory access pattern analyzed
-- [ ] Hot paths identified for optimization
-- [ ] GC impact measured
-- [ ] Thread safety verified
+## Failure handling
+- Materializer crash: restart from the last committed offset; upserts
+  keyed by (entity, ts) make replayed rows no-ops when older.
+- Late event past the watermark: append plus bounded recompute of
+  affected training partitions; never an in-place rewrite.
+- Online shard loss: rebuild from the offline log tail (full replay
+  for the shard's entity range), not from a stale snapshot.
+- Registry outage: serving continues on cached version pins; new
+  training builds wait rather than proceeding unpinned.

@@ -1,39 +1,39 @@
-﻿# Reflection: Feature Stores
+﻿# Feature Stores — Reflection
 
-## Self-Assessment Questions
+## What surprised you?
+Most learners expect the hard part to be model math; the lab shows the
+hard part is guaranteeing the model saw what you think it saw. A single
+inequality (ts <= t) carries more production weight than a clever
+architecture choice made on leaked data.
 
-### Understanding
-1. Can I explain Feature Stores to a non-mathematician?
-2. Do I understand when to use each variant?
-3. Can I identify numerical issues before they occur?
+## Check your understanding
+- Can you state the as-of rule without looking, and explain why the
+  u1@25 row must be 2.0 and not 3.0?
+- Can you explain the 0.0 vs 1.0 maxdiff numbers in terms of the shift
+  constant in the two transforms?
+- Can you recompute coverage 0.5 from the four ages (90, 50, 10, 5)
+  against TTL 30?
 
-### Application
-1. Have I implemented the algorithm correctly?
-2. Can I modify for different use cases?
-3. Do I know how to test correctness and performance?
+## Connect to your own work
+Think of a dataset you have built with a join on timestamps. Was the
+predicate `<=` label time or just "nearest"? What would change in your
+metrics if one feature leaked one step into the future?
 
-### Connection
-1. How does this connect to other math areas?
-2. How does it apply to my work/studies?
-3. What problems can I now solve?
+## What to do next
+- Re-implement the as-of join over a shuffled input order and confirm
+  order-independence of the result.
+- Add a version field to the demo and show v1/v2 coexistence.
+- Read the Sculley et al. debt paper's sections on boundary erosion
+  and map each to a store component that addresses it.
 
-## Learning Journal Prompts
-- Write a summary in your own words
-- Describe a situation where this would help
-- What questions remain?
+## One-sentence takeaway
+A feature store is a causality contract (as-of joins), a consistency
+contract (shared versioned transforms), and a freshness contract (TTL)
+— everything else is implementation detail.
 
-## Progress Tracking
-| Concept | Before | After | Confidence |
-|---------|--------|-------|-----------|
-| Core definition | | | |
-| Key theorems | | | |
-| Implementation | | | |
-| Numerical aspects | | | |
-| Applications | | | |
-
-## Goals for Mastery
-- [ ] Implement from memory
-- [ ] Explain to a peer
-- [ ] Apply to novel problems
-- [ ] Fix numerical issues
-- [ ] Teach others
+## Self-grade rubric
+- Can state the as-of rule and apply it to a new (entity, ts) pair: yes/no.
+- Can compute maxdiff for a given pair of transforms: yes/no.
+- Can compute coverage from ages and a TTL: yes/no.
+- Can name what breaks if any one of the three contracts lapses: yes/no.
+Three or more "no" answers means reworking EXERCISES.md before moving on.

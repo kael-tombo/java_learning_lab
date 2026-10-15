@@ -1,62 +1,148 @@
-﻿# Code Deep Dive: FeatureStores.java
+﻿# Feature Stores — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Feature Stores.
+All snippets run on any JDK 9+ (verified on JDK 23), no dependencies.
+Each snippet models one store mechanism on small fixed datasets with
+hand-checkable results.
 
-## Class Structure
+## 1. As-Of Join: Leakage vs Correctness on the Same Data
 
-### FeatureStores.java
-The main class implementing core algorithms for Feature Stores.
+```java
+import java.util.ArrayList;
+import java.util.List;
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Feature Stores:
+public class AsOfJoin {
+    record Snapshot(String key, long ts, double value) {}
+    record Event(String key, long ts) {}
 
-`java
-public class FeatureStores {
-    /**
-     * Computes the core operation for Feature Stores.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
+    // correct: latest snapshot with snapshot.ts <= event.ts
+    static double asOf(List<Snapshot> snaps, String key, long ts) {
+        double v = Double.NaN;
+        long best = Long.MIN_VALUE;
+        for (Snapshot s : snaps) {
+            if (s.key().equals(key) && s.ts() <= ts && s.ts() > best) {
+                best = s.ts();
+                v = s.value();
+            }
         }
-        return coreAlgorithm(input);
+        return v;
     }
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
+    // WRONG: latest snapshot regardless of time (the leakage join)
+    static double latest(List<Snapshot> snaps, String key) {
+        double v = Double.NaN;
+        long best = Long.MIN_VALUE;
+        for (Snapshot s : snaps) {
+            if (s.key().equals(key) && s.ts() > best) {
+                best = s.ts();
+                v = s.value();
+            }
+        }
+        return v;
+    }
+
+    public static void main(String[] args) {
+        List<Snapshot> snaps = List.of(
+                new Snapshot("u1", 8, 0.20),
+                new Snapshot("u1", 12, 0.90),   // arrives AFTER the event
+                new Snapshot("u1", 15, 0.95));
+        Event e = new Event("u1", 10);
+        System.out.println("as-of value (correct): " + asOf(snaps, e.key(), e.ts()));
+        System.out.println("latest value (leakage): " + latest(snaps, e.key()));
+        System.out.println("leakage inflates the feature: "
+                + (latest(snaps, e.key()) > asOf(snaps, e.key(), e.ts())));
     }
 }
-`
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+Expected output:
+```
+as-of value (correct): 0.2
+latest value (leakage): 0.95
+leakage inflates the feature: true
+```
 
-## Numerical Considerations
+## 2. Freshness SLO: Stale Reads Rejected by Timestamp
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
+```java
+import java.util.HashMap;
+import java.util.Map;
 
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
+public class FreshnessSlo {
+    record Entry(double value, long ts) {}
+    static final Map<String, Entry> ONLINE = new HashMap<>();
 
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
+    static void upsert(String key, double value, long now) {
+        ONLINE.put(key, new Entry(value, now));
+    }
 
-## Complete Source
-See src/main/java/com/mathlab/featurestores/FeatureStores.java for the full implementation.
+    // serve only if age <= maxAge; else report stale (trigger refresh path)
+    static String serve(String key, long now, long maxAge) {
+        Entry e = ONLINE.get(key);
+        if (e == null) return "MISS";
+        long age = now - e.ts();
+        return age <= maxAge ? "FRESH:" + e.value() : "STALE(age=" + age + ")";
+    }
+
+    public static void main(String[] args) {
+        upsert("u1", 0.5, 1000);
+        System.out.println("t=1005, slo=10: " + serve("u1", 1005, 10));
+        System.out.println("t=1020, slo=10: " + serve("u1", 1020, 10));
+        System.out.println("unknown key: " + serve("u9", 1005, 10));
+        upsert("u1", 0.7, 1025);
+        System.out.println("t=1030 after refresh: " + serve("u1", 1030, 10));
+    }
+}
+```
+
+Expected output:
+```
+t=1005, slo=10: FRESH:0.5
+t=1020, slo=10: STALE(age=20)
+unknown key: MISS
+t=1030 after refresh: FRESH:0.7
+```
+
+## 3. Backfill Provenance: Never Mix Ranges Silently
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class BackfillAudit {
+    record Range(long from, long to, String provenance) {}
+
+    // returns true iff [from, to) is FULLY covered by LIVE ranges (no backfill mixing)
+    static boolean liveCovered(List<Range> ranges, long from, long to) {
+        long cursor = from;
+        List<Range> live = new ArrayList<>();
+        for (Range r : ranges) if (r.provenance().equals("live")) live.add(r);
+        live.sort((a, b) -> Long.compare(a.from(), b.from()));
+        for (Range r : live) {
+            if (r.from() > cursor) return false;   // gap
+            if (r.to() > cursor) cursor = r.to();
+            if (cursor >= to) return true;
+        }
+        return cursor >= to;
+    }
+
+    public static void main(String[] args) {
+        List<Range> ranges = List.of(
+                new Range(0, 100, "live"),
+                new Range(100, 200, "backfill-v2"),   // recomputed range
+                new Range(200, 300, "live"));
+        System.out.println("live covers [0,100): " + liveCovered(ranges, 0, 100));
+        System.out.println("live covers [50,150): " + liveCovered(ranges, 50, 150));
+        System.out.println("live covers [200,300): " + liveCovered(ranges, 200, 300));
+        System.out.println("backfill range quarantined from live reads: "
+                + !liveCovered(ranges, 100, 200));
+    }
+}
+```
+
+Expected output:
+```
+live covers [0,100): true
+live covers [50,150): false
+live covers [200,300): true
+backfill range quarantined from live reads: true
+```

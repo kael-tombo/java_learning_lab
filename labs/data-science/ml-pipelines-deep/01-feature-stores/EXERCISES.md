@@ -1,130 +1,41 @@
-﻿# Exercises: Feature Stores
+﻿# Feature Stores — Exercises
 
-## Theoretical Exercises
+## 1. As-of join by hand (pen and paper, then run)
+History: (u1,10,1.0), (u1,20,2.0), (u1,30,3.0). Labels: (u1,25), (u1,30).
+Write the expected join values before running PointInTimeJoin.
+Expected: 2.0 and 3.0. Then add label (u1,9) and predict the output
+before running: must be NO_FEATURE.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Feature Stores in your own words.
-**Answer**: Feature Stores involves understanding how mathematical quantities change and relate under specific operations.
+## 2. Leak detector
+Modify the label loop to also compute a naive "latest regardless of
+time" join. Assert the naive value >= as-of value on this dataset and
+print both. Confirms the leak direction on monotone histories.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Feature Stores.
-**Answer**: The proof follows from the definitions and established theorems.
+## 3. Skew alarm
+Change the stale shift from 0.0 to 0.9 in ServingSkewCheck. Predict
+maxdiff (0.1 per element, so 0.1), run, confirm. Then set an alert
+threshold of 1e-9 and print SKEW vs OK.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Feature Stores to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## 4. TTL tuning
+In BackfillTtl, set TTL to 60. Predict kept/dropped before running
+(ages 90 drop; 50, 10, 5 keep: kept=3, dropped=1, coverage=0.75).
+Run and confirm.
 
-## Programming Exercises
+## 5. Version pinning drill
+Extend the Feature record with a version field. Build two histories v1
+and v2 with different values at the same ts. Write `asOfValue` variant
+that filters by version. Show a model pinned to v1 is unaffected when
+v2 rows are added.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Feature Stores.
+## 6. Missing-data contract
+For entity u2 at t=12 (no history), decide: impute with declared
+default vs drop the row. Write down when each is correct and what
+breaks if serving imputes differently from training.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
-
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
-
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
-
-## Challenge Problems
-
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
-
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
-
-## Solutions
-
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Feature Stores
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Feature Stores?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Feature Stores?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+## 7. Late-event drill
+Insert a late row (u1,18,9.0) after the u1@25 training row was built.
+Decide: does the existing row change (no — history is append-only and
+the row already consumed ts<=25 state), and what does the next
+materialization carry? Recompute the u1@25 value with the late row
+present (still 2.0, since ts=20 remains the max <= 25) and state the
+watermark rule you would file for rows later than one day.

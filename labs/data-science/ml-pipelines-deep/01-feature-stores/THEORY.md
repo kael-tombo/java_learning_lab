@@ -1,76 +1,75 @@
-﻿# Feature Stores -- Theory
+﻿# Feature Stores — Theoretical Foundation
 
-## 1. Introduction
+## Core Concept
 
-Feature Stores is a fundamental concept in ML Pipelines Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+A feature store is a managed layer between raw data and model training /
+serving with one job: **every feature value a model trains on must be
+reproducible at serve time, and every served value must be fresh enough to
+matter**. It splits into two stores with opposite optimizations:
 
-## 2. Core Definitions
+| | Offline store | Online store |
+|---|---|---|
+| Reads | bulk scans (training sets) | point lookups by key (µs–ms) |
+| Writes | batch backfills, immutable history | streaming/low-latency upserts |
+| Consistency demand | complete history, replayable | freshest value per key |
+| Typical backing shape | columnar files / warehouse tables | key-value / document lookup |
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Feature Stores rests on several key definitions and axioms that form the foundation of the theory.
+Same logical features, two physical systems, one contract gluing them:
+**point-in-time correctness**.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## Point-in-Time Correctness (the load-bearing rule)
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+Training rows join events to features **as of the event timestamp** —
+the latest feature value *at or before* the event, never after:
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Feature Stores:
+```
+event @ t=10  →  feature snapshot @ t=8   (correct)
+event @ t=10  →  feature snapshot @ t=12  (LEAKAGE: future information)
+```
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Joining the *current* feature value instead of the *as-of* value leaks the
+future into training: the model learns from information it will never have
+at serve time, inflating offline metrics that collapse in production. The
+as-of join (temporal join, `FOR SYSTEM_TIME AS OF` in streaming SQL
+dialects) is the mechanism; "no future leakage" is the invariant every
+audit checks first.
 
-### 2.3 Formal Framework
-The mathematical framework for Feature Stores is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## Training/Serving Skew and Its Sources
 
-## 3. Mathematical Formulation
+Even with correct joins, training and serving diverge through:
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+1. **Pipeline skew** — batch features (recomputed nightly) vs served
+   features (computed inline): different code paths, different bugs.
+   Fix: shared transformation definitions (one function, two runners).
+2. **Staleness skew** — online value lags the event (streaming delay,
+   TTL expiry): the model sees older features than training assumed.
+   Fix: freshness SLOs + staleness monitoring, not hope.
+3. **Feedback skew** — served predictions influence future training labels
+   (recommendation loops, fraud-model retraining on caught fraud only).
+   Fix: logging the *served* feature values alongside predictions so
+   retraining replays reality, not the offline ideal.
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+## Versioning, Backfill, Retention
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+- **Versioning**: feature definitions (not just values) are versioned —
+  retraining six months later must resolve the *same transformation code*,
+  or the replay is fiction. Pin code + data snapshots together.
+- **Backfill**: recomputing history after a definition change or outage.
+  Backfills must respect as-of semantics *and* quarantine: never mix
+  backfilled ranges with live ranges without marking provenance, or
+  downstream consumers can't distinguish recomputation artifacts.
+- **Retention/TTL**: online stores expire keys (cost + relevance); offline
+  stores retain per compliance *and* per retraining horizon. Deleting
+  online state a model still expects is a silent accuracy incident —
+  retention policy is a model contract, not janitorial detail.
 
-### 3.3 Existence and Uniqueness
-A critical question in Feature Stores is whether solutions exist and whether they are unique.
+## Key Invariants
 
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Feature Stores extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Feature Stores requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Feature Stores connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Feature Stores provide the rigorous basis needed for correct computational implementation and real-world application.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-
-- Google, "Rules of Machine Learning: Best Practices for ML Engineering" by M. Zinkevich (living guide, fetched Oct 2026) — https://developers.google.com/machine-learning/guides/rules-of-ml — takeaway for this lab: Rule #4/#5 keep the first model simple and test infrastructure independently — a feature store earns its keep by making training/serving feature delivery reliable first.
-- Google, "Rules of Machine Learning" Rules #29/#32 on training-serving skew (living guide, fetched Oct 2026) — https://developers.google.com/machine-learning/guides/rules-of-ml — takeaway for this lab: log features at serving time and reuse code between training and serving; directly motivates point-in-time-correct feature-store joins.
-- Google, "Rules of Machine Learning" Rules #8/#10/#11 on freshness, silent failures, feature ownership (living guide, fetched Oct 2026) — https://developers.google.com/machine-learning/guides/rules-of-ml — takeaway for this lab: document feature owners, monitor staleness/coverage (e.g. 90%-to-60% drops), and set freshness SLOs for store refreshes.
+1. Training joins are as-of-event-time, never as-of-now.
+2. Every served feature has a freshness SLO; staleness is monitored, not
+   assumed away.
+3. Feature definitions are versioned with their values; replay resolves
+   both.
+4. Logged serving-time values (not offline ideals) feed retraining.
+5. Online/offline are two views of one logical feature set — drift between
+   the views is a bug, not a property.

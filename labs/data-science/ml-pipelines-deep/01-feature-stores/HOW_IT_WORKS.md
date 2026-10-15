@@ -1,35 +1,36 @@
-﻿# How It Works: Feature Stores
+﻿# Feature Stores — How It Works
 
-## High-Level Explanation
+## 1. Ingestion
+Raw events land in a log with (entity, event time, payload). A
+scheduler runs each versioned transform and appends (entity, ts, value)
+rows to the offline store. Late events are handled by watermark rules:
+rows arriving after the watermark trigger a bounded recompute, not an
+in-place edit.
 
-### The Core Idea
-Feature Stores is about understanding how mathematical quantities behave under specific operations and transformations.
+## 2. Training dataset build
+For each label (entity, label time), the builder runs an as-of join:
+latest feature row with ts <= label time per feature. The output row
+carries feature values plus (name, version) lineage. If no feature row
+qualifies, the field is missing and the declared imputation applies.
 
-### Step-by-Step Mental Model
-1. Start with input values
-2. Apply defined mathematical rules
-3. Verify result satisfies properties
-4. Return computed value
+## 3. Online materialization
+A streamer tails the offline log and upserts the newest row per entity
+into the online key-value store. Serving reads one key and gets the full
+vector. TTL is enforced at read time: expired fields return missing.
 
-### Why This Approach?
-- Provides rigorous mathematical guarantees
-- Computationally tractable
-- Generalizes to wide range of problems
+## 4. Version rollout
+New transform v2 is registered, backfilled over history, validated, then
+marked live. Online materialization switches to v2 rows; v1 rows remain
+for models pinned to v1. Rollback is a pointer change, not a data edit.
 
-## Key Insights
+## 5. Skew monitoring loop
+Serving logs (entity, time, served vector). A job recomputes expected
+vectors from the offline store with the pinned version and compares.
+Per-feature max absolute difference and null-rate deltas page the owner
+when thresholds break.
 
-### Insight 1: Trade-offs
-Speed vs. accuracy vs. stability -- no algorithm excels at all three.
-
-### Insight 2: Compositionality
-Complex operations built from simpler ones.
-
-### Insight 3: Numerical Reality
-Finite precision requires careful implementation.
-
-## Common Questions
-**Q:** Why not use formula directly?
-**A:** Direct application often has numerical instability or poor performance.
-
-**Q:** When to use this implementation?
-**A:** When reliable, tested computation with known accuracy is needed.
+## 6. Failure modes it prevents
+- Future leakage from naive joins.
+- Silent transform drift between training and serving code.
+- Unreproducible datasets from unversioned SQL.
+- Stale serving reads with no expiry.

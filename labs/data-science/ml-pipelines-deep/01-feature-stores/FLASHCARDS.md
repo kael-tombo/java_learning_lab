@@ -1,52 +1,41 @@
-﻿# Flashcards: Feature Stores
+﻿# Feature Stores — Flashcards
 
-## Front-Back Cards
+Q: Offline store vs online store?
+A: Offline holds full (entity, ts, value) history for training joins;
+online holds the latest vector per entity for low-latency serving.
 
-### Card 1
-**Front**: What is the definition of Feature Stores?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: Point-in-time correctness in one sentence?
+A: A training row at label time t may only use feature rows with
+ts <= t, taking the latest such row per feature.
 
-### Card 2
-**Front**: Key properties of Feature Stores?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: What breaks if the join allows ts > t?
+A: Future leakage: the model trains on data unavailable at serving
+time; verified bias of 1.0 on the demo row (3.0 vs 2.0).
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: What is serving skew?
+A: Training and serving compute different vectors for the same entity,
+usually from divergent transform code or defaults.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: How is skew detected numerically?
+A: Recompute expected vectors offline and take per-feature max absolute
+difference; demo gives 0.0 consistent, 1.0 with a stale shift.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: Why version features?
+A: So definition changes do not silently alter deployed models;
+training rows pin (name, version) and old versions stay readable.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: What is a backfill?
+A: Recomputing history with a new versioned transform in ts order,
+validated before the version goes live.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: What does TTL do?
+A: Treats values older than TTL as missing at read time; demo
+TTL=30 at t=100 keeps 2 of 4 rows (coverage 0.5).
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: Offline/online must share what?
+A: The transform code. Sharing code is the main structural defense
+against skew.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Feature Stores algorithm: ________. **Answer**: O(n)
-
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
-
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
-
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: What does the materializer do?
+A: Streams offline rows into the online store via idempotent upserts
+keyed by (entity, ts), ignoring older ts on retry.

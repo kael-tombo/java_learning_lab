@@ -1,33 +1,21 @@
-﻿# Why It Matters: Feature Stores
+﻿# Feature Stores — Why It Matters
 
-## Real-World Importance
+A leaked or skewed feature silently inflates offline metrics and then
+deflates production revenue. The damage is quiet: dashboards look fine
+until the model meets real traffic. Point-in-time joins protect the
+validity of every experiment; shared transforms protect the transfer
+from lab to serving; TTLs bound how wrong a stale read can be.
 
-### 1. Scientific Computing
-Fundamental to simulations in physics, climate, and drug discovery.
+Concretely: the demo leak shifts one row by 1.0; at scale that is a
+systematic optimism baked into model selection. The demo skew shifts
+every element by 1.0; a threshold on that distance is the cheapest
+production alarm a team can own. Versioning turns "which features?"
+from tribal knowledge into queryable metadata.
 
-### 2. Engineering
-Every discipline relies on these foundations for design and analysis.
-
-### 3. Machine Learning and AI
-Core to model training, optimization, and inference.
-
-### 4. Financial Modeling
-Risk analysis, portfolio optimization, quantitative trading.
-
-### 5. Computer Graphics
-Rendering, animation, physics simulation.
-
-## Impact by Industry
-| Industry | Application | Impact |
-|----------|-------------|--------|
-| Healthcare | Imaging, drug discovery | Life-critical |
-| Finance | Risk modeling, trading | Economic |
-| Technology | ML/AI, search | Transformative |
-| Manufacturing | Design optimization | Efficiency |
-
-## Why Learn This?
-1. Foundational to modern technology
-2. Transferable across domains
-3. Durable knowledge
-4. Enables innovation
-5. High career value
+The business translation is direct. Leakage wastes model-selection
+effort on illusions and delays launches when reality intrudes. Skew
+wastes serving traffic on a model evaluated under false premises.
+Missing versioning wastes incident response on archaeology instead of
+fixes. Each contract in the store maps to one class of wasted spend,
+which is why small teams feel the absence first: they can least afford
+to pay for the same plumbing failure twice.

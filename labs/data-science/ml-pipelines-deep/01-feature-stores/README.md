@@ -1,76 +1,40 @@
-﻿# Feature Stores
+﻿# Lab 01 — Feature Stores
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Feature Stores**, a cornerstone topic in ML Pipelines Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+## Goal
+Understand why ML teams put features behind a store instead of ad-hoc
+SQL, and how the store prevents training/serving mismatch.
 
-## Topics Covered
-- offline/online serving, Feast, feature definitions, point-in-time joins, feature validation
+## Core ideas
+- Offline store: point-in-time-correct training rows built with as-of joins.
+- Online store: low-latency key-value serving of the latest feature vector.
+- Feature versioning: v1/v2 of a definition coexist so old models keep working.
+- Serving skew: training used one transform, serving uses another; metrics rot.
+- Backfill discipline: recompute history with the versioned transform, never patch by hand.
+- TTL/retention: stale rows expire so serving never reads ancient values.
+
+## What you do here
+1. Read THEORY.md for as-of join semantics and skew mechanics.
+2. Study CODE_DEEP_DIVE.md: three runnable JDK-only programs.
+3. Work EXERCISES.md with small inline datasets.
+4. Use FLASHCARDS.md and INTERVIEW.md to check recall.
 
 ## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+Java 21+, comfort with lists/maps, basic ML vocabulary (features, labels).
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Feature Stores
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## File map
+22 notes: THEORY, HOW_IT_WORKS, ARCHITECTURE, INTERNALS, STEP_BY_STEP,
+VISUAL_GUIDE, CODE_DEEP_DIVE, EXERCISES, MATH_FOUNDATION, HISTORY,
+MENTAL_MODELS, WHY_IT_EXISTS, WHY_IT_MATTERS, PERFORMANCE, SECURITY,
+DEBUGGING, COMMON_MISTAKES, INTERVIEW, REFLECTION, REFERENCES,
+FLASHCARDS, README (this file).
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+## Rule for this lab
+Every numeric claim is either a standard textbook fact or the observed
+output of a snippet compiled with `javac --release 21` and run.
 
-## Project Structure
-`
-featurestores/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/featurestores/FeatureStores.java
-    â””â”€â”€ test/java/com/mathlab/featurestores/FeatureStoresTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## How to verify your work
+Compile the three CODE_DEEP_DIVE.md programs and match outputs
+exactly: as-of values 2.0/3.0/NO_FEATURE with bias 1.0, maxdiffs 0.0
+and 1.0, TTL kept=2 dropped=2 coverage=0.5. Any deviation means the
+code was altered — diff before proceeding, since later labs assume
+these semantics hold.
