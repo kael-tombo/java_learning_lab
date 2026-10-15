@@ -86,6 +86,8 @@
 **Q**: Get uploaded file content (BLOB)?
 **A**: `APEX_FILE_MANAGER.GET_FILE_CONTENT(:P1_FILE)`
 
+<!-- UNVERIFIED: APEX_FILE_MANAGER.* needs doc/DB confirmation — package and function signatures not verified against the APEX docs. Applies to all APEX_FILE_MANAGER claims in this file. -->
+
 ---
 **Q**: Get MIME type of uploaded file?
 **A**: `APEX_FILE_MANAGER.GET_FILE_MIME_TYPE(:P1_FILE)`

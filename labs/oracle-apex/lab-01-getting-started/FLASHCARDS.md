@@ -45,6 +45,7 @@
 32. Q: When must the URL be used instead? | A: When the link must be shareable or bookmarkable.
 33. Q: Where is session context set? | A: Once, at authentication — an After-Login computation or a page 0 process.
 34. Q: How do you read session state in SQL/PLSQL? | A: `APEX_UTIL.SESSION_STATE('MY_CTX_DEPARTMENT_ID')`.
+<!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. -->
 
 ## DML and Processes
 35. Q: Where does DML belong? | A: A page process with a `When` condition — never a region query.
@@ -78,4 +79,5 @@
 57. Q: Two protections a delete needs? | A: A confirmation dialog (against accidents) and an audit snapshot (against irreversibility).
 58. Q: What should the audit row contain? | A: The full prior state of the deleted row.
 59. Q: What is the rollback path for an application change? | A: Re-import the previous YAML export — about 5 seconds for 400 KB.
+<!-- UNVERIFIED: the "about 5 seconds for 400 KB" YAML-export size/time claim needs confirmation against a real export — do not cite as fact. -->
 60. Q: Why export to source control from day one? | A: Because a rollback plan that is not a file is not a plan.

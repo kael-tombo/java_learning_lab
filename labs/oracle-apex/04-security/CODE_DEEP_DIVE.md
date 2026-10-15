@@ -248,6 +248,7 @@ Feature-level authorisation in a page process:
 ```sql
 -- Process "Approve transaction"
 -- Server-side condition:
+-- <!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. Applies to all SESSION_STATE calls in this file. -->
 APEX_UTIL.SESSION_STATE('APP_ROLE') IN ('ADMIN','MANAGER')
 ```
 

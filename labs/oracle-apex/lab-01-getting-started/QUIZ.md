@@ -82,6 +82,8 @@ Answers follow; no peeking.
 14. Import the previous YAML export: roughly 400 KB, about 5 seconds, and it
     restores every page exactly. Reconstructing by hand takes hours. That is why
     the export belongs in source control from day one, not at delivery.
+
+<!-- UNVERIFIED: the "roughly 400 KB, about 5 seconds" YAML-export size/time claim needs confirmation against a real export — do not cite as fact. -->
 15. Accountability and recoverability. A delete destroys the only record, so
     without an audit snapshot the action is neither attributable nor reversible.
     Storage for 7,280 deletes over a 7-year retention is under 3 MB — negligible

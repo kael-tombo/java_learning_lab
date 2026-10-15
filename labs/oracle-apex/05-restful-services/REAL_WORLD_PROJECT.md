@@ -52,6 +52,7 @@ BEGIN
 END;
 /
 -- Read the failure from the server, not from the client:
+-- <!-- UNVERIFIED: ords_log table and columns need doc/DB confirmation. -->
 SELECT id, datetime, uri, method, status_code, ora_error_message
   FROM ords_log
  WHERE status_code >= 500

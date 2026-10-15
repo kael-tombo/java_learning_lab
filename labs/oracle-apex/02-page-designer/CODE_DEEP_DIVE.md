@@ -235,6 +235,7 @@ SELECT /* existing query */
 -- Source:
 BEGIN
   INSERT INTO dashboard_usage_log (user_name, from_date, to_date, region_id)
+  -- <!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. -->
   VALUES (APEX_UTIL.SESSION_STATE('MY_CTX_USERNAME'),
           :P1_FROM_DATE, :P1_TO_DATE, :P1_REGION);
 END;

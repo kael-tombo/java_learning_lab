@@ -20,7 +20,7 @@ Test your understanding of building a first APEX expense-tracker app (see `PROBL
 1. **Interactive Report** (on `EXPENSES`) and **Form** (on `EXPENSES`, linked), plus a departments report and a blank Dashboard page.
 2. Generates surrogate primary keys (`expense_id`) via `expense_seq.NEXTVAL` so inserts never collide.
 3. They accelerate the report's filter/sort/order columns and keep the 2-second SLA on 10,000 rows.
-4. Row-level security: a manager sees only their department (`:G_DEPT_ID`); when the item is NULL (e.g. admin) all rows show.
+4. Row-level security: a manager sees only their department (`:G_DEPT_ID`); when the item is NULL (e.g. admin) all rows show. This is the documented admin exception to THEORY Principle 6 (fail closed) — the NULL case must be restricted to an administrator role checked server-side.
 5. Set the Expense ID column as a **Link Column** targeting Page 2 with `P2_EXPENSE_ID` = `#EXPENSE_ID#`.
 6. The form opens as an overlay dialog; user stays in report context, Cancel/close returns without full navigation.
 7. **Automatic Row Processing (DML)** — Fetch Row on load + DML process on submit handles INSERT vs UPDATE by PK.

@@ -86,7 +86,7 @@ D) `#ORDER_ID#` (handled by Dynamic Action)
 
 ---
 
-## Question 6: Materialized View Refresh
+## Question 7: Materialized View Refresh
 **For a materialized view that must reflect base table changes immediately after commit, which refresh mode is correct?**
 
 A) `REFRESH COMPLETE ON DEMAND`
@@ -100,7 +100,7 @@ D) `REFRESH NEVER`
 
 ---
 
-## Question 7: Search Column Performance
+## Question 8: Search Column Performance
 **An IR searches across 50 columns and is slow. Best fix?**
 
 A) Increase Maximum Row Count
@@ -114,7 +114,7 @@ D) Add `/*+ PARALLEL */` hint
 
 ---
 
-## Question 8: IR JavaScript Refresh
+## Question 9: IR JavaScript Refresh
 **To programmatically refresh an IR with Static ID `SALES_IR` from JavaScript:**
 
 A) `apex.region('SALES_IR').refresh();`
@@ -128,7 +128,7 @@ D) `apex.ir.refresh('SALES_IR');`
 
 ---
 
-## Question 9: Index Usage Verification
+## Question 10: Index Usage Verification
 **How to verify an IR query uses an index on the filtered column?**
 
 A) Check Region → Attributes → Explain Plan
@@ -142,7 +142,7 @@ D) Check `USER_INDEXES` for `STATUS = 'VALID'`
 
 ---
 
-## Question 10: Subscription Email Not Sending
+## Question 11: Subscription Email Not Sending
 **A user creates an IR subscription but never receives email. First troubleshooting step?**
 
 A) Check `APEX_MAIL_QUEUE` for pending/failed mails
@@ -157,4 +157,4 @@ D) Increase Maximum Row Count
 ---
 
 ## Answer Key
-1. B | 2. B | 3. A | 4. B | 5. C | 6. A | 7. B | 8. B | 9. B | 10. A
+1. B | 2. B | 3. A | 4. B | 5. C | 6. A | 7. B | 8. B | 9. B | 10. B | 11. A

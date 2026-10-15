@@ -20,7 +20,8 @@ By the end of this lab you will be able to:
 ## Prerequisites
 - Oracle APEX 23.2 or later
 - Lab 02: APEX Page Designer
-- Lab 05: APEX Performance (caching and collections)
+- Lab 05: APEX Performance (caching and collections) — one-way prerequisite
+  (Lab 05 does not depend on this lab)
 - Database query optimisation fundamentals
 
 ## Lab Structure

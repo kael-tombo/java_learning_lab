@@ -27,6 +27,7 @@ WHERE  (:id IS NULL OR product_id = :id);
 ---------------------------------------------------------------
 
 -- 2a. Scope the privilege to exactly the catalog templates
+-- <!-- UNVERIFIED: ORDS.DEFINE_PRIVILEGE signature including p_module_id => 100 needs doc/DB confirmation. -->
 BEGIN
   ORDS.DEFINE_PRIVILEGE(
     p_privilege_name => 'catalog_api',
@@ -39,6 +40,7 @@ END;
 /
 
 -- 2b. Who called what (audit trail per client)
+-- <!-- UNVERIFIED: ords_audit_log table and columns need doc/DB confirmation. -->
 SELECT client_id, url, method, status_code, created_on
 FROM   ords_audit_log
 ORDER  BY created_on DESC
@@ -49,6 +51,7 @@ FETCH  FIRST 20 ROWS ONLY;
 ---------------------------------------------------------------
 
 -- 3a. Newest 500s first
+-- <!-- UNVERIFIED: ords_log table and columns need doc/DB confirmation. -->
 SELECT url, method, status_code, error_message, created_on
 FROM   ords_log
 WHERE  created_on > SYSDATE - 1

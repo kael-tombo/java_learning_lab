@@ -166,6 +166,9 @@ WHERE o.order_id = :P1_SELECTED_ORDER;
 
 -- ---------------------------------------------------------------------
 -- 7. VALIDATION: QUANTITY > 0 (Page Validation)
+--    Validation Type: Function Returning Error Text
+--    (RETURN 'text' on failure / RETURN NULL on success is only
+--    correct for this validation type.)
 -- ---------------------------------------------------------------------
 
 DECLARE
@@ -183,6 +186,9 @@ END;
 
 -- ---------------------------------------------------------------------
 -- 8. VALIDATION: INVENTORY CHECK (Page Validation)
+--    Validation Type: Function Returning Error Text
+--    (RETURN 'text' on failure / RETURN NULL on success is only
+--    correct for this validation type.)
 -- ---------------------------------------------------------------------
 
 DECLARE
@@ -335,6 +341,7 @@ DECLARE
 BEGIN
     -- Parse CSV file from APEX file item
     l_data := APEX_DATA_PARSER.PARSE(
+        -- <!-- UNVERIFIED: APEX_FILE_MANAGER.* needs doc/DB confirmation — package and function signatures not verified against the APEX docs. -->
         p_content   => APEX_FILE_MANAGER.GET_FILE_CONTENT(:P3_CSV_FILE),
         p_file_name => :P3_CSV_FILE,
         p_format    => 'CSV'
@@ -446,7 +453,9 @@ BEGIN
         p_method         => 'GET',
         p_source_type    => 'json/collection',
         p_source         => q'[
-            SELECT o.*,
+            SELECT o.order_id, o.customer_id, o.order_date, o.status,
+                   o.total_amount, o.notes, o.created_by, o.created_date,
+                   o.updated_date,
                    JSON_ARRAYAGG(
                        JSON_OBJECT(
                            'item_id' KEY oi.item_id,
@@ -459,8 +468,11 @@ BEGIN
             FROM orders o
             LEFT JOIN order_items oi ON oi.order_id = o.order_id
             WHERE o.order_id = :id
+            -- every non-aggregated orders column must be grouped (ORA-00979);
+            -- 9 columns in the CREATE TABLE above, all 9 listed here
             GROUP BY o.order_id, o.customer_id, o.order_date, o.status,
-                     o.total_amount, o.notes, o.created_date
+                     o.total_amount, o.notes, o.created_by, o.created_date,
+                     o.updated_date
         ]'
     );
     COMMIT;

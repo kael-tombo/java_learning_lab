@@ -78,6 +78,7 @@ Add OAuth2 client credentials authentication to an ORDS RESTful service.
 -- > ORDS CREATE OAUTH CLIENT --name mobile_app --grant_type client_credentials
 
 -- ORDS privilege SQL
+-- <!-- UNVERIFIED: ORDS.DEFINE_PRIVILEGE signature including p_module_id => 100 needs doc/DB confirmation. -->
 BEGIN
     ORDS.DEFINE_PRIVILEGE(
         p_privilege_name => 'catalog_api',
@@ -169,6 +170,7 @@ ORDS returns HTTP 500. Need to find and fix the root cause.
 ### Solution Walkthrough
 1. **Check ORDS Logs** — Review `ords_log` table in APEX schema:
    ```sql
+   -- <!-- UNVERIFIED: ords_log table and columns need doc/DB confirmation. -->
    SELECT * FROM ords_log ORDER BY created_on DESC;
    ```
 2. **Enable ORDS Debugging** — Set `ords.debug=true` in `defaults.xml`
@@ -193,6 +195,7 @@ END;
 /
 
 -- Check ORDS log
+-- <!-- UNVERIFIED: ords_log table and columns need doc/DB confirmation. -->
 SELECT url, method, status_code, error_message, created_on
 FROM ords_log
 WHERE created_on > SYSDATE - 1

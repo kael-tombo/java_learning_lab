@@ -110,6 +110,7 @@ BEGIN
     SELECT APEX_DATA_EXPORT.EXPORT(
         p_format   => 'CSV',
         p_query    => 'SELECT * FROM orders WHERE order_id IN (SELECT * FROM TABLE(:ids))',
+        -- <!-- UNVERIFIED T_BINDS FORM: PROBLEM_WALKTHROUGH/THEORY show T_BINDS(1 => 'ids') while SQL/CODE_DEEP_DIVE show T_BINDS('ids' => l_ids). The two forms disagree and must be reconciled against the APEX docs. -->
         p_binds    => APEX_DATA_EXPORT.T_BINDS(1 => 'ids')
     ) INTO l_csv FROM DUAL;
 

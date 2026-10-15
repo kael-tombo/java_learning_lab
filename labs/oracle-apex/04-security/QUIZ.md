@@ -91,7 +91,7 @@ D. It is faster
 
 ---
 
-**9:** Why not disable CSRF protection when a form fails?
+**9.** Why not disable CSRF protection when a form fails?
 
 A. It is slower
 B. The cause is nearly always a form submitted without the token — fix the form,

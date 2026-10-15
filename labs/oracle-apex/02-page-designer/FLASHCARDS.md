@@ -10,6 +10,7 @@
 8. Q: Hours from DATE subtraction? | A: Multiply by 24: `(:end - :start)*24`.
 9. Q: Sluggish Page Designer fix (layout)? | A: Page Groups, disable preview, Source=Never for static regions.
 10. Q: Clear cached page 10? | A: `APEX_UTIL.CLEAR_PAGE_CACHE(p_page_id=>10)`.
+<!-- UNVERIFIED: APEX_UTIL.CLEAR_PAGE_CACHE needs doc/DB confirmation — package, procedure name, and signature not verified against the APEX docs. -->
 11. Q: Dictionary view for page regions? | A: `APEX_APPLICATION_PAGE_REGIONS`.
 12. Q: True/False DA chain use? | A: Branch logic on PL/SQL success vs failure.
 13. Q: Why clear grandchild on parent change? | A: Stale city values no longer belong to new state.

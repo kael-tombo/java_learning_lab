@@ -332,6 +332,7 @@ BEGIN
         l_doc_id,
         :P2_SHIPMENT_ID,
         :P2_FILE,
+        -- <!-- UNVERIFIED: APEX_FILE_MANAGER.* needs doc/DB confirmation — package and function signatures not verified against the APEX docs. Applies to all APEX_FILE_MANAGER calls in this file. -->
         APEX_FILE_MANAGER.GET_FILE_MIME_TYPE(:P2_FILE),
         APEX_FILE_MANAGER.GET_FILE_SIZE(:P2_FILE),
         APEX_FILE_MANAGER.GET_FILE_CONTENT(:P2_FILE),
@@ -482,7 +483,13 @@ BEGIN
         p_pattern        => 'shipments/:id',
         p_method         => 'GET',
         p_source_type    => 'json/collection',
-        p_source         => 'SELECT s.*,
+        p_source         => 'SELECT s.shipment_id, s.tracking_number, s.carrier,
+                                    s.origin, s.destination, s.status,
+                                    s.estimated_delivery, s.actual_delivery,
+                                    s.last_api_sync,
+                                    -- MAX() because a CLOB cannot appear in GROUP BY (ORA-00979)
+                                    MAX(s.last_api_response) AS last_api_response,
+                                    s.created_by, s.created_date, s.updated_date,
                                     JSON_ARRAYAGG(
                                         JSON_OBJECT(
                                             ''doc_id'' KEY d.doc_id,
@@ -497,7 +504,8 @@ BEGIN
                              GROUP BY s.shipment_id, s.tracking_number, s.carrier,
                                       s.origin, s.destination, s.status,
                                       s.estimated_delivery, s.actual_delivery,
-                                      s.last_api_sync, s.created_date'
+                                      s.last_api_sync, s.created_by, s.created_date,
+                                      s.updated_date'
     );
     COMMIT;
 END;

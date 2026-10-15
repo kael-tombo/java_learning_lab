@@ -19,7 +19,6 @@ By the end of this lab you will be able to:
 ## Prerequisites
 - Oracle APEX 23.2 or later
 - Lab 02: Page Designer
-- Lab 08: APEX Performance (query optimisation)
 - Understanding of database result caching
 
 ## Lab Structure

@@ -26,6 +26,8 @@ flow (token endpoint → Bearer header → ORDS validation → privilege check)
 draws authentication. Every call logs client ID + timestamp — the audit
 trail that turns "who broke it" from archaeology into a query.
 
+<!-- UNVERIFIED: ORDS.DEFINE_PRIVILEGE signature (including p_module_id) needs doc/DB confirmation. -->
+
 ## 4. Outbound calls invert the trust
 
 Inbound: you validate callers. Outbound (`MAKE_REST_REQUEST` to the
@@ -41,6 +43,8 @@ body for exactly this reason.
 *same binds* in SQL Workshop → check bind names, ambiguous columns, JSON
 syntax → verify privileges/credentials → confirm POST-handler `COMMIT`.
 Random order wastes hours; this order converges in minutes.
+
+<!-- UNVERIFIED: ords_log as a directly queryable table (name and columns) needs doc/DB confirmation. -->
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 

@@ -143,6 +143,7 @@ Amount must be greater than 0. Entered: -50
 -- Fails CLOSED: no context means no rows, never all rows
 CREATE OR REPLACE FUNCTION current_department RETURN NUMBER IS
 BEGIN
+  -- <!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. Applies to all SESSION_STATE calls in this file. -->
   RETURN NVL(TO_NUMBER(APEX_UTIL.SESSION_STATE('MY_CTX_DEPARTMENT_ID')), -1);
 EXCEPTION WHEN OTHERS THEN RETURN -1;
 END;

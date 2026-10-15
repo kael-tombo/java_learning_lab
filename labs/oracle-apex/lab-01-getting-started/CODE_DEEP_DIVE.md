@@ -77,6 +77,7 @@ END;
 ```plsql
 CREATE OR REPLACE FUNCTION current_department RETURN NUMBER IS
 BEGIN
+  -- <!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. Applies to all SESSION_STATE calls in this file. -->
   RETURN NVL(TO_NUMBER(APEX_UTIL.SESSION_STATE('MY_CTX_DEPARTMENT_ID')), -1);
 EXCEPTION WHEN OTHERS THEN
   -- Any failure — bad session, cleared context, conversion error —

@@ -26,4 +26,6 @@ Grounded in `02-page-designer/PROBLEM_WALKTHROUGH.md` (4 interview scenarios).
 7. `entry_id != NVL(:P3_ENTRY_ID,-1) AND (start_time < :P3_END_TIME AND end_time > :P3_START_TIME)` for same employee+date.
 8. `NVL(SUM(hours),0) + (:P3_END_TIME - :P3_START_TIME)*24 > 16` → reject.
 9. Use Page Groups/folders; disable live preview; set layout-only regions Source to Never; minimise custom HTML; clear page cache (`APEX_UTIL.CLEAR_PAGE_CACHE`); upgrade APEX for tree virtualization.
+
+<!-- UNVERIFIED: APEX_UTIL.CLEAR_PAGE_CACHE needs doc/DB confirmation — package, procedure name, and signature not verified against the APEX docs. -->
 10. `SELECT region_id, region_name, source_type, source FROM APEX_APPLICATION_PAGE_REGIONS WHERE application_id=100 AND page_id=10 ORDER BY region_id;`

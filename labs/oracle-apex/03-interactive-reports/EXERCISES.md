@@ -82,6 +82,7 @@ Select multiple orders → click button → download CSV.
            p_format => 'CSV',
            p_query  => 'SELECT * FROM orders WHERE order_id IN (SELECT * FROM TABLE(:ids))',
            p_binds  => APEX_DATA_EXPORT.T_BINDS('ids' => l_ids)
+           -- <!-- UNVERIFIED T_BINDS FORM: SQL/EXERCISES show T_BINDS('ids' => l_ids) while THEORY shows T_BINDS(1 => 'ids'). The two forms disagree and must be reconciled against the APEX docs. -->
        );
        
        -- Return CSV via page item or download
@@ -136,6 +137,7 @@ Add "Email Report" button that sends CSV to user's email.
            p_format => 'CSV',
            p_query  => 'SELECT * FROM orders WHERE order_id IN (SELECT * FROM TABLE(:ids))',
            p_binds  => APEX_DATA_EXPORT.T_BINDS('ids' => l_ids)
+           -- <!-- UNVERIFIED T_BINDS FORM: SQL/EXERCISES show T_BINDS('ids' => l_ids) while THEORY shows T_BINDS(1 => 'ids'). The two forms disagree and must be reconciled against the APEX docs. -->
        );
        
        APEX_MAIL.SEND(

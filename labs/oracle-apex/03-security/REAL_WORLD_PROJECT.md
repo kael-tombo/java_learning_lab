@@ -40,6 +40,7 @@ Audit (tamper-evident)
 ```sql
 -- Row security via an APEX session-context function
 CREATE OR REPLACE FUNCTION branch_scope(p_col VARCHAR2) RETURN VARCHAR2 IS
+  -- <!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. -->
   l_branch NUMBER := TO_NUMBER(APEX_UTIL.SESSION_STATE('MY_BRANCH_ID'));
 BEGIN
   -- NULL session context = no data access, not full data access

@@ -156,6 +156,16 @@ region returns nothing rather than everything:
 WHERE department_id = NVL(SYS_CONTEXT('MY_CTX','DEPARTMENT_ID'), -1)
 ```
 
+### Admin exception (documented)
+
+The rule above is fail closed: a NULL or missing context must return no
+rows. The `NVL(:G_DEPT_ID, e.department_id)` pattern used in
+WORKED_EXAMPLE.sql is fail-open by construction — a NULL item returns all
+rows — and is permitted ONLY as an explicitly documented admin exception:
+the NULL case must be reachable solely by an administrator role checked
+server-side, and the exception must be recorded where the query is defined.
+Quiz Q4 describes exactly this exception, not the default rule.
+
 ## Principle 7: Delete deserves a confirmation and an audit row
 
 Delete is irreversible and is the operation users misclick. Two requirements:

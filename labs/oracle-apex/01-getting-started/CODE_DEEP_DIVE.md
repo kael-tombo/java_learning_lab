@@ -56,6 +56,7 @@ END;
 CREATE OR REPLACE FUNCTION current_department RETURN NUMBER IS
   l_dept NUMBER;
 BEGIN
+  -- <!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. Applies to all SESSION_STATE calls in this file. -->
   l_dept := TO_NUMBER(APEX_UTIL.SESSION_STATE('MY_CTX_DEPARTMENT_ID'));
   -- NULL context means NO DATA, not ALL DATA.
   RETURN NVL(l_dept, -1);

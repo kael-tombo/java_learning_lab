@@ -2,6 +2,9 @@
 -- Run in SQL Workshop / SQL*Plus as workspace schema.
 
 -- 1) Department monthly totals (dashboard bar-chart source)
+-- NOTE: NVL(:G_DEPT_ID, e.department_id) is the DOCUMENTED ADMIN EXCEPTION
+-- to THEORY Principle 6 (fail closed): NULL shows all rows, so the NULL case
+-- must be reachable only by an administrator role checked server-side.
 SELECT TO_CHAR(e.expense_date, 'YYYY-MM') AS label,
        SUM(e.amount) AS value
 FROM expenses e

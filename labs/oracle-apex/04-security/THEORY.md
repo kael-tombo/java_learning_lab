@@ -191,7 +191,7 @@ The fix is to include the token, not to remove the protection.
 | Logging | Minimal by default | Authentication events audited |
 | SSRF | Depends on outbound calls | Outbound calls restricted |
 
-**Five of these are APEX defaults and five depend on what you build.** "APEX is
+**Seven of these are APEX defaults and three depend on what you build.** "APEX is
 secure" conflates the two lists.
 
 ## Principle 10: SSO is a migration, not a switch

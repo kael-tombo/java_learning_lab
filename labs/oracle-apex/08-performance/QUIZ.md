@@ -93,7 +93,7 @@ D. It improves security
 
 ---
 
-**10:** Why is theme asset optimisation worth more than its size suggests?
+**9.** Why is theme asset optimisation worth more than its size suggests?
 
 A. It is easier
 B. Transfer happens before the first region renders, so it does not appear in
@@ -105,7 +105,7 @@ D. It improves query plans
 
 ---
 
-**11.** `v$system_event` shows `db file sequential read` dominating. Whose problem?
+**10.** `v$system_event` shows `db file sequential read` dominating. Whose problem?
 
 A. The application, entirely
 B. Partly the application (more selective SQL reduces I/O) but the root cause is
@@ -117,7 +117,7 @@ D. The network
 
 ---
 
-**12.** Why report p95 rather than the average?
+**11.** Why report p95 rather than the average?
 
 A. It is easier to compute
 B. The mean hides the tail users experience — here 3.2 s average against 14.6 s p95,

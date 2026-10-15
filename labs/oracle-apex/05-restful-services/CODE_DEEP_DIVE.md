@@ -20,6 +20,8 @@ All references are to `PROBLEM_WALKTHROUGH.md` in this lab.
   p_module_id)`: the pattern `/catalog/v1/products/*` scopes exactly the
   catalog templates; `COMMIT` persists (same forgotten-commit gotcha as
   the EBS `fnd_profile.save` lesson).
+
+<!-- UNVERIFIED: ORDS.DEFINE_PRIVILEGE signature including p_module_id needs doc/DB confirmation. -->
 - Flow: `POST /oauth/token (grant_type=client_credentials)` → token →
   `Authorization: Bearer` → ORDS validates → extracts user → checks
   privilege → audit row. Each arrow is independently testable with cURL.
@@ -40,6 +42,8 @@ All references are to `PROBLEM_WALKTHROUGH.md` in this lab.
 
 - `ords_log WHERE status_code=500 AND created_on > SYSDATE-1 ORDER BY
   created_on DESC`: the failing URL + method + error in one screen.
+
+<!-- UNVERIFIED: ords_log as a directly queryable table (name and columns) needs doc/DB confirmation. -->
 - `APEX_DEBUG.ENABLE(C_LOG_ALL)`: session-scoped tracing for the
   reproduce pass. Handler-SQL-in-isolation with identical binds is the
   step that distinguishes SQL bugs from ORDS-config bugs.

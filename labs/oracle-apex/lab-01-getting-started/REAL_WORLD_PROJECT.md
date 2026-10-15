@@ -59,6 +59,7 @@ Expense application (APEX, single schema)
 
 ```sql
 -- Fail closed. NULL context yields no data, not all data.
+-- <!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. Applies to all SESSION_STATE calls in this file. -->
 CREATE OR REPLACE FUNCTION current_department RETURN NUMBER IS
 BEGIN
   RETURN NVL(TO_NUMBER(APEX_UTIL.SESSION_STATE('MY_CTX_DEPARTMENT_ID')), -1);

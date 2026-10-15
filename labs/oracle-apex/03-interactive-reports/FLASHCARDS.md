@@ -176,6 +176,8 @@
 | Check MV refresh | `SELECT mview_name, last_refresh_type, last_refresh_date FROM user_mviews;` |
 | Rebuild MV log | `DROP MATERIALIZED VIEW LOG ON t; CREATE MATERIALIZED VIEW LOG ON t WITH ROWID...` |
 
+<!-- UNVERIFIED T_BINDS FORM: the "Export selected to CSV" row above shows T_BINDS('ids'=>l_ids) while THEORY shows T_BINDS(1 => 'ids'). The two forms disagree and must be reconciled against the APEX docs. -->
+
 ---
 
 ## Study Tips

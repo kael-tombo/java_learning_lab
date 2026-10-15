@@ -73,6 +73,7 @@ BEGIN
     l_csv := APEX_DATA_EXPORT.EXPORT(
         p_format => 'CSV',
         p_query  => 'SELECT * FROM orders WHERE order_id IN (SELECT * FROM TABLE(:ids))',
+        -- <!-- UNVERIFIED T_BINDS FORM: SQL/CODE_DEEP_DIVE show T_BINDS('ids' => l_ids) while THEORY shows T_BINDS(1 => 'ids'). The two forms disagree and must be reconciled against the APEX docs. -->
         p_binds  => APEX_DATA_EXPORT.T_BINDS('ids' => l_ids)
     );
     -- l_csv contains CSV with headers
@@ -235,6 +236,7 @@ BEGIN
     l_csv := APEX_DATA_EXPORT.EXPORT(
         p_format => 'CSV',
         p_query  => 'SELECT * FROM orders WHERE order_id IN (SELECT * FROM TABLE(:ids))',
+        -- <!-- UNVERIFIED T_BINDS FORM: SQL/CODE_DEEP_DIVE show T_BINDS('ids' => l_ids) while THEORY shows T_BINDS(1 => 'ids'). The two forms disagree and must be reconciled against the APEX docs. -->
         p_binds  => APEX_DATA_EXPORT.T_BINDS('ids' => 
             CAST(MULTISET(
                 SELECT TO_NUMBER(column_value) 

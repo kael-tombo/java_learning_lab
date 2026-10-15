@@ -175,6 +175,7 @@ CREATE OR REPLACE PACKAGE BODY sec_pwd AS
         l_hash RAW(2000);
     BEGIN
         -- PBKDF2-HMAC-SHA256 with 10000 iterations
+        -- <!-- UNVERIFIED: DBMS_CRYPTO.PBKDF2 needs doc/DB confirmation — package function, parameter names, and prf constants not verified against the Oracle docs. -->
         l_hash := DBMS_CRYPTO.PBKDF2(
             password  => UTL_RAW.CAST_TO_RAW(p_password),
             salt      => UTL_RAW.CAST_TO_RAW(p_salt),

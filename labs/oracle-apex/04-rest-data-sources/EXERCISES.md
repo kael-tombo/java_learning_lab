@@ -125,6 +125,7 @@ Upload PDF/image files with MIME type and size validation.
        l_mime VARCHAR2(100);
        l_size NUMBER;
    BEGIN
+       -- <!-- UNVERIFIED: APEX_FILE_MANAGER.* needs doc/DB confirmation — package and function signatures not verified against the APEX docs. Applies to all APEX_FILE_MANAGER calls in this file. -->
        l_mime := APEX_FILE_MANAGER.GET_FILE_MIME_TYPE(:P1_FILE);
        l_size := APEX_FILE_MANAGER.GET_FILE_SIZE(:P1_FILE);
        
@@ -295,7 +296,13 @@ Expose shipments data via ORDS REST API with pagination and nested documents.
            p_method      => 'GET',
            p_source_type => 'json/collection',
            p_source      => q'[
-               SELECT s.*,
+               SELECT s.shipment_id, s.tracking_number, s.carrier,
+                      s.origin, s.destination, s.status,
+                      s.estimated_delivery, s.actual_delivery,
+                      s.last_api_sync,
+                      -- MAX() because a CLOB cannot appear in GROUP BY (ORA-00979)
+                      MAX(s.last_api_response) AS last_api_response,
+                      s.created_by, s.created_date, s.updated_date,
                       JSON_ARRAYAGG(
                           JSON_OBJECT(
                               'doc_id' KEY d.doc_id,
@@ -310,7 +317,8 @@ Expose shipments data via ORDS REST API with pagination and nested documents.
                GROUP BY s.shipment_id, s.tracking_number, s.carrier,
                         s.origin, s.destination, s.status,
                         s.estimated_delivery, s.actual_delivery,
-                        s.created_date
+                        s.last_api_sync, s.created_by, s.created_date,
+                        s.updated_date
            ]'
        );
        COMMIT;

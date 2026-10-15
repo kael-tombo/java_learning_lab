@@ -145,6 +145,7 @@ DBMS_LOB.SUBSTR(blob_content, 256, 1) → magic bytes
 ### Cleanup Critical
 ```sql
 -- After processing, ALWAYS clean up:
+-- <!-- UNVERIFIED: APEX_FILE_MANAGER.* needs doc/DB confirmation — package and function signatures not verified against the APEX docs. Applies to all APEX_FILE_MANAGER calls in this file. -->
 APEX_FILE_MANAGER.DELETE_FILE(:P1_FILE);
 -- Or bulk:
 DELETE FROM wwv_flow_files$ WHERE name IN (SELECT ...);

@@ -148,6 +148,9 @@ f?p=&APP_ID.:1:&SESSION.:::P1_SELECTED_ORDER:#ORDER_ID#
 ### Validation in Detail IG
 ```sql
 -- Validation: Quantity > 0 (server-side)
+-- Validation Type: Function Returning Error Text
+-- (RETURN 'text' on failure / RETURN NULL on success is only
+-- correct for this validation type.)
 DECLARE
     l_count NUMBER;
 BEGIN

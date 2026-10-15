@@ -155,6 +155,7 @@ that, someone discovers the staleness in production.
 
 ```sql
 -- Populate once per session
+-- <!-- UNVERIFIED: APEX_UTIL.SESSION_STATE( needs doc/DB confirmation — function name and call signature not verified against the APEX docs. -->
 IF APEX_UTIL.SESSION_STATE('CTX_REGION_LIST') IS NULL THEN
   APEX_UTIL.SET_SESSION_STATE(
     'CTX_REGION_LIST',

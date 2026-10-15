@@ -168,6 +168,7 @@ Page Designer becomes sluggish when editing apps with complex pages (30+ regions
 5. **Use Template Options** — Minimize custom HTML regions
 6. **Clear Cache** — Flush APEX page cache:
    ```sql
+   -- <!-- UNVERIFIED: APEX_UTIL.CLEAR_PAGE_CACHE needs doc/DB confirmation — package, procedure name, and signature not verified against the APEX docs. -->
    BEGIN APEX_UTIL.CLEAR_PAGE_CACHE(p_page_id => 10); END; /
    ```
 7. **Upgrade APEX** — Latest APEX version has tree virtualization
