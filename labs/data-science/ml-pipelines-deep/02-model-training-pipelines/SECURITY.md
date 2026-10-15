@@ -22,7 +22,14 @@
   with actor and timestamp.
 
 ## Demo connection
-The config hash (-1652323048 for the demo string) illustrates the
-integrity-pointer idea: any change in code, params, or data reference
-changes the hash and breaks silent substitution. Real systems use
-cryptographic hashes; the role is identical.
+This lab's DAG demo chains each stage's artifact hash into the next
+(head `9a545d0` for the six-stage run) — the same integrity-pointer
+idea: any change in an upstream artifact changes every downstream hash
+and breaks silent substitution. Real systems use cryptographic hashes
+over the artifact bytes; the role is identical.
+
+## Least privilege for schedulers
+Pipeline runners need write access to exactly one staging area plus
+append-only logs; promotion to production registries goes through a
+separate approval identity. A compromised training job then cannot
+promote itself, and a compromised notebook cannot rewrite history.

@@ -24,3 +24,10 @@ never books that are checked out (deployed or audited).
 Validation gates detect smoke (bad data) early; they do not make the
 house fireproof (models can still fail on good data). Both layers are
 needed, and this lab covers the detector half.
+
+## 6. Fixed test set as a ruler
+A ruler that stretches between measurements measures nothing. The
+held-out set is fixed across compared runs for the same reason: metric
+deltas must mean data-or-code changed, never that the exam changed.
+Seed discipline (same seed, same 20-of-100 partition) is how the ruler
+stays rigid across retrains.
