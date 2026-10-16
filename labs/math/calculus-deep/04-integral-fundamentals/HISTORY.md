@@ -1,47 +1,36 @@
-﻿# History: Integral Fundamentals
+# History: Integral Fundamentals
 
-## Historical Development
+## Quadrature in antiquity
+Archimedes' Quadrature of the Parabola summed a geometric series to
+give the parabolic segment area, and his Method (lost until the 1906
+palimpsest rediscovery) shows the mechanical thinking behind it.
+Eudoxus' 4th-century-BCE exhaustion supplied the bounding technique.
+These are quadrature results, not yet a theory of integration.
 
-### Ancient Origins
-The foundations of Integral Fundamentals trace back to ancient mathematicians who first explored these concepts. Early work focused on practical computation for astronomy, engineering, and commerce.
+## Indivisibles and the FTC in pieces (1635-1670)
+Bonaventura Cavalieri's Geometria indivisibilibus (1635) integrated
+powers by indivisibles. James Gregory's Geometriae Pars Universalis
+(1668) and Isaac Barrow's Lectiones (published 1669-70) each stated
+geometric versions of the Fundamental Theorem: differentiation and
+area-accumulation undo each other.
 
-### 17th-18th Century Breakthroughs
-The scientific revolution brought major advances:
-- Formalization of core concepts by pioneering mathematicians
-- Connections to physics and natural philosophy discovered
-- Computational techniques developed for scientific problems
-- Integration with calculus and analytical geometry
+## Newton and Leibniz (1660s-1686)
+Newton's manuscripts of the 1660s-70s and Leibniz's 1686 integral
+paper both present the theorem analytically. As with derivatives, both
+traditions computed fluently; neither supplied modern hypotheses.
 
-### 19th Century Rigor
-The 19th century saw rigorous mathematical foundations established:
-- Formal definitions replaced intuitive notions
-- Fundamental theorems proved with full rigor
-- Extensions to more general mathematical settings
-- Connections between different branches of mathematics revealed
+## Rigor: Cauchy to Lebesgue (1823-1902)
+Cauchy defined the integral via sums in his 1823 Resume. Bernhard
+Riemann's 1854 habilitation lecture generalized the construction to
+the integral now bearing his name. Darboux simplified the presentation
+with upper and lower sums in 1875. Henri Lebesgue's 1902 doctoral
+thesis rebuilt integration on measure, admitting limits that Riemann's
+version mishandles.
 
-### 20th Century Computational Revolution
-The advent of electronic computers transformed the field:
-- Algorithm development for digital computation
-- Numerical analysis emerged as a distinct discipline
-- Integration with scientific computing across all fields
-- Error analysis and stability theory developed
-
-### Modern Era
-Contemporary developments continue to advance the field:
-- High-performance implementations for modern hardware
-- GPU-accelerated and distributed computation
-- Integration with machine learning frameworks
-- Automatic differentiation and differentiable programming
-
-## Key Figures
-The development of Integral Fundamentals was advanced by many brilliant mathematicians and computer scientists whose insights transformed our understanding of the subject.
-
-## Timeline
-| Year | Development |
-|------|-------------|
-| Ancient | Early exploration of core concepts |
-| 1600s | Formal foundations established |
-| 1800s | Rigorous proofs and extensions |
-| 1900s | Computational methods developed |
-| 2000s | High-performance and GPU computing |
-| Present | Integration with AI and ML frameworks |
+## What this lab inherits
+Riemann sums as definition (1854), both parts of the Fundamental
+Theorem with exact hypotheses (Cauchy through Lebesgue), and the
+antiderivative table checked by differentiating back: the lab teaches
+the 1902 settlement using 17th-century examples. Signed versus
+total area is Lebesgue's distinction made visible: the integral
+counts cancellation, and only the absolute value forgives it.

@@ -1,81 +1,47 @@
-﻿# Math Foundation for Eigenvalues Advanced
+﻿# Eigenvalues Advanced — Math Foundation
 
-## Prerequisite Mathematics
+All values computed in exact rational arithmetic (Python `fractions`).
 
-This document reviews the mathematical prerequisites needed to study Eigenvalues Advanced effectively.
+## 1. Characteristic polynomial of [[4,1],[2,3]]
 
-## 1. Algebra Review
+det(A - tI) = (4-t)(3-t) - 2 = 12 - 7t + t^2 - 2 = t^2 - 7t + 10.
+Roots: t = (7 +- 3)/2 = 5, 2.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Eigenvector verification
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+A(1,1) = (4+1, 2+3) = (5,5) = 5(1,1).
+A(1,-2) = (4-2, 2-6) = (2,-4) = 2(1,-2).
+Eigenspaces: for lambda = 5, A - 5I = [[-1,1],[2,-2]], rows dependent
+(second = -2 first), nullity 1, basis (1,1). For lambda = 2,
+A - 2I = [[2,1],[2,1]], basis (1,-2).
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Diagonalizer determinant
 
-## 2. Functions and Graphs
+P = [[1,1],[1,-2]]: det = -2 - 1 = -3, nonzero, so diagonalizable.
+A^2 check via D: A^2 = P diag(25,4) P^{-1}; trace = 25+4 = 29.
+Direct: A^2 = [[18,7],[14,11]], trace 18+11 = 29. Agreement.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Symmetric case
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+S = [[2,1],[1,2]]: p(t) = (2-t)^2 - 1 = t^2 - 4t + 3 = (t-3)(t-1).
+S(1,1) = (3,3); S(1,-1) = (1,-1). Orthonormal: (1/sqrt2)(1,1) dot
+(1/sqrt2)(1,-1) = (1-1)/2 = 0.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 5. Cayley-Hamilton on A
 
-## 3. Trigonometry
+(A - 5I)(A - 2I) = [[-1,1],[2,-2]] [[2,1],[2,1]] = [[0,0],[0,0]]:
+entry (1,1): -2+2 = 0; (1,2): -1+1 = 0; (2,1): 4-4 = 0;
+(2,2): 2-2 = 0.
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+## 6. Third power trace
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
+A^2 = [[18,7],[14,11]]. A^3 = A^2 A: (1,1): 72+14 = 86;
+(1,2): 18+21 = 39; (2,1): 56+22 = 78; (2,2): 14+33 = 47.
+Trace 86+47 = 133 = 125+8 = 5^3+2^3.
 
-## 4. Key Formulas for Reference
+## 7. Polynomial values at 0 and 1
 
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+p(0) = 10 = det A: the constant term of the characteristic polynomial
+is the determinant (up to sign; exact here since degree 2).
+p(1) = 1-7+10 = 4 = det(A-I): A-I = [[3,1],[2,2]], det 6-2 = 4.
+Consistent both ways.

@@ -1,76 +1,38 @@
-﻿# Integral Fundamentals -- Theory
+# Integral Fundamentals -- Theory
 
-## 1. Introduction
+## 1. Riemann Sums and the Definite Integral
 
-Integral Fundamentals is a fundamental concept in Calculus Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+Partition [a, b], sample x_i* in each subinterval, form
+sum f(x_i*) dx. The definite integral int_a^b f is the limit as mesh
+-> 0, when it exists (continuous functions are integrable). Left,
+right, midpoint, and trapezoidal choices differ for finite n but share
+the limit. MATH_FOUNDATION.md computes L4, R4, M4 for x^2 on [0, 2]
+exactly: 7/4, 15/4, 21/8 against the true 8/3.
 
-## 2. Core Definitions
+## 2. Fundamental Theorem, Part 1
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Integral Fundamentals rests on several key definitions and axioms that form the foundation of the theory.
+If f is continuous on [a, b], then F(x) = int_a^x f(t) dt satisfies
+F'(x) = f(x): accumulation functions differentiate back to the
+integrand. Corollary: every continuous function has an antiderivative,
+even when no elementary formula exists (e.g. e^{-x^2}).
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Fundamental Theorem, Part 2
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+If f is continuous on [a, b] and F' = f there, then
+int_a^b f(x) dx = F(b) - F(a). Hypotheses: continuity of f on the
+whole closed interval and F an antiderivative on it. Net area follows:
+the integral counts signed area, so int_{-1}^1 x^3 dx = 0 while the
+total geometric area is 1/2.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Integral Fundamentals:
+## 4. Properties and Standard Antiderivatives
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Integral Fundamentals is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic. The formal definition provides the foundation for all subsequent analysis.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Integral Fundamentals is whether solutions exist and whether they are unique. We examine these questions through rigorous analysis:
-
-- **Existence**: Under what conditions does a solution exist?
-- **Uniqueness**: When is the solution unique?
-- **Continuity**: How does the solution depend on parameters?
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-*Rate*: The convergence rate depends on the conditioning of the problem.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-*Applications*: Used to determine required precision in computations.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Integral Fundamentals extend naturally to higher-dimensional settings, though additional complexity arises.
-
-### 5.2 Computational Considerations
-Numerical computation of Integral Fundamentals requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Integral Fundamentals connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Integral Fundamentals provide the rigorous basis needed for correct computational implementation and real-world application. Mastery of these concepts enables deeper understanding of advanced topics in mathematics and computer science.
+Linearity, interval additivity (int_a^b + int_b^c = int_a^c),
+comparison (f <= g gives int f <= int g), and |int f| <= int |f|.
+Power rule: int x^n dx = x^{n+1}/(n+1) + C (n != -1);
+int 1/x dx = ln|x| + C; int e^x dx = e^x + C;
+int sin x dx = -cos x + C; int cos x dx = sin x + C;
+int sec^2 x dx = tan x + C; int 1/sqrt(1-x^2) dx = arcsin x + C
+(|x| < 1); int 1/(1+x^2) dx = arctan x + C. Each is verified by
+differentiating back -- the check used for every antiderivative in
+this track. The + C matters: antiderivatives form a one-parameter
+family, and initial conditions select the member.

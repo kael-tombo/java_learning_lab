@@ -1,76 +1,42 @@
 ﻿# Matrix Calculus
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Matrix Calculus**, a cornerstone topic in Linear Algebra Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Micro-lab on derivatives of Ax, quadratic forms, and trace identities,
+each with a hand-checkable numeric instance.
 
-## Topics Covered
-- matrix derivative, gradient of quadratic forms, derivatives of matrix products, Jacobian, Hessian
+## Contents
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: d(Ax)/dx = A, d(x^T A x)/dx = (A+A^T)x giving (12,21)
+  at (1,2) with f = 27, trace cyclic 21 = 21, identity table, layout
+  note.
+- MATH_FOUNDATION.md: Ax = (5,11), expansion 1+4+6+16 = 27, partials
+  12 and 21, the ABC/CAB products entry by entry.
+- CODE_DEEP_DIVE.md: fractions snippets printing [5,11] 27,
+  [12,21], and 21 21.
+- EXERCISES.md: six problems with computed solutions.
+- FLASHCARDS.md: twelve recall cards.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Matrix Calculus
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## How to use
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Expand x^T A x by hand once (four terms, total 27); the gradient
+formula then reads as bookkeeping rather than magic.
 
-## Project Structure
-`
-matrixcalc/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/matrixcalc/MatrixCalculus.java
-    â””â”€â”€ test/java/com/mathlab/matrixcalc/MatrixCalculusTest.java
-`
+## Worked anchors (all values executed)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+- Ax = (5,11); x^T A x = 27 = 1+4+6+16.
+- Gradient (12,21) via [[2,5],[5,8]]; finite difference 13 = 12 + h.
+- Trace cyclic: ABC and CAB traces both 21, entry by entry.
+- Hessian [[2,5],[5,8]], det -9: saddle, not minimum.
+- Linear form x1+2x2: gradient (1,2), value 5 at (1,2).
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Study sequence
+
+1. Expand x^T A x into four terms summing to 27 at (1,2).
+2. Differentiate term by term; assemble (12,21) = (A+A^T)x.
+3. Confirm the x1 finite difference 13 = 12 + h.
+4. Multiply out ABC and CAB; check both traces equal 21.
+5. Note the Hessian det -9: explain why x = 0 is not a minimum.
+
+## Notes
+
+- d(a^T x)/dx = a: row 1 of A is (1,2), matching df1/dx exactly.
+- Chain shapes: scalar-of-Ax gradients compose as (1x2)(2x2) = 1x2.

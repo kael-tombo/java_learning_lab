@@ -1,70 +1,42 @@
-﻿# Matrix Decompositions -- Theory
+﻿# Matrix Decompositions — Theory
 
-## 1. Introduction
+## 1. LU without pivoting
 
-Matrix Decompositions is a fundamental concept in Linear Algebra Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+If all leading principal minors of A are nonzero, A = LU with L unit
+lower-triangular and U upper-triangular, uniquely. det A is then the
+product of U's diagonal. Running example:
 
-## 2. Core Definitions
+    A = [[2,1,1],[4,3,3],[8,7,9]], L = [[1,0,0],[2,1,0],[4,3,1]],
+    U = [[2,1,1],[0,1,1],[0,0,2]], det A = 2*1*2 = 4.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Matrix Decompositions rests on several key definitions and axioms that form the foundation of the theory.
+Elimination multipliers are L's subdiagonal: 4/2 = 2, 8/2 = 4, then
+3/1 = 3. Zero pivots or row swaps break this form — that is what
+partial pivoting (PA = LU) repairs.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 2. QR
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+Every real m x n matrix with independent columns factors as A = QR:
+Q has orthonormal columns, R is upper-triangular with positive
+diagonal. Example on a1 = (1,1,0), a2 = (0,1,1):
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Matrix Decompositions:
+    e1 = (1/sqrt2, 1/sqrt2, 0),
+    u2 = a2 - (a2.e1)e1 = (-1/2, 1/2, 1), |u2|^2 = 3/2,
+    R = [[sqrt2, 1/sqrt2],[0, sqrt(3/2)]].
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+R's diagonal entries are the successive residual norms.
 
-### 2.3 Formal Framework
-The mathematical framework for Matrix Decompositions is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 3. SVD
 
-## 3. Mathematical Formulation
+Every real m x n matrix factors as A = U Sigma V^T with U, V
+orthogonal and Sigma diagonal holding singular values
+s1 >= s2 >= ... >= 0 (square roots of eigenvalues of A^T A).
+Example: A = [[3,0],[4,0]] has A^T A = [[25,0],[0,0]], so singular
+values 5 and 0, u1 = (3/5,4/5), v1 = (1,0): A v1 = (3,4) = 5 u1.
+Rank equals the number of nonzero singular values — here 1.
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 4. Shapes and existence
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Matrix Decompositions is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Matrix Decompositions extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Matrix Decompositions requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Matrix Decompositions connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Matrix Decompositions provide the rigorous basis needed for correct computational implementation and real-world application.
+- LU (with pivoting): always exists for square A; no-pivot form needs
+  nonzero leading minors.
+- QR: always exists (Gram-Schmidt); Q is m x m (full) or m x n (thin).
+- SVD: always exists for any shape; U is m x m, Sigma m x n, V n x n.

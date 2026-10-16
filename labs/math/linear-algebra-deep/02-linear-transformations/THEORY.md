@@ -1,70 +1,51 @@
-﻿# Linear Transformations -- Theory
+﻿# Linear Transformations — Theory
 
-## 1. Introduction
+## 1. Definition
 
-Linear Transformations is a fundamental concept in Linear Algebra Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+T: V -> W is linear iff T(au + bv) = aT(u) + bT(v) for all scalars
+a,b and vectors u,v. Equivalently: T preserves addition and scalar
+multiplication. Every linear T: R^n -> R^m is multiplication by a
+unique m x n matrix A, whose j-th column is T(e_j).
 
-## 2. Core Definitions
+## 2. Running example
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Linear Transformations rests on several key definitions and axioms that form the foundation of the theory.
+T(x1,x2,x3) = (x1 + 2x2 + 3x3, x2 + 4x3), matrix
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+    A = [[1,2,3],[0,1,4]].
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 3. Kernel and image
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Linear Transformations:
+- ker T = {x : Ax = 0}. Here x2 + 4x3 = 0 and x1 + 2x2 + 3x3 = 0
+  give x2 = -4t, x1 = 5t: ker T = span{(5,-4,1)}, nullity 1.
+- im T = column space of A. Columns (1,0) and (2,1) are independent
+  (2x2 determinant 1), so im T = R^2, rank 2.
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+## 4. Rank-nullity
 
-### 2.3 Formal Framework
-The mathematical framework for Linear Transformations is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+For T: V -> W with V finite-dimensional:
+dim ker T + dim im T = dim V. Here 1 + 2 = 3.
 
-## 3. Mathematical Formulation
+## 5. Composition and matrix product
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+(S compose T)(x) = S(T(x)); matrices multiply: [S compose T] = [S][T].
+Dimensions must chain: (m x k)(k x n) = m x n.
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+## 6. Change of basis and similarity
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+If P is the change-of-basis matrix (columns = new basis in old
+coordinates), the same operator reads A_P = P^{-1} A P.
+Example: A = [[2,1],[0,3]], P = [[1,1],[1,-1]]. Then
+P^{-1} = [[1/2,1/2],[1/2,-1/2]] and
 
-### 3.3 Existence and Uniqueness
-A critical question in Linear Transformations is whether solutions exist and whether they are unique.
+    A_P = [[3,-1],[0,2]].
 
-## 4. Important Theorems
+Trace 5 and determinant 6 are unchanged (tr 2+3 = 3+2; det 6 = 6),
+as the theorem promises: similar matrices share trace, determinant,
+characteristic polynomial, and eigenvalues.
 
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
+## 7. Eigenvalue preview
 
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Linear Transformations extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Linear Transformations requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Linear Transformations connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Linear Transformations provide the rigorous basis needed for correct computational implementation and real-world application.
+A_P = [[3,-1],[0,2]] is upper-triangular, so its eigenvalues read off
+the diagonal: 3 with eigenvector (1,0) (A_P(1,0) = (3,0)), and 2 with
+eigenvector (1,1) (A_P(1,1) = (2,2)). Same spectrum {2,3} as A —
+similarity preserves eigenvalues, as claimed.

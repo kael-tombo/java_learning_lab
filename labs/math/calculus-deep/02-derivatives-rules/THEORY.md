@@ -1,76 +1,43 @@
-﻿# Derivatives and Differentiation Rules -- Theory
+# Derivatives and Rules -- Theory
 
-## 1. Introduction
+## 1. Definition
 
-Derivatives and Differentiation Rules is a fundamental concept in Calculus Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+f'(a) = lim_{h -> 0} (f(a+h) - f(a))/h when the limit exists. Then f
+is differentiable at a. Differentiability implies continuity: write
+f(a+h) - f(a) = h * (f(a+h)-f(a))/h -> 0 * f'(a) = 0, so
+lim_{h -> 0} f(a+h) = f(a). The converse is false: |x| is continuous
+at 0 but not differentiable there (left quotient -1, right +1).
 
-## 2. Core Definitions
+## 2. Core Rules
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Derivatives and Differentiation Rules rests on several key definitions and axioms that form the foundation of the theory.
+Power: d/dx x^n = n x^{n-1}. Linearity: (af + bg)' = af' + bg'.
+Product: (fg)' = f'g + fg'. Quotient: (f/g)' = (f'g - fg')/g^2
+(g != 0). Chain: d/dx f(g(x)) = f'(g(x)) g'(x). These five derive every
+computation in MATH_FOUNDATION.md; the quotient rule is the product
+rule applied to f * (1/g), and the chain rule follows from the linear
+approximation of f at g(a) composed with that of g at a.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Standard Derivatives
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+d/dx e^x = e^x; d/dx a^x = a^x ln a; d/dx ln x = 1/x (x > 0);
+d/dx sin x = cos x; d/dx cos x = -sin x; d/dx tan x = sec^2 x.
+Inverse trig, e.g. d/dx arctan x = 1/(1+x^2), follows from implicit
+differentiation of tan(y) = x. Logarithmic differentiation handles
+x^x and products of many factors: ln y then differentiate implicitly.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Derivatives and Differentiation Rules:
+## 4. Higher Derivatives and Notation
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+f'', f''', f^{(n)} or d^2y/dx^2: differentiate repeatedly. Leibniz
+notation tracks the variable; prime notation tracks the function.
+Mixed partials (lab 07) commute under the same smoothness that makes
+the second derivative symmetric here.
 
-### 2.3 Formal Framework
-The mathematical framework for Derivatives and Differentiation Rules is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Mean Value Theorem and Rolle
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic. The formal definition provides the foundation for all subsequent analysis.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Derivatives and Differentiation Rules is whether solutions exist and whether they are unique. We examine these questions through rigorous analysis:
-
-- **Existence**: Under what conditions does a solution exist?
-- **Uniqueness**: When is the solution unique?
-- **Continuity**: How does the solution depend on parameters?
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-*Rate*: The convergence rate depends on the conditioning of the problem.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-*Applications*: Used to determine required precision in computations.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Derivatives and Differentiation Rules extend naturally to higher-dimensional settings, though additional complexity arises.
-
-### 5.2 Computational Considerations
-Numerical computation of Derivatives and Differentiation Rules requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Derivatives and Differentiation Rules connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Derivatives and Differentiation Rules provide the rigorous basis needed for correct computational implementation and real-world application. Mastery of these concepts enables deeper understanding of advanced topics in mathematics and computer science.
+Rolle: if f is continuous on [a,b], differentiable on (a,b), and
+f(a) = f(b), then some c in (a,b) has f'(c) = 0. MVT: under the same
+hypotheses minus f(a) = f(b), some c has f'(c) = (f(b)-f(a))/(b-a).
+Proof sketch: tilt f by the secant line to reduce MVT to Rolle; Rolle
+follows from EVT (an extremum in (a,b) has zero derivative). Failure
+without differentiability inside: f(x) = |x| on [-1,1] has no c with
+f'(c) = 0 despite f(-1) = f(1).

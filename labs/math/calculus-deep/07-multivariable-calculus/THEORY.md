@@ -1,76 +1,43 @@
-﻿# Multivariable Calculus -- Theory
+# Multivariable Calculus -- Theory
 
-## 1. Introduction
+## 1. Partial Derivatives
 
-Multivariable Calculus is a fundamental concept in Calculus Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+fx = lim_{h -> 0} (f(x+h, y) - f(x, y))/h treats y as constant; fy
+symmetrically. Clairaut: if fxy and fyx are continuous near a point,
+they are equal there -- mixed partials commute under that hypothesis.
+For f(x, y) = x^2 y + 3x y^2: fx = 2xy + 3y^2, fy = x^2 + 6xy,
+fxx = 2y, fyy = 6x, fxy = fyx = 2x + 6y (verified at (2,1) in
+MATH_FOUNDATION.md).
 
-## 2. Core Definitions
+## 2. Gradient and Directional Derivatives
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Multivariable Calculus rests on several key definitions and axioms that form the foundation of the theory.
+grad f = (fx, fy) points in the steepest-ascent direction with
+magnitude equal to the steepest slope. The directional derivative in
+unit direction u is D_u f = grad f . u. At (2, 1) for the f above,
+grad = (7, 16), |grad| = sqrt(305) = 17.46424919657298 (observed),
+and along u = (3/5, 4/5): D = (21 + 64)/5 = 17 exactly (observed).
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Tangent Planes and Linear Approximation
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+z = f(a, b) + fx(a,b)(x - a) + fy(a,b)(y - b) is the tangent plane;
+it is the first-order Taylor polynomial. For the f above at (2, 1):
+z = 10 + 7(x - 2) + 16(y - 1). At (2.01, 1.02) the plane predicts
+10.39 while the true value is 10.394513999999997 (observed) --
+quadratic remainder ~0.0045, as expected one order smaller than the
+0.03 linear correction.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Multivariable Calculus:
+## 4. Critical Points and the Second-Derivative Test
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Critical: fx = fy = 0. With D = fxx fyy - fxy^2: D > 0 and fxx > 0
+gives a local min; D > 0 and fxx < 0 a local max; D < 0 a saddle;
+D = 0 inconclusive. For g(x, y) = x^2 + y^2 - 4x - 2y + 5:
+gx = 2x - 4, gy = 2y - 2, critical (2, 1), D = 4 > 0 with gxx = 2
+> 0: local min, value g(2,1) = 0 (observed).
 
-### 2.3 Formal Framework
-The mathematical framework for Multivariable Calculus is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Chain Rule and Double Integrals
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic. The formal definition provides the foundation for all subsequent analysis.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Multivariable Calculus is whether solutions exist and whether they are unique. We examine these questions through rigorous analysis:
-
-- **Existence**: Under what conditions does a solution exist?
-- **Uniqueness**: When is the solution unique?
-- **Continuity**: How does the solution depend on parameters?
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-*Rate*: The convergence rate depends on the conditioning of the problem.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-*Applications*: Used to determine required precision in computations.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Multivariable Calculus extend naturally to higher-dimensional settings, though additional complexity arises.
-
-### 5.2 Computational Considerations
-Numerical computation of Multivariable Calculus requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Multivariable Calculus connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Multivariable Calculus provide the rigorous basis needed for correct computational implementation and real-world application. Mastery of these concepts enables deeper understanding of advanced topics in mathematics and computer science.
+Multivariable chain rule: dz/dt = fx dx/dt + fy dy/dt along a path.
+Fubini: iterated integrals equal the double integral for continuous f
+on a rectangle. Example: int_0^1 int_0^2 (x + 2y) dx dy = int_0^1
+(2 + 4y) dy = [2y + 2y^2]_0^1 = 4 (observed); swapping the order gives
+int_0^2 int_0^1 (x + 2y) dy dx = int_0^2 (x + 1) dx = 4 (observed).

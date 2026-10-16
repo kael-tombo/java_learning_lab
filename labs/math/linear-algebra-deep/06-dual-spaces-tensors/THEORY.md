@@ -1,70 +1,46 @@
-﻿# Dual Spaces and Tensors -- Theory
+﻿# Dual Spaces and Tensors — Theory
 
-## 1. Introduction
+## 1. Dual space
 
-Dual Spaces and Tensors is a fundamental concept in Linear Algebra Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+V* is the space of linear functionals f: V -> F. dim V* = dim V.
+Given a basis {e1,e2} of R^2 with e1 = (1,1), e2 = (1,-1), the dual
+basis {phi1,phi2} satisfies phi_i(e_j) = delta_ij:
 
-## 2. Core Definitions
+    phi1(x,y) = (x+y)/2, phi2(x,y) = (x-y)/2.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Dual Spaces and Tensors rests on several key definitions and axioms that form the foundation of the theory.
+Check: phi1(e1) = 1, phi1(e2) = 0; phi2(e1) = 0, phi2(e2) = 1.
+Every functional is a combination: f = f(e1) phi1 + f(e2) phi2.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 2. Annihilator
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+For W ⊆ V, W^0 = {f : f(w) = 0 for all w in W}; dim W + dim W^0 = dim V.
+Example: W = span{(1,1)} in R^2; W^0 = span{phi2}-direction, i.e.
+functionals (x,y) -> a(x-y)/2, dimension 1. 1 + 1 = 2.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Dual Spaces and Tensors:
+## 3. Tensor/Kronecker product
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+For u in R^m, v in R^n, u (x) v lists all pairwise products u_i v_j.
+Example: (1,2) (x) (3,-1) = (3,-1,6,-2). Mixed-product identity:
 
-### 2.3 Formal Framework
-The mathematical framework for Dual Spaces and Tensors is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+    (A (x) B)(u (x) v) = (Au) (x) (Bv).
 
-## 3. Mathematical Formulation
+Instance: A = [[1,1],[0,1]], B = [[2,0],[1,1]] give Au = (3,2),
+Bv = (6,2), and (Au) (x) (Bv) = (18,6,12,4).
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 4. Rank one
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+u (x) v as a matrix is u v^T, rank <= 1. Here [[1],[2]] [3,-1] =
+[[3,-1],[6,-2]]: row 2 = 2 row 1, rank exactly 1.
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+## 5. Double dual
 
-### 3.3 Existence and Uniqueness
-A critical question in Dual Spaces and Tensors is whether solutions exist and whether they are unique.
+Evaluation v -> (f -> f(v)) identifies finite-dimensional V with V**.
+A bilinear form B(x,y) = x^T M y is a (0,2)-tensor with matrix M.
 
-## 4. Important Theorems
+## 6. How functionals change basis
 
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Dual Spaces and Tensors extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Dual Spaces and Tensors requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Dual Spaces and Tensors connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Dual Spaces and Tensors provide the rigorous basis needed for correct computational implementation and real-world application.
+If vectors change by P, coordinates change by P^{-1}, and dual
+functionals change by P^{-T} (contragredient). Here P = [[1,1],[1,-1]]
+has symmetric inverse [[1/2,1/2],[1/2,-1/2]], so old-coordinate
+functional (a,b) reads ((a+b)/2, (a-b)/2) in the new dual basis —
+the same halves as phi1, phi2. Consistency, not coincidence.

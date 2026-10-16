@@ -1,62 +1,44 @@
-﻿# Code Deep Dive: EigenvaluesAdvanced.java
+﻿# Eigenvalues Advanced — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Eigenvalues Advanced.
+Stdlib only (`fractions`). Outputs pasted from execution.
 
-## Class Structure
+## 1. Eigenpairs
 
-### EigenvaluesAdvanced.java
-The main class implementing core algorithms for Eigenvalues Advanced.
+```python
+from fractions import Fraction as F
+A = [[F(4),F(1)],[F(2),F(3)]]
+for v, lam in (([F(1),F(1)],F(5)), ([F(1),F(-2)],F(2))):
+    print([sum(a*x for a,x in zip(row,v)) for row in A], [lam*x for x in v])
+# observed: [5, 5] [5, 5]
+# observed: [2, -4] [2, -4]
+```
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Eigenvalues Advanced:
+## 2. Trace of A^2 both ways
 
-`java
-public class EigenvaluesAdvanced {
-    /**
-     * Computes the core operation for Eigenvalues Advanced.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+```python
+from fractions import Fraction as F
+A = [[F(4),F(1)],[F(2),F(3)]]
+A2 = [[sum(x*y for x,y in zip(r,c)) for c in zip(*A)] for r in A]
+print(A2, A2[0][0]+A2[1][1])
+# observed: [[18, 7], [14, 11]] 29
+print(F(25)+F(4))
+# observed: 29
+```
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+## 3. Cayley-Hamilton
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+```python
+from fractions import Fraction as F
+M5 = [[F(-1),F(1)],[F(2),F(-2)]]
+M2 = [[F(2),F(1)],[F(2),F(1)]]
+print([[sum(x*y for x,y in zip(r,c)) for c in zip(*M2)] for r in M5])
+# observed: [[0, 0], [0, 0]]
+```
 
-## Numerical Considerations
+## 4. Symmetric orthonormality
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-
-## Complete Source
-See src/main/java/com/mathlab/eigenvalues/EigenvaluesAdvanced.java for the full implementation.
+```python
+from fractions import Fraction as F
+print((F(1)-F(1))/F(2))
+# observed: 0
+```

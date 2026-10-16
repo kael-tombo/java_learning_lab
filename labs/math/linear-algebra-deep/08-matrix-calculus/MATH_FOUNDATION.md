@@ -1,81 +1,45 @@
-﻿# Math Foundation for Matrix Calculus
+﻿# Matrix Calculus — Math Foundation
 
-## Prerequisite Mathematics
+All values computed in exact rational arithmetic (Python `fractions`).
 
-This document reviews the mathematical prerequisites needed to study Matrix Calculus effectively.
+## 1. Ax and the quadratic value
 
-## 1. Algebra Review
+A = [[1,2],[3,4]], x = (1,2). Row 1: 1+4 = 5. Row 2: 3+8 = 11.
+f = x^T A x = (1,2).(5,11) = 5 + 22 = 27. Direct expansion agrees:
+1 + 4 + 6 + 16 = 27 (x1^2 + 2 x1x2 + 3 x2x1 + 4 x2^2 at (1,2)).
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Gradient entries
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+A + A^T = [[2,5],[5,8]]. Times (1,2): (2+10, 5+16) = (12,21).
+Partial check: df/dx1 = 2x1 + 5x2 = 2+10 = 12; df/dx2 = 5x1 + 8x2 =
+5+16 = 21. Finite difference in x1 with h = 1: f(2,2) = 4+8+12+16 =
+40; (40-27)/1 = 13 = 12 + h. Linear term 12 confirmed.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Trace cyclic, exhibited
 
-## 2. Functions and Graphs
+AB: row 1 = (1*2+2*1, 1*1+2*2) = (4,5); row 2 = (0+1, 0+2) = (1,2).
+ABC: row 1 = (4*1+5*3, 5) = (19,5); row 2 = (1+6, 2) = (7,2);
+trace 19+2 = 21.
+CA: row 1 = (1,2); row 2 = 3*(1,2)+(0,1) = (3,7).
+CAB: row 1 = (4,5); row 2 = 3*(4,5)+(1,2) = (13,17);
+trace 4+17 = 21. So tr(ABC) = 21 = tr(CAB).
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. d tr(AXB)/dX check
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+With A = I, B = I: tr(X) derivative is the ones-on-diagonal matrix;
+entry (i,j) derivative of sum_k X_kk is delta_ij. Consistent with
+A^T B^T = I.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 5. Linear form and Hessian entries
 
-## 3. Trigonometry
+g(x) = a^T x with a = (1,2): dg/dx = (1,2) = a. At x = (1,2),
+g = 5 — the first entry of Ax, as expected since row 1 of A is a^T.
+Hessian of f: d/dx1 of (2x1+5x2) = 2; d/dx2 of (5x1+8x2) = 8;
+cross partials 5, 5 — symmetric, matching [[2,5],[5,8]].
+det = 16-25 = -9.
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+## 6. Row-gradient correspondence
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+f1 = x1+2x2 has gradient (1,2) = row 1 of A; f2 = 3x1+4x2 has
+gradient (3,4) = row 2. d(Ax)/dx = A stacks one row-gradient per
+output row. At (1,2): f = (5,11), as in Section 1.

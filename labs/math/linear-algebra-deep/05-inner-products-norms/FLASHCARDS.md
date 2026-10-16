@@ -1,52 +1,45 @@
-﻿# Flashcards: Inner Products and Norms
+﻿# Inner Products and Norms — Flashcards
 
-## Front-Back Cards
+## Q/A
 
-### Card 1
-**Front**: What is the definition of Inner Products and Norms?
-**Back**: Mathematical operations transforming inputs according to established rules.
+1. Q: Standard inner product and norm on R^n?
+   A: <x,y> = sum x_i y_i; |x| = sqrt(<x,x>).
 
-### Card 2
-**Front**: Key properties of Inner Products and Norms?
-**Back**: Continuity, convergence, stability, error bounds.
+2. Q: Cauchy-Schwarz with equality case?
+   A: |<x,y>| <= |x||y|; equality iff dependent.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+3. Q: Instance numbers for (1,2,3),(1,1,0)?
+   A: Inner product 3; 9 <= 28.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+4. Q: Gram-Schmidt u2 for (1,1,0),(0,1,1)?
+   A: (-1/2,1/2,1); coefficient 1/2, norm-squared 3/2.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+5. Q: u3 for (1,0,1) and its norm-squared?
+   A: (2/3,-2/3,2/3); 4/3.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+6. Q: Projection of (1,2,3) on span{u1,u2}?
+   A: (1/3,8/3,7/3); coefficients 3/2, 7/3.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+7. Q: Residual and why it matters?
+   A: (2/3,-2/3,2/3); orthogonal to the subspace, proves optimality.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+8. Q: det of the GS triple?
+   A: 2, confirming independence.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Inner Products and Norms algorithm: ________. **Answer**: O(n)
+9. Q: Best approximation theorem?
+   A: The projection is the unique closest point in the subspace.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+10. Q: Orthogonal matrix criterion?
+    A: Q^T Q = I; preserves dots and norms.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+11. Q: Normalized e3?
+    A: (1/sqrt3)(1,-1,1); squared entries sum to 3*(1/3) = 1.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+12. Q: |residual|^2 here?
+    A: 4/3.
+
+13. Q: cos of the angle between (1,2,3) and (1,1,0)?
+    A: 3/sqrt28.
+
+14. Q: Why are coordinates just dots in an orthonormal basis?
+    A: E^T E = I, so c = E^T w directly.

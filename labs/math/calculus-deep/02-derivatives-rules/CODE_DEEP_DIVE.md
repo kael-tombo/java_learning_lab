@@ -1,73 +1,40 @@
-﻿# Code Deep Dive: DerivativesRules.java
+# Code Deep Dive: Derivative Rules
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Derivatives and Differentiation Rules.
+Stdlib only (math). Observed outputs in comments; h = 1e-5 central
+differences throughout.
 
-## Class Structure
+## 1. Central-Difference Harness
 
-### DerivativesRules.java
-The main class implementing core algorithms for Derivatives and Differentiation Rules.
+```python
+import math
+def central(f, x, h=1e-5):
+    return (f(x+h) - f(x-h)) / (2*h)
+print(central(lambda t: t*t*math.exp(t), 2.0))  # observed 59.112448794529364 (exact 59.1124487914452)
+print(central(lambda t: math.log(t*t+1), 2.0))  # observed 0.8000000000008 (exact 0.8)
+print(central(lambda t: (t**3+1)/(t-1), 2.0))   # observed 2.9999999998864264 (exact 3)
+```
 
-## Implementation Details
+## 2. Exact Formulas vs Numeric
 
-### Core Algorithm Implementation
-The primary method implements the fundamental computation for Derivatives and Differentiation Rules:
+```python
+import math
+print(math.exp(2)*8)        # observed 59.1124487914452 = e^2(2x+x^2) at x=2
+print(4/5)                  # observed 0.8 = 2x/(x^2+1) at x=2
+print(3*math.sin(3.0))      # observed 0.4233600241796016 = 3 sin(6x) at x=0.5
+print(central(lambda t: math.sin(3*t)**2, 0.5))  # observed 0.42336002392673316
+```
 
-`java
-public class DerivativesRules {
-    /**
-     * Computes the core operation for Derivatives and Differentiation Rules.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+## 3. Tangent Line Check
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+```python
+# f(x)=(x^3+1)/(x-1): f(2)=9, f'(2)=3, so f(2.001) ~= 9.003
+q = lambda t: (t**3+1)/(t-1)
+print(q(2.001), 9 + 3*0.001)  # observed 9.003002998001996 vs 9.003: linear error O(h^2)
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+## 4. MVT Point Search
 
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Code Conventions
-- Java 21+ features including records, sealed classes, pattern matching
-- Descriptive variable names with mathematical notation correspondence
-- Comprehensive Javadoc for all public methods
-- Fail-fast validation with descriptive exception messages
-- Immutable value objects where appropriate
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-- Performance benchmarks for hot paths
-- Property-based testing for algebraic properties
-
-## Complete Source
-See src/main/java/com/mathlab/derivativesrules/DerivativesRules.java for the full implementation.
+```python
+# x^2 on [1,3]: secant 4.0; scan f'(x)=2x for match
+print((9-1)/(3-1))  # observed 4.0; c=2.0 gives f'(c)=4.0 exactly
+```

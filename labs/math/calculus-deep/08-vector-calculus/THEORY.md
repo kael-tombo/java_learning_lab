@@ -1,76 +1,46 @@
-﻿# Vector Calculus -- Theory
+# Vector Calculus -- Theory
 
-## 1. Introduction
+## 1. Gradient, Divergence, Curl
 
-Vector Calculus is a fundamental concept in Calculus Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+For scalar f(x,y,z): grad f = (fx, fy, fz). For F = (P, Q, R):
+div F = Px + Qy + Rz (scalar: net outflow per volume);
+curl F = (Ry - Qz, Pz - Rx, Qx - Py) (vector: local rotation axis).
+For F(x,y,z) = (x^2, y^2, z^2): div F = 2x + 2y + 2z (12 at (1,2,3),
+observed) and curl F = (0, 0, 0) (observed componentwise). For
+G(x,y,z) = (-y, x, 0): div G = 0 and curl G = (0, 0, 2) (observed).
 
-## 2. Core Definitions
+## 2. Conservative Fields and Potentials
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Vector Calculus rests on several key definitions and axioms that form the foundation of the theory.
+F = grad phi on an open simply connected domain iff curl F = 0 there
+(and in general path-independence is equivalent to zero loop integrals
+iff the domain has no holes). Then int_C F . dr = phi(end) - phi(start).
+Example: F(x,y) = (2x, 2y) = grad(x^2 + y^2), so the integral from
+(0,0) to (1,1) is 2 - 0 = 2 along every path (observed for two paths
+in MATH_FOUNDATION.md).
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Line and Surface Integrals
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+int_C F . dr = int_a^b F(r(t)) . r'(t) dt for parametrized C.
+Flux across S: int_S F . n dS. For F(x,y) = (y, x) along r(t) =
+(t, t^2), 0 <= t <= 1: F(r) . r' = (t^2)(1) + (t)(2t) = 3t^2, integral
+[t^3]_0^1 = 1 (observed; midpoint sum gives 0.9999999999750026).
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Vector Calculus:
+## 4. Green, Stokes, Divergence Theorems
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Green (circulation): for positively oriented simple closed C bounding
+D with P, Q continuously differentiable on D: int_C P dx + Q dy =
+int_D (Qx - Py) dA. Check: F = (-y, x) on the unit circle gives
+circulation 2 pi = 6.283185307179586 (observed): integrand Qx - Py =
+1 + 1 = 2, area pi, product 2 pi.
+Stokes: int_S (curl F) . n dS = int_{boundary} F . dr under matching
+orientation, for piecewise smooth S with C^1 field.
+Divergence (Gauss): int_{closed S} F . n dS = int_V div F dV.
+Each needs the stated smoothness on the full region, not just the
+boundary -- the hypotheses are load-bearing.
 
-### 2.3 Formal Framework
-The mathematical framework for Vector Calculus is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Which Theorem Applies
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic. The formal definition provides the foundation for all subsequent analysis.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Vector Calculus is whether solutions exist and whether they are unique. We examine these questions through rigorous analysis:
-
-- **Existence**: Under what conditions does a solution exist?
-- **Uniqueness**: When is the solution unique?
-- **Continuity**: How does the solution depend on parameters?
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-*Rate*: The convergence rate depends on the conditioning of the problem.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-*Applications*: Used to determine required precision in computations.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Vector Calculus extend naturally to higher-dimensional settings, though additional complexity arises.
-
-### 5.2 Computational Considerations
-Numerical computation of Vector Calculus requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Vector Calculus connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Vector Calculus provide the rigorous basis needed for correct computational implementation and real-world application. Mastery of these concepts enables deeper understanding of advanced topics in mathematics and computer science.
+Loop integral in the plane: Green. Surface flux from interior
+divergence: Gauss. Surface integral of curl from boundary data:
+Stokes. Line integral of a gradient: potential difference, no theorem
+needed. Checking curl = 0 first saves work whenever it vanishes.

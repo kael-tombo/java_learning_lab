@@ -1,61 +1,34 @@
-﻿# Performance: Eigenvalues Advanced Implementation
+# Performance: Eigenvalues, Advanced
 
-## Performance Analysis
+## Cost model
+Dense nonsymmetric eigensolving is O(n^3) end to end: reduction to
+Hessenberg form dominates, then QR iteration at O(n^2) per sweep over
+a modest number of sweeps. Symmetric tridiagonal QR is far cheaper per
+step, which is why reduction to tridiagonal form comes first. Power
+iteration costs one matvec, O(n^2) dense, per step, with the number of
+steps set by the eigenvalue gap: error shrinks like |lambda2/lambda1|
+per step, so clustered leading eigenvalues mean slow convergence.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Per-task costs in this lab
+- Characteristic polynomial of a 2-by-2: O(1); never a general
+  strategy, since polynomial root-finding is ill-conditioned and the
+  coefficients alone cost O(n^3) for large n.
+- Diagonalization check and the A^2 trace identity: matrix
+  multiplication, O(n^3) naive, O(1) at n = 2.
+- Cayley-Hamilton verification entry by entry: one squaring plus
+  additions, O(n^3) in general.
+- Defective-block experiment: QR iteration converges slowly or stalls
+  near a nontrivial Jordan block, a qualitative fact worth observing
+  rather than timing.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
-
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
-
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Eigenvalues Advanced Implementation
-
-## Code Smells and Improvements
-
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
-
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
-
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## How to benchmark honestly
+This file contains no timings because none were taken. For real data,
+warm up, fix the matrix ensemble (random symmetric vs. Jordan-like
+behave nothing alike), and report iterations-to-tolerance alongside
+seconds, since eigensolvers stop on criteria, not clocks. Confirm
+cubic scaling across sizes before quoting any single size. JMH is the
+right harness for JVM code, timeit for Python. Never benchmark only
+diagonal or only 2-by-2 inputs: the former converges instantly and the
+latter measures call overhead, not arithmetic. Shift strategies
+(Wilkinson shift for symmetric tridiagonal QR) cut sweep counts
+sharply; they change the constant, not the O(n^3) envelope.

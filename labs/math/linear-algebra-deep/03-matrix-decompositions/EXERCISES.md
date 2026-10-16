@@ -1,130 +1,44 @@
-﻿# Exercises: Matrix Decompositions
+﻿# Matrix Decompositions — Exercises
 
-## Theoretical Exercises
+## 1. LU multipliers
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Matrix Decompositions in your own words.
-**Answer**: Matrix Decompositions involves understanding how mathematical quantities change and relate under specific operations.
+Q: Factor A = [[2,1,1],[4,3,3],[8,7,9]] as LU.
+A: Pivot 2: multipliers 2 and 4. Remaining pivot 1: multiplier 3.
+L = [[1,0,0],[2,1,0],[4,3,1]], U = [[2,1,1],[0,1,1],[0,0,2]].
+det = 4, confirmed by expansion 12-12+4.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Matrix Decompositions.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Solve with LU
 
-### Exercise 3: Application
-**Question**: Apply the theory of Matrix Decompositions to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Q: Solve Ax = (3,7,18) using the factors.
+A: Ly = b: y1 = 3, y2 = 7-6 = 1, y3 = 18-12-3 = 3. Ux = y:
+2x3 = 3 so x3 = 3/2; x2 = 1-3/2 = -1/2; x1 = (3+1/2-3/2)/2 = 1.
+Check row 1: 2-1/2+3/2 = 3.
 
-## Programming Exercises
+## 3. QR
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Matrix Decompositions.
+Q: QR of columns (1,1,0),(0,1,1) (thin form).
+A: e1 = (1/sqrt2,1/sqrt2,0); u2 = (-1/2,1/2,1), e2 = u2/sqrt(3/2);
+R = [[sqrt2,1/sqrt2],[0,sqrt(3/2)]].
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. SVD
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Q: Singular values and vectors of [[3,0],[4,0]]?
+A: A^T A = [[25,0],[0,0]]; singular values 5, 0; v1 = (1,0),
+u1 = (3/5,4/5); rank 1.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Shapes
 
-## Challenge Problems
+Q: Shapes in the SVD of a 5x3 rank-2 matrix?
+A: U 5x5, Sigma 5x3 (diagonal 3x3 block with s1,s2,0), V 3x3.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. When LU fails
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Q: Give a matrix with no no-pivot LU and its fix.
+A: [[0,1],[1,0]]: zero pivot. Swap rows first: PA = LU with
+P = [[0,1],[1,0]], L = I, U = [[1,0],[0,1]].
 
-## Solutions
+## 7. Verify an LU solve
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Matrix Decompositions
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Matrix Decompositions?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Matrix Decompositions?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Q: Check x = (1,-1/2,3/2) against Ax = (3,7,18).
+A: Row 1: 2-1/2+3/2 = 3. Row 2: 4-3/2+9/2 = 7. Row 3: 8-7/2+27/2
+= 18. Exact.

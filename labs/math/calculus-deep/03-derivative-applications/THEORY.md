@@ -1,76 +1,42 @@
-﻿# Derivative Applications -- Theory
+# Derivative Applications -- Theory
 
-## 1. Introduction
+## 1. Critical Points and Fermat
 
-Derivative Applications is a fundamental concept in Calculus Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+c is critical if f'(c) = 0 or f' is undefined at c (with c in the
+domain). Fermat: a local extremum at an interior point forces f'(c)
+= 0 (when differentiable). Endpoints and nondifferentiable points need
+separate inspection -- they are critical without a zero derivative.
 
-## 2. Core Definitions
+## 2. First and Second Derivative Tests
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Derivative Applications rests on several key definitions and axioms that form the foundation of the theory.
+First derivative test: f' changes + to - at c gives a local max;
+- to + gives a local min; no sign change gives neither (x^3 at 0).
+Second derivative test: f'(c) = 0 and f''(c) < 0 gives a local max;
+f''(c) > 0 gives a local min; f''(c) = 0 is inconclusive (x^4 vs x^3
+both have f''(0) = 0; one is a min, the other is not an extremum).
+Neither test replaces checking the sign chart or higher derivatives
+when f''(c) = 0.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Extreme Value Theorem (EVT)
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+If f is continuous on a closed bounded [a, b], f attains a global max
+and min there. Procedure: evaluate f at critical points inside (a, b)
+and at a and b; the largest/smallest value wins. Open intervals and
+discontinuities void the guarantee (e.g. 1/x on (0, 1] has no max).
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Derivative Applications:
+## 4. Optimization Protocol
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Model (single-variable function plus domain) -> differentiate ->
+critical points -> classify (first/second derivative) -> compare with
+endpoint behavior -> answer with units. MATH_FOUNDATION.md runs this
+twice: a cubic interior classification and an open-box volume with
+endpoint comparison.
 
-### 2.3 Formal Framework
-The mathematical framework for Derivative Applications is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Related Rates and Linear Approximation
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic. The formal definition provides the foundation for all subsequent analysis.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Derivative Applications is whether solutions exist and whether they are unique. We examine these questions through rigorous analysis:
-
-- **Existence**: Under what conditions does a solution exist?
-- **Uniqueness**: When is the solution unique?
-- **Continuity**: How does the solution depend on parameters?
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-*Rate*: The convergence rate depends on the conditioning of the problem.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-*Applications*: Used to determine required precision in computations.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Derivative Applications extend naturally to higher-dimensional settings, though additional complexity arises.
-
-### 5.2 Computational Considerations
-Numerical computation of Derivative Applications requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Derivative Applications connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Derivative Applications provide the rigorous basis needed for correct computational implementation and real-world application. Mastery of these concepts enables deeper understanding of advanced topics in mathematics and computer science.
+Related rates: differentiate the governing relation implicitly with
+respect to time, then substitute the instantaneous values (sphere
+example in MATH_FOUNDATION.md). Linear approximation:
+f(x) ~= f(a) + f'(a)(x - a) with error bounded by (M/2)(x-a)^2 where
+M bounds |f''| nearby. Differentials dy = f'(x) dx package the same
+idea; Newton iteration x_{n+1} = x_n - f/f' refines it.

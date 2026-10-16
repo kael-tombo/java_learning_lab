@@ -1,62 +1,37 @@
-﻿# Code Deep Dive: InnerProductsNorms.java
+﻿# Inner Products and Norms — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Inner Products and Norms.
+Stdlib only (`fractions`). Outputs pasted from execution.
 
-## Class Structure
+## 1. Orthogonal triple
 
-### InnerProductsNorms.java
-The main class implementing core algorithms for Inner Products and Norms.
+```python
+from fractions import Fraction as F
+u1 = [F(1),F(1),F(0)]; u2 = [F(-1,2),F(1,2),F(1)]; u3 = [F(2,3),F(-2,3),F(2,3)]
+def dot(a,b): return sum(x*y for x,y in zip(a,b))
+print(dot(u1,u1), dot(u2,u2), dot(u3,u3))
+# observed: 2 3/2 4/3
+print(dot(u1,u2), dot(u1,u3), dot(u2,u3))
+# observed: 0 0 0
+```
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Inner Products and Norms:
+## 2. Projection coefficients
 
-`java
-public class InnerProductsNorms {
-    /**
-     * Computes the core operation for Inner Products and Norms.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+```python
+from fractions import Fraction as F
+w = [F(1),F(2),F(3)]
+u1 = [F(1),F(1),F(0)]; u2 = [F(-1,2),F(1,2),F(1)]
+c1 = sum(x*y for x,y in zip(w,u1))/sum(x*x for x in u1)
+c2 = sum(x*y for x,y in zip(w,u2))/sum(x*x for x in u2)
+print(c1, c2)
+# observed: 3/2 7/3
+print([c1*u1[i]+c2*u2[i] for i in range(3)])
+# observed: [1/3, 8/3, 7/3]
+```
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+## 3. Cauchy-Schwarz margin
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
-
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-
-## Complete Source
-See src/main/java/com/mathlab/innerproducts/InnerProductsNorms.java for the full implementation.
+```python
+from fractions import Fraction as F
+print(F(3)**2, (F(1)+F(4)+F(9))*(F(1)+F(1)))
+# observed: 9 28
+```

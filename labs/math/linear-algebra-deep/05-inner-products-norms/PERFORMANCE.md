@@ -1,61 +1,35 @@
-﻿# Performance: Inner Products and Norms Implementation
+# Performance: Inner Products and Norms
 
-## Performance Analysis
+## Cost model
+A dot product or squared norm on vectors of length n costs O(n): one
+multiply-add per entry. Classical Gram-Schmidt over m vectors of
+length n costs O(m^2 n): vector k is orthogonalized against all k - 1
+predecessors at O(n) each. The projection formula and residual checks
+are single dots, O(n); applying an orthogonal matrix is O(n^2).
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Per-task costs in this lab
+- Cauchy-Schwarz instance 9 <= 28: two dots plus a comparison, O(n).
+- Full Gram-Schmidt triple: O(m^2 n) with m = 3, trivial in absolute
+  terms and exactly the asymptotic regime in miniature.
+- Projection (1/3, 8/3, 7/3): coefficient dots plus a linear
+  combination, O(n) per projected vector.
+- Orthogonality dots and the determinant-2 check: O(n) and O(1).
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Stability is not complexity
+Modified Gram-Schmidt has the same O(m^2 n) cost as the classical
+variant but far better rounding behavior; Householder QR at
+2 n^2 (m - n / 3) is the production choice for the same reason. This
+lab's exact fractions sidestep rounding entirely, trading speed for
+bit-for-bit reproducibility. Reorthogonalization doubles the constant
+to about 4 m^2 n and is the standard cure when one pass loses
+orthogonality.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
-
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Inner Products and Norms Implementation
-
-## Code Smells and Improvements
-
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
-
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
-
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## How to benchmark honestly
+No timings are printed here; none were collected. If you collect your
+own, warm up, sweep the vector length over at least two orders of
+magnitude, and confirm linear scaling for dots before believing any
+single figure. Report medians of many repeats, plus the memory layout
+(row- vs column-major changes constants, never exponents). JMH with
+warmup iterations is the JVM standard; timeit is its Python cousin.
+Benchmark norms, full orthogonalization, and residual checks as three
+separate series so the O(m^2 n) term does not masquerade as O(n).

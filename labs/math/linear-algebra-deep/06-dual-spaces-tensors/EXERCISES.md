@@ -1,130 +1,51 @@
-﻿# Exercises: Dual Spaces and Tensors
+﻿# Dual Spaces and Tensors — Exercises
 
-## Theoretical Exercises
+## 1. Dual basis
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Dual Spaces and Tensors in your own words.
-**Answer**: Dual Spaces and Tensors involves understanding how mathematical quantities change and relate under specific operations.
+Q: Dual basis to {(1,1),(1,-1)}?
+A: phi1(x,y) = (x+y)/2, phi2(x,y) = (x-y)/2; table is identity.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Dual Spaces and Tensors.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Expansion
 
-### Exercise 3: Application
-**Question**: Apply the theory of Dual Spaces and Tensors to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Q: Write f(x,y) = 3x - y in the dual basis; test at (5,1).
+A: 2 phi1 + 4 phi2; 2*3+4*2 = 14 = 3*5-1.
 
-## Programming Exercises
+## 3. Annihilator
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Dual Spaces and Tensors.
+Q: Annihilator of span{(1,1)} in R^2?
+A: Multiples of phi2: (x,y) -> a(x-y)/2. Dimension 1; 1+1 = 2.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Kronecker
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Q: (1,2) (x) (3,-1)?
+A: (3,-1,6,-2).
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Mixed product
 
-## Challenge Problems
+Q: Verify (A (x) B)(u (x) v) = (Au) (x) (Bv) for the lab's matrices.
+A: Au = (3,2), Bv = (6,2), product (18,6,12,4) — matches the direct
+application.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. Rank
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Q: Rank of u v^T for nonzero u,v?
+A: At most 1 (columns all multiples of u); exactly 1 here since
+det [[3,-1],[6,-2]] = 0 with the matrix nonzero.
 
-## Solutions
+## 7. Second expansion
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Dual Spaces and Tensors
+Q: Expand g(x,y) = 3x-y in the dual basis; test at (1,0).
+A: g(e1) = 2, g(e2) = 4, so g = 2 phi1 + 4 phi2. At (1,0):
+2*(1/2)+4*(1/2) = 3 = g(1,0). Exact.
 
-## Multiple Choice Questions
+## 8. Kronecker dimensions
 
-### Question 1
-What is the fundamental principle underlying Dual Spaces and Tensors?
+Q: (A (x) B) shape for A 2x2, B 2x2? Input/output sizes?
+A: 4x4 on 4-vectors: (2*2) x (2*2). Here it sends (3,-1,6,-2) to
+(18,6,12,4).
 
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
+## 9. Annihilator values
 
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Dual Spaces and Tensors?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Q: Evaluate z(x,y) = (x-y)/2 on (1,1) and (1,-1). Conclusion?
+A: 0 and 1. Zero on W = span{(1,1)}, nonzero overall: spans W^0,
+which is 1-dimensional since 2-1 = 1.

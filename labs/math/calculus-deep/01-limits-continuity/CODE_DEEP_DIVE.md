@@ -1,73 +1,46 @@
-﻿# Code Deep Dive: LimitsContinuity.java
+# Code Deep Dive: Limits and Continuity
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Limits and Continuity.
+Runnable checks (stdlib only: math). Each block was executed and the
+commented outputs are the observed results.
 
-## Class Structure
+## 1. Removable Discontinuity Approaches 4
 
-### LimitsContinuity.java
-The main class implementing core algorithms for Limits and Continuity.
+```python
+import math
+f = lambda x: (x**2 - 4)/(x - 2)
+for x in [1.9, 1.99, 1.999, 2.001, 2.01, 1.5]:
+    print(x, f(x))
+# observed: 1.9 3.8999999999999977 | 1.99 3.989999999999979 | 1.999 3.99899999999986
+#           2.001 4.00100000000014 | 2.01 4.009999999999977 | 1.5 3.5 -> limit 4
+```
 
-## Implementation Details
+## 2. Rationalized Limit Approaches 1/6
 
-### Core Algorithm Implementation
-The primary method implements the fundamental computation for Limits and Continuity:
+```python
+import math
+g = lambda x: (math.sqrt(x+5)-3)/(x-4)
+for x in [4.001, 4.0001, 3.9999]:
+    print(x, g(x))
+print(1/6)
+# observed: 4.001 0.16666203729437376 | 4.0001 0.1666662037051457
+#           3.9999 0.16666712963040808 | 1/6 = 0.16666666666666666
+```
 
-`java
-public class LimitsContinuity {
-    /**
-     * Computes the core operation for Limits and Continuity.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+## 3. Trig Limits and L'Hopital Case
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+```python
+import math
+print(math.sin(3*0.0001)/0.0001)          # observed 2.9999999550000003 (limit 3)
+print((1-math.cos(0.001))/0.001**2)       # observed 0.49999995832550326 (limit 1/2)
+print((math.exp(0.001)-1-0.001)/0.001**2) # observed 0.5001667083845766 (limit 1/2)
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+## 4. Squeeze Envelope
 
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Code Conventions
-- Java 21+ features including records, sealed classes, pattern matching
-- Descriptive variable names with mathematical notation correspondence
-- Comprehensive Javadoc for all public methods
-- Fail-fast validation with descriptive exception messages
-- Immutable value objects where appropriate
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-- Performance benchmarks for hot paths
-- Property-based testing for algebraic properties
-
-## Complete Source
-See src/main/java/com/mathlab/limitscontinuity/LimitsContinuity.java for the full implementation.
+```python
+import math
+for x in [0.1, 0.01, 0.001]:
+    v = x*math.sin(1/x)
+    print(x, v, abs(v) <= abs(x))
+# observed values satisfy |v| <= |x|: envelope crushes oscillation to 0
+```

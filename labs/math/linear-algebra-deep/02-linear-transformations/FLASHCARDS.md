@@ -1,52 +1,45 @@
-﻿# Flashcards: Linear Transformations
+﻿# Linear Transformations — Flashcards
 
-## Front-Back Cards
+## Q/A
 
-### Card 1
-**Front**: What is the definition of Linear Transformations?
-**Back**: Mathematical operations transforming inputs according to established rules.
+1. Q: Define linear map.
+   A: T(au+bv) = aT(u)+bT(v).
 
-### Card 2
-**Front**: Key properties of Linear Transformations?
-**Back**: Continuity, convergence, stability, error bounds.
+2. Q: Kernel of (x1+2x2+3x3, x2+4x3)?
+   A: span{(5,-4,1)}; A(5,-4,1) = (0,0).
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+3. Q: Rank and image of that map?
+   A: Rank 2, image R^2; minor det [[1,2],[0,1]] = 1.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+4. Q: Rank-nullity here?
+   A: 1 + 2 = 3.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+5. Q: Matrix of T from T(e_j)?
+   A: j-th column is T(e_j).
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+6. Q: Matrix of composition S after T?
+   A: [S][T], chained (m x k)(k x n).
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+7. Q: Change-of-basis formula?
+   A: A_P = P^{-1}AP.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+8. Q: A=[[2,1],[0,3]] in basis {(1,1),(1,-1)}?
+   A: [[3,-1],[0,2]]; trace 5, det 6 preserved.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Linear Transformations algorithm: ________. **Answer**: O(n)
+9. Q: Which quantities does similarity preserve?
+   A: Trace, determinant, characteristic polynomial, eigenvalues.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+10. Q: Can T: R^3 -> R^2 be injective?
+    A: No; nullity >= 1.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+11. Q: det P for P=[[1,1],[1,-1]]?
+    A: -2.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+12. Q: BA(1,1) for B=[[1,1],[0,1]], A=[[2,1],[0,3]]?
+    A: (6,3).
+
+13. Q: Eigenvectors of A_P=[[3,-1],[0,2]]?
+    A: (1,0) for 3; (1,1) for 2.
+
+14. Q: P^{-1}P?
+    A: I: rows (1,0) and (0,1) by direct multiplication.

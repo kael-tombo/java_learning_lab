@@ -1,83 +1,40 @@
-﻿# Math Foundation for Derivative Applications
+# Derivative Applications -- Math Foundation
 
-## Prerequisite Mathematics
+All numbers computed in Python; observed outputs pasted.
 
-This document reviews the mathematical prerequisites needed to study Derivative Applications effectively.
+## 1. Cubic Classification: f(x) = x^3 - 3x^2 - 9x + 5
 
-## 1. Algebra Review
+f'(x) = 3x^2 - 6x - 9 = 3(x^2 - 2x - 3) = 3(x - 3)(x + 1). Critical
+points: x = -1, x = 3. Values: f(-1) = -1 - 3 + 9 + 5 = 10;
+f(3) = 27 - 27 - 27 + 5 = -22 (both observed). Second derivative
+f''(x) = 6x - 6: f''(-1) = -12 < 0 so x = -1 is a local max;
+f''(3) = 12 > 0 so x = 3 is a local min. Sign chart agrees: f' > 0
+for x < -1, f' < 0 on (-1, 3), f' > 0 for x > 3.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Open Box From a 12x12 Sheet
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0, solved by x = (-b +/- sqrt(b^2 - 4ac)) / (2a)
-- Systems of linear equations
+Cut squares of side x, fold up: V(x) = x(12 - 2x)^2 on [0, 6].
+V'(x) = (12-2x)^2 + x*2(12-2x)(-2) = (12-2x)(12 - 2x - 4x)
+= (12 - 2x)(12 - 6x) = 12(6 - x)(2 - x). Critical interior: x = 2
+(x = 6 is the endpoint). Expanded, V(x) = 4x^3 - 48x^2 + 144x, so
+V''(x) = 24x - 96 and V''(2) = -48 < 0, confirming a local max.
+V(2) = 2 * 8^2 = 128 (observed). Compare:
+V(1.5) = 1.5 * 81 = 121.5; V(2.5) = 2.5 * 49 = 122.5; endpoints
+V(0) = V(6) = 0 (all observed). By EVT on [0, 6], x = 2, V = 128
+cubic units is the global max. V''(2) = -72 < 0 confirms local max.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Related Rates: Inflating Sphere
 
-## 2. Functions and Graphs
+V = (4/3) pi r^3, so dV/dt = 4 pi r^2 dr/dt. At r = 5 with
+dr/dt = 2 units/s: dV/dt = 4 pi * 25 * 2 = 200 pi = 628.3185307179587
+(observed). The rate scales with r^2: doubling the radius quadruples
+dV/dt at fixed dr/dt.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Linear Approximation vs True Value
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b, slope m, y-intercept b
-- **Quadratic**: f(x) = ax^2 + bx + c, parabola
-- **Polynomial**: f(x) = a_n x^n + a_{n-1}x^{n-1} + ... + a_0
-- **Rational**: f(x) = p(x)/q(x), vertical asymptotes at zeros of q
-- **Exponential**: f(x) = a^x, growth/decay
-- **Logarithmic**: f(x) = log_a(x), inverse of exponential
-- **Trigonometric**: sin(x), cos(x), tan(x), periodic
-
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x) across x-axis, f(-x) across y-axis
-- Stretch/compress: c * f(x), f(cx)
-
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-- sin(a +/- b) = sin(a)*cos(b) +/- cos(a)*sin(b)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative (instantaneous rate of change) |
-| int_a^b f(x) dx = lim_{n->inf} sum_{i=1}^n f(x_i*) Delta_x | Definite integral (accumulated area) |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule for derivatives |
-| int x^n dx = x^{n+1}/(n+1) + C (n != -1) | Power rule for integrals |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or u = 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+sqrt near a = 25: sqrt(26) ~= 5 + (1/10) = 5.1. True value (observed):
+5.0990195135927845. Error: 0.0009804864072155, under the Lagrange
+bound (M/2)(1)^2 with M = max |f''| on [25, 26]. Since f''(x) =
+-1/(4x^{3/2}) is largest in magnitude at x = 25, M = 1/500 = 0.002,
+bound 0.001. Observed error 0.00098 <= 0.001 holds, nearly tight, as
+expected for f'' almost constant on [25, 26].

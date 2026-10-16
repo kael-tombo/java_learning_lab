@@ -1,76 +1,32 @@
-﻿# Vector Calculus
+# Vector Calculus
 
 ## Overview
-This micro-lab provides a deep-dive exploration of **Vector Calculus**, a cornerstone topic in Calculus Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
 
-## Topics Covered
-- vector fields, divergence, curl, line integrals, surface integrals, Green theorem, Stokes theorem, Gauss theorem
+Fields in three dimensions: gradient, divergence, and curl evaluated
+at points (div 12, curl (0,0,0) for (x^2,y^2,z^2); curl (0,0,2) for
+(-y,x,0)), conservative fields with potentials verified on two paths,
+a line integral worked to 1 with its Riemann confirmation, and Green
+(2 pi both sides) plus divergence-theorem flux (4 pi both sides).
+
+## Contents
+
+- THEORY.md: grad/div/curl definitions, conservative-field criterion,
+  line and surface integrals, Green/Stokes/divergence theorems with
+  exact hypotheses, a guide to which theorem applies.
+- MATH_FOUNDATION.md: div/curl at (1,2,3); line integral along
+  (t,t^2) equal to 1; potential x^2+y^2 giving 2 on two paths; Green
+  2 pi = 2 pi; flux 4 pi = 4 pi.
+- CODE_DEEP_DIVE.md: component checks, midpoint line-integral sum
+  0.9999999999750026, Green/Gauss spot values, path-independence
+  equality 2 = 2.0.
 
 ## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Vector Calculus
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+Multivariable calculus (lab 07); single-variable integrals (lab 04).
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
-
-## Project Structure
-`
-vectorcalc/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/vectorcalc/VectorCalculus.java
-    â””â”€â”€ test/java/com/mathlab/vectorcalc/VectorCalculusTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## How to work this lab
+Decide the theorem before computing: closed curve in the plane means
+Green, closed surface means divergence, conservative field means find
+the potential and evaluate endpoints. Verify curl/divergence components
+individually first — a single wrong partial invalidates the whole
+integral, and component checks isolate it in seconds.

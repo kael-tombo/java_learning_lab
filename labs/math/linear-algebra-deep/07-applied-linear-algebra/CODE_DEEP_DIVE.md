@@ -1,62 +1,48 @@
-﻿# Code Deep Dive: AppliedLinearAlgebra.java
+﻿# Applied Linear Algebra — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Applied Linear Algebra.
+Stdlib only (`fractions`). Outputs pasted from execution.
 
-## Class Structure
+## 1. Normal equations
 
-### AppliedLinearAlgebra.java
-The main class implementing core algorithms for Applied Linear Algebra.
+```python
+from fractions import Fraction as F
+XtX = [[F(3),F(3)],[F(3),F(5)]]; Xty = [F(6),F(7)]
+d = XtX[0][0]*XtX[1][1]-XtX[0][1]*XtX[1][0]
+print(d)
+# observed: 6
+print((F(5)*F(6)-F(3)*F(7))/d, (-F(3)*F(6)+F(3)*F(7))/d)
+# observed: 3/2 1/2
+```
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Applied Linear Algebra:
+## 2. Residual orthogonality
 
-`java
-public class AppliedLinearAlgebra {
-    /**
-     * Computes the core operation for Applied Linear Algebra.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+```python
+from fractions import Fraction as F
+r = [F(-1,2),F(1),F(-1,2)]; xs = [F(0),F(1),F(2)]
+print(sum(r), sum(x*e for x,e in zip(xs,r)), sum(e*e for e in r))
+# observed: 0 0 3/2
+```
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+X^T r = (0,0); squared error 3/2.
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+## 3. Power step and Rayleigh quotient
 
-## Numerical Considerations
+```python
+from fractions import Fraction as F
+S = [[F(2),F(1)],[F(1),F(2)]]
+x = [F(2),F(1)]
+Sx = [S[0][0]*x[0]+S[0][1]*x[1], S[1][0]*x[0]+S[1][1]*x[1]]
+print(Sx, sum(a*b for a,b in zip(x,Sx))/sum(a*a for a in x))
+# observed: [5, 4] 14/5
+```
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
+## 4. Predictions and mean baseline
 
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-
-## Complete Source
-See src/main/java/com/mathlab/appliedla/AppliedLinearAlgebra.java for the full implementation.
+```python
+from fractions import Fraction as F
+a, b = F(3,2), F(1,2)
+print([a+b*x for x in (F(0),F(1),F(2))])
+# observed: [3/2, 2, 5/2]
+print(sum((y-F(2))**2 for y in (F(1),F(3),F(2))))
+# observed: 2
+```

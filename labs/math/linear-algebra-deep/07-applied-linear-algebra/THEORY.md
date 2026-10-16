@@ -1,70 +1,50 @@
-﻿# Applied Linear Algebra -- Theory
+﻿# Applied Linear Algebra — Theory
 
-## 1. Introduction
+## 1. Least squares and normal equations
 
-Applied Linear Algebra is a fundamental concept in Linear Algebra Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+For overdetermined Xb ~= y, the minimizer of |Xb - y|^2 solves
+X^T X b = X^T y. With independent columns, X^T X is invertible and
+b_hat = (X^T X)^{-1} X^T y; the residual is orthogonal to col(X).
 
-## 2. Core Definitions
+## 2. Running fit
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Applied Linear Algebra rests on several key definitions and axioms that form the foundation of the theory.
+Points (0,1), (1,3), (2,2), model y = a + bx:
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+    X = [[1,0],[1,1],[1,2]], y = (1,3,2),
+    X^T X = [[3,3],[3,5]], X^T y = (6,7), det = 15-9 = 6,
+    a = (6*5-3*7)/6 = 3/2, b = (3*7-3*6)/6 = 1/2.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+Fitted values (3/2, 2, 5/2); residual r = (-1/2, 1, -1/2),
+|r|^2 = 1/4 + 1 + 1/4 = 3/2. Normal-equation check: sum r = 0 and
+0*(-1/2) + 1*1 + 2*(-1/2) = 0, i.e. X^T r = (0,0).
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Applied Linear Algebra:
+## 3. Projection view
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+b_hat gives the projection of y onto col(X); r is the orthogonal
+complement. Same geometry as Lab 05, now with a data matrix.
 
-### 2.3 Formal Framework
-The mathematical framework for Applied Linear Algebra is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 4. Power iteration
 
-## 3. Mathematical Formulation
+For symmetric S = [[2,1],[1,2]] (eigenvalues 3, 1), iterating
+x_{k+1} = Sx_k/|Sx_k| from (1,0) gives (2,1)/sqrt5, then
+(5,4)/sqrt41, aligning toward (1,1)/sqrt2. Rayleigh quotients climb
+2 -> 14/5 = 2.8 -> toward 3, the dominant eigenvalue.
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 5. Conditioning note
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+X^T X has eigenvalues 4 +- sqrt10 (~7.16, ~0.84); forming X^T X
+squares sensitivity versus QR on X — fine at this size, relevant
+at scale.
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+## 6. Fitted values as projection
 
-### 3.3 Existence and Uniqueness
-A critical question in Applied Linear Algebra is whether solutions exist and whether they are unique.
+X b_hat = (3/2, 2, 5/2): each entry a + b x_i. The Pythagorean split
+|y|^2 = |X b_hat|^2 + |r|^2 reads 1+9+4 = 14 on the left and
+(9/4+4+25/4) + 3/2 = 50/4+6/4 = 56/4 = 14 on the right. Exact.
 
-## 4. Important Theorems
+## 7. Degrees of freedom
 
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Applied Linear Algebra extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Applied Linear Algebra requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Applied Linear Algebra connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Applied Linear Algebra provide the rigorous basis needed for correct computational implementation and real-world application.
+Three points minus two fitted parameters leaves 1 degree of freedom;
+the residual norm-squared 3/2 on 1 dof is the variance-scale estimate.
+Fitting only the mean (y-bar = 2) leaves residuals (-1,1,0) with
+norm-squared 2 — adding the slope reduces 2 to 3/2, as it must.

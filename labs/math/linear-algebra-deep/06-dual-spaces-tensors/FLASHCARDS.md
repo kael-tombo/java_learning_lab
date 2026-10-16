@@ -1,52 +1,46 @@
-﻿# Flashcards: Dual Spaces and Tensors
+﻿# Dual Spaces and Tensors — Flashcards
 
-## Front-Back Cards
+## Q/A
 
-### Card 1
-**Front**: What is the definition of Dual Spaces and Tensors?
-**Back**: Mathematical operations transforming inputs according to established rules.
+1. Q: Dual basis to {(1,1),(1,-1)}?
+   A: phi1=(x+y)/2, phi2=(x-y)/2.
 
-### Card 2
-**Front**: Key properties of Dual Spaces and Tensors?
-**Back**: Continuity, convergence, stability, error bounds.
+2. Q: Duality condition?
+   A: phi_i(e_j) = delta_ij.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+3. Q: Expand (x,y) in e-basis via dual functionals?
+   A: (x,y) = phi1 e1 + phi2 e2.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+4. Q: 3x-y in the dual basis?
+   A: 2 phi1 + 4 phi2; value 14 at (5,1).
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+5. Q: Annihilator dimension formula?
+   A: dim W + dim W^0 = dim V.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+6. Q: Annihilator of span{(1,1)}?
+   A: Multiples of (x-y)/2.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+7. Q: (1,2) (x) (3,-1)?
+   A: (3,-1,6,-2).
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+8. Q: Mixed-product identity?
+   A: (A (x) B)(u (x) v) = (Au) (x) (Bv).
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Dual Spaces and Tensors algorithm: ________. **Answer**: O(n)
+9. Q: (Au) (x) (Bv) numbers here?
+   A: (18,6,12,4).
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+10. Q: Rank of u v^T?
+    A: At most 1; exactly 1 when both nonzero.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+11. Q: det [[3,-1],[6,-2]]?
+    A: 0.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+12. Q: V** identification?
+    A: v maps to evaluation f -> f(v); an isomorphism in finite
+    dimension.
+
+13. Q: A (x) B matrix here?
+    A: [[2,0,2,0],[1,1,1,1],[0,0,2,0],[0,0,1,1]]; row 2 dots w to 6.
+
+14. Q: Dual change-of-basis rule?
+    A: Functionals transform by P^{-T}; here [[1/2,1/2],[1/2,-1/2]].

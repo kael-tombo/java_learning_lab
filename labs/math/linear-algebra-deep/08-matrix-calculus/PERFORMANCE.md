@@ -1,61 +1,37 @@
-﻿# Performance: Matrix Calculus Implementation
+# Performance: Matrix Calculus
 
-## Performance Analysis
+## Cost model
+For A n-by-n and x length n: evaluating A x costs O(n^2), and so does
+the quadratic form x^T A x with its gradient (A + A^T) x. Trace
+identities are not just algebra, they are algorithm selection: using
+the cyclic property to parenthesize a product chain cheapest-first
+can change an O(n^3) evaluation into an O(n^2) one. This lab's trace
+check 21 = 21 is the constant-size shadow of that choice.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Differentiation modes
+Finite differences need n + 1 function evaluations for a gradient,
+with truncation error fighting rounding error as the step shrinks.
+Forward-mode automatic differentiation costs roughly n times one
+function evaluation for a full gradient; reverse mode costs a small
+constant multiple of one evaluation regardless of n, at the price of
+storing the forward pass. For scalar-valued functions of many
+variables, reverse mode wins; for few inputs and many outputs,
+forward mode does.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Per-task costs in this lab
+- A x = (5, 11): one matvec, O(n^2).
+- Expansion 1 + 4 + 6 + 16 = 27: the double sum, O(n^2).
+- Partials 12 and 21: one more matvec with the symmetrized matrix.
+- ABC versus CAB trace products: same trace, different flop counts
+  in general, identical here by smallness.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
-
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Matrix Calculus Implementation
-
-## Code Smells and Improvements
-
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
-
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
-
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## How to benchmark honestly
+No timings are given here since none were measured. To compare modes
+fairly: warm up, fix n across a wide sweep, and time full gradient
+evaluations (not one partial) with medians over repeats. Confirm the
+expected slopes on a log-log plot: quadratic for matvec-based
+gradients, linear-times-n for forward mode. Use JMH on the JVM and
+timeit in Python. Count memory traffic for reverse mode alongside
+time, because its tape storage is the real budget at scale. State the
+layout convention in every report; timings for transposed-convention
+code are not comparable.

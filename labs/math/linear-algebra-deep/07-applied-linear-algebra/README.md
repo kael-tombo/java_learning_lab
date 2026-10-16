@@ -1,76 +1,42 @@
 ﻿# Applied Linear Algebra
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Applied Linear Algebra**, a cornerstone topic in Linear Algebra Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Micro-lab on least squares via the normal equations and power iteration
+with the Rayleigh quotient, all on hand-checkable numbers.
 
-## Topics Covered
-- PCA, PageRank, eigenvector centrality, Markov chains, linear regression, normal equations
+## Contents
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: normal equations, the fit a = 3/2, b = 1/2 with residual
+  norm-squared 3/2, power iteration toward eigenvalue 3, conditioning
+  note (4 +- sqrt10).
+- MATH_FOUNDATION.md: matrix assembly entry by entry, the 2x2 solve,
+  the residual ledger, Rayleigh values 2, 14/5, 3.
+- CODE_DEEP_DIVE.md: fractions snippets for the solve, the
+  orthogonality sums, and the power step.
+- EXERCISES.md: six problems with computed solutions.
+- FLASHCARDS.md: twelve recall cards.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Applied Linear Algebra
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## How to use
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Solve the 2x2 system by hand (det 6), then confirm the residual sums
+are both zero before moving on.
 
-## Project Structure
-`
-appliedla/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/appliedla/AppliedLinearAlgebra.java
-    â””â”€â”€ test/java/com/mathlab/appliedla/AppliedLinearAlgebraTest.java
-`
+## Worked anchors (all values executed)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+- X^T X = [[3,3],[3,5]], X^T y = (6,7); a = 3/2, b = 1/2.
+- Residual (-1/2,1,-1/2), |r|^2 = 3/2, X^T r = (0,0).
+- Fitted (3/2,2,5/2); Pythagoras 14 = 50/4 + 6/4.
+- Power: S(1,0) = (2,1); Rayleigh 2, 14/5, 3.
+- X^T X eigenvalues 4 +- sqrt10.
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Study sequence
+
+1. Assemble X^T X and X^T y entry by entry from the three points.
+2. Solve the 2x2 system (det 6) for a = 3/2, b = 1/2.
+3. List predictions and residuals; confirm X^T r = (0,0).
+4. Close Pythagoras 14 = 50/4 + 6/4; compare the mean-only 2.
+5. Run one power step on S; compute Rayleigh 14/5 by hand.
+
+## Notes
+
+- X column sums are (3,3): they seed the first row of X^T X.
+- dof accounting: 3 points - 2 params = 1; variance scale 3/2.

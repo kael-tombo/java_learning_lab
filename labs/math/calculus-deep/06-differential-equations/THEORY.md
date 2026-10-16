@@ -1,76 +1,40 @@
-﻿# Differential Equations -- Theory
+# Differential Equations -- Theory
 
-## 1. Introduction
+## 1. What a Solution Means
 
-Differential Equations is a fundamental concept in Calculus Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+An ODE relates y, y', and x; a solution is a differentiable function
+satisfying the equation on an interval, verified by substitution.
+General solutions carry one constant per order; initial conditions
+pin them down. Existence-uniqueness: if f and df/dy are continuous
+near (x0, y0), y' = f(x, y), y(x0) = y0 has exactly one local solution.
+Without the df/dy hypothesis uniqueness can fail (y' = sqrt|y|).
 
-## 2. Core Definitions
+## 2. Separable Equations
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Differential Equations rests on several key definitions and axioms that form the foundation of the theory.
+dy/dx = g(x) h(y) separates to dy/h(y) = g(x) dx (where h != 0);
+integrate both sides. MATH_FOUNDATION.md solves dy/dx = x/y with
+y(0) = 2: y dy = x dx gives y^2/2 = x^2/2 + 2, i.e. y = sqrt(x^2+4)
+(positive branch through (0,2)), verified by substitution at x = 3.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. First-Order Linear and Integrating Factors
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+y' + P(x) y = Q(x) is solved by mu(x) = exp(int P dx): then
+(mu y)' = mu Q, so y = (int mu Q + C)/mu. MATH_FOUNDATION.md solves
+y' + 2y = 6, y(0) = 1: mu = e^{2x}, (e^{2x} y)' = 6 e^{2x},
+y = 3 - 2 e^{-2x}, with residual exactly 0 at the checked point.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Differential Equations:
+## 4. Growth, Decay, and Equilibria
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+y' = k y gives y = C e^{kx}: k > 0 growth, k < 0 decay, verified by
+y' - k y = 0 on substitution. Equilibria of y' = f(y) sit at zeros of
+f; f' < 0 there means stable (returns after perturbation), f' > 0
+means unstable. For y' + 2y = 6, y = 3 is the stable equilibrium the
+solution approaches (y(1) = 2.7293294335267744, observed).
 
-### 2.3 Formal Framework
-The mathematical framework for Differential Equations is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Euler Approximation
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic. The formal definition provides the foundation for all subsequent analysis.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Differential Equations is whether solutions exist and whether they are unique. We examine these questions through rigorous analysis:
-
-- **Existence**: Under what conditions does a solution exist?
-- **Uniqueness**: When is the solution unique?
-- **Continuity**: How does the solution depend on parameters?
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-*Rate*: The convergence rate depends on the conditioning of the problem.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-*Applications*: Used to determine required precision in computations.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Differential Equations extend naturally to higher-dimensional settings, though additional complexity arises.
-
-### 5.2 Computational Considerations
-Numerical computation of Differential Equations requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Differential Equations connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Differential Equations provide the rigorous basis needed for correct computational implementation and real-world application. Mastery of these concepts enables deeper understanding of advanced topics in mathematics and computer science.
+y_{n+1} = y_n + h f(x_n, y_n) follows the tangent line. For y' = y,
+y(0) = 1, h = 0.1, ten steps give 2.5937424601 (observed) against
+exact e = 2.718281828459045: first-order global error O(h), here
+0.1245 with h = 0.1. Halving h roughly halves the error; the method
+is a baseline that higher-order schemes improve on.

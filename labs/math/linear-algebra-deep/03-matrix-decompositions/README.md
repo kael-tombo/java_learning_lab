@@ -1,76 +1,43 @@
 ﻿# Matrix Decompositions
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Matrix Decompositions**, a cornerstone topic in Linear Algebra Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Micro-lab on LU, QR, and SVD: existence, shapes, and one fully checked
+numeric instance of each.
 
-## Topics Covered
-- LU, Cholesky, QR, Gram-Schmidt, Householder, eigenvalue decomposition, SVD
+## Contents
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: no-pivot LU conditions, QR via Gram-Schmidt, SVD from
+  A^T A, shape table for all three.
+- MATH_FOUNDATION.md: LU product verified row by row with det 4 both
+  ways, QR residual norm-squared 3/2, SVD singular values 5 and 0
+  with A v1 = 5 u1.
+- CODE_DEEP_DIVE.md: fractions snippets for the LU product, the
+  orthogonality dot (0), and the A^T A entries.
+- EXERCISES.md: six problems with computed solutions, including an
+  LU solve giving x = (1,-1/2,3/2).
+- FLASHCARDS.md: twelve recall cards.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Matrix Decompositions
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## How to use
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Recompute the LU rows by hand; they are small enough to check in under
+a minute, and everything else builds on the same arithmetic.
 
-## Project Structure
-`
-matrixdecomp/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/matrixdecomp/MatrixDecompositions.java
-    â””â”€â”€ test/java/com/mathlab/matrixdecomp/MatrixDecompositionsTest.java
-`
+## Worked anchors (all values executed)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+- LU: L=[[1,0,0],[2,1,0],[4,3,1]], U=[[2,1,1],[0,1,1],[0,0,2]].
+- det = 4 both from the U diagonal and from 12-12+4.
+- QR: R = [[sqrt2,1/sqrt2],[0,sqrt(3/2)]]; residual norm-squared 3/2.
+- SVD of [[3,0],[4,0]]: singular values 5, 0; A(1,0) = 5*(3/5,4/5).
+- Solve: Ax=(3,7,18) gives x=(1,-1/2,3/2) via y=(3,1,3).
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Study sequence
+
+1. Reproduce the LU product rows by hand; confirm det 4 both ways.
+2. Run snippet 1; then solve Ly = b on paper for y = (3,1,3).
+3. Derive u2 = (-1/2,1/2,1) yourself; check the dot is 0 in code.
+4. Compute A^T A for [[3,0],[4,0]] and read off singular values 5, 0.
+5. Do EXERCISES.md 1-7; attempt the no-pivot failure case last.
+
+## Notes
+
+- Multipliers live below L's diagonal: 2, 4, 3 — elimination recorded.
+- Thin QR of a 3x2 is Q 3x2 with R 2x2; full SVD of 2x2 is all 2x2.

@@ -1,76 +1,53 @@
-﻿# Limits and Continuity -- Theory
+# Limits and Continuity -- Theory
 
-## 1. Introduction
+## 1. Epsilon-Delta Definition
 
-Limits and Continuity is a fundamental concept in Calculus Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+lim_{x -> a} f(x) = L means: for every epsilon > 0 there exists
+delta > 0 such that 0 < |x - a| < delta implies |f(x) - L| < epsilon.
+The point x = a itself is excluded; the limit depends only on nearby
+values. One-sided limits restrict to x > a (right, x -> a+) or x < a
+(left, x -> a-). The two-sided limit exists iff both one-sided limits
+exist and agree.
 
-## 2. Core Definitions
+## 2. Limit Laws
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Limits and Continuity rests on several key definitions and axioms that form the foundation of the theory.
+If lim f(x) = F and lim g(x) = G (both finite), then:
+sum/difference: lim (f +- g) = F +- G; product: lim fg = FG;
+quotient: lim f/g = F/G provided G != 0; power/root and composition
+pass through wherever the outer function is continuous.
+Direct substitution works for polynomials, rationals (denominator
+nonzero), roots, exponentials, logs, and trig at interior points --
+every other technique here exists for the cases where substitution
+gives 0/0 or another indeterminate form.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Continuity
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+f is continuous at a iff three things hold: f(a) is defined,
+lim_{x -> a} f(x) exists, and the limit equals f(a). Continuity on an
+interval means continuity at each point (one-sided at endpoints).
+Sums, products, quotients (nonzero denominator), and compositions of
+continuous functions are continuous. Polynomials are continuous
+everywhere; rational functions wherever defined.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Limits and Continuity:
+## 4. Squeeze Theorem
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+If g(x) <= f(x) <= h(x) near a (except possibly at a) and
+lim g = lim h = L, then lim f = L. Standard use:
+-|x| <= x sin(1/x) <= |x| forces lim_{x -> 0} x sin(1/x) = 0,
+and the geometric squeeze gives lim_{x -> 0} sin(x)/x = 1, from which
+lim (1 - cos x)/x^2 = 1/2 follows (see MATH_FOUNDATION.md).
 
-### 2.3 Formal Framework
-The mathematical framework for Limits and Continuity is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Intermediate Value Theorem (IVT)
 
-## 3. Mathematical Formulation
+If f is continuous on [a, b] and N is between f(a) and f(b), then some
+c in (a, b) has f(c) = N. Hypotheses matter: continuity on the whole
+closed interval is required. Consequence: a continuous f with f(a) and
+f(b) of opposite signs has a zero in (a, b).
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic. The formal definition provides the foundation for all subsequent analysis.
+## 6. Removable vs Jump vs Infinite Discontinuities
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Limits and Continuity is whether solutions exist and whether they are unique. We examine these questions through rigorous analysis:
-
-- **Existence**: Under what conditions does a solution exist?
-- **Uniqueness**: When is the solution unique?
-- **Continuity**: How does the solution depend on parameters?
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-*Rate*: The convergence rate depends on the conditioning of the problem.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-*Applications*: Used to determine required precision in computations.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Limits and Continuity extend naturally to higher-dimensional settings, though additional complexity arises.
-
-### 5.2 Computational Considerations
-Numerical computation of Limits and Continuity requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Limits and Continuity connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Limits and Continuity provide the rigorous basis needed for correct computational implementation and real-world application. Mastery of these concepts enables deeper understanding of advanced topics in mathematics and computer science.
+(x^2 - 4)/(x - 2) has a removable discontinuity at x = 2 (limit 4,
+function undefined); redefining f(2) = 4 makes it continuous. A jump
+(step function) has distinct finite one-sided limits and cannot be
+fixed by one point. A vertical asymptote (1/x at 0) is an infinite
+discontinuity: at least one one-sided limit is unbounded.

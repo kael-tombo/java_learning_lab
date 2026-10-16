@@ -1,83 +1,44 @@
-﻿# Math Foundation for Vector Calculus
+# Vector Calculus -- Math Foundation
 
-## Prerequisite Mathematics
+All values computed in Python; observed outputs pasted.
 
-This document reviews the mathematical prerequisites needed to study Vector Calculus effectively.
+## 1. Divergence and Curl, Evaluated at Points
 
-## 1. Algebra Review
+F(x,y,z) = (x^2, y^2, z^2): div F = 2x + 2y + 2z; at (1,2,3):
+2 + 4 + 6 = 12 (observed). curl F: Ry - Qz = 0 - 0 = 0 and likewise
+for all three components, so curl F = (0,0,0) everywhere -- symmetric
+pure-stretch fields do not rotate. G(x,y,z) = (-y, x, 0): div G =
+0 + 0 + 0 = 0; curl G = (0 - 0, 0 - 0, 1 + 1) = (0, 0, 2) (observed):
+pure rotation with uniform vorticity 2 and no net outflow.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Line Integral Along r(t) = (t, t^2)
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0, solved by x = (-b +/- sqrt(b^2 - 4ac)) / (2a)
-- Systems of linear equations
+F(x,y) = (y, x), 0 <= t <= 1: F(r(t)) = (t^2, t), r'(t) = (1, 2t),
+dot product t^2 + 2t^2 = 3t^2. int_0^1 3t^2 dt = 1 exactly. Midpoint
+Riemann sum with n = 100000 gives 0.9999999999750026 (observed).
+Straight-line path from (0,0) to (1,1) instead: r(t) = (t, t),
+F . r' = t + t = 2t, integral 1 as well -- same value, hinting the
+field structure; note F = grad(xy), so path-independence is exact.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Conservative Field, Two Paths
 
-## 2. Functions and Graphs
+F(x,y) = (2x, 2y) = grad(x^2 + y^2), potential phi = x^2 + y^2.
+Path A (axes): (0,0) -> (1,0) -> (1,1): int = int_0^1 2x dx + int_0^1
+2y dy = 1 + 1 = 2. Path B (diagonal): r(t) = (t,t): F . r' = 4t,
+int_0^1 4t dt = 2. Both give 2 = phi(1,1) - phi(0,0) (observed).
+curl check: Qx - Py = 0 - 0 = 0, consistent with conservativeness.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Green's Theorem on the Unit Disk
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b, slope m, y-intercept b
-- **Quadratic**: f(x) = ax^2 + bx + c, parabola
-- **Polynomial**: f(x) = a_n x^n + a_{n-1}x^{n-1} + ... + a_0
-- **Rational**: f(x) = p(x)/q(x), vertical asymptotes at zeros of q
-- **Exponential**: f(x) = a^x, growth/decay
-- **Logarithmic**: f(x) = log_a(x), inverse of exponential
-- **Trigonometric**: sin(x), cos(x), tan(x), periodic
+Circulation of F = (-y, x) around the unit circle r(t) = (cos t,
+sin t): F(r) . r' = (-sin t)(-sin t) + (cos t)(cos t) = 1, so int_0^{2pi}
+1 dt = 2 pi = 6.283185307179586 (observed). Green side: Qx - Py =
+1 - (-1) = 2 over the disk of area pi: 2 pi (observed product).
+Boundary and interior computations agree.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x) across x-axis, f(-x) across y-axis
-- Stretch/compress: c * f(x), f(cx)
+## 5. Flux via Divergence Theorem (Sphere Check)
 
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-- sin(a +/- b) = sin(a)*cos(b) +/- cos(a)*sin(b)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative (instantaneous rate of change) |
-| int_a^b f(x) dx = lim_{n->inf} sum_{i=1}^n f(x_i*) Delta_x | Definite integral (accumulated area) |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule for derivatives |
-| int x^n dx = x^{n+1}/(n+1) + C (n != -1) | Power rule for integrals |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or u = 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+F(x,y,z) = (x, y, z), div F = 3. Over the unit ball (volume 4 pi/3 =
+4.1887902047863905, observed): flux = 3 * 4 pi/3 = 4 pi =
+12.566370614359172 (observed). Direct surface check: on |r| = 1,
+F . n = 1, times area 4 pi gives 4 pi. Interior and surface agree.

@@ -1,47 +1,35 @@
-﻿# History: Derivative Applications
+# History: Derivative Applications
 
-## Historical Development
+## Fermat's extrema (1630s)
+Fermat's adequality located maxima and minima before derivatives had
+a name: set the expression for a perturbed value effectively equal,
+divide by the perturbation, drop the remainder. The Fermat stationary
+condition in this lab is that procedure with modern notation.
 
-### Ancient Origins
-The foundations of Derivative Applications trace back to ancient mathematicians who first explored these concepts. Early work focused on practical computation for astronomy, engineering, and commerce.
+## Taylor and Maclaurin (1715-1742)
+Brook Taylor published the general series expansion in his 1715
+Methodus Incrementorum. Colin Maclaurin's widely read 1742 Treatise
+of Fluxions popularized the zero-centered special case. Lagrange's
+1797 remainder form turned series into approximation with guarantees,
+the ancestor of the lab's Lagrange error bound.
 
-### 17th-18th Century Breakthroughs
-The scientific revolution brought major advances:
-- Formalization of core concepts by pioneering mathematicians
-- Connections to physics and natural philosophy discovered
-- Computational techniques developed for scientific problems
-- Integration with calculus and analytical geometry
+## The Mean Value connection (1691-1823)
+Rolle's 1691 polynomial theorem, Lagrange's 1797 statements, and
+Cauchy's 1823 proof built the chain that justifies the first- and
+second-derivative tests. Optimization on closed intervals via the
+Extreme Value Theorem waited for Weierstrass's Berlin lectures of the
+1860s, where continuous functions on closed bounded intervals were
+finally shown to attain their bounds.
 
-### 19th Century Rigor
-The 19th century saw rigorous mathematical foundations established:
-- Formal definitions replaced intuitive notions
-- Fundamental theorems proved with full rigor
-- Extensions to more general mathematical settings
-- Connections between different branches of mathematics revealed
+## Implicit relations and related rates (18th century)
+Implicit differentiation and time-related rates appear as routine
+technique in 18th-century textbooks after Euler. No single inventor
+is credited; they emerged as the chain rule met word problems.
 
-### 20th Century Computational Revolution
-The advent of electronic computers transformed the field:
-- Algorithm development for digital computation
-- Numerical analysis emerged as a distinct discipline
-- Integration with scientific computing across all fields
-- Error analysis and stability theory developed
-
-### Modern Era
-Contemporary developments continue to advance the field:
-- High-performance implementations for modern hardware
-- GPU-accelerated and distributed computation
-- Integration with machine learning frameworks
-- Automatic differentiation and differentiable programming
-
-## Key Figures
-The development of Derivative Applications was advanced by many brilliant mathematicians and computer scientists whose insights transformed our understanding of the subject.
-
-## Timeline
-| Year | Development |
-|------|-------------|
-| Ancient | Early exploration of core concepts |
-| 1600s | Formal foundations established |
-| 1800s | Rigorous proofs and extensions |
-| 1900s | Computational methods developed |
-| 2000s | High-performance and GPU computing |
-| Present | Integration with AI and ML frameworks |
+## What this lab inherits
+Fermat's test classifies, Taylor's series approximates with a
+Lagrange bound, Weierstrass's theorem guarantees existence: three
+centuries of applications resting on the one derivative concept.
+The lab's models follow the historical order: local tests first,
+existence theorem last, approximation with a bound wherever an
+exact extremum is out of reach.

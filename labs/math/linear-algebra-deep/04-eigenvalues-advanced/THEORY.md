@@ -1,70 +1,45 @@
-﻿# Eigenvalues Advanced -- Theory
+﻿# Eigenvalues Advanced — Theory
 
-## 1. Introduction
+## 1. Definitions
 
-Eigenvalues Advanced is a fundamental concept in Linear Algebra Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+lambda is an eigenvalue of A with eigenvector v != 0 iff Av = lambda v.
+The characteristic polynomial p_A(t) = det(A - tI); its roots are the
+eigenvalues. Trace = sum of eigenvalues, determinant = product
+(counting algebraic multiplicity).
 
-## 2. Core Definitions
+## 2. Running example
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Eigenvalues Advanced rests on several key definitions and axioms that form the foundation of the theory.
+A = [[4,1],[2,3]]: A - tI = [[4-t,1],[2,3-t]],
+p(t) = (4-t)(3-t) - 2 = t^2 - 7t + 10 = (t-5)(t-2).
+Eigenvalues 5 and 2; eigenvectors (1,1) and (1,-2):
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+    A(1,1) = (5,5) = 5(1,1); A(1,-2) = (2,-4) = 2(1,-2).
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+Trace 7 = 5+2; det 10 = 5*2.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Eigenvalues Advanced:
+## 3. Diagonalization
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+A is diagonalizable iff it has n independent eigenvectors, iff the
+geometric multiplicity of each eigenvalue equals its algebraic one.
+Distinct eigenvalues always suffice. A = PDP^{-1} with
+P = [[1,1],[1,-2]] (det -3), D = diag(5,2). Then A^k = PD^kP^{-1}.
 
-### 2.3 Formal Framework
-The mathematical framework for Eigenvalues Advanced is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 4. Symmetric spectral theorem
 
-## 3. Mathematical Formulation
+Every real symmetric matrix is orthogonally diagonalizable with real
+eigenvalues and orthonormal eigenvectors. Example S = [[2,1],[1,2]]:
+eigenvalues 3 (vector (1,1)) and 1 (vector (1,-1)); normalized,
+Q = (1/sqrt2)[[1,1],[1,-1]], S = Q diag(3,1) Q^T.
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 5. Non-diagonalizable case
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+J = [[2,1],[0,2]] has p(t) = (2-t)^2: eigenvalue 2 algebraic
+multiplicity 2, but J - 2I = [[0,1],[0,0]] has rank 1, nullity 1 —
+geometric multiplicity 1. Not diagonalizable. Cayley-Hamilton holds
+regardless: (A-5I)(A-2I) = 0 for the A above.
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+## 6. Powers
 
-### 3.3 Existence and Uniqueness
-A critical question in Eigenvalues Advanced is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Eigenvalues Advanced extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Eigenvalues Advanced requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Eigenvalues Advanced connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Eigenvalues Advanced provide the rigorous basis needed for correct computational implementation and real-world application.
+A^3 = P diag(125,8) P^{-1}; trace 125+8 = 133. Direct product gives
+[[86,39],[78,47]], trace 86+47 = 133. Powers stay inside the
+eigenbasis: only the diagonal entries change.

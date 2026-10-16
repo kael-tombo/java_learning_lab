@@ -1,52 +1,46 @@
-﻿# Flashcards: Eigenvalues Advanced
+﻿# Eigenvalues Advanced — Flashcards
 
-## Front-Back Cards
+## Q/A
 
-### Card 1
-**Front**: What is the definition of Eigenvalues Advanced?
-**Back**: Mathematical operations transforming inputs according to established rules.
+1. Q: Characteristic polynomial of [[4,1],[2,3]]?
+   A: t^2-7t+10 = (t-5)(t-2).
 
-### Card 2
-**Front**: Key properties of Eigenvalues Advanced?
-**Back**: Continuity, convergence, stability, error bounds.
+2. Q: Eigenvectors?
+   A: (1,1) for 5; (1,-2) for 2.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+3. Q: A(1,-2)?
+   A: (2,-4) = 2(1,-2).
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+4. Q: Diagonalizability criterion?
+   A: n independent eigenvectors; geometric = algebraic multiplicity.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+5. Q: det P for P=[[1,1],[1,-2]]?
+   A: -3, so P is a valid diagonalizer.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+6. Q: Trace of A^2?
+   A: 29, both from 25+4 and from [[18,7],[14,11]].
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+7. Q: Spectral theorem (real symmetric)?
+   A: Orthogonally diagonalizable, real eigenvalues, orthonormal
+   eigenvectors.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+8. Q: Eigendata of [[2,1],[1,2]]?
+   A: 3 on (1,1); 1 on (1,-1).
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Eigenvalues Advanced algorithm: ________. **Answer**: O(n)
+9. Q: Why is [[2,1],[0,2]] defective?
+   A: Eigenvalue 2 has algebraic 2 but geometric 1.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+10. Q: Cayley-Hamilton statement?
+    A: p_A(A) = 0.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+11. Q: Trace/det vs eigenvalues?
+    A: Trace = sum, det = product (with multiplicity).
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+12. Q: A^k from diagonalization?
+    A: A^k = P D^k P^{-1}.
+
+13. Q: Trace of A^3?
+    A: 133 = 125+8; direct product traces to 86+47.
+
+14. Q: A^2 matrix?
+    A: [[18,7],[14,11]].

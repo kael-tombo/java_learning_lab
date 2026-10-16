@@ -1,73 +1,39 @@
-﻿# Code Deep Dive: DerivativeApplications.java
+# Code Deep Dive: Derivative Applications
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Derivative Applications.
+Stdlib only (math). Observed outputs in comments.
 
-## Class Structure
+## 1. Critical Points and Classification
 
-### DerivativeApplications.java
-The main class implementing core algorithms for Derivative Applications.
+```python
+f = lambda x: x**3 - 3*x**2 - 9*x + 5
+fp = lambda x: 3*x**2 - 6*x - 9
+f2 = lambda x: 6*x - 6
+print(f(-1), f(3))        # observed 10 -22
+print(f2(-1), f2(3))      # observed -12 12  -> max at -1, min at 3
+print([fp(x/10) for x in [-11, 0, 31]])  # observed [1.23, -9.0, 1.23]: +, -, + chart
+```
 
-## Implementation Details
+## 2. Box Volume Scan (EVT Comparison)
 
-### Core Algorithm Implementation
-The primary method implements the fundamental computation for Derivative Applications:
+```python
+V = lambda x: x*(12-2*x)**2
+for x in [0, 1.5, 2.0, 2.5, 6.0]:
+    print(x, V(x))
+# observed: 0 0 | 1.5 121.5 | 2.0 128 | 2.5 122.5 | 6.0 0
+print(24*2-96)  # observed -48 = V''(2) < 0 confirms local max
+```
 
-`java
-public class DerivativeApplications {
-    /**
-     * Computes the core operation for Derivative Applications.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+## 3. Related Rates
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+```python
+import math
+print(4*math.pi*25*2)  # observed 628.3185307179587 = 200*pi
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+## 4. Linear Approximation Error
 
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Code Conventions
-- Java 21+ features including records, sealed classes, pattern matching
-- Descriptive variable names with mathematical notation correspondence
-- Comprehensive Javadoc for all public methods
-- Fail-fast validation with descriptive exception messages
-- Immutable value objects where appropriate
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-- Performance benchmarks for hot paths
-- Property-based testing for algebraic properties
-
-## Complete Source
-See src/main/java/com/mathlab/derivativeapps/DerivativeApplications.java for the full implementation.
+```python
+import math
+print(math.sqrt(26), 5.1, 5.1 - math.sqrt(26))  # observed 5.0990195135927845 5.1 0.0009804864072155
+print(1/500)  # observed 0.002 -> bound (M/2)h^2 = 0.001 covers the error
+```

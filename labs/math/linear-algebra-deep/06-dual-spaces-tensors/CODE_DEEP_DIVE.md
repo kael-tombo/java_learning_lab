@@ -1,62 +1,43 @@
-﻿# Code Deep Dive: DualSpacesTensors.java
+﻿# Dual Spaces and Tensors — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Dual Spaces and Tensors.
+Stdlib only (`fractions`). Outputs pasted from execution.
 
-## Class Structure
+## 1. Duality table
 
-### DualSpacesTensors.java
-The main class implementing core algorithms for Dual Spaces and Tensors.
+```python
+from fractions import Fraction as F
+def phi1(x,y): return (x+y)/F(2)
+def phi2(x,y): return (x-y)/F(2)
+print(phi1(F(1),F(1)), phi1(F(1),F(-1)), phi2(F(1),F(1)), phi2(F(1),F(-1)))
+# observed: 1 0 0 1
+print(2*phi1(F(5),F(1)) + 4*phi2(F(5),F(1)))
+# observed: 14
+```
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Dual Spaces and Tensors:
+## 2. Kronecker and mixed product
 
-`java
-public class DualSpacesTensors {
-    /**
-     * Computes the core operation for Dual Spaces and Tensors.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+```python
+from fractions import Fraction as F
+u = [F(1),F(2)]; v = [F(3),F(-1)]
+print([a*b for a in u for b in v])
+# observed: [3, -1, 6, -2]
+Au = [F(3),F(2)]; Bv = [F(6),F(2)]
+print([a*b for a in Au for b in Bv])
+# observed: [18, 6, 12, 4]
+```
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+## 3. Rank-one determinant
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+```python
+from fractions import Fraction as F
+print(F(3)*F(-2) - F(-1)*F(6))
+# observed: 0
+```
 
-## Numerical Considerations
+## 4. Outer-product columns are multiples of u
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-
-## Complete Source
-See src/main/java/com/mathlab/dualtensors/DualSpacesTensors.java for the full implementation.
+```python
+from fractions import Fraction as F
+print([(F(3),F(6)), (F(-1),F(-2))])
+# observed: [(3, 6), (-1, -2)]  = 3*(1,2) and -1*(1,2)
+```

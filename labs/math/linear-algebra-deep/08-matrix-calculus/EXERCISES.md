@@ -1,130 +1,48 @@
-﻿# Exercises: Matrix Calculus
+﻿# Matrix Calculus — Exercises
 
-## Theoretical Exercises
+## 1. Jacobian of Ax
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Matrix Calculus in your own words.
-**Answer**: Matrix Calculus involves understanding how mathematical quantities change and relate under specific operations.
+Q: d(Ax)/dx for A = [[1,2],[3,4]]? Verify on row 1 at x = (1,2).
+A: The Jacobian is A itself. Row 1 gives f1 = x1+2x2 = 5 with
+gradient (1,2), the matrix's first row.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Matrix Calculus.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Quadratic gradient
 
-### Exercise 3: Application
-**Question**: Apply the theory of Matrix Calculus to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Q: Gradient of x^T A x at (1,2) for the same A?
+A: (A+A^T)x = [[2,5],[5,8]](1,2) = (12,21). Partial check:
+2*1+5*2 = 12; 5*1+8*2 = 21.
 
-## Programming Exercises
+## 3. Finite difference
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Matrix Calculus.
+Q: Confirm the first gradient entry by finite differencing in x1.
+A: f(2,2) = 40, f(1,2) = 27; (40-27)/1 = 13 = 12 + h with h = 1,
+so the linear term is 12.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Trace cyclic
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Q: Verify tr(ABC) = tr(CAB) for A=[[1,2],[0,1]], B=[[2,1],[1,2]],
+C=[[1,0],[3,1]].
+A: ABC = [[19,5],[7,2]], trace 21; CAB = [[4,5],[13,17]], trace 21.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Symmetric shortcut
 
-## Challenge Problems
+Q: Gradient of x^T S x with S symmetric? Apply to S=[[2,1],[1,2]]
+at (1,1).
+A: 2Sx = 2(3,3) = (6,6). Also (S+S^T)x = 2Sx. Consistent.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. d tr(AXB)/dX
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Q: State and check against A = B = I.
+A: A^T B^T = I, and indeed d tr(X)/dX puts 1 on the diagonal, 0
+elsewhere.
 
-## Solutions
+## 7. Hessian definiteness
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Matrix Calculus
+Q: Hessian of x^T A x for A = [[1,2],[3,4]]? Definite?
+A: [[2,5],[5,8]], det -9: indefinite saddle. Gradient zero at x = 0
+is not a minimum.
 
-## Multiple Choice Questions
+## 8. Linear form
 
-### Question 1
-What is the fundamental principle underlying Matrix Calculus?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Matrix Calculus?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Q: Gradient of g(x) = x1 + 2x2? Value at (1,2)?
+A: (1,2) everywhere; value 5 — row 1 of Ax.

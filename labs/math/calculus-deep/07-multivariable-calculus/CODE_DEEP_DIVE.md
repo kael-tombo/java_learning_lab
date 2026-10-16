@@ -1,73 +1,40 @@
-﻿# Code Deep Dive: MultivariableCalculus.java
+# Code Deep Dive: Multivariable Calculus
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Multivariable Calculus.
+Stdlib only (math). Observed outputs in comments.
 
-## Class Structure
+## 1. Gradient and Directional Derivative
 
-### MultivariableCalculus.java
-The main class implementing core algorithms for Multivariable Calculus.
+```python
+import math
+f = lambda x, y: x*x*y + 3*x*y*y
+fx = lambda x, y: 2*x*y + 3*y*y
+fy = lambda x, y: x*x + 6*x*y
+print(f(2,1), fx(2,1), fy(2,1))  # observed 10 7 16
+print(math.sqrt(49+256))        # observed 17.46424919657298 = |grad|
+print((7*3 + 16*4)/5)           # observed 17.0 = directional derivative along (3/5,4/5)
+```
 
-## Implementation Details
+## 2. Tangent Plane vs True Value
 
-### Core Algorithm Implementation
-The primary method implements the fundamental computation for Multivariable Calculus:
+```python
+print(10 + 7*0.01 + 16*0.02)  # observed 10.39 = plane prediction at (2.01,1.02)
+print(f(2.01, 1.02))           # observed 10.394513999999997 = true value
+h = 1e-5
+print((f(2+h,1)-f(2-h,1))/(2*h))  # observed 7.0000000000902665 confirms fx = 7
+```
 
-`java
-public class MultivariableCalculus {
-    /**
-     * Computes the core operation for Multivariable Calculus.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+## 3. Minimum Search and Fubini Check
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
-
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
-
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Code Conventions
-- Java 21+ features including records, sealed classes, pattern matching
-- Descriptive variable names with mathematical notation correspondence
-- Comprehensive Javadoc for all public methods
-- Fail-fast validation with descriptive exception messages
-- Immutable value objects where appropriate
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-- Performance benchmarks for hot paths
-- Property-based testing for algebraic properties
-
-## Complete Source
-See src/main/java/com/mathlab/multivarcalc/MultivariableCalculus.java for the full implementation.
+```python
+g = lambda x, y: x*x + y*y - 4*x - 2*y + 5
+print(g(2,1))  # observed 0
+print(min(g(2+dx,1+dy) for dx in [-0.1,0,0.1] for dy in [-0.1,0,0.1]))  # observed 0: grid min at (2,1)
+def midpoint2(n):
+    s = 0.0
+    for i in range(n):
+        for j in range(n):
+            x = (i+0.5)/n*2; y = (j+0.5)/n
+            s += (x + 2*y)
+    return s/n/n*2*1
+print(midpoint2(200))  # observed 4.0: double Riemann sum equals the iterated value 4
+```

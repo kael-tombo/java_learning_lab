@@ -1,47 +1,38 @@
-﻿# History: Multivariable Calculus
+# History: Multivariable Calculus
 
-## Historical Development
+## Two variables arrive (1637-1700s)
+Descartes' La Geometrie (1637) and Fermat's coordinate methods made
+curves algebraic; surfaces followed in the 1700s. Partial derivatives
+were computed as needed for decades before anyone stated when mixed
+partials agree: Clairaut gave the symmetry condition in the 18th
+century, which is why textbooks still say Clairaut's theorem.
 
-### Ancient Origins
-The foundations of Multivariable Calculus trace back to ancient mathematicians who first explored these concepts. Early work focused on practical computation for astronomy, engineering, and commerce.
+## Constrained extrema (1788)
+Lagrange's Mecanique analytique (1788) introduced multipliers for
+constrained optimization, turning physics problems into algebra. The
+Hessian determinant test descends from Otto Hesse's work of the 1840s
+on homogeneous forms and curvature.
 
-### 17th-18th Century Breakthroughs
-The scientific revolution brought major advances:
-- Formalization of core concepts by pioneering mathematicians
-- Connections to physics and natural philosophy discovered
-- Computational techniques developed for scientific problems
-- Integration with calculus and analytical geometry
+## Gradient language (1880s-1901)
+Gibbs' lecture notes of the 1880s and the 1901 Wilson textbook gave
+the gradient its vector notation and its geometric reading as the
+direction of steepest ascent. Directional derivatives as dot products
+with the gradient belong to this notation, not to the 17th century.
 
-### 19th Century Rigor
-The 19th century saw rigorous mathematical foundations established:
-- Formal definitions replaced intuitive notions
-- Fundamental theorems proved with full rigor
-- Extensions to more general mathematical settings
-- Connections between different branches of mathematics revealed
+## Iterated integrals (1907)
+Guido Fubini proved in 1907 the theorem that evaluates multiple
+integrals one variable at a time under integrability hypotheses.
+Classical texts had swapped integration order freely for a century;
+Fubini stated what justifies it.
 
-### 20th Century Computational Revolution
-The advent of electronic computers transformed the field:
-- Algorithm development for digital computation
-- Numerical analysis emerged as a distinct discipline
-- Integration with scientific computing across all fields
-- Error analysis and stability theory developed
+## Rigor for maps (19th-20th century)
+The inverse and implicit function theorems, the foundations under
+tangent planes and Lagrange multipliers, were proved in stages across
+the 19th and early 20th centuries. Dini's 1870s version for real
+variables is one landmark among several; this file names no single
+origin because there is none.
 
-### Modern Era
-Contemporary developments continue to advance the field:
-- High-performance implementations for modern hardware
-- GPU-accelerated and distributed computation
-- Integration with machine learning frameworks
-- Automatic differentiation and differentiable programming
-
-## Key Figures
-The development of Multivariable Calculus was advanced by many brilliant mathematicians and computer scientists whose insights transformed our understanding of the subject.
-
-## Timeline
-| Year | Development |
-|------|-------------|
-| Ancient | Early exploration of core concepts |
-| 1600s | Formal foundations established |
-| 1800s | Rigorous proofs and extensions |
-| 1900s | Computational methods developed |
-| 2000s | High-performance and GPU computing |
-| Present | Integration with AI and ML frameworks |
+## What this lab inherits
+Grad (7, 16) and the directional value 17 at (2, 1) are Gibbs-era
+notation applied to polynomial examples; the Hessian test and Fubini
+iteration are the 1840s and 1907 guarantees underneath.

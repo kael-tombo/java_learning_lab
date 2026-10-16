@@ -1,73 +1,42 @@
-﻿# Code Deep Dive: IntegrationTechniques.java
+# Code Deep Dive: Integration Techniques
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Integration Techniques.
+Stdlib only (math). Observed outputs in comments.
 
-## Class Structure
+## 1. Differentiation-Back Checks
 
-### IntegrationTechniques.java
-The main class implementing core algorithms for Integration Techniques.
+```python
+import math
+h = 1e-5
+def central(f, x): return (f(x+h) - f(x-h))/(2*h)
+print(central(lambda x: math.exp(x*x), 0.7))  # observed 2.2852427082331594 (analytic 2.28524270793753)
+print(central(lambda x: (x-1)*math.exp(x), 1.0))  # observed 2.7182818285976778 (analytic e = 2.718281828459045)
+print(central(lambda x: x/2 - math.sin(2*x)/4, 1.0))  # observed 0.7080734182596248 (analytic sin^2(1) = 0.7080734182735712)
+```
 
-## Implementation Details
+## 2. Definite Values vs Numeric Sums
 
-### Core Algorithm Implementation
-The primary method implements the fundamental computation for Integration Techniques:
+```python
+import math
+print(math.e - 1)              # observed 1.718281828459045 = int_0^1 2x e^{x^2} dx
+print(math.exp(2) + 1)         # observed 8.38905609893065 = int_0^2 x e^x dx
+print(2*math.log(2) - math.log(3))  # observed 0.2876820724517808 = partial-fractions integral
+print(math.pi/4)               # observed 0.7853981633974483 = int_0^1 dx/(1+x^2)
+def midpoint(f, a, b, n):
+    dx = (b-a)/n
+    return sum(f(a+(i+0.5)*dx) for i in range(n))*dx
+print(midpoint(lambda x: 1/(1+x*x), 0, 1, 1000))  # observed 0.7853981842307817 (pi/4 = 0.7853981633974483)
+```
 
-`java
-public class IntegrationTechniques {
-    /**
-     * Computes the core operation for Integration Techniques.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+## 3. Split Identity Check
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+```python
+x = 0.5
+print(1/((x+1)*(x+2)), 1/(x+1) - 1/(x+2))  # observed 0.26666666666666666 0.2666666666666666
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+## 4. Improper Integral Converges to 1
 
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Code Conventions
-- Java 21+ features including records, sealed classes, pattern matching
-- Descriptive variable names with mathematical notation correspondence
-- Comprehensive Javadoc for all public methods
-- Fail-fast validation with descriptive exception messages
-- Immutable value objects where appropriate
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-- Performance benchmarks for hot paths
-- Property-based testing for algebraic properties
-
-## Complete Source
-See src/main/java/com/mathlab/integrationtech/IntegrationTechniques.java for the full implementation.
+```python
+for R in [10, 100, 1000]:
+    print(R, 1 - 1/R)  # observed 10 0.9 | 100 0.99 | 1000 0.999 -> int_1^infty 1/x^2 dx = 1
+```

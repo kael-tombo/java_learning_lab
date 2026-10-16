@@ -1,76 +1,42 @@
 ﻿# Dual Spaces and Tensors
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Dual Spaces and Tensors**, a cornerstone topic in Linear Algebra Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Micro-lab on dual bases computed explicitly, annihilators, Kronecker
+products with the mixed-product identity, and rank-one matrices.
 
-## Topics Covered
-- dual space, bilinear forms, tensor products, Kronecker product, tensor algebra, contractions
+## Contents
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: dual basis phi1=(x+y)/2, phi2=(x-y)/2 with the identity
+  duality table, annihilator dimension, Kronecker (3,-1,6,-2) and the
+  mixed product (18,6,12,4), rank-one form.
+- MATH_FOUNDATION.md: the duality checks, functional expansion giving
+  14 at (5,1), the mixed product both ways, det 0 rank argument.
+- CODE_DEEP_DIVE.md: fractions snippets printing 1 0 0 1, the two
+  Kronecker lists, and the zero determinant.
+- EXERCISES.md: six problems with computed solutions.
+- FLASHCARDS.md: twelve recall cards.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Dual Spaces and Tensors
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## How to use
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Verify the duality table by hand first; everything else is arithmetic
+built on phi1 and phi2.
 
-## Project Structure
-`
-dualtensors/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/dualtensors/DualSpacesTensors.java
-    â””â”€â”€ test/java/com/mathlab/dualtensors/DualSpacesTensorsTest.java
-`
+## Worked anchors (all values executed)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+- Duality table [[1,0],[0,1]] from phi1=(x+y)/2, phi2=(x-y)/2.
+- 3x-y = 2 phi1 + 4 phi2; value 14 at (5,1), 3 at (1,0).
+- Kronecker (3,-1,6,-2); mixed product (18,6,12,4) both orders.
+- Rank-one det 0; annihilator dim 1 with 1+1 = 2.
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Study sequence
+
+1. Fill the duality table by evaluating phi1, phi2 on e1, e2.
+2. Expand 3x-y as 2 phi1 + 4 phi2; test at (5,1) and (1,0).
+3. Form the Kronecker product (3,-1,6,-2) and the mixed product
+   (18,6,12,4); run snippet 2.
+4. Read rank 1 off the outer-product columns; confirm det 0.
+5. Do EXERCISES.md 1-9; cards 7-9 test the product identities.
+
+## Notes
+
+- Outer-product columns (3,6) and (-1,-2) are 3(1,2) and -1(1,2).
+- Pairing: (2 phi1 + 4 phi2)(5,1) = 2*3 + 4*2 = 14.

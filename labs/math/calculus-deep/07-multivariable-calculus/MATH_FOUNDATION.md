@@ -1,83 +1,44 @@
-﻿# Math Foundation for Multivariable Calculus
+# Multivariable Calculus -- Math Foundation
 
-## Prerequisite Mathematics
+All values computed in Python; observed outputs pasted.
 
-This document reviews the mathematical prerequisites needed to study Multivariable Calculus effectively.
+## 1. Partials of f(x, y) = x^2 y + 3x y^2 at (2, 1)
 
-## 1. Algebra Review
+fx = 2xy + 3y^2: termwise 2*2*1 = 4 and 3*1 = 3, so fx = 7 (observed). fy = x^2 + 6xy = 4 + 12 = 16 (observed).
+Second order: fxx = 2y = 2, fyy = 6x = 12, fxy = 2x + 6y = 10,
+fyx = 2x + 6y = 10 (all observed) -- Clairaut holds with equality
+exhibited. Function value: f(2,1) = 4 + 6 = 10 (observed).
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Gradient, Magnitude, Directional Derivative
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0, solved by x = (-b +/- sqrt(b^2 - 4ac)) / (2a)
-- Systems of linear equations
+grad f(2,1) = (7, 16). Magnitude sqrt(49 + 256) = sqrt(305) =
+17.46424919657298 (observed). Steepest-ascent
+unit vector: (7, 16)/17.46424919657298. Directional derivative along
+u = (3/5, 4/5): D = 7*(3/5) + 16*(4/5) = 21/5 + 64/5 = 85/5 = 17
+exactly (observed 17.0). Since 17 < 17.464..., u is steep but not
+steepest, consistent with grad giving the maximum.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Tangent Plane Accuracy
 
-## 2. Functions and Graphs
+Plane at (2, 1): z = 10 + 7(x-2) + 16(y-1). At (2.01, 1.02):
+prediction 10 + 0.07 + 0.32 = 10.39; true f = 10.394513999999997
+(observed). Remainder 0.004514: quadratic in the step (0.01, 0.02),
+one order below the 0.39 linear move. Central-difference check of fx
+at (2,1) with h = 1e-5: (f(2.00001,1) - f(1.99999,1))/0.00002 =
+7.000000000... (observed 7.0000000000902665), confirming fx = 7.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Min of g(x, y) = x^2 + y^2 - 4x - 2y + 5
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b, slope m, y-intercept b
-- **Quadratic**: f(x) = ax^2 + bx + c, parabola
-- **Polynomial**: f(x) = a_n x^n + a_{n-1}x^{n-1} + ... + a_0
-- **Rational**: f(x) = p(x)/q(x), vertical asymptotes at zeros of q
-- **Exponential**: f(x) = a^x, growth/decay
-- **Logarithmic**: f(x) = log_a(x), inverse of exponential
-- **Trigonometric**: sin(x), cos(x), tan(x), periodic
+Complete the square: (x-2)^2 + (y-1)^2 = x^2 - 4x + 4 + y^2 - 2y + 1,
+so g = (x-2)^2 + (y-1)^2 + 0. Minimum 0 at (2, 1) (observed g(2,1)
+= 4 + 1 - 8 - 2 + 5 = 0). Hessian [[2, 0],[0, 2]], D = 4 > 0,
+gxx = 2 > 0: the second-derivative test independently reports a local
+min, and the sum-of-squares form upgrades it to global.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x) across x-axis, f(-x) across y-axis
-- Stretch/compress: c * f(x), f(cx)
+## 5. Iterated Integral Both Orders
 
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-- sin(a +/- b) = sin(a)*cos(b) +/- cos(a)*sin(b)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative (instantaneous rate of change) |
-| int_a^b f(x) dx = lim_{n->inf} sum_{i=1}^n f(x_i*) Delta_x | Definite integral (accumulated area) |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule for derivatives |
-| int x^n dx = x^{n+1}/(n+1) + C (n != -1) | Power rule for integrals |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or u = 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+int_0^1 int_0^2 (x + 2y) dx dy: inner = [x^2/2 + 2xy]_{x=0}^2 = 2 + 4y;
+outer = [2y + 2y^2]_0^1 = 4 (observed). Swapped: inner over y =
+[x + y^2... ]: int_0^1 (x+2y) dy = x + 1; outer int_0^2 (x+1) dx =
+[x^2/2 + x]_0^2 = 2 + 2 = 4 (observed). Both orders give 4: Fubini
+with equality exhibited.

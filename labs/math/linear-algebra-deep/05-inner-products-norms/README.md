@@ -1,76 +1,43 @@
 ﻿# Inner Products and Norms
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Inner Products and Norms**, a cornerstone topic in Linear Algebra Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Micro-lab on Cauchy-Schwarz, Gram-Schmidt with exact fractions, the
+projection formula, and orthogonal matrices.
 
-## Topics Covered
-- inner product spaces, Cauchy-Schwarz, orthogonal projection, Gram-Schmidt, least squares
+## Contents
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: inner product axioms, Cauchy-Schwarz (9 <= 28 instance),
+  the full Gram-Schmidt triple with norms 2, 3/2, 4/3, projection
+  (1/3,8/3,7/3), orthogonal matrices.
+- MATH_FOUNDATION.md: every coefficient derived: 1/2, 1/2, 1/3; all
+  three orthogonality dots; the residual check; det 2.
+- CODE_DEEP_DIVE.md: fractions snippets printing the norms, the zero
+  dots, and the projection.
+- EXERCISES.md: six problems with computed solutions.
+- FLASHCARDS.md: twelve recall cards.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Inner Products and Norms
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## How to use
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Reproduce u2 by hand (one subtraction), then let the snippets carry
+the heavier u3 arithmetic.
 
-## Project Structure
-`
-innerproducts/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/innerproducts/InnerProductsNorms.java
-    â””â”€â”€ test/java/com/mathlab/innerproducts/InnerProductsNormsTest.java
-`
+## Worked anchors (all values executed)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+- u2 = (-1/2,1/2,1) with |u2|^2 = 3/2; u3 = (2/3,-2/3,2/3).
+- All three pairwise dots are 0; det of the triple is 2.
+- Projection of (1,2,3): (1/3,8/3,7/3) via 3/2 and 7/3.
+- Cauchy-Schwarz: 9 <= 28; cos = 3/sqrt28.
+- Orthonormal: e3 = (1/sqrt3)(1,-1,1).
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Study sequence
+
+1. Compute u2 by hand; confirm coefficients 1/2, 1/2, 1/3 in order.
+2. Check all three orthogonality dots with snippet 1.
+3. Derive the projection coefficients 3/2 and 7/3 before reading.
+4. Close the Pythagoras ledger 38/3 + 4/3 = 14 yourself.
+5. Do EXERCISES.md 1-7; cards 4-7 hold the Gram-Schmidt numbers.
+
+## Notes
+
+- The residual (2/3,-2/3,2/3) equals u3 exactly: projection missed
+  only the u3 direction.
+- Triangle spot-check: |x+y|^2 = 22 sits inside (|x|+|y|)^2.

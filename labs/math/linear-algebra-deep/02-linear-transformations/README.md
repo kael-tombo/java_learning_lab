@@ -1,76 +1,39 @@
 ﻿# Linear Transformations
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Linear Transformations**, a cornerstone topic in Linear Algebra Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Micro-lab on the matrix of a linear map, kernel/image with rank-nullity,
+composition as matrix product, and change of basis via similarity.
 
-## Topics Covered
-- matrix representation, kernel/image, rank-nullity theorem, change of basis, similarity transformations
+## Contents
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: linearity, the running matrix [[1,2,3],[0,1,4]],
+  kernel span{(5,-4,1)}, rank-nullity 1+2=3, similarity
+  A_P = [[3,-1],[0,2]] with trace 5 and det 6 preserved.
+- MATH_FOUNDATION.md: the kernel solved coordinate by coordinate, the
+  2x2 minor equal to 1, the similarity product P^{-1}AP step by step,
+  a composition check giving (6,3).
+- CODE_DEEP_DIVE.md: fractions snippets reproducing the kernel zero,
+  the minor, the similarity, and the composition order.
+- EXERCISES.md: six problems with computed solutions.
+- FLASHCARDS.md: twelve recall cards.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Linear Transformations
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## How to use
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Work the kernel computation by hand first, then confirm with the code
+snippets. Keep track of product order in every composition.
 
-## Project Structure
-`
-lineartransforms/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/lineartransforms/LinearTransformations.java
-    â””â”€â”€ test/java/com/mathlab/lineartransforms/LinearTransformationsTest.java
-`
+## Worked anchors (all values executed)
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+- ker of [[1,2,3],[0,1,4]] is span{(5,-4,1)}; rank 2 via minor 1.
+- Rank-nullity: 1 + 2 = 3.
+- Similarity: P^{-1}AP = [[3,-1],[0,2]]; trace 5, det 6 preserved.
+- A_P eigenvalues 3 (vector (1,0)) and 2 (vector (1,1)).
+- Composition check: BA(1,1) = (6,3).
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Study sequence
+
+1. Solve the kernel system in MATH_FOUNDATION.md section 1 by hand.
+2. Confirm the image minor equals 1 with the snippet in section 2.
+3. Multiply out P^{-1}AP row by row; check trace 5 and det 6.
+4. Read off A_P's eigenvalues from its triangular form; verify both
+   eigenvectors by multiplication.
+5. Do EXERCISES.md 1-8; cards 2, 8, and 13 carry the key numbers.

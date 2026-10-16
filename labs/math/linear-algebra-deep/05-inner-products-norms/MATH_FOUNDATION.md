@@ -1,81 +1,47 @@
-﻿# Math Foundation for Inner Products and Norms
+﻿# Inner Products and Norms — Math Foundation
 
-## Prerequisite Mathematics
+All values computed in exact rational arithmetic (Python `fractions`).
 
-This document reviews the mathematical prerequisites needed to study Inner Products and Norms effectively.
+## 1. Gram-Schmidt coefficients
 
-## 1. Algebra Review
+v1 = (1,1,0), v2 = (0,1,1): <v2,u1> = 1, <u1,u1> = 2, ratio 1/2.
+u2 = (0,1,1) - (1/2)(1,1,0) = (-1/2,1/2,1).
+v3 = (1,0,1): <v3,u1> = 1, ratio 1/2. <v3,u2> = -1/2 + 0 + 1 = 1/2;
+|u2|^2 = 1/4+1/4+1 = 3/2, ratio (1/2)/(3/2) = 1/3.
+u3 = (1,0,1) - (1/2)(1,1,0) - (1/3)(-1/2,1/2,1)
+   = (1 - 1/2 + 1/6, 0 - 1/2 - 1/6, 1 - 1/3) = (2/3,-2/3,2/3).
+|u3|^2 = 3*(4/9) = 4/3.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Orthogonality dots
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+<u1,u2> = -1/2 + 1/2 + 0 = 0. <u1,u3> = 2/3 - 2/3 + 0 = 0.
+<u2,u3> = -1/3 - 1/3 + 2/3 = 0.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Projection of (1,2,3)
 
-## 2. Functions and Graphs
+<w,u1> = 3, ratio 3/2. <w,u2> = -1/2 + 1 + 3 = 7/2, ratio (7/2)/(3/2)
+= 7/3. Projection = (3/2)(1,1,0) + (7/3)(-1/2,1/2,1)
+= (3/2 - 7/6, 3/2 + 7/6, 7/3) = (1/3, 8/3, 7/3).
+Residual: (2/3,-2/3,2/3) = u3 direction; dot vs u1: 2/3-2/3 = 0;
+vs u2: -1/3-1/3+2/3 = 0.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Cauchy-Schwarz numbers
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+<x,y> = 3; |x|^2 = 1+4+9 = 14; |y|^2 = 2; 3^2 = 9 <= 28 = 14*2.
+Triangle check: |x+y|^2 = | (2,3,3) |^2 = 22 <= (|x|+|y|)^2.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 5. Determinant
 
-## 3. Trigonometry
+det with rows (1,1,0),(0,1,1),(1,0,1) = 1*(1-0) - 1*(0-1) + 0 = 2.
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+## 6. Angle between x and y
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
+cos theta = 3/(sqrt14 sqrt2) = 3/sqrt28. Positive and well below 1,
+consistent with 9 <= 28 — the vectors are far from parallel, which is
+why the projection (1/3,8/3,7/3) differs markedly from w itself.
+Residual norm-squared 4/3 is the leftover.
 
-## 4. Key Formulas for Reference
+## 7. Pythagoras ledger
 
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+|p|^2 = (1+64+49)/9 = 38/3; |r|^2 = (4+4+4)/9 = 4/3;
+38/3 + 4/3 = 42/3 = 14 = 1+4+9 = |w|^2. Closed exactly.

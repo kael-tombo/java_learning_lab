@@ -1,61 +1,35 @@
-﻿# Performance: Vector Spaces Implementation
+# Performance: Vector Spaces (exact rational arithmetic)
 
-## Performance Analysis
+## Cost model
+Count field operations as a function of matrix shape. For an m-by-n
+matrix with m <= n, reduction to row-echelon form costs about
+2 m^2 n - 2 m^3 / 3 flops; square n-by-n is the familiar 2 n^3 / 3.
+Rank, the null-space basis, and the determinant test in this lab all
+ride on that one elimination, so they share its cubic cost.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Per-task costs in this lab
+- Determinant of a 3-by-3 triple: O(1) work, six products either way.
+- Row reduction of the 3-by-4 running example: a small constant
+  number of flops; the point is the method, not the size.
+- Null-space basis extraction: back-substitution over the free
+  variables, O(n^2) once elimination is finished.
+- Coordinate solve in a 2-by-2 basis: O(1); the 2-by-2 inverse is
+  four multiplications and one division.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Exact arithmetic surcharge
+This lab uses fractions, not floats. Results are exact, but numerators
+and denominators grow during elimination (intermediate coefficient
+swell), so wall-clock cost rises faster than the flop count suggests.
+Fraction-free elimination (Bareiss, 1960s) keeps intermediates integral
+at the same O(n^3) flop budget. Rank by SVD costs O(m n^2) and is
+the stable choice in floating point; elimination is exact here only
+because fractions allow it.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
-
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Vector Spaces Implementation
-
-## Code Smells and Improvements
-
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
-
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
-
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## How to benchmark honestly
+No timings are quoted here because none were measured. To get real
+numbers: warm the interpreter with throwaway runs, then time many
+repetitions with timeit and report the median, never the best single
+run. Vary the matrix size and confirm cubic growth; one size proves
+nothing. On the JVM the equivalent harness is JMH with warmup
+iterations. Time elimination alone, then the full null-space
+extraction, so the O(n^2) tail is not hidden inside the O(n^3) head.

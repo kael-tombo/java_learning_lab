@@ -1,76 +1,23 @@
-﻿# Integral Fundamentals
+# Integral Fundamentals
 
 ## Overview
-This micro-lab provides a deep-dive exploration of **Integral Fundamentals**, a cornerstone topic in Calculus Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
 
-## Topics Covered
-- Riemann sums, definite integral, indefinite integral, FTC, u-substitution, area between curves
+Riemann sums as the definition of the definite integral, both parts
+of the Fundamental Theorem with exact hypotheses, signed vs total
+area, and the standard antiderivative table -- every entry checked by
+differentiating back.
+
+## Contents
+
+- THEORY.md: Riemann construction, FTC parts 1 and 2, integral
+  properties, standard antiderivatives.
+- MATH_FOUNDATION.md: x^2 on [0,2] with n=4 worked exactly
+  (L4 = 7/4, R4 = 15/4, M4 = 21/8, limit 8/3); FTC evaluations
+  (int_1^3 (2x+1) = 10, int_0^1 e^x = e-1); net-vs-total area for
+  x^3 on [-1,1] (0 vs 1/2); accumulation differentiation-back at x=2.
+- CODE_DEEP_DIVE.md: exact Fraction sums, midpoint convergence
+  2.625 -> 2.6662500000000007 -> 2.6666625 toward 8/3, FTC spot-checks.
 
 ## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Integral Fundamentals
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
-
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
-
-## Project Structure
-`
-integralfund/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/integralfund/IntegralFundamentals.java
-    â””â”€â”€ test/java/com/mathlab/integralfund/IntegralFundamentalsTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+Limits (lab 01) and derivatives (lab 02).

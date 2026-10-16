@@ -1,76 +1,42 @@
-﻿# Integration Techniques -- Theory
+# Integration Techniques -- Theory
 
-## 1. Introduction
+## 1. Substitution
 
-Integration Techniques is a fundamental concept in Calculus Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+If u = g(x) is differentiable with continuous g' and f continuous,
+int f(g(x)) g'(x) dx = int f(u) du. For definite integrals change the
+limits: x = a maps to u = g(a). The method inverts the chain rule, so
+its check is differentiating back. Example: int 2x e^{x^2} dx with
+u = x^2 gives e^{x^2} + C, verified since d/dx e^{x^2} = 2x e^{x^2}.
 
-## 2. Core Definitions
+## 2. Integration by Parts
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Integration Techniques rests on several key definitions and axioms that form the foundation of the theory.
+int u dv = uv - int v du, from the product rule. Choice of u follows
+LIATE priority (log, inverse trig, algebraic, trig, exponential):
+for int x e^x dx take u = x, dv = e^x dx, giving (x-1)e^x + C, and
+d/dx [(x-1)e^x] = e^x + (x-1)e^x = x e^x confirms it. Definite form:
+int_a^b u dv = [uv]_a^b - int_a^b v du.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Partial Fractions
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+A proper rational P/Q with factored denominator splits into A/(linear)
+and (Bx+C)/(quadratic) terms. Example: 1/((x+1)(x+2)) = 1/(x+1) -
+1/(x+2) (check: ((x+2)-(x+1))/((x+1)(x+2)) = 1/((x+1)(x+2))). Then
+int_0^1 = [ln|x+1| - ln|x+2|]_0^1 = (ln 2 - ln 3) - (0 - ln 2)
+= 2 ln 2 - ln 3 = 0.2876820724517808 (observed). Repeated and
+irreducible-quadratic factors add standard terms.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Integration Techniques:
+## 4. Trigonometric Integrals and Substitution
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+sin^2 x = (1 - cos 2x)/2 and sin^2 + cos^2 = 1 reduce powers; e.g.
+int sin^2 x dx = x/2 - sin(2x)/4 + C, checked by differentiating back
+(1/2 - cos(2x)/2 = sin^2 x). For sqrt(a^2 - x^2) use x = a sin theta;
+for sqrt(a^2 + x^2) use x = a tan theta; for sqrt(x^2 - a^2) use
+x = a sec theta. Each converts the radical to a trig factor whose
+antiderivative is elementary.
 
-### 2.3 Formal Framework
-The mathematical framework for Integration Techniques is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Improper Integrals
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic. The formal definition provides the foundation for all subsequent analysis.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Integration Techniques is whether solutions exist and whether they are unique. We examine these questions through rigorous analysis:
-
-- **Existence**: Under what conditions does a solution exist?
-- **Uniqueness**: When is the solution unique?
-- **Continuity**: How does the solution depend on parameters?
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-*Rate*: The convergence rate depends on the conditioning of the problem.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-*Applications*: Used to determine required precision in computations.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Integration Techniques extend naturally to higher-dimensional settings, though additional complexity arises.
-
-### 5.2 Computational Considerations
-Numerical computation of Integration Techniques requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Integration Techniques connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Integration Techniques provide the rigorous basis needed for correct computational implementation and real-world application. Mastery of these concepts enables deeper understanding of advanced topics in mathematics and computer science.
+int_a^infty f = lim_{R -> infty} int_a^R f when the limit exists.
+int_1^infty 1/x^2 dx = lim_{R} (1 - 1/R) = 1 converges; int_1^infty
+1/x dx = lim ln R diverges. Comparison and p-test (int_1^infty
+1/x^p converges iff p > 1) decide the rest.

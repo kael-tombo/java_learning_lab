@@ -1,70 +1,49 @@
-﻿# Inner Products and Norms -- Theory
+﻿# Inner Products and Norms — Theory
 
-## 1. Introduction
+## 1. Inner product and norm
 
-Inner Products and Norms is a fundamental concept in Linear Algebra Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+The standard inner product on R^n is <x,y> = sum x_i y_i; the norm is
+|x| = sqrt(<x,x>). Norm properties: |x| >= 0 with equality only at 0,
+|ax| = |a||x|, triangle inequality |x+y| <= |x|+|y|.
 
-## 2. Core Definitions
+## 2. Cauchy-Schwarz
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Inner Products and Norms rests on several key definitions and axioms that form the foundation of the theory.
+|<x,y>| <= |x||y|, equality iff dependent. Instance: x = (1,2,3),
+y = (1,1,0) give <x,y> = 3, |x|^2 = 14, |y|^2 = 2, and 9 <= 28.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Gram-Schmidt
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+For independent v1 = (1,1,0), v2 = (0,1,1), v3 = (1,0,1):
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Inner Products and Norms:
+    u1 = v1 = (1,1,0), |u1|^2 = 2.
+    u2 = v2 - (1/2)u1 = (-1/2,1/2,1), |u2|^2 = 3/2.
+    u3 = v3 - (1/2)u1 - (1/3)u2 = (2/3,-2/3,2/3), |u3|^2 = 4/3.
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+Pairwise dots are 0, 0, 0. Normalizing gives an orthonormal basis;
+det of the triple is 2, nonzero, confirming independence.
 
-### 2.3 Formal Framework
-The mathematical framework for Inner Products and Norms is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 4. Projection and best approximation
 
-## 3. Mathematical Formulation
+Projection of w onto span{u1,u2} is sum (<w,u_i>/<u_i,u_i>) u_i.
+For w = (1,2,3): coefficients 3/2 and 7/3, projection
+(1/3, 8/3, 7/3). The residual w - proj is orthogonal to the subspace,
+and the projection is the closest point (best approximation theorem).
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 5. Orthogonal matrices
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
+Q preserves inner products iff Q^T Q = I; then |Qx| = |x| and
+Q^{-1} = Q^T.
 
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
+## 6. Full orthonormal basis
 
-### 3.3 Existence and Uniqueness
-A critical question in Inner Products and Norms is whether solutions exist and whether they are unique.
+Normalizing the Section 3 triple: e1 = (1/sqrt2)(1,1,0),
+e2 = u2/sqrt(3/2), e3 = u3/(2/sqrt3) = (1/sqrt3)(1,-1,1).
+Norm check: 3*(1/3) = 1. The change-of-basis matrix
+E = [e1 e2 e3] satisfies E^T E = I: orthogonal, so coordinates in
+this basis are just dots, no solve needed.
 
-## 4. Important Theorems
+## 7. Pythagoras in numbers
 
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Inner Products and Norms extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Inner Products and Norms requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Inner Products and Norms connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Inner Products and Norms provide the rigorous basis needed for correct computational implementation and real-world application.
+|p|^2 = (1+64+49)/9 = 114/9 = 38/3. |r|^2 = 4/3. Sum: 38/3+4/3 =
+42/3 = 14 = |w|^2 = 1+4+9. The orthogonal split accounts for every
+unit of squared length.

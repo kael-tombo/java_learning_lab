@@ -1,62 +1,51 @@
-﻿# Code Deep Dive: LinearTransformations.java
+﻿# Linear Transformations — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Linear Transformations.
+Stdlib only (`fractions`). Outputs pasted from execution.
 
-## Class Structure
+## 1. Kernel vector lands at zero
 
-### LinearTransformations.java
-The main class implementing core algorithms for Linear Transformations.
+```python
+from fractions import Fraction as F
+A = [[F(1),F(2),F(3)],[F(0),F(1),F(4)]]
+k = [F(5),F(-4),F(1)]
+print([sum(a*x for a,x in zip(row,k)) for row in A])
+# observed: [0, 0]
+```
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Linear Transformations:
+## 2. Rank via a nonzero 2x2 minor
 
-`java
-public class LinearTransformations {
-    /**
-     * Computes the core operation for Linear Transformations.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+```python
+from fractions import Fraction as F
+print(F(1)*F(1) - F(2)*F(0))
+# observed: 1
+```
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+Minor 1 != 0, so rank is 2 (maximal for a 2x3 matrix).
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+## 3. Similarity transform
 
-## Numerical Considerations
+```python
+from fractions import Fraction as F
+Pinv = [[F(1,2),F(1,2)],[F(1,2),F(-1,2)]]
+A = [[F(2),F(1)],[F(0),F(3)]]
+P = [[F(1),F(1)],[F(1),F(-1)]]
+def mm(X,Y):
+    return [[sum(x*y for x,y in zip(r,c)) for c in zip(*Y)] for r in X]
+print(mm(mm(Pinv,A),P))
+# observed: [[3, -1], [0, 2]]
+print(mm(Pinv,P))
+# observed: [[1, 0], [0, 1]]
+```
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
+Trace 5 and determinant 6 survive the change of basis.
 
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
+## 4. Composition order
 
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-
-## Complete Source
-See src/main/java/com/mathlab/lineartransforms/LinearTransformations.java for the full implementation.
+```python
+from fractions import Fraction as F
+B = [[F(1),F(1)],[F(0),F(1)]]
+v = [F(1),F(1)]
+Av = [F(3),F(3)]
+print([Av[0]+Av[1], Av[1]])
+# observed: [6, 3]
+```

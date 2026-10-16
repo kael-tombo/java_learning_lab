@@ -1,62 +1,44 @@
-﻿# Code Deep Dive: MatrixCalculus.java
+﻿# Matrix Calculus — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Matrix Calculus.
+Stdlib only (`fractions`). Outputs pasted from execution.
 
-## Class Structure
+## 1. Ax and x^T A x
 
-### MatrixCalculus.java
-The main class implementing core algorithms for Matrix Calculus.
+```python
+from fractions import Fraction as F
+A = [[F(1),F(2)],[F(3),F(4)]]; x = [F(1),F(2)]
+Ax = [sum(a*b for a,b in zip(row,x)) for row in A]
+print(Ax, sum(a*b for a,b in zip(x,Ax)))
+# observed: [5, 11] 27
+```
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Matrix Calculus:
+## 2. Quadratic gradient
 
-`java
-public class MatrixCalculus {
-    /**
-     * Computes the core operation for Matrix Calculus.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+```python
+from fractions import Fraction as F
+ApA = [[F(2),F(5)],[F(5),F(8)]]; x = [F(1),F(2)]
+print([sum(a*b for a,b in zip(row,x)) for row in ApA])
+# observed: [12, 21]
+print((F(40)-F(27))/F(1))
+# observed: 13   ( = 12 + h with h = 1, confirming linear term 12)
+```
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+## 3. Trace cyclic
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+```python
+from fractions import Fraction as F
+def mm(X,Y): return [[sum(a*b for a,b in zip(r,c)) for c in zip(*Y)] for r in X]
+A=[[F(1),F(2)],[F(0),F(1)]];B=[[F(2),F(1)],[F(1),F(2)]];C=[[F(1),F(0)],[F(3),F(1)]]
+ABC=mm(mm(A,B),C); CAB=mm(C,mm(A,B))
+print(ABC[0][0]+ABC[1][1], CAB[0][0]+CAB[1][1])
+# observed: 21 21
+```
 
-## Numerical Considerations
+## 4. Linear form gradient
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-
-## Complete Source
-See src/main/java/com/mathlab/matrixcalc/MatrixCalculus.java for the full implementation.
+```python
+from fractions import Fraction as F
+a = [F(1),F(2)]; x = [F(1),F(2)]
+print(sum(p*q for p,q in zip(a,x)))
+# observed: 5
+```

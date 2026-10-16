@@ -1,52 +1,45 @@
-﻿# Flashcards: Matrix Decompositions
+﻿# Matrix Decompositions — Flashcards
 
-## Front-Back Cards
+## Q/A
 
-### Card 1
-**Front**: What is the definition of Matrix Decompositions?
-**Back**: Mathematical operations transforming inputs according to established rules.
+1. Q: LU of [[2,1,1],[4,3,3],[8,7,9]]?
+   A: L=[[1,0,0],[2,1,0],[4,3,1]], U=[[2,1,1],[0,1,1],[0,0,2]].
 
-### Card 2
-**Front**: Key properties of Matrix Decompositions?
-**Back**: Continuity, convergence, stability, error bounds.
+2. Q: det from that LU?
+   A: 2*1*2 = 4; expansion gives 12-12+4 = 4.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+3. Q: Elimination multipliers?
+   A: 2, 4, then 3.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+4. Q: When does no-pivot LU exist (square)?
+   A: All leading principal minors nonzero.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+5. Q: Thin QR shapes for m x n independent columns?
+   A: Q m x n orthonormal columns, R n x n upper-triangular.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+6. Q: R for columns (1,1,0),(0,1,1)?
+   A: [[sqrt2,1/sqrt2],[0,sqrt(3/2)]].
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+7. Q: u2 and |u2|^2 in that Gram-Schmidt step?
+   A: (-1/2,1/2,1), norm-squared 3/2.
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+8. Q: SVD of [[3,0],[4,0]]?
+   A: Singular values 5, 0; u1=(3/5,4/5), v1=(1,0).
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Matrix Decompositions algorithm: ________. **Answer**: O(n)
+9. Q: A^T A there?
+   A: [[25,0],[0,0]].
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+10. Q: Rank from SVD?
+    A: Count of nonzero singular values.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+11. Q: Full SVD shapes for 5x3?
+    A: U 5x5, Sigma 5x3, V 3x3.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+12. Q: Fix for zero pivot?
+    A: Partial pivoting: PA = LU.
+
+13. Q: Solution of Ax=(3,7,18) via the LU factors?
+    A: Forward gives y=(3,1,3); back gives x=(1,-1/2,3/2).
+
+14. Q: R_11 meaning?
+    A: Norm of the first column: sqrt2 = |a1|.

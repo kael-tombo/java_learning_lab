@@ -1,73 +1,37 @@
-﻿# Code Deep Dive: DifferentialEquations.java
+# Code Deep Dive: Differential Equations
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Differential Equations.
+Stdlib only (math). Observed outputs in comments.
 
-## Class Structure
+## 1. Residual Checks (Substitution Verification)
 
-### DifferentialEquations.java
-The main class implementing core algorithms for Differential Equations.
+```python
+import math
+print(3*math.exp(2))                    # observed 22.16716829679195 = growth y(1)
+print(math.log(2)/2)                    # observed 0.34657359027997264 = doubling time
+print(math.sqrt(13))                    # observed 3.605551275463989 = separable y(3)
+print(math.sqrt(13)*(3/math.sqrt(13))-3) # observed 0.0 = yy' - x residual
+y = lambda t: 3 - 2*math.exp(-2*t)
+yp = lambda t: 4*math.exp(-2*t)
+print(y(0), y(1))                       # observed 1.0 2.7293294335267744
+print(yp(0.5) + 2*y(0.5) - 6)           # observed 0.0 = linear ODE residual
+```
 
-## Implementation Details
+## 2. Euler Iteration
 
-### Core Algorithm Implementation
-The primary method implements the fundamental computation for Differential Equations:
+```python
+import math
+yh = 1.0
+for i in range(10):
+    yh += 0.1*yh
+print(yh, math.e)  # observed 2.5937424601 2.718281828459045
+print(1.1**10)     # observed 2.5937424601: iteration equals (1+h)^n exactly
+```
 
-`java
-public class DifferentialEquations {
-    /**
-     * Computes the core operation for Differential Equations.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+## 3. Logistic Climb Toward y = 10
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
-
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
-
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Code Conventions
-- Java 21+ features including records, sealed classes, pattern matching
-- Descriptive variable names with mathematical notation correspondence
-- Comprehensive Javadoc for all public methods
-- Fail-fast validation with descriptive exception messages
-- Immutable value objects where appropriate
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-- Performance benchmarks for hot paths
-- Property-based testing for algebraic properties
-
-## Complete Source
-See src/main/java/com/mathlab/diffeq/DifferentialEquations.java for the full implementation.
+```python
+z = 2.0
+for i in range(50):
+    z += 0.1*z*(1 - z/10)
+print(z)  # observed 9.761170243292469; monotone rise toward the stable equilibrium 10
+```

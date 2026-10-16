@@ -1,83 +1,43 @@
-﻿# Math Foundation for Derivatives and Differentiation Rules
+# Derivatives and Rules -- Math Foundation
 
-## Prerequisite Mathematics
+All derivatives below were differentiated by hand from the rules and
+then confirmed by central differences (h = 1e-5); observed values pasted.
 
-This document reviews the mathematical prerequisites needed to study Derivatives and Differentiation Rules effectively.
+## 1. Product Rule: d/dx [x^2 e^x] at x = 2
 
-## 1. Algebra Review
+f' = 2x e^x + x^2 e^x = e^x (2x + x^2). At x = 2: e^2 * 8 =
+59.1124487914452 (observed via math.exp). Central difference with
+h = 1e-5: 59.112448794529364 (observed) -- agreement to 8 significant
+figures, confirming the rule application.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Chain Rule: d/dx [ln(x^2 + 1)] at x = 2
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0, solved by x = (-b +/- sqrt(b^2 - 4ac)) / (2a)
-- Systems of linear equations
+Outer ln(u), u = x^2+1: f' = (1/u)(2x) = 2x/(x^2+1). At x = 2: 4/5
+= 0.8 exactly. Central difference (observed): 0.8000000000008.
+Common error this catches: forgetting the inner 2x gives 1/5 = 0.2,
+which the numeric check refutes.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Quotient Rule: d/dx [(x^3 + 1)/(x - 1)] at x = 2
 
-## 2. Functions and Graphs
+f' = (3x^2 (x-1) - (x^3+1)(1))/(x-1)^2. At x = 2: numerator
+3*4*1 - 9 = 12 - 9 = 3, denominator 1, so f'(2) = 3. Central
+difference (observed): 2.9999999998864264. Note the function value
+f(2) = 9, so the tangent line at x = 2 is y = 9 + 3(x - 2).
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Chain + Trig: d/dx [sin^2(3x)] at x = 0.5
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b, slope m, y-intercept b
-- **Quadratic**: f(x) = ax^2 + bx + c, parabola
-- **Polynomial**: f(x) = a_n x^n + a_{n-1}x^{n-1} + ... + a_0
-- **Rational**: f(x) = p(x)/q(x), vertical asymptotes at zeros of q
-- **Exponential**: f(x) = a^x, growth/decay
-- **Logarithmic**: f(x) = log_a(x), inverse of exponential
-- **Trigonometric**: sin(x), cos(x), tan(x), periodic
+Write sin^2(3x) = (sin 3x)^2. Outer power, middle sin, inner 3x:
+f' = 2 sin(3x) cos(3x) * 3 = 3 sin(6x). At x = 0.5: 3 sin(3) =
+0.4233600241796016 (observed). Central difference (observed):
+0.42336002392673316 (agreement to 9 figures). The double-angle form
+3 sin(6x) is exact, not an approximation.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x) across x-axis, f(-x) across y-axis
-- Stretch/compress: c * f(x), f(cx)
+## 5. MVT Check on f(x) = x^2, [1, 3]
 
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-- sin(a +/- b) = sin(a)*cos(b) +/- cos(a)*sin(b)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative (instantaneous rate of change) |
-| int_a^b f(x) dx = lim_{n->inf} sum_{i=1}^n f(x_i*) Delta_x | Definite integral (accumulated area) |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule for derivatives |
-| int x^n dx = x^{n+1}/(n+1) + C (n != -1) | Power rule for integrals |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or u = 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+Secant slope: (9 - 1)/(3 - 1) = 4. MVT promises c with f'(c) = 2c
+= 4, i.e. c = 2, interior to (1, 3). Verified directly: f'(2) = 4.
+Second check on f(x) = x^3, [0, 2]: secant slope (8 - 0)/2 = 4,
+f'(c) = 3c^2 = 4 gives c = 2/sqrt(3) = 1.1547005383792517 (observed),
+interior to (0, 2). Both cases exhibit the promised interior point.
+This is the theorem holding with equality exhibited on a case whose
+c is computable in closed form.

@@ -1,76 +1,31 @@
-﻿# Multivariable Calculus
+# Multivariable Calculus
 
 ## Overview
-This micro-lab provides a deep-dive exploration of **Multivariable Calculus**, a cornerstone topic in Calculus Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
 
-## Topics Covered
-- partial derivatives, gradient, directional derivative, Lagrange multipliers, multiple integrals, Jacobian
+Calculus in two variables: partials with Clairaut, gradient and
+directional derivatives, tangent planes, the Hessian second-derivative
+test, and iterated integrals via Fubini. Worked around f(x,y) =
+x^2 y + 3x y^2 at (2,1) -- grad (7,16), directional 17 -- and
+g(x,y) = x^2+y^2-4x-2y+5 with minimum 0 at (2,1).
+
+## Contents
+
+- THEORY.md: partials, gradient, tangent plane, critical-point test,
+  chain rule, Fubini with a both-orders example (4 = 4).
+- MATH_FOUNDATION.md: term-by-term partials, |grad| =
+  17.46424919657298, plane error 0.004514, sum-of-squares minimum,
+  iterated integrals both orders equal 4.
+- CODE_DEEP_DIVE.md: gradient evaluation, plane-vs-true comparison,
+  central-difference confirmation of fx, grid minimum, double Riemann
+  sum tending to 4.
 
 ## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Multivariable Calculus
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+Single-variable derivatives and integrals (labs 02-04).
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
-
-## Project Structure
-`
-multivarcalc/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/multivarcalc/MultivariableCalculus.java
-    â””â”€â”€ test/java/com/mathlab/multivarcalc/MultivariableCalculusTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## How to work this lab
+Compute partials term by term, then confirm fx against a central
+difference before trusting the gradient — one sign error poisons every
+downstream number (directional derivative, plane, optimum). For double
+integrals, evaluate both orders; Fubini says they agree, and disagreement
+locates the setup mistake to a specific limit.

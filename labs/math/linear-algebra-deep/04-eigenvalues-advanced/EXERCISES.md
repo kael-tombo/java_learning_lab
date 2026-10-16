@@ -1,130 +1,51 @@
-﻿# Exercises: Eigenvalues Advanced
+﻿# Eigenvalues Advanced — Exercises
 
-## Theoretical Exercises
+## 1. Characteristic polynomial
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Eigenvalues Advanced in your own words.
-**Answer**: Eigenvalues Advanced involves understanding how mathematical quantities change and relate under specific operations.
+Q: Eigenvalues of [[4,1],[2,3]]?
+A: t^2 - 7t + 10 = (t-5)(t-2): 5 and 2.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Eigenvalues Advanced.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Eigenspaces
 
-### Exercise 3: Application
-**Question**: Apply the theory of Eigenvalues Advanced to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Q: Bases for both eigenspaces?
+A: lambda=5: [[-1,1],[2,-2]], basis (1,1). lambda=2: [[2,1],[2,1]],
+basis (1,-2). Each nullity 1; geometric = algebraic = 1.
 
-## Programming Exercises
+## 3. Powers via D
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Eigenvalues Advanced.
+Q: Compute A^2's trace without multiplying, then confirm.
+A: 25+4 = 29. Direct product [[18,7],[14,11]] traces to 29.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Spectral decomposition
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Q: Orthogonally diagonalize S = [[2,1],[1,2]].
+A: Eigenvalues 3, 1 with orthonormal (1/sqrt2)(1,1), (1/sqrt2)(1,-1).
+S = Q diag(3,1) Q^T; dot of the two vectors is 0.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Defective matrix
 
-## Challenge Problems
+Q: Show J = [[2,1],[0,2]] is not diagonalizable.
+A: Only eigenvalue 2 (double root). J-2I = [[0,1],[0,0]] has nullity
+1 < 2, so no eigenbasis exists.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. Cayley-Hamilton
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Q: Verify p(A) = 0 for A above.
+A: (A-5I)(A-2I) = [[0,0],[0,0]] entry by entry (Section 5).
 
-## Solutions
+## 7. Third power
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Eigenvalues Advanced
+Q: Trace of A^3, two ways?
+A: 5^3+2^3 = 133; direct [[86,39],[78,47]] traces to 86+47 = 133.
 
-## Multiple Choice Questions
+## 8. Quick eigenvalue read
 
-### Question 1
-What is the fundamental principle underlying Eigenvalues Advanced?
+Q: Eigenvalues of triangular [[3,-1],[0,2]]?
+A: Diagonal entries 3 and 2 — the characteristic polynomial splits
+as (3-t)(2-t).
 
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
+## 9. Constant term check
 
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Eigenvalues Advanced?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Q: Relate p(0) and p(1) to determinants for A = [[4,1],[2,3]].
+A: p(0) = 10 = det A. p(1) = 4 = det(A-I) = 6-2. The polynomial
+evaluated at shifts gives shifted determinants.

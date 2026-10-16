@@ -1,130 +1,51 @@
-﻿# Exercises: Applied Linear Algebra
+﻿# Applied Linear Algebra — Exercises
 
-## Theoretical Exercises
+## 1. Normal equations
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Applied Linear Algebra in your own words.
-**Answer**: Applied Linear Algebra involves understanding how mathematical quantities change and relate under specific operations.
+Q: Fit y = a + bx to (0,1),(1,3),(2,2).
+A: X^T X = [[3,3],[3,5]], X^T y = (6,7), det 6; a = 3/2, b = 1/2.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Applied Linear Algebra.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Residual
 
-### Exercise 3: Application
-**Question**: Apply the theory of Applied Linear Algebra to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Q: Residual vector and squared error?
+A: r = (-1/2,1,-1/2); |r|^2 = 3/2. X^T r = (0,0): sums 0 and 0.
 
-## Programming Exercises
+## 3. Projection view
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Applied Linear Algebra.
+Q: What geometric object is the fitted vector (3/2,2,5/2)?
+A: The orthogonal projection of y onto col(X); y minus it is
+orthogonal to both columns.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Power iteration
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Q: One power step on S = [[2,1],[1,2]] from (1,0); Rayleigh at (2,1)?
+A: S(1,0) = (2,1). Rayleigh at (2,1): 14/5 = 2.8, moving from 2
+toward the dominant eigenvalue 3.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Conditioning
 
-## Challenge Problems
+Q: Eigenvalues of X^T X and what they say?
+A: 4 +- sqrt10 (product 6, sum 8). Positive, so invertible; the
+spread ~7.16/0.84 warns that forming X^T X squares sensitivity.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. Rank deficiency
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Q: What breaks if X's columns are dependent?
+A: X^T X singular (det 0); infinitely many minimizers — the normal
+equations still hold but no unique b_hat.
 
-## Solutions
+## 7. Pythagoras check
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Applied Linear Algebra
+Q: Verify |y|^2 = |X b_hat|^2 + |r|^2.
+A: 14 = 50/4 + 6/4: (9/4+4+25/4) + (1/4+1+1/4) = 56/4 = 14.
 
-## Multiple Choice Questions
+## 8. Inverse check
 
-### Question 1
-What is the fundamental principle underlying Applied Linear Algebra?
+Q: Verify the inverse (1/6)[[5,-3],[-3,3]] of X^T X.
+A: Product row 1: ((15-9)/6, (-9+15)/6) = (1,0); row 2: (0,1).
 
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
+## 9. Mean-only baseline
 
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Applied Linear Algebra?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Q: Compare against fitting just the mean.
+A: y-bar = 2, residuals (-1,1,0), norm-squared 2 > 3/2. The slope
+reduces squared error from 2 to 3/2.

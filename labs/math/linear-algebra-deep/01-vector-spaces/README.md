@@ -1,76 +1,46 @@
 ﻿# Vector Spaces
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Vector Spaces**, a cornerstone topic in Linear Algebra Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Micro-lab on subspaces, span, independence, bases, dimension, and
+rank-nullity, worked with exact rational arithmetic throughout.
 
-## Topics Covered
-- vector axioms, subspaces, linear combinations, span, linear independence, basis, dimension
+## Contents
+
+- THEORY.md: eight axioms, subspace test, span/independence/basis,
+  coordinates in the basis {(1,1),(1,-1)}, rank-nullity on the
+  rows (1,0,2,-1), (0,1,1,3), (2,1,5,1) with rank 2 and nullity 2.
+- MATH_FOUNDATION.md: span membership as a solved linear system,
+  determinant test (-3 vs 0 on the near-miss triples), exhibited
+  null-space basis {(-2,-1,1,0),(1,-3,0,1)}, coordinates (5,-2).
+- CODE_DEEP_DIVE.md: stdlib-only Python (fractions) that recomputes
+  the determinant, the row dependence, the null-space check, and the
+  coordinates, with observed outputs.
+- EXERCISES.md: six problems with worked solutions, including the
+  dependence relation 2*(4,5,6)-(1,2,3)=(7,8,9).
+- FLASHCARDS.md: twelve recall cards keyed to the same numbers.
+
+## How to use
+
+Read THEORY.md, then MATH_FOUNDATION.md with a REPL open; rerun every
+CODE_DEEP_DIVE.md snippet before attempting EXERCISES.md.
 
 ## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Vector Spaces
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+High-school algebra and solving 2x2 linear systems. No prior abstract
+algebra assumed.
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+## Worked anchors (all values executed, not hand-waved)
 
-## Project Structure
-`
-vectorspaces/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/vectorspaces/VectorSpaces.java
-    â””â”€â”€ test/java/com/mathlab/vectorspaces/VectorSpacesTest.java
-`
+- det {(1,2,3),(4,5,6),(7,8,10)} = -3; with 9 instead of 10, 0.
+- Row dependence 2*row1 + row2 = row3 pins rank at 2.
+- Null-space basis {(-2,-1,1,0),(1,-3,0,1)}; rank + nullity = 2+2 = 4.
+- Coordinates of (3,7) in {(1,1),(1,-1)} are (5,-2); the coordinate
+  matrix has det -2.
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
+## Study sequence
 
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+1. Read THEORY.md sections 1-2; test {(1,0),(0,1)} vs {(1,1),(1,-1)}
+   for the subspace rules by hand.
+2. Solve both span systems in MATH_FOUNDATION.md section 1 on paper.
+3. Run the determinant snippet; flip 10 to 9 and rerun.
+4. Verify each null-basis dot product without looking, then check.
+5. Do EXERCISES.md 1-6 in order; cards 3-10 cover the same ground.

@@ -1,52 +1,45 @@
-﻿# Flashcards: Matrix Calculus
+﻿# Matrix Calculus — Flashcards
 
-## Front-Back Cards
+## Q/A
 
-### Card 1
-**Front**: What is the definition of Matrix Calculus?
-**Back**: Mathematical operations transforming inputs according to established rules.
+1. Q: d(Ax)/dx?
+   A: A.
 
-### Card 2
-**Front**: Key properties of Matrix Calculus?
-**Back**: Continuity, convergence, stability, error bounds.
+2. Q: Ax for A=[[1,2],[3,4]], x=(1,2)?
+   A: (5,11).
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+3. Q: d(x^T A x)/dx?
+   A: (A + A^T) x; 2Ax if symmetric.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+4. Q: x^T A x and its gradient at (1,2)?
+   A: 27; (12,21).
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+5. Q: A + A^T here?
+   A: [[2,5],[5,8]].
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+6. Q: Finite-difference confirmation of 12?
+   A: (f(2,2)-f(1,2))/1 = 13 = 12 + h.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+7. Q: Trace cyclic property?
+   A: tr(ABC) = tr(CAB) = tr(BCA).
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+8. Q: Instance traces?
+   A: 21 = 21.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Matrix Calculus algorithm: ________. **Answer**: O(n)
+9. Q: d tr(AXB)/dX?
+   A: A^T B^T.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+10. Q: d det(X)/dX?
+    A: det(X) X^{-T}.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+11. Q: Gradient of x^T S x, S=[[2,1],[1,2]], at (1,1)?
+    A: (6,6).
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+12. Q: Layout used in this lab?
+    A: Numerator layout; df/dx of a scalar is a column.
+
+13. Q: Hessian of x^T A x here? det?
+    A: [[2,5],[5,8]]; -9, indefinite.
+
+14. Q: a^T x gradient for a=(1,2)?
+    A: (1,2); value 5 at (1,2).

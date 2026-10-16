@@ -1,130 +1,42 @@
-﻿# Exercises: Vector Spaces
+﻿# Vector Spaces — Exercises
 
-## Theoretical Exercises
+## 1. Span membership
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Vector Spaces in your own words.
-**Answer**: Vector Spaces involves understanding how mathematical quantities change and relate under specific operations.
+Q: Is (1,2,1) in span{(1,1,0),(0,1,1)}? Is (1,0,2)?
+A: a(1,1,0)+b(0,1,1)=(x,y,z) gives a=x, b=y-x, and needs z=y-x.
+For (1,2,1): 1=2-1 holds — in the span with a=b=1.
+For (1,0,2): 2 vs 0-1=-1 — outside.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Vector Spaces.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Determinant pair
 
-### Exercise 3: Application
-**Question**: Apply the theory of Vector Spaces to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Q: Decide independence of {(1,2,3),(4,5,6),(7,8,10)} and of
+{(1,2,3),(4,5,6),(7,8,9)}.
+A: First determinant: 1*(50-48)-2*(40-42)+3*(32-35) = 2+4-9 = -3,
+independent. Second: same with 9: 1*(45-48)-2*(36-42)+3*(32-35) =
+-3+12-9 = 0, dependent via row3 = 2*row2 - row1:
+2(4,5,6)-(1,2,3) = (7,8,9).
 
-## Programming Exercises
+## 3. Rank
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Vector Spaces.
+Q: Rank of the map with rows (1,0,2,-1),(0,1,1,3),(2,1,5,1)?
+A: 2, since 2*row1+row2 = (2,1,5,1) = row3. First two rows are
+independent (neither is a multiple of the other).
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Null space
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Q: Find a null-space basis and verify it.
+A: Free x3,x4: x1 = -2x3+x4, x2 = -x3-3x4. Basis (-2,-1,1,0),
+(1,-3,0,1). Dots vs row1: 1*(-2)+0+2*1-0=0; 1*1+0+0-1=0.
+Vs row2: 0-1+1+0=0; 0-3+0+3=0. Nullity 2; 2+2=4.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Coordinates
 
-## Challenge Problems
+Q: Coordinates of (3,7) in {(1,1),(1,-1)}?
+A: c1+c2=3, c1-c2=7 gives c1=5, c2=-2. Check:
+5(1,1)-2(1,-1) = (3,7).
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. Subspace or not
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
-
-## Solutions
-
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Vector Spaces
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Vector Spaces?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Vector Spaces?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Q: Which are subspaces of R^2: (a) {xy=0}, (b) {x+y=0}, (c) {x+y=1}?
+A: (a) No: (1,0)+(0,1)=(1,1) escapes. (b) Yes: line through 0.
+(c) No: 0 missing.

@@ -1,83 +1,44 @@
-﻿# Math Foundation for Integration Techniques
+# Integration Techniques -- Math Foundation
 
-## Prerequisite Mathematics
+All values computed in Python; observed outputs pasted. Every
+antiderivative is verified by differentiating back.
 
-This document reviews the mathematical prerequisites needed to study Integration Techniques effectively.
+## 1. Substitution: int 2x e^{x^2} dx
 
-## 1. Algebra Review
+u = x^2, du = 2x dx: integral = int e^u du = e^u + C = e^{x^2} + C.
+Differentiation-back at x = 0.7: analytic 2*0.7*e^{0.49} =
+2.28524270793753 (observed); numeric central difference of e^{x^2}
+with h = 1e-5: 2.2852427082331594 (observed). Agreement to 9 figures.
+Definite check: int_0^1 2x e^{x^2} dx = e - 1 = 1.718281828459045
+(observed).
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Parts: int x e^x dx, Evaluated 0 to 2
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0, solved by x = (-b +/- sqrt(b^2 - 4ac)) / (2a)
-- Systems of linear equations
+u = x, dv = e^x dx: du = dx, v = e^x. int x e^x dx = x e^x - e^x + C
+= (x-1)e^x + C. Back-check: d/dx [(x-1)e^x] = e^x + (x-1)e^x = x e^x.
+Definite 0 to 1: [(x-1)e^x]_0^1 = 0 - (-1) = 1. Definite 0 to 2:
+[(x-1)e^x]_0^2 = e^2 - (-1) = e^2 + 1 = 8.38905609893065 (observed).
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Partial Fractions: int_0^1 dx/((x+1)(x+2))
 
-## 2. Functions and Graphs
+Split: 1/((x+1)(x+2)) = 1/(x+1) - 1/(x+2). Integral: ln(x+1) -
+ln(x+2) evaluated 0 to 1 = (ln 2 - ln 3) - (ln 1 - ln 2) = 2 ln 2 -
+ln 3 = 0.2876820724517808 (observed). Back-check of the split at
+x = 0.5: 1/(1.5*2.5) = 0.26666..., and 1/1.5 - 1/2.5 = 0.66666...
+- 0.4 = 0.26666... (observed 0.26666666666666666 vs 0.2666666666666666,
+agreeing to 16 figures).
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Trig Power: int sin^2 x dx
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b, slope m, y-intercept b
-- **Quadratic**: f(x) = ax^2 + bx + c, parabola
-- **Polynomial**: f(x) = a_n x^n + a_{n-1}x^{n-1} + ... + a_0
-- **Rational**: f(x) = p(x)/q(x), vertical asymptotes at zeros of q
-- **Exponential**: f(x) = a^x, growth/decay
-- **Logarithmic**: f(x) = log_a(x), inverse of exponential
-- **Trigonometric**: sin(x), cos(x), tan(x), periodic
+sin^2 x = (1 - cos 2x)/2, so the antiderivative is x/2 - sin(2x)/4
++ C. Back-check: d/dx [x/2 - sin(2x)/4] = 1/2 - cos(2x)/2 = sin^2 x
+by the double-angle identity. Definite 0 to pi: [x/2 - sin(2x)/4]_0^pi
+= pi/2 - 0 = 1.5707963267948966 (observed). Average of sin^2 over a
+period is 1/2, and pi * 1/2 = pi/2 confirms the same value.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x) across x-axis, f(-x) across y-axis
-- Stretch/compress: c * f(x), f(cx)
+## 5. Arctan Integral: int_0^1 dx/(1+x^2)
 
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-- sin(a +/- b) = sin(a)*cos(b) +/- cos(a)*sin(b)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative (instantaneous rate of change) |
-| int_a^b f(x) dx = lim_{n->inf} sum_{i=1}^n f(x_i*) Delta_x | Definite integral (accumulated area) |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule for derivatives |
-| int x^n dx = x^{n+1}/(n+1) + C (n != -1) | Power rule for integrals |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or u = 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+Antiderivative arctan x (check: d/dx arctan x = 1/(1+x^2)). Value:
+arctan 1 - arctan 0 = pi/4 = 0.7853981633974483 (observed). Midpoint
+rule with n = 1000 gives 0.7853981842307817 (observed), within
+2.1e-8 of pi/4 -- the closed form and the numeric sum agree.

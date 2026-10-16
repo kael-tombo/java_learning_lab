@@ -1,70 +1,42 @@
-﻿# Matrix Calculus -- Theory
+﻿# Matrix Calculus — Theory
 
-## 1. Introduction
+## 1. Derivative of Ax
 
-Matrix Calculus is a fundamental concept in Linear Algebra Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+For fixed A, f(x) = Ax has Jacobian A: d(Ax)/dx = A. Row-wise:
+f1 = x1 + 2x2 has gradient (1,2), the first row of A = [[1,2],[3,4]].
 
-## 2. Core Definitions
+## 2. Quadratic form gradient
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Matrix Calculus rests on several key definitions and axioms that form the foundation of the theory.
+For f(x) = x^T A x: df/dx = (A + A^T) x; if A is symmetric, 2Ax.
+Instance: A = [[1,2],[3,4]], x = (1,2). Ax = (5,11),
+f = 1*5 + 2*11 = 27. A + A^T = [[2,5],[5,8]],
+grad = (2+10, 5+16) = (12,21).
+Finite-difference check on x1: f(1+h,2) - f(1,2) = 2h + h^2 + 10h
+over h -> 12 as h -> 0. Matches.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 3. Trace cyclic property
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+tr(ABC) = tr(CAB) = tr(BCA). Instance: A = [[1,2],[0,1]],
+B = [[2,1],[1,2]], C = [[1,0],[3,1]]; tr(ABC) = 21 = tr(CAB),
+computed entry by entry in MATH_FOUNDATION.md.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Matrix Calculus:
+## 4. Standard identities used here
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+- d(a^T x)/dx = a.
+- d(x^T A x)/dx = (A + A^T) x.
+- d tr(AXB)/dX = A^T B^T.
+- d det(X)/dX = det(X) X^{-T} (X invertible).
+- Chain: dL/dx = (dL/dy)(dy/dx) with shapes (1 x m)(m x n).
 
-### 2.3 Formal Framework
-The mathematical framework for Matrix Calculus is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 5. Layout note
 
-## 3. Mathematical Formulation
+This lab uses numerator layout: df/dx for scalar f is a column of
+partial derivatives. Denominator layout transposes everything;
+pick one and hold it through each derivation.
 
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
+## 6. Hessian of the quadratic
 
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Matrix Calculus is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Matrix Calculus extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Matrix Calculus requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Matrix Calculus connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Matrix Calculus provide the rigorous basis needed for correct computational implementation and real-world application.
+d2f/dx2 = A + A^T = [[2,5],[5,8]]: constant, since f is quadratic.
+Symmetric with det 16-25 = -9: this f is indefinite (a saddle, not a
+bowl) — gradient descent on x^T A x with this A does not converge to
+a minimum. The sign of the Hessian, not just the gradient, decides.

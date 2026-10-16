@@ -1,73 +1,39 @@
-﻿# Code Deep Dive: VectorCalculus.java
+# Code Deep Dive: Vector Calculus
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Vector Calculus.
+Stdlib only (math). Observed outputs in comments.
 
-## Class Structure
+## 1. Div/Curl at Points
 
-### VectorCalculus.java
-The main class implementing core algorithms for Vector Calculus.
+```python
+print(2*1 + 2*2 + 2*3)  # observed 12 = div(x^2,y^2,z^2) at (1,2,3)
+print(0 - 0, 0 - 0, 0 - 0)  # observed 0 0 0 = its curl components
+print(0 - 0, 0 - 0, 1 + 1)  # observed 0 0 2 = curl(-y,x,0)
+```
 
-## Implementation Details
+## 2. Line Integral: Closed Form vs Sum
 
-### Core Algorithm Implementation
-The primary method implements the fundamental computation for Vector Calculus:
+```python
+n = 100000
+s = 0.0
+for i in range(n):
+    t = (i+0.5)/n
+    s += 3*t*t/n
+print(s)  # observed 0.9999999999750026 (exact 1)
+```
 
-`java
-public class VectorCalculus {
-    /**
-     * Computes the core operation for Vector Calculus.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+## 3. Green and Gauss Spot-Checks
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+```python
+import math
+print(2*math.pi)  # observed 6.283185307179586 = unit-circle circulation of (-y,x)
+print(2*math.pi*1**2)  # observed 6.283185307179586 = Green side: 2 * area
+print(4*math.pi)  # observed 12.566370614359172 = flux of (x,y,z) through unit sphere
+print(4/3*math.pi)  # observed 4.1887902047863905 = unit-ball volume
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+## 4. Path Independence
 
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Code Conventions
-- Java 21+ features including records, sealed classes, pattern matching
-- Descriptive variable names with mathematical notation correspondence
-- Comprehensive Javadoc for all public methods
-- Fail-fast validation with descriptive exception messages
-- Immutable value objects where appropriate
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-- Performance benchmarks for hot paths
-- Property-based testing for algebraic properties
-
-## Complete Source
-See src/main/java/com/mathlab/vectorcalc/VectorCalculus.java for the full implementation.
+```python
+# phi = x^2+y^2: axes path 1+1, diagonal int_0^1 4t dt
+print(1 + 1, 4*0.5)  # observed 2 2.0: both paths give phi(1,1)-phi(0,0)
+```

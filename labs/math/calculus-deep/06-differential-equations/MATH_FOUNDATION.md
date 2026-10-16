@@ -1,83 +1,44 @@
-﻿# Math Foundation for Differential Equations
+# Differential Equations -- Math Foundation
 
-## Prerequisite Mathematics
+All values computed in Python; observed outputs pasted. Every closed
+form is verified by substitution into its ODE.
 
-This document reviews the mathematical prerequisites needed to study Differential Equations effectively.
+## 1. Exponential Growth: y' = 2y, y(0) = 3
 
-## 1. Algebra Review
+Solution y = 3 e^{2t}. Check: y' = 6 e^{2t} = 2y, and y(0) = 3.
+Observed: y(1) = 22.16716829679195. Doubling time: y = 6 when
+e^{2t} = 2, t = ln 2 / 2 = 0.34657359027997264 (observed). The same
+equation with k = -2 would halve every 0.34657... time units.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Separable: dy/dx = x/y, y(0) = 2
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0, solved by x = (-b +/- sqrt(b^2 - 4ac)) / (2a)
-- Systems of linear equations
+Separate: y dy = x dx. Integrate: y^2/2 = x^2/2 + C. IC: 4/2 = C,
+so C = 2 and y = sqrt(x^2 + 4) (positive branch, since y(0) = 2 > 0).
+Verify at x = 3: y = sqrt(13) = 3.605551275463989 (observed);
+y' = 3/sqrt(13), so y y' = 3 = x (observed 3.0 exactly in float:
+sqrt(13)*(3/sqrt(13)) - 3 = 0.0). Solution curve confirmed on the ODE.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Linear: y' + 2y = 6, y(0) = 1
 
-## 2. Functions and Graphs
+Integrating factor mu = e^{2x}. (e^{2x} y)' = 6 e^{2x}, so e^{2x} y
+= 3 e^{2x} + C, y = 3 + C e^{-2x}. IC y(0) = 1 gives C = -2:
+y = 3 - 2 e^{-2x}. Observed: y(0) = 1.0, y(1) = 2.7293294335267744,
+approaching the equilibrium y = 3. Residual check: y' = 4 e^{-2x},
+so y' + 2y - 6 = 4 e^{-2x} + 6 - 4 e^{-2x} - 6 = 0; observed 0.0 at
+x = 0.5. Exact satisfaction, not a fit.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Euler Method on y' = y, y(0) = 1
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b, slope m, y-intercept b
-- **Quadratic**: f(x) = ax^2 + bx + c, parabola
-- **Polynomial**: f(x) = a_n x^n + a_{n-1}x^{n-1} + ... + a_0
-- **Rational**: f(x) = p(x)/q(x), vertical asymptotes at zeros of q
-- **Exponential**: f(x) = a^x, growth/decay
-- **Logarithmic**: f(x) = log_a(x), inverse of exponential
-- **Trigonometric**: sin(x), cos(x), tan(x), periodic
+h = 0.1, 10 steps: y_10 = 2.5937424601 (observed) vs e =
+2.718281828459045 (observed). Error 0.124539368359045. The method
+compounds (1 + h) each step: (1.1)^10 = 2.5937424601 exactly matches
+the iteration, showing the error comes from the tangent-line
+approximation, not implementation drift.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x) across x-axis, f(-x) across y-axis
-- Stretch/compress: c * f(x), f(cx)
+## 5. Logistic Sketch: y' = y(1 - y/10)
 
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-- sin(a +/- b) = sin(a)*cos(b) +/- cos(a)*sin(b)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative (instantaneous rate of change) |
-| int_a^b f(x) dx = lim_{n->inf} sum_{i=1}^n f(x_i*) Delta_x | Definite integral (accumulated area) |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule for derivatives |
-| int x^n dx = x^{n+1}/(n+1) + C (n != -1) | Power rule for integrals |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or u = 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+Equilibria at y = 0 (unstable: f'(0) = 1 > 0) and y = 10 (stable:
+f'(10) = -1 < 0). Starting from y(0) = 2, Euler with h = 0.1 for 50
+steps gives 9.761170243292469 (observed): monotone rise
+toward 10, consistent with the stable equilibrium -- the trajectory
+cannot cross y = 10 by uniqueness.

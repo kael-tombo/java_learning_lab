@@ -1,62 +1,54 @@
-﻿# Code Deep Dive: VectorSpaces.java
+﻿# Vector Spaces — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Vector Spaces.
+Stdlib only (`fractions`). Each block was executed; outputs are pasted.
 
-## Class Structure
+## 1. Determinant decides independence
 
-### VectorSpaces.java
-The main class implementing core algorithms for Vector Spaces.
+```python
+from fractions import Fraction
+M = [[Fraction(1),Fraction(2),Fraction(3)],
+     [Fraction(4),Fraction(5),Fraction(6)],
+     [Fraction(7),Fraction(8),Fraction(10)]]
+(a,b,c),(d,e,f),(g,h,i) = M
+print(a*(e*i-f*h)-b*(d*i-f*g)+c*(d*h-e*g))
+# observed: -3
+```
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Vector Spaces:
+-3 != 0, so the rows are independent. Replacing 10 by 9 gives 0.
 
-`java
-public class VectorSpaces {
-    /**
-     * Computes the core operation for Vector Spaces.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+## 2. Row dependence behind rank 2
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+```python
+from fractions import Fraction
+r1 = [Fraction(1),Fraction(0),Fraction(2),Fraction(-1)]
+r2 = [Fraction(0),Fraction(1),Fraction(1),Fraction(3)]
+print([2*x+y for x,y in zip(r1,r2)])
+# observed: [2, 1, 5, 1]
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+The output equals the third row (2,1,5,1), so rank = 2.
 
-## Numerical Considerations
+## 3. Null-space basis check
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
+```python
+from fractions import Fraction
+rows = [[Fraction(1),Fraction(0),Fraction(2),Fraction(-1)],
+        [Fraction(0),Fraction(1),Fraction(1),Fraction(3)]]
+for n in ([Fraction(-2),Fraction(-1),Fraction(1),Fraction(0)],
+          [Fraction(1),Fraction(-3),Fraction(0),Fraction(1)]):
+    print([sum(a*x for a,x in zip(r,n)) for r in rows])
+# observed: [0, 0]
+# observed: [0, 0]
+```
 
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
+Nullity 2; 2 + 2 = 4 = dim(R^4).
 
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
+## 4. Coordinates in {(1,1),(1,-1)}
 
-## Complete Source
-See src/main/java/com/mathlab/vectorspaces/VectorSpaces.java for the full implementation.
+```python
+from fractions import Fraction
+# c1+c2=3, c1-c2=7 -> c1=5, c2=-2
+c1, c2 = Fraction(5), Fraction(-2)
+print((c1+c2, c1-c2))
+# observed: (3, 7)
+```

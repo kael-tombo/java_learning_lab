@@ -1,52 +1,45 @@
-﻿# Flashcards: Applied Linear Algebra
+﻿# Applied Linear Algebra — Flashcards
 
-## Front-Back Cards
+## Q/A
 
-### Card 1
-**Front**: What is the definition of Applied Linear Algebra?
-**Back**: Mathematical operations transforming inputs according to established rules.
+1. Q: Normal equations?
+   A: X^T X b = X^T y.
 
-### Card 2
-**Front**: Key properties of Applied Linear Algebra?
-**Back**: Continuity, convergence, stability, error bounds.
+2. Q: X^T X and X^T y for points (0,1),(1,3),(2,2)?
+   A: [[3,3],[3,5]] and (6,7); det 6.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+3. Q: Fitted intercept and slope?
+   A: a = 3/2, b = 1/2.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+4. Q: Residual and squared error?
+   A: (-1/2,1,-1/2); 3/2.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+5. Q: Verify optimality via orthogonality?
+   A: X^T r = (0,0): sums 0 and 0.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+6. Q: Geometric meaning of X b_hat?
+   A: Projection of y onto col(X).
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+7. Q: Power step S(1,0) for S=[[2,1],[1,2]]?
+   A: (2,1).
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+8. Q: Rayleigh at (2,1)? Limit?
+   A: 14/5 = 2.8; converges to 3.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Applied Linear Algebra algorithm: ________. **Answer**: O(n)
+9. Q: Rayleigh quotient formula?
+   A: (x^T S x)/(x^T x).
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+10. Q: Eigenvalues of X^T X?
+    A: 4 +- sqrt10.
 
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
+11. Q: Why prefer QR over normal equations at scale?
+    A: Forming X^T X squares the condition number.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+12. Q: Dependent columns consequence?
+    A: X^T X singular; minimizer not unique.
+
+13. Q: Fitted values?
+    A: (3/2, 2, 5/2).
+
+14. Q: Pythagoras split numbers?
+    A: 14 = 50/4 + 6/4.

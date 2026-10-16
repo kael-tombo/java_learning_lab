@@ -1,62 +1,47 @@
-﻿# Code Deep Dive: MatrixDecompositions.java
+﻿# Matrix Decompositions — Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Matrix Decompositions.
+Stdlib only (`fractions`). Outputs pasted from execution.
 
-## Class Structure
+## 1. LU reconstruction
 
-### MatrixDecompositions.java
-The main class implementing core algorithms for Matrix Decompositions.
+```python
+from fractions import Fraction as F
+L = [[F(1),F(0),F(0)],[F(2),F(1),F(0)],[F(4),F(3),F(1)]]
+U = [[F(2),F(1),F(1)],[F(0),F(1),F(1)],[F(0),F(0),F(2)]]
+print([[sum(x*y for x,y in zip(r,c)) for c in zip(*U)] for r in L])
+# observed: [[2, 1, 1], [4, 3, 3], [8, 7, 9]]
+print(U[0][0]*U[1][1]*U[2][2])
+# observed: 4
+```
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Matrix Decompositions:
+## 2. Gram-Schmidt residual
 
-`java
-public class MatrixDecompositions {
-    /**
-     * Computes the core operation for Matrix Decompositions.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
-    }
+```python
+from fractions import Fraction as F
+u2 = [F(-1,2),F(1,2),F(1)]
+print(sum(x*x for x in u2))
+# observed: 3/2
+e1 = [F(1),F(1),F(0)]
+print(sum(x*y for x,y in zip(u2,e1)))
+# observed: 0
+```
 
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
-    }
-}
-`
+Residual norm-squared 3/2 feeds R_22 = sqrt(3/2); dot 0 confirms
+the orthogonal split.
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+## 3. SVD data
 
-## Numerical Considerations
-
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
-
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
-
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
-
-## Complete Source
-See src/main/java/com/mathlab/matrixdecomp/MatrixDecompositions.java for the full implementation.
+```python
+from fractions import Fraction as F
+A = [[F(3),F(0)],[F(4),F(0)]]
+AtA = [[A[0][0]**2+A[1][0]**2, F(0)],[F(0), F(0)]]
+print(AtA)
+# observed: [[25, 0], [0, 0]]
+v1 = [F(1),F(0)]; u1 = [F(3,5),F(4,5)]
+print([sum(a*x for a,x in zip(row,v1)) for row in A])
+# observed: [3, 4]
+print([F(5)*x for x in u1])
+# observed: [3, 4]  (A v1 = 5 u1 with singular value 5)
+print(sum(x*x for x in u1))
+# observed: 1
+```

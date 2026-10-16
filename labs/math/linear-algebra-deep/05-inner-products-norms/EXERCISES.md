@@ -1,130 +1,45 @@
-﻿# Exercises: Inner Products and Norms
+﻿# Inner Products and Norms — Exercises
 
-## Theoretical Exercises
+## 1. Gram-Schmidt
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Inner Products and Norms in your own words.
-**Answer**: Inner Products and Norms involves understanding how mathematical quantities change and relate under specific operations.
+Q: Orthogonalize (1,1,0), (0,1,1), (1,0,1).
+A: u1 = (1,1,0); u2 = (-1/2,1/2,1); u3 = (2/3,-2/3,2/3), with
+norms-squared 2, 3/2, 4/3 and all pairwise dots 0.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Inner Products and Norms.
-**Answer**: The proof follows from the definitions and established theorems.
+## 2. Orthonormal basis
 
-### Exercise 3: Application
-**Question**: Apply the theory of Inner Products and Norms to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+Q: Normalize the triple.
+A: e1 = (1/sqrt2)(1,1,0); e2 = u2/sqrt(3/2); e3 = (1/sqrt3)(1,-1,1),
+since |u3| = 2/sqrt3, so u3/|u3| = (2/3,-2/3,2/3)/(2/sqrt3)
+= (1/sqrt3)(1,-1,1). Check: 3*(1/3) = 1.
 
-## Programming Exercises
+## 3. Projection
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Inner Products and Norms.
+Q: Project (1,2,3) onto span{u1,u2}.
+A: (1/3,8/3,7/3) with coefficients 3/2, 7/3. Residual (2/3,-2/3,2/3)
+is orthogonal to both u1 and u2.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+## 4. Cauchy-Schwarz
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+Q: Verify it for (1,2,3) and (1,1,0), and name the equality case.
+A: 9 <= 28. Equality iff the vectors are linearly dependent.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+## 5. Best approximation
 
-## Challenge Problems
+Q: Why is the projection the closest point in the subspace?
+A: For any s in the subspace, |w-s|^2 = |w-p|^2 + |p-s|^2 by
+orthogonality (Pythagoras), minimized at s = p. Here the gap is
+|residual|^2 = 4/3.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## 6. Orthogonal matrix check
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Q: Is (1/sqrt2)[[1,1],[1,-1]] orthogonal?
+A: Yes: columns have norm 1 and dot (1-1)/2 = 0; Q^T Q = I.
 
-## Solutions
+## 7. Coordinates via dots
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Inner Products and Norms
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Inner Products and Norms?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Inner Products and Norms?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Q: Coordinates of (3,7) in the orthonormal basis from Exercise 2's
+2D analogue — i.e. dot instead of solve?
+A: Dots with (1/sqrt2)(1,1) and (1/sqrt2)(1,-1) give 10/sqrt2 = 5
+sqrt2 and -4/sqrt2 = -2 sqrt2; dividing by 1 (unit norms) and
+comparing with 5(1,1)-2(1,-1) = (3,7) confirms coefficients 5, -2.
