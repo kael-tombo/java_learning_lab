@@ -1,81 +1,47 @@
-﻿# Math Foundation for Vector Spaces
+﻿# Vector Spaces — Math Foundation
 
-## Prerequisite Mathematics
+All computations below were executed in exact rational arithmetic
+(Python `fractions`) and the stated values are the observed outputs,
+not hand derivations.
 
-This document reviews the mathematical prerequisites needed to study Vector Spaces effectively.
+## 1. Span Membership Is a Linear System
 
-## 1. Algebra Review
+Question: is (1,0,2) in span{(1,1,0),(0,1,1)}?
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+Set a(1,1,0) + b(0,1,1) = (1,0,2) and read coordinate-wise:
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+- First coordinate: a = 1.
+- Second: a + b = 0, so b = −1.
+- Third: b = −1 against required 2. Contradiction.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+**Not in the span.** Contrast (1,2,1): a = 1, b = 1, third coordinate
+1 = 1. **In the span.** One sign flip in the target decides membership —
+span questions are solved systems, never inspections.
 
-## 2. Functions and Graphs
+## 2. Determinant Test for Independence
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+{(1,2,3), (4,5,6), (7,8,10)}: determinant = **−3** (exact), hence
+independent. Compare the textbook triple {(1,2,3),(4,5,6),(7,8,9)}:
+determinant = **0**, dependent (third row = 2·second − first: check
+2(4,5,6) − (1,2,3) = (7,8,9)). A single entry (9 → 10) moves the
+determinant off zero — dependence in R³ is a knife-edge condition,
+det = 0, and this pair shows both sides of it.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## 3. Rank–Nullity With Exhibited Bases
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+T: R⁴ → R³, rows (1,0,2,−1), (0,1,1,3), (2,1,5,1).
 
-## 3. Trigonometry
+- Row dependence: 2·(1,0,2,−1) + (0,1,1,3) = (2,1,5,1) exactly → the
+  third row adds nothing → rank = 2.
+- Null space: free x₃, x₄. Setting (x₃,x₄) = (1,0) gives (−2,−1,1,0);
+  (0,1) gives (1,−3,0,1). Dot products against both rows are 0,0 and
+  0,0 respectively (verified) → nullity = 2.
+- 2 + 2 = 4 = dim R⁴. ∎
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+## 4. Coordinates in a Nonstandard Basis
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+v = (3,7), basis {(1,1),(1,−1)}: solve c₁ + c₂ = 3, c₁ − c₂ = 7 →
+c₁ = 5, c₂ = −2. Check: 5(1,1) − 2(1,−1) = (5−2, 5+2) = (3,7). ∎
+Coordinates are solutions, and the solution here is integral — a
+property of this basis (determinant −2 divides evenly), not a general
+promise.

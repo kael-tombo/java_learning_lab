@@ -1,70 +1,52 @@
-﻿# Vector Spaces -- Theory
+﻿# Vector Spaces — Theory
 
-## 1. Introduction
+## 1. What a Vector Space Is
 
-Vector Spaces is a fundamental concept in Linear Algebra Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+A vector space over a field F (think R or Q) is a set V with addition and
+scalar multiplication satisfying eight axioms: closure under both
+operations, associativity and commutativity of addition, a zero vector,
+additive inverses, and distributivity/compatibility of scalars
+(1·v = v, a(bv) = (ab)v, a(u+v) = au+av, (a+b)v = av+bv). Everything in
+this lab is a consequence of those eight rules — subspaces, span,
+independence, bases, and dimension all follow without further assumptions.
 
-## 2. Core Definitions
+Standard examples: Rⁿ, the space Pₙ of polynomials of degree ≤ n
+(dimension n+1), M_{m×n} matrices (dimension mn), and function spaces
+(infinite-dimensional — the finite intuition needs care there).
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Vector Spaces rests on several key definitions and axioms that form the foundation of the theory.
+## 2. Subspaces
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+A subset W ⊆ V is a subspace iff it is nonempty and closed under both
+operations (equivalently: closed under linear combinations). Practical
+test: 0 ∈ W, and au + bv ∈ W for all u, v ∈ W and scalars a, b.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+- Solution sets of homogeneous systems Ax = 0 are subspaces (null spaces).
+- Solution sets of Ax = b with b ≠ 0 are NOT subspaces (0 missing) — they
+  are affine translates x_particular + N(A).
+- Unions of subspaces are almost never subspaces (take vectors from each
+  side; their sum escapes). Intersections always are.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Vector Spaces:
+## 3. Span, Independence, Basis, Dimension
 
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
+- **Span** of {v₁, …, vₖ}: all linear combinations. Membership is a
+  linear system: (1,2,1) ∈ span{(1,1,0),(0,1,1)} because a = 1, b = 1
+  solves a(1,1,0) + b(0,1,1) = (1,2,1) — while (1,0,2) is outside it
+  (a = 1 forces b = −1, but the third coordinate then reads −1 ≠ 2).
+- **Independence**: the only relation c₁v₁ + … + cₖvₖ = 0 is the trivial
+  one. {(1,2,3),(4,5,6),(7,8,10)} is independent (determinant −3 ≠ 0);
+  note the near-miss classic {(1,2,3),(4,5,6),(7,8,9)} with determinant
+  0 — one changed entry flips dependence to independence.
+- **Basis**: independent + spanning. **Dimension** = size of any basis
+  (well-defined: every basis of V has the same cardinality — the
+  exchange theorem).
+- **Coordinates**: relative to an ordered basis. v = (3,7) in the basis
+  {(1,1),(1,−1)} has coordinates (5,−2), since 5(1,1) − 2(1,−1) = (3,7).
 
-### 2.3 Formal Framework
-The mathematical framework for Vector Spaces is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
+## 4. Rank–Nullity (Worked)
 
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Vector Spaces is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Vector Spaces extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Vector Spaces requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Vector Spaces connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Vector Spaces provide the rigorous basis needed for correct computational implementation and real-world application.
+For T: R⁴ → R³ with rows r₁ = (1,0,2,−1), r₂ = (0,1,1,3),
+r₃ = (2,1,5,1): r₃ = 2r₁ + r₂ exactly, so the row space has dimension 2
+(rank 2). Free variables x₃, x₄ give null-space basis
+{(−2,−1,1,0), (1,−3,0,1)} — each dot-verified against both rows —
+so nullity 2, and 2 + 2 = 4 = dim(domain). Rank–nullity holds with
+equality exhibited, not merely stated.
