@@ -1,53 +1,30 @@
-﻿# Exploratory Analysis - Vision & Future Directions
-
-## Current State
-
-Exploratory Analysis continues to evolve rapidly with new algorithms, tools, and methodologies emerging regularly. The field is moving toward greater automation, interpretability, and accessibility.
-
-## Emerging Trends
-
-### Automated Machine Learning (AutoML)
-AutoML platforms are democratizing Exploratory Analysis by automating feature selection, model selection, and hyperparameter tuning. This enables domain experts to build models without deep ML expertise.
-
-### Explainable AI (XAI)
-As models become more complex, the demand for interpretability grows. Techniques like SHAP, LIME, and attention visualization are becoming standard requirements.
-
-### Federated Learning
-Privacy-preserving techniques allow model training across decentralized data sources without centralizing sensitive information.
-
-### Edge Computing
-Deploying Exploratory Analysis capabilities on edge devices reduces latency and bandwidth requirements, enabling real-time decision making.
-
-## Technology Evolution
-
-### Language Models
-Large language models are transforming how we interact with data, enabling natural language interfaces for Exploratory Analysis tasks.
-
-### Vector Databases
-Specialized databases for similarity search are enabling efficient retrieval-augmented generation and semantic search.
-
-### Real-Time Processing
-Stream processing frameworks are enabling real-time Exploratory Analysis with sub-second latency requirements.
-
-## Future Applications
-
-### Personalized Medicine
-Exploratory Analysis will enable treatment plans tailored to individual genetic profiles and medical histories.
-
-### Climate Modeling
-Advanced techniques will improve climate predictions and help develop mitigation strategies.
-
-### Scientific Discovery
-Automated hypothesis generation and testing will accelerate scientific research across domains.
-
-## Skills for the Future
-
-To stay relevant, practitioners should develop:
-- Strong software engineering fundamentals
-- Cloud computing and distributed systems expertise
-- Domain knowledge in their area of application
-- Communication and storytelling skills
-
-## Conclusion
-
-The future of Exploratory Analysis is bright, with expanding applications across every industry. Continuous learning and adaptation will be essential for success in this dynamic field.
+# Exploratory Analysis - Vision
+## Where this leads
+- Exploratory Analysis practice here points toward stratified exploratory comparisons that survive review meetings.
+- Learners finishing 03-exploratory-analysis repeat the cross-tabs, group-wise summaries, QQ inspection, permutation spot-checks workflow without notes.
+- The Retail basket exploration pack dossier becomes the 03-exploratory-analysis reference for later chapters.
+- Confidence in 03-exploratory-analysis comes from rerun counts, not from slogans.
+- Peers can audit the 03-exploratory-analysis trail from raw inputs to final tables.
+## What changes next
+- Schedule monthly re-runs of the Retail basket exploration pack checks after 03-exploratory-analysis.
+- Extend the 03-exploratory-analysis results into 06-causal-inference for formalizing the promo question as the next chapter.
+- Pair each 03-exploratory-analysis artifact with a one-paragraph decision memo.
+- Keep 03-exploratory-analysis results tied to choices instead of drifting into trivia.
+- Revisit the 03-exploratory-analysis acceptance numbers quarterly for relevance.
+- Prune any Exploratory Analysis check that stopped informing 03-exploratory-analysis decisions.
+## What this lab does not cover
+- Exploratory Analysis in 03-exploratory-analysis does not cover demand forecasting, price optimization, loyalty modeling.
+- Those topics need their own labs outside 03-exploratory-analysis.
+- Claims about demand forecasting, price optimization, loyalty modeling do not belong in 03-exploratory-analysis reviews.
+- Treat 03-exploratory-analysis completion as readiness for 06-causal-inference for formalizing the promo question.
+## Signals the 03-exploratory-analysis habits stuck
+- The learner reaches for cross-tabs, group-wise summaries, QQ inspection, permutation spot-checks before proposing models.
+- The Retail basket exploration pack dossier gets cited by its table numbers in discussion.
+- Reruns of the Basket question triage reproduce counts without drama.
+- New 03-exploratory-analysis questions get framed with grain and metric first.
+- Review notes on 03-exploratory-analysis shrink to one page because basics hold.
+## Anti-goals while studying Exploratory Analysis
+- No benchmark chasing inside 03-exploratory-analysis; standard numbers suffice.
+- No vendor-specific tooling claims attached to Exploratory Analysis results.
+- No borrowed statistics presented without re-running 03-exploratory-analysis checks.
+- No demand forecasting, price optimization, loyalty modeling promises smuggled into 03-exploratory-analysis conclusions.

@@ -1,53 +1,30 @@
-﻿# Causal Inference - Vision & Future Directions
-
-## Current State
-
-Causal Inference continues to evolve rapidly with new algorithms, tools, and methodologies emerging regularly. The field is moving toward greater automation, interpretability, and accessibility.
-
-## Emerging Trends
-
-### Automated Machine Learning (AutoML)
-AutoML platforms are democratizing Causal Inference by automating feature selection, model selection, and hyperparameter tuning. This enables domain experts to build models without deep ML expertise.
-
-### Explainable AI (XAI)
-As models become more complex, the demand for interpretability grows. Techniques like SHAP, LIME, and attention visualization are becoming standard requirements.
-
-### Federated Learning
-Privacy-preserving techniques allow model training across decentralized data sources without centralizing sensitive information.
-
-### Edge Computing
-Deploying Causal Inference capabilities on edge devices reduces latency and bandwidth requirements, enabling real-time decision making.
-
-## Technology Evolution
-
-### Language Models
-Large language models are transforming how we interact with data, enabling natural language interfaces for Causal Inference tasks.
-
-### Vector Databases
-Specialized databases for similarity search are enabling efficient retrieval-augmented generation and semantic search.
-
-### Real-Time Processing
-Stream processing frameworks are enabling real-time Causal Inference with sub-second latency requirements.
-
-## Future Applications
-
-### Personalized Medicine
-Causal Inference will enable treatment plans tailored to individual genetic profiles and medical histories.
-
-### Climate Modeling
-Advanced techniques will improve climate predictions and help develop mitigation strategies.
-
-### Scientific Discovery
-Automated hypothesis generation and testing will accelerate scientific research across domains.
-
-## Skills for the Future
-
-To stay relevant, practitioners should develop:
-- Strong software engineering fundamentals
-- Cloud computing and distributed systems expertise
-- Domain knowledge in their area of application
-- Communication and storytelling skills
-
-## Conclusion
-
-The future of Causal Inference is bright, with expanding applications across every industry. Continuous learning and adaptation will be essential for success in this dynamic field.
+# Causal Inference - Vision
+## Trajectory
+- Causal Inference practice here points toward confounder-first observational comparisons with placebo discipline.
+- Learners finishing 06-causal-inference repeat the DAG drafting, propensity matching, difference-in-differences, refutation checks workflow without notes.
+- The Promo uplift observational study dossier becomes the 06-causal-inference reference for later chapters.
+- Confidence in 06-causal-inference comes from rerun counts, not from slogans.
+- Peers can audit the 06-causal-inference trail from raw inputs to final tables.
+## Follow-on practice
+- Schedule monthly re-runs of the Promo uplift observational study checks after 06-causal-inference.
+- Extend the 06-causal-inference results into 07-experimentation for running the next promo as a randomized test as the next chapter.
+- Pair each 06-causal-inference artifact with a one-paragraph decision memo.
+- Keep 06-causal-inference results tied to choices instead of drifting into trivia.
+- Revisit the 06-causal-inference acceptance numbers quarterly for relevance.
+- Prune any Causal Inference check that stopped informing 06-causal-inference decisions.
+## Out of scope here
+- Causal Inference in 06-causal-inference does not cover instrumental variables at scale, panel econometrics, policy rollout evaluation.
+- Those topics need their own labs outside 06-causal-inference.
+- Claims about instrumental variables at scale, panel econometrics, policy rollout evaluation do not belong in 06-causal-inference reviews.
+- Treat 06-causal-inference completion as readiness for 07-experimentation for running the next promo as a randomized test.
+## Signals the 06-causal-inference habits stuck
+- The learner reaches for DAG drafting, propensity matching, difference-in-differences, refutation checks before proposing models.
+- The Promo uplift observational study dossier gets cited by its table numbers in discussion.
+- Reruns of the Matching micro-study reproduce counts without drama.
+- New 06-causal-inference questions get framed with grain and metric first.
+- Review notes on 06-causal-inference shrink to one page because basics hold.
+## Anti-goals while studying Causal Inference
+- No benchmark chasing inside 06-causal-inference; standard numbers suffice.
+- No vendor-specific tooling claims attached to Causal Inference results.
+- No borrowed statistics presented without re-running 06-causal-inference checks.
+- No instrumental variables at scale, panel econometrics, policy rollout evaluation promises smuggled into 06-causal-inference conclusions.

@@ -1,200 +1,32 @@
-﻿# Exploratory Data Analysis - Real-World Project
-
-## Project Overview
-
-This project implements a production-grade Exploratory Data Analysis system designed for real-world deployment. It addresses practical challenges including scalability, reliability, and maintainability.
-
-## Sourced field notes (fetched Oct 2026 - verify before citing)
-- [Apache Airflow Documentation](https://airflow.apache.org/docs/) - Production workflow orchestration patterns
-- [Google MLOps Guide](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning) - CI/CD for machine learning best practices
-
-## System Architecture
-
-### High-Level Design
-`
-+-------------+     +--------------+     +-------------+
-| Data Sources |---->| Ingestion    |---->| Processing  |
-| (DB, API,    |     | Layer        |     | Engine      |
-|  Files)      |     |              |     |             |
-+-------------+     +--------------+     +------+------+
-                                               |
-                    +--------------+     +------v------+
-                    | Monitoring   |<----| Storage     |
-                    | & Alerting   |     | Layer       |
-                    +--------------+     +-------------+
-`
-
-### Components
-
-#### 1. Data Ingestion Service
-- REST API endpoints for data submission
-- Message queue integration for async processing
-- Data validation and schema enforcement
-- Rate limiting and authentication
-
-#### 2. Processing Engine
-- Distributed task execution
-- Fault tolerance with retry mechanisms
-- Horizontal scaling support
-- Real-time and batch processing modes
-
-#### 3. Storage Layer
-- Relational database for structured data
-- Object storage for large files
-- Cache layer for frequently accessed data
-- Data versioning and lineage tracking
-
-#### 4. Monitoring & Observability
-- Metrics collection (Prometheus)
-- Distributed tracing (OpenTelemetry)
-- Centralized logging (ELK stack)
-- Alerting and dashboards (Grafana)
-
-## Technology Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Language | Java 21 | Core development |
-| Framework | Spring Boot | Application framework |
-| Database | PostgreSQL | Primary data store |
-| Cache | Redis | Caching layer |
-| Queue | Apache Kafka | Message streaming |
-| Orchestration | Apache Airflow | Workflow management |
-| Container | Docker | Deployment |
-| Orchestration | Kubernetes | Container orchestration |
-
-## Implementation Details
-
-### API Design
-`java
-@RestController
-@RequestMapping("/api/v1/processing")
-public class ProcessingController {
-
-    @PostMapping("/jobs")
-    public ResponseEntity<JobResponse> submitJob(
-        @Valid @RequestBody JobRequest request
-    ) {
-        // Implementation
-    }
-
-    @GetMapping("/jobs/{jobId}")
-    public ResponseEntity<JobStatus> getJobStatus(
-        @PathVariable String jobId
-    ) {
-        // Implementation
-    }
-}
-`
-
-### Data Models
-`java
-@Entity
-@Table(name = "processing_jobs")
-public class ProcessingJob {
-    @Id
-    private String jobId;
-    private JobStatus status;
-    private String inputPath;
-    private String outputPath;
-    private Instant createdAt;
-    private Instant updatedAt;
-    // Getters, setters, builders
-}
-`
-
-### Error Handling
-- Global exception handler with structured error responses
-- Circuit breaker pattern for external service calls
-- Dead letter queue for failed messages
-- Comprehensive audit logging
-
-## Deployment
-
-### Docker Configuration
-`dockerfile
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
-COPY target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-XX:+UseG1GC", "-jar", "app.jar"]
-`
-
-### Kubernetes Deployment
-- Horizontal Pod Autoscaler for dynamic scaling
-- Rolling updates for zero-downtime deployments
-- ConfigMaps and Secrets for configuration
-- Persistent volumes for data storage
-
-## Security Considerations
-
-### Authentication & Authorization
-- OAuth 2.0 / JWT for API authentication
-- Role-based access control (RBAC)
-- API key management for service-to-service communication
-
-### Data Protection
-- Encryption at rest and in transit
-- PII detection and masking
-- Data retention policies
-- GDPR compliance measures
-
-## Performance Optimization
-
-### Caching Strategy
-- Multi-level caching (in-memory + distributed)
-- Cache invalidation patterns
-- Pre-computation of expensive queries
-
-### Database Optimization
-- Indexing strategy for common queries
-- Connection pooling
-- Read replicas for query scaling
-- Partitioning for large tables
-
-## Testing Strategy
-
-### Test Pyramid
-- Unit tests: 70% coverage
-- Integration tests: 20% coverage
-- End-to-end tests: 10% coverage
-
-### Quality Gates
-- Static code analysis (SonarQube)
-- Dependency vulnerability scanning
-- Performance regression testing
-- Chaos engineering experiments
-
-## Monitoring & Alerting
-
-### Key Metrics
-- Request rate and latency
-- Error rates
-- Resource utilization
-- Business KPIs
-
-### Alert Rules
-- Error rate > 5% for 5 minutes
-- Latency p99 > 1 second
-- Disk usage > 80%
-- Failed job count > threshold
-
-## Maintenance
-
-### Backup Strategy
-- Automated daily backups
-- Point-in-time recovery
-- Cross-region replication
-- Regular restore testing
-
-### Disaster Recovery
-- RPO: 1 hour
-- RTO: 4 hours
-- Failover procedures
-- Regular DR drills
-
-## Future Enhancements
-- Machine learning for anomaly detection
-- Auto-scaling based on predictive models
-- Multi-region deployment
-- Advanced analytics and reporting
+# Exploratory Data Analysis - Real-World Project: Rental listings EDA dossier
+## Brief
+rental adverts with price, floor area, bedroom count, posting lag, missing area entries. Success means a reviewer can rerun the 02-eda flow from raw files to final tables without asking for missing steps.
+## Components (univariate distributions, grouped summaries, correlation scan, missingness audit)
+Core chain runs price-per-area derived only where area present; never imputed silently; missingness cross-tabbed by poster type.
+Method set in play: univariate distributions, grouped summaries, correlation scan, missingness audit.
+## Work plan
+1. Tabulate missingness per column and cross-tab missing area against poster type.
+2. Plot price and area distributions with median, IQR, 1st/99th percentiles annotated.
+3. Compare median price per bedroom band and per district with counts alongside.
+4. Compute pairwise correlations among numeric columns and flag pairs above 0.8.
+5. Isolate top 1% prices and verify whether area, bedrooms, or entry error explains them.
+6. Record three falsifiable observations plus one disproof attempt for each.
+## Done when
+- every chart states sample size n after exclusions for the 02-eda dossier.
+- medians reported with IQR rather than mean-only summaries checked against 02-eda logs.
+- correlation table uses pairwise-complete rows with n shown reproduced on rerun of 02-eda steps.
+- top-1% review classifies each case as explained or data error stored with the 02-eda artifact set.
+- observations list includes at least one failed disproof note signed off inside the 02-eda review note.
+## Limits of Rental listings EDA dossier
+Textbook methods only; streaming, serving, and cost tuning belong outside this 02-eda brief.
+## Evidence pack carried with 02-eda
+- Raw rental adverts with price, floor area, bedroom count, posting lag, missing area entries snapshot pointer plus exact row counts.
+- Dated run log linking each 02-eda build decision to its output table.
+- Before/after comparison table kept beside the Rental listings EDA dossier tables.
+- Rejected-rows file with rule codes for the 02-eda audit trail.
+- One-page Exploratory Data Analysis glossary defining every column the Rental listings EDA dossier emits.
+## Reviewer walkthrough for Rental listings EDA dossier
+- Reviewer opens 02-eda inputs and reproduces row counts unaided.
+- Reviewer traces one rejected row from quarantine back to rental adverts with price, floor area, bedroom count, posting lag, missing area entries.
+- Reviewer confirms every chart states sample size n after exclusions without extra explanation.
+- Reviewer closes the Exploratory Data Analysis session with two written follow-ups.

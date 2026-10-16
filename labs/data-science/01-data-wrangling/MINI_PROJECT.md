@@ -1,99 +1,30 @@
-﻿# Data Wrangling - Mini Project
-
-## Project Overview
-
-Build a complete Data Wrangling application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Data Wrangling - Mini Project: Civic CSV janitor
+## Task
+Build the Civic CSV janitor for 01-data-wrangling in one sitting: single messy CSV with mixed date formats, blank wards, dup rows.
+Scope stays tight so the 01-data-wrangling technique itself is what gets practiced.
+## Inputs
+Working set for 01-data-wrangling: single messy CSV with mixed date formats, blank wards, dup rows.
+Reference methods: schema validation, missing-value treatment, record dedup keys, tidy reshape.
+## Procedure
+1. Infer column types and report null rate per column for 01-data-wrangling.
+2. Unify dates to ISO format with reject list for 01-data-wrangling.
+3. Fold ward-name aliases through editable map for 01-data-wrangling.
+4. Drop exact duplicates and log count removed for 01-data-wrangling.
+## Deliverable checks
+- script reports per-column null rates before and after within the 01-data-wrangling mini submission.
+- all emitted dates parse as ISO with zero silent coercions verified by rerunning 01-data-wrangling commands.
+- alias map file lists every folded ward name readable inside the 01-data-wrangling mini report.
+- duplicate removal count printed and reproducible confirmed before calling 01-data-wrangling mini done.
+## After Civic CSV janitor
+Carry the 01-data-wrangling notes into the full Municipal service-request cleaning pipeline build next.
+## Evidence left behind by Civic CSV janitor
+- Input single messy CSV with mixed date formats, blank wards, dup rows snapshot plus row counts for 01-data-wrangling.
+- Command log reproducing the Civic CSV janitor result end to end.
+- Output tables from 01-data-wrangling with sample sizes printed inline.
+- Short Data Wrangling note naming the hardest 01-data-wrangling judgment call.
+- Error log quoting the exact 01-data-wrangling failure seen and its fix.
+## Typical 01-data-wrangling slips this mini exposes
+- Skipping the Infer column types and report null rate per column check and paying for it later.
+- Blaming the 01-data-wrangling input instead of documenting the 01-data-wrangling assumption.
+- Reporting a 01-data-wrangling number without the supporting table reference.
+- Closing the Civic CSV janitor without rerunning the 01-data-wrangling commands once.

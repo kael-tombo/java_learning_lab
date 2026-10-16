@@ -27,3 +27,4 @@ postmortem concludes "we need better monitoring" without ever producing
 the records that monitoring would have read. Pipelines are that record
 by construction, not by afterthought. That is the whole of it: evidence
 instead of argument, every retrain, as a side effect of running the work.
+Start there: version the inputs before optimizing anything else.

@@ -23,4 +23,9 @@ the accuracy-led team from the first paragraph, shipping majority
 classifiers at 99% and learning about it from users. Between those
 two futures, the only difference is whether anyone insisted on the
 denominator before launch. This lab is that insistence, rehearsed
-until it is reflex.
+until it is reflex. The demo's scale is deliberately toy — five
+labels, one table — so the mechanics stay visible; production adds
+zeros to every count and changes nothing about which questions to ask.
+Keep this file's habit: every metric you quote, quote with its counts,
+its split, and its threshold — the three coordinates that make a number
+a measurement instead of a rumor.

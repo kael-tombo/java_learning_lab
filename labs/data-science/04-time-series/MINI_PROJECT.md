@@ -1,99 +1,30 @@
-﻿# Time Series Analysis - Mini Project
-
-## Project Overview
-
-Build a complete Time Series Analysis application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Time Series (Decomposition) - Mini Project: Baseline forecaster
+## Task
+Build the Baseline forecaster for 04-time-series in one sitting: single meter series of 12 weeks hourly.
+Scope stays tight so the 04-time-series technique itself is what gets practiced.
+## Inputs
+Working set for 04-time-series: single meter series of 12 weeks hourly.
+Reference methods: classical decomposition, ACF/PACF inspection, ADF and KPSS checks, seasonal-naive baseline.
+## Procedure
+1. Decompose one week to name daily peaks for 04-time-series.
+2. Compute seasonal-naive MAE over last two weeks for 04-time-series.
+3. Compare against overall-mean baseline MAE for 04-time-series.
+4. State which hours the naive model misses for 04-time-series.
+## Deliverable checks
+- MAE values shown for both baselines within the 04-time-series mini submission.
+- peak hours named with clock times verified by rerunning 04-time-series commands.
+- holdout covers exactly the final two weeks readable inside the 04-time-series mini report.
+- miss pattern described in two sentences confirmed before calling 04-time-series mini done.
+## After Baseline forecaster
+Carry the 04-time-series notes into the full Energy demand decomposition study build next.
+## Evidence left behind by Baseline forecaster
+- Input single meter series of 12 weeks hourly snapshot plus row counts for 04-time-series.
+- Command log reproducing the Baseline forecaster result end to end.
+- Output tables from 04-time-series with sample sizes printed inline.
+- Short Time Series (Decomposition) note naming the hardest 04-time-series judgment call.
+- Error log quoting the exact 04-time-series failure seen and its fix.
+## Typical 04-time-series slips this mini exposes
+- Skipping the Decompose one week to name daily peaks check and paying for it later.
+- Blaming the 04-time-series input instead of documenting the 04-time-series assumption.
+- Reporting a 04-time-series number without the supporting table reference.
+- Closing the Baseline forecaster without rerunning the 04-time-series commands once.

@@ -1,99 +1,30 @@
-﻿# Dimensionality Reduction - Mini Project
-
-## Project Overview
-
-Build a complete Dimensionality Reduction application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Dimension Reduction - Mini Project: PCA versus baseline
+## Challenge
+Build the PCA versus baseline for 09-dimension-reduction in one sitting: 12-item satisfaction block from the same survey.
+Scope stays tight so the 09-dimension-reduction technique itself is what gets practiced.
+## Dataset
+Working set for 09-dimension-reduction: 12-item satisfaction block from the same survey.
+Reference methods: PCA with scaling, scree inspection, loading interpretation, reconstruction error.
+## Steps
+1. Run PCA on standardized items and note variance per component for 09-dimension-reduction.
+2. Keep two components and report cumulative share for 09-dimension-reduction.
+3. Compare reconstruction MAE against item-mean baseline for 09-dimension-reduction.
+4. Name which items load together on component one for 09-dimension-reduction.
+## Complete when
+- per-component variance shares listed within the 09-dimension-reduction mini submission.
+- cumulative two-component share stated verified by rerunning 09-dimension-reduction commands.
+- baseline MAE comparison present readable inside the 09-dimension-reduction mini report.
+- component-one item group named explicitly confirmed before calling 09-dimension-reduction mini done.
+## After PCA versus baseline
+Carry the 09-dimension-reduction notes into the full Survey-item compression report build next.
+## Evidence left behind by PCA versus baseline
+- Input 12-item satisfaction block from the same survey snapshot plus row counts for 09-dimension-reduction.
+- Command log reproducing the PCA versus baseline result end to end.
+- Output tables from 09-dimension-reduction with sample sizes printed inline.
+- Short Dimension Reduction note naming the hardest 09-dimension-reduction judgment call.
+- Error log quoting the exact 09-dimension-reduction failure seen and its fix.
+## Typical 09-dimension-reduction slips this mini exposes
+- Skipping the Run PCA on standardized items and note variance per component check and paying for it later.
+- Blaming the 09-dimension-reduction input instead of documenting the 09-dimension-reduction assumption.
+- Reporting a 09-dimension-reduction number without the supporting table reference.
+- Closing the PCA versus baseline without rerunning the 09-dimension-reduction commands once.

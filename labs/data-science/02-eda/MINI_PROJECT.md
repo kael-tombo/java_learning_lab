@@ -1,99 +1,30 @@
-﻿# Exploratory Data Analysis - Mini Project
-
-## Project Overview
-
-Build a complete Exploratory Data Analysis application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Exploratory Data Analysis - Mini Project: One-table price explorer
+## Assignment
+Build the One-table price explorer for 02-eda in one sitting: rental slice of 2k-5k rows kept fully local.
+Scope stays tight so the 02-eda technique itself is what gets practiced.
+## Materials
+Working set for 02-eda: rental slice of 2k-5k rows kept fully local.
+Reference methods: univariate distributions, grouped summaries, correlation scan, missingness audit.
+## Method
+1. Summarize each column with count, missing share, median/IQR or mode for 02-eda.
+2. Cross-tab median price by one categorical with group sizes for 02-eda.
+3. Sketch two distributions by hand-description before any plotting call for 02-eda.
+4. Write five numbered findings each naming its supporting table for 02-eda.
+## Grading checks
+- findings cite table numbers not impressions within the 02-eda mini submission.
+- missing-share column present for every variable verified by rerunning 02-eda commands.
+- at least one finding revised after second look at counts readable inside the 02-eda mini report.
+- sample size printed on each output page confirmed before calling 02-eda mini done.
+## After One-table price explorer
+Carry the 02-eda notes into the full Rental listings EDA dossier build next.
+## Evidence left behind by One-table price explorer
+- Input rental slice of 2k-5k rows kept fully local snapshot plus row counts for 02-eda.
+- Command log reproducing the One-table price explorer result end to end.
+- Output tables from 02-eda with sample sizes printed inline.
+- Short Exploratory Data Analysis note naming the hardest 02-eda judgment call.
+- Error log quoting the exact 02-eda failure seen and its fix.
+## Typical 02-eda slips this mini exposes
+- Skipping the Summarize each column with count, missing share, median/IQR or mode check and paying for it later.
+- Blaming the 02-eda input instead of documenting the 02-eda assumption.
+- Reporting a 02-eda number without the supporting table reference.
+- Closing the One-table price explorer without rerunning the 02-eda commands once.

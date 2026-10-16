@@ -1,99 +1,30 @@
-﻿# Time Series Forecasting - Mini Project
-
-## Project Overview
-
-Build a complete Time Series Forecasting application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Time Series (Forecasting) - Mini Project: Rolling-origin comparison
+## Assignment
+Build the Rolling-origin comparison for 05-time-series in one sitting: one station year of daily rentals.
+Scope stays tight so the 05-time-series technique itself is what gets practiced.
+## Materials
+Working set for 05-time-series: one station year of daily rentals.
+Reference methods: ARIMA/ETS selection, rolling-origin validation, prediction intervals, residual diagnostics.
+## Method
+1. Split last 90 days into three 30-day origins for 05-time-series.
+2. Score seasonal-naive versus one ARIMA order for 05-time-series.
+3. Report MAE per origin in a small table for 05-time-series.
+4. Keep the simpler model if gaps are negligible for 05-time-series.
+## Grading checks
+- three-origin MAE table present within the 05-time-series mini submission.
+- candidate order written with its AIC verified by rerunning 05-time-series commands.
+- simpler-model decision justified numerically readable inside the 05-time-series mini report.
+- origins dated explicitly in the table confirmed before calling 05-time-series mini done.
+## After Rolling-origin comparison
+Carry the 05-time-series notes into the full Bike-share demand forecast harness build next.
+## Evidence left behind by Rolling-origin comparison
+- Input one station year of daily rentals snapshot plus row counts for 05-time-series.
+- Command log reproducing the Rolling-origin comparison result end to end.
+- Output tables from 05-time-series with sample sizes printed inline.
+- Short Time Series (Forecasting) note naming the hardest 05-time-series judgment call.
+- Error log quoting the exact 05-time-series failure seen and its fix.
+## Typical 05-time-series slips this mini exposes
+- Skipping the Split last 90 days into three 30-day origins check and paying for it later.
+- Blaming the 05-time-series input instead of documenting the 05-time-series assumption.
+- Reporting a 05-time-series number without the supporting table reference.
+- Closing the Rolling-origin comparison without rerunning the 05-time-series commands once.

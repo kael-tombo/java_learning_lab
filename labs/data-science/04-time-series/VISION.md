@@ -1,53 +1,30 @@
-﻿# Time Series Analysis - Vision & Future Directions
-
-## Current State
-
-Time Series Analysis continues to evolve rapidly with new algorithms, tools, and methodologies emerging regularly. The field is moving toward greater automation, interpretability, and accessibility.
-
-## Emerging Trends
-
-### Automated Machine Learning (AutoML)
-AutoML platforms are democratizing Time Series Analysis by automating feature selection, model selection, and hyperparameter tuning. This enables domain experts to build models without deep ML expertise.
-
-### Explainable AI (XAI)
-As models become more complex, the demand for interpretability grows. Techniques like SHAP, LIME, and attention visualization are becoming standard requirements.
-
-### Federated Learning
-Privacy-preserving techniques allow model training across decentralized data sources without centralizing sensitive information.
-
-### Edge Computing
-Deploying Time Series Analysis capabilities on edge devices reduces latency and bandwidth requirements, enabling real-time decision making.
-
-## Technology Evolution
-
-### Language Models
-Large language models are transforming how we interact with data, enabling natural language interfaces for Time Series Analysis tasks.
-
-### Vector Databases
-Specialized databases for similarity search are enabling efficient retrieval-augmented generation and semantic search.
-
-### Real-Time Processing
-Stream processing frameworks are enabling real-time Time Series Analysis with sub-second latency requirements.
-
-## Future Applications
-
-### Personalized Medicine
-Time Series Analysis will enable treatment plans tailored to individual genetic profiles and medical histories.
-
-### Climate Modeling
-Advanced techniques will improve climate predictions and help develop mitigation strategies.
-
-### Scientific Discovery
-Automated hypothesis generation and testing will accelerate scientific research across domains.
-
-## Skills for the Future
-
-To stay relevant, practitioners should develop:
-- Strong software engineering fundamentals
-- Cloud computing and distributed systems expertise
-- Domain knowledge in their area of application
-- Communication and storytelling skills
-
-## Conclusion
-
-The future of Time Series Analysis is bright, with expanding applications across every industry. Continuous learning and adaptation will be essential for success in this dynamic field.
+# Time Series (Decomposition) - Vision
+## Where this leads
+- Time Series (Decomposition) practice here points toward decomposition-first habits before any forecasting model.
+- Learners finishing 04-time-series repeat the classical decomposition, ACF/PACF inspection, ADF and KPSS checks, seasonal-naive baseline workflow without notes.
+- The Energy demand decomposition study dossier becomes the 04-time-series reference for later chapters.
+- Confidence in 04-time-series comes from rerun counts, not from slogans.
+- Peers can audit the 04-time-series trail from raw inputs to final tables.
+## What changes next
+- Schedule monthly re-runs of the Energy demand decomposition study checks after 04-time-series.
+- Extend the 04-time-series results into 05-time-series for ARIMA/ETS forecasting on the same demand as the next chapter.
+- Pair each 04-time-series artifact with a one-paragraph decision memo.
+- Keep 04-time-series results tied to choices instead of drifting into trivia.
+- Revisit the 04-time-series acceptance numbers quarterly for relevance.
+- Prune any Time Series (Decomposition) check that stopped informing 04-time-series decisions.
+## What this lab does not cover
+- Time Series (Decomposition) in 04-time-series does not cover probabilistic load forecasting, grid control, weather coupling.
+- Those topics need their own labs outside 04-time-series.
+- Claims about probabilistic load forecasting, grid control, weather coupling do not belong in 04-time-series reviews.
+- Treat 04-time-series completion as readiness for 05-time-series for ARIMA/ETS forecasting on the same demand.
+## Signals the 04-time-series habits stuck
+- The learner reaches for classical decomposition, ACF/PACF inspection, ADF and KPSS checks, seasonal-naive baseline before proposing models.
+- The Energy demand decomposition study dossier gets cited by its table numbers in discussion.
+- Reruns of the Baseline forecaster reproduce counts without drama.
+- New 04-time-series questions get framed with grain and metric first.
+- Review notes on 04-time-series shrink to one page because basics hold.
+## Anti-goals while studying Time Series (Decomposition)
+- No benchmark chasing inside 04-time-series; standard numbers suffice.
+- No vendor-specific tooling claims attached to Time Series (Decomposition) results.
+- No borrowed statistics presented without re-running 04-time-series checks.
+- No probabilistic load forecasting, grid control, weather coupling promises smuggled into 04-time-series conclusions.

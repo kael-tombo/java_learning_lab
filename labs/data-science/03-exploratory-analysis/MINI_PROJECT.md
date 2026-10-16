@@ -1,99 +1,30 @@
-﻿# Exploratory Analysis - Mini Project
-
-## Project Overview
-
-Build a complete Exploratory Analysis application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Exploratory Analysis - Mini Project: Basket question triage
+## Task
+Build the Basket question triage for 03-exploratory-analysis in one sitting: single weekend of transactions under 10k rows.
+Scope stays tight so the 03-exploratory-analysis technique itself is what gets practiced.
+## Inputs
+Working set for 03-exploratory-analysis: single weekend of transactions under 10k rows.
+Reference methods: cross-tabs, group-wise summaries, QQ inspection, permutation spot-checks.
+## Procedure
+1. Answer three set questions: busiest band, tender mix, promo gap for 03-exploratory-analysis.
+2. Support each answer with one table and one sentence for 03-exploratory-analysis.
+3. Attempt one disproof of the promo-gap answer for 03-exploratory-analysis.
+4. Rank which question deserves deeper data for 03-exploratory-analysis.
+## Deliverable checks
+- each answer names its table and row counts within the 03-exploratory-analysis mini submission.
+- disproof attempt written even if it fails verified by rerunning 03-exploratory-analysis commands.
+- ranking justified in two sentences or fewer readable inside the 03-exploratory-analysis mini report.
+- no pooled claim where bands differ confirmed before calling 03-exploratory-analysis mini done.
+## After Basket question triage
+Carry the 03-exploratory-analysis notes into the full Retail basket exploration pack build next.
+## Evidence left behind by Basket question triage
+- Input single weekend of transactions under 10k rows snapshot plus row counts for 03-exploratory-analysis.
+- Command log reproducing the Basket question triage result end to end.
+- Output tables from 03-exploratory-analysis with sample sizes printed inline.
+- Short Exploratory Analysis note naming the hardest 03-exploratory-analysis judgment call.
+- Error log quoting the exact 03-exploratory-analysis failure seen and its fix.
+## Typical 03-exploratory-analysis slips this mini exposes
+- Skipping the Answer three set questions: busiest band, tender mix, promo gap check and paying for it later.
+- Blaming the 03-exploratory-analysis input instead of documenting the 03-exploratory-analysis assumption.
+- Reporting a 03-exploratory-analysis number without the supporting table reference.
+- Closing the Basket question triage without rerunning the 03-exploratory-analysis commands once.

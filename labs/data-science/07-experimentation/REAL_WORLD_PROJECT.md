@@ -1,200 +1,32 @@
-﻿# Experimentation - Real-World Project
-
-## Project Overview
-
-This project implements a production-grade Experimentation system designed for real-world deployment. It addresses practical challenges including scalability, reliability, and maintainability.
-
-## Sourced field notes (fetched Oct 2026 - verify before citing)
-- [Apache Airflow Documentation](https://airflow.apache.org/docs/) - Production workflow orchestration patterns
-- [Google MLOps Guide](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning) - CI/CD for machine learning best practices
-
-## System Architecture
-
-### High-Level Design
-`
-+-------------+     +--------------+     +-------------+
-| Data Sources |---->| Ingestion    |---->| Processing  |
-| (DB, API,    |     | Layer        |     | Engine      |
-|  Files)      |     |              |     |             |
-+-------------+     +--------------+     +------+------+
-                                               |
-                    +--------------+     +------v------+
-                    | Monitoring   |<----| Storage     |
-                    | & Alerting   |     | Layer       |
-                    +--------------+     +-------------+
-`
-
-### Components
-
-#### 1. Data Ingestion Service
-- REST API endpoints for data submission
-- Message queue integration for async processing
-- Data validation and schema enforcement
-- Rate limiting and authentication
-
-#### 2. Processing Engine
-- Distributed task execution
-- Fault tolerance with retry mechanisms
-- Horizontal scaling support
-- Real-time and batch processing modes
-
-#### 3. Storage Layer
-- Relational database for structured data
-- Object storage for large files
-- Cache layer for frequently accessed data
-- Data versioning and lineage tracking
-
-#### 4. Monitoring & Observability
-- Metrics collection (Prometheus)
-- Distributed tracing (OpenTelemetry)
-- Centralized logging (ELK stack)
-- Alerting and dashboards (Grafana)
-
-## Technology Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Language | Java 21 | Core development |
-| Framework | Spring Boot | Application framework |
-| Database | PostgreSQL | Primary data store |
-| Cache | Redis | Caching layer |
-| Queue | Apache Kafka | Message streaming |
-| Orchestration | Apache Airflow | Workflow management |
-| Container | Docker | Deployment |
-| Orchestration | Kubernetes | Container orchestration |
-
-## Implementation Details
-
-### API Design
-`java
-@RestController
-@RequestMapping("/api/v1/processing")
-public class ProcessingController {
-
-    @PostMapping("/jobs")
-    public ResponseEntity<JobResponse> submitJob(
-        @Valid @RequestBody JobRequest request
-    ) {
-        // Implementation
-    }
-
-    @GetMapping("/jobs/{jobId}")
-    public ResponseEntity<JobStatus> getJobStatus(
-        @PathVariable String jobId
-    ) {
-        // Implementation
-    }
-}
-`
-
-### Data Models
-`java
-@Entity
-@Table(name = "processing_jobs")
-public class ProcessingJob {
-    @Id
-    private String jobId;
-    private JobStatus status;
-    private String inputPath;
-    private String outputPath;
-    private Instant createdAt;
-    private Instant updatedAt;
-    // Getters, setters, builders
-}
-`
-
-### Error Handling
-- Global exception handler with structured error responses
-- Circuit breaker pattern for external service calls
-- Dead letter queue for failed messages
-- Comprehensive audit logging
-
-## Deployment
-
-### Docker Configuration
-`dockerfile
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
-COPY target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-XX:+UseG1GC", "-jar", "app.jar"]
-`
-
-### Kubernetes Deployment
-- Horizontal Pod Autoscaler for dynamic scaling
-- Rolling updates for zero-downtime deployments
-- ConfigMaps and Secrets for configuration
-- Persistent volumes for data storage
-
-## Security Considerations
-
-### Authentication & Authorization
-- OAuth 2.0 / JWT for API authentication
-- Role-based access control (RBAC)
-- API key management for service-to-service communication
-
-### Data Protection
-- Encryption at rest and in transit
-- PII detection and masking
-- Data retention policies
-- GDPR compliance measures
-
-## Performance Optimization
-
-### Caching Strategy
-- Multi-level caching (in-memory + distributed)
-- Cache invalidation patterns
-- Pre-computation of expensive queries
-
-### Database Optimization
-- Indexing strategy for common queries
-- Connection pooling
-- Read replicas for query scaling
-- Partitioning for large tables
-
-## Testing Strategy
-
-### Test Pyramid
-- Unit tests: 70% coverage
-- Integration tests: 20% coverage
-- End-to-end tests: 10% coverage
-
-### Quality Gates
-- Static code analysis (SonarQube)
-- Dependency vulnerability scanning
-- Performance regression testing
-- Chaos engineering experiments
-
-## Monitoring & Alerting
-
-### Key Metrics
-- Request rate and latency
-- Error rates
-- Resource utilization
-- Business KPIs
-
-### Alert Rules
-- Error rate > 5% for 5 minutes
-- Latency p99 > 1 second
-- Disk usage > 80%
-- Failed job count > threshold
-
-## Maintenance
-
-### Backup Strategy
-- Automated daily backups
-- Point-in-time recovery
-- Cross-region replication
-- Regular restore testing
-
-### Disaster Recovery
-- RPO: 1 hour
-- RTO: 4 hours
-- Failover procedures
-- Regular DR drills
-
-## Future Enhancements
-- Machine learning for anomaly detection
-- Auto-scaling based on predictive models
-- Multi-region deployment
-- Advanced analytics and reporting
+# Experimentation - Real-World Project: Checkout A/B plan and analysis
+## Problem
+checkout funnel with visitor, cart-start, purchase events plus device stratum. Success means a reviewer can rerun the 07-experimentation flow from raw files to final tables without asking for missing steps.
+## Architecture (randomization design, power calculation, t and chi-square tests, peeking guards)
+Core chain runs primary metric fixed upfront as purchase per visitor; device used only as stratum.
+Method set in play: randomization design, power calculation, t and chi-square tests, peeking guards.
+## Build sequence
+1. Fix primary metric, unit of randomization, and minimum detectable effect in writing.
+2. Compute required sample size at alpha 0.05 and power 0.80 for that effect.
+3. Randomize by visitor hash with stratification on device class.
+4. Monitor sample-ratio mismatch daily without testing the primary metric early.
+5. Analyze with two-sample t for rates and chi-square for device-balance check.
+6. Report effect with 95% interval plus a ship, iterate, or stop recommendation.
+## Acceptance checks
+- alpha 0.05 and power 0.80 stated with the MDE value for the 07-experimentation dossier.
+- sample-size formula inputs preserved in the plan checked against 07-experimentation logs.
+- SRM check procedure documented with threshold reproduced on rerun of 07-experimentation steps.
+- 95% interval shown beside the p-value stored with the 07-experimentation artifact set.
+- recommendation maps explicitly to the interval not hype signed off inside the 07-experimentation review note.
+## Limits of Checkout A/B plan and analysis
+Textbook methods only; streaming, serving, and cost tuning belong outside this 07-experimentation brief.
+## Evidence pack carried with 07-experimentation
+- Raw checkout funnel with visitor, cart-start, purchase events plus device stratum snapshot pointer plus exact row counts.
+- Dated run log linking each 07-experimentation build decision to its output table.
+- Before/after comparison table kept beside the Checkout A/B plan and analysis tables.
+- Rejected-rows file with rule codes for the 07-experimentation audit trail.
+- One-page Experimentation glossary defining every column the Checkout A/B plan and analysis emits.
+## Reviewer walkthrough for Checkout A/B plan and analysis
+- Reviewer opens 07-experimentation inputs and reproduces row counts unaided.
+- Reviewer traces one rejected row from quarantine back to checkout funnel with visitor, cart-start, purchase events plus device stratum.
+- Reviewer confirms alpha 0.05 and power 0.80 stated with the MDE value without extra explanation.
+- Reviewer closes the Experimentation session with two written follow-ups.

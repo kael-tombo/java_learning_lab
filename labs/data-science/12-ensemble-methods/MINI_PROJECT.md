@@ -1,99 +1,30 @@
-﻿# Ensemble Methods - Mini Project
-
-## Project Overview
-
-Build a complete Ensemble Methods application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Ensemble Methods - Mini Project: Tree versus forest versus boosting
+## Challenge
+Build the Tree versus forest versus boosting for 12-ensemble-methods in one sitting: 1k-row borrower sample with 12% default rate.
+Scope stays tight so the 12-ensemble-methods technique itself is what gets practiced.
+## Dataset
+Working set for 12-ensemble-methods: 1k-row borrower sample with 12% default rate.
+Reference methods: bagging and random forests, gradient boosting, stacking, OOB and CV scoring.
+## Steps
+1. Fit one tuned tree as baseline for 12-ensemble-methods.
+2. Fit 200-tree forest and note OOB error for 12-ensemble-methods.
+3. Fit small boosting run at two depths for 12-ensemble-methods.
+4. Rank the three by PR-AUC on one holdout for 12-ensemble-methods.
+## Complete when
+- default rate stated beside every score within the 12-ensemble-methods mini submission.
+- OOB error quoted for forest only verified by rerunning 12-ensemble-methods commands.
+- depth comparison table present readable inside the 12-ensemble-methods mini report.
+- ranking decided by PR-AUC not accuracy confirmed before calling 12-ensemble-methods mini done.
+## After Tree versus forest versus boosting
+Carry the 12-ensemble-methods notes into the full Tabular default-risk ensemble comparison build next.
+## Evidence left behind by Tree versus forest versus boosting
+- Input 1k-row borrower sample with 12% default rate snapshot plus row counts for 12-ensemble-methods.
+- Command log reproducing the Tree versus forest versus boosting result end to end.
+- Output tables from 12-ensemble-methods with sample sizes printed inline.
+- Short Ensemble Methods note naming the hardest 12-ensemble-methods judgment call.
+- Error log quoting the exact 12-ensemble-methods failure seen and its fix.
+## Typical 12-ensemble-methods slips this mini exposes
+- Skipping the Fit one tuned tree as baseline check and paying for it later.
+- Blaming the 12-ensemble-methods input instead of documenting the 12-ensemble-methods assumption.
+- Reporting a 12-ensemble-methods number without the supporting table reference.
+- Closing the Tree versus forest versus boosting without rerunning the 12-ensemble-methods commands once.

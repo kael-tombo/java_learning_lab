@@ -1,200 +1,32 @@
-﻿# Advanced NLP - Real-World Project
-
-## Project Overview
-
-This project implements a production-grade Advanced NLP system designed for real-world deployment. It addresses practical challenges including scalability, reliability, and maintainability.
-
-## Sourced field notes (fetched Oct 2026 - verify before citing)
-- [Apache Airflow Documentation](https://airflow.apache.org/docs/) - Production workflow orchestration patterns
-- [Google MLOps Guide](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning) - CI/CD for machine learning best practices
-
-## System Architecture
-
-### High-Level Design
-`
-+-------------+     +--------------+     +-------------+
-| Data Sources |---->| Ingestion    |---->| Processing  |
-| (DB, API,    |     | Layer        |     | Engine      |
-|  Files)      |     |              |     |             |
-+-------------+     +--------------+     +------+------+
-                                               |
-                    +--------------+     +------v------+
-                    | Monitoring   |<----| Storage     |
-                    | & Alerting   |     | Layer       |
-                    +--------------+     +-------------+
-`
-
-### Components
-
-#### 1. Data Ingestion Service
-- REST API endpoints for data submission
-- Message queue integration for async processing
-- Data validation and schema enforcement
-- Rate limiting and authentication
-
-#### 2. Processing Engine
-- Distributed task execution
-- Fault tolerance with retry mechanisms
-- Horizontal scaling support
-- Real-time and batch processing modes
-
-#### 3. Storage Layer
-- Relational database for structured data
-- Object storage for large files
-- Cache layer for frequently accessed data
-- Data versioning and lineage tracking
-
-#### 4. Monitoring & Observability
-- Metrics collection (Prometheus)
-- Distributed tracing (OpenTelemetry)
-- Centralized logging (ELK stack)
-- Alerting and dashboards (Grafana)
-
-## Technology Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Language | Java 21 | Core development |
-| Framework | Spring Boot | Application framework |
-| Database | PostgreSQL | Primary data store |
-| Cache | Redis | Caching layer |
-| Queue | Apache Kafka | Message streaming |
-| Orchestration | Apache Airflow | Workflow management |
-| Container | Docker | Deployment |
-| Orchestration | Kubernetes | Container orchestration |
-
-## Implementation Details
-
-### API Design
-`java
-@RestController
-@RequestMapping("/api/v1/processing")
-public class ProcessingController {
-
-    @PostMapping("/jobs")
-    public ResponseEntity<JobResponse> submitJob(
-        @Valid @RequestBody JobRequest request
-    ) {
-        // Implementation
-    }
-
-    @GetMapping("/jobs/{jobId}")
-    public ResponseEntity<JobStatus> getJobStatus(
-        @PathVariable String jobId
-    ) {
-        // Implementation
-    }
-}
-`
-
-### Data Models
-`java
-@Entity
-@Table(name = "processing_jobs")
-public class ProcessingJob {
-    @Id
-    private String jobId;
-    private JobStatus status;
-    private String inputPath;
-    private String outputPath;
-    private Instant createdAt;
-    private Instant updatedAt;
-    // Getters, setters, builders
-}
-`
-
-### Error Handling
-- Global exception handler with structured error responses
-- Circuit breaker pattern for external service calls
-- Dead letter queue for failed messages
-- Comprehensive audit logging
-
-## Deployment
-
-### Docker Configuration
-`dockerfile
-FROM eclipse-temurin:21-jre-alpine
-WORKDIR /app
-COPY target/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-XX:+UseG1GC", "-jar", "app.jar"]
-`
-
-### Kubernetes Deployment
-- Horizontal Pod Autoscaler for dynamic scaling
-- Rolling updates for zero-downtime deployments
-- ConfigMaps and Secrets for configuration
-- Persistent volumes for data storage
-
-## Security Considerations
-
-### Authentication & Authorization
-- OAuth 2.0 / JWT for API authentication
-- Role-based access control (RBAC)
-- API key management for service-to-service communication
-
-### Data Protection
-- Encryption at rest and in transit
-- PII detection and masking
-- Data retention policies
-- GDPR compliance measures
-
-## Performance Optimization
-
-### Caching Strategy
-- Multi-level caching (in-memory + distributed)
-- Cache invalidation patterns
-- Pre-computation of expensive queries
-
-### Database Optimization
-- Indexing strategy for common queries
-- Connection pooling
-- Read replicas for query scaling
-- Partitioning for large tables
-
-## Testing Strategy
-
-### Test Pyramid
-- Unit tests: 70% coverage
-- Integration tests: 20% coverage
-- End-to-end tests: 10% coverage
-
-### Quality Gates
-- Static code analysis (SonarQube)
-- Dependency vulnerability scanning
-- Performance regression testing
-- Chaos engineering experiments
-
-## Monitoring & Alerting
-
-### Key Metrics
-- Request rate and latency
-- Error rates
-- Resource utilization
-- Business KPIs
-
-### Alert Rules
-- Error rate > 5% for 5 minutes
-- Latency p99 > 1 second
-- Disk usage > 80%
-- Failed job count > threshold
-
-## Maintenance
-
-### Backup Strategy
-- Automated daily backups
-- Point-in-time recovery
-- Cross-region replication
-- Regular restore testing
-
-### Disaster Recovery
-- RPO: 1 hour
-- RTO: 4 hours
-- Failover procedures
-- Regular DR drills
-
-## Future Enhancements
-- Machine learning for anomaly detection
-- Auto-scaling based on predictive models
-- Multi-region deployment
-- Advanced analytics and reporting
+# Advanced NLP - Real-World Project: Support-ticket triage spec
+## Brief
+help-desk tickets with subject, body, product tag, priority label. Success means a reviewer can rerun the 11-nlp-advanced flow from raw files to final tables without asking for missing steps.
+## Components (tokenization/normalization, TF-IDF retrieval, LDA topics, embedding similarity checks)
+Core chain runs tokenizer and IDF vocabulary frozen on train; topics labeled by top terms plus exemplars.
+Method set in play: tokenization/normalization, TF-IDF retrieval, LDA topics, embedding similarity checks.
+## Work plan
+1. Normalize text with documented lowercasing, punctuation, stop-word rules.
+2. Freeze TF-IDF vocabulary on train and report out-of-vocabulary rate on holdout.
+3. Fit LDA across 5, 10, 15 topics comparing coherence scores.
+4. Label chosen topics with top terms plus three exemplar tickets each.
+5. Score embedding-similarity retrieval with precision at 5 on tagged pairs.
+6. Route low-confidence tickets to manual review with threshold rationale.
+## Done when
+- normalization rules listed verbatim in config for the 11-nlp-advanced dossier.
+- OOV rate reported on holdout with counts checked against 11-nlp-advanced logs.
+- coherence comparison covers 5/10/15 topics reproduced on rerun of 11-nlp-advanced steps.
+- topic labels each cite terms plus exemplars stored with the 11-nlp-advanced artifact set.
+- precision-at-5 reported with pair counts signed off inside the 11-nlp-advanced review note.
+## Limits of Support-ticket triage spec
+Textbook methods only; streaming, serving, and cost tuning belong outside this 11-nlp-advanced brief.
+## Evidence pack carried with 11-nlp-advanced
+- Raw help-desk tickets with subject, body, product tag, priority label snapshot pointer plus exact row counts.
+- Dated run log linking each 11-nlp-advanced build decision to its output table.
+- Before/after comparison table kept beside the Support-ticket triage spec tables.
+- Rejected-rows file with rule codes for the 11-nlp-advanced audit trail.
+- One-page Advanced NLP glossary defining every column the Support-ticket triage spec emits.
+## Reviewer walkthrough for Support-ticket triage spec
+- Reviewer opens 11-nlp-advanced inputs and reproduces row counts unaided.
+- Reviewer traces one rejected row from quarantine back to help-desk tickets with subject, body, product tag, priority label.
+- Reviewer confirms normalization rules listed verbatim in config without extra explanation.
+- Reviewer closes the Advanced NLP session with two written follow-ups.

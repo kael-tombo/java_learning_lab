@@ -1,99 +1,30 @@
-﻿# Model Evaluation - Mini Project
-
-## Project Overview
-
-Build a complete Model Evaluation application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Model Evaluation - Mini Project: Metric-misuse demo
+## Task
+Build the Metric-misuse demo for 13-model-evaluation in one sitting: 300 scored outcomes at 10% positive rate.
+Scope stays tight so the 13-model-evaluation technique itself is what gets practiced.
+## Inputs
+Working set for 13-model-evaluation: 300 scored outcomes at 10% positive rate.
+Reference methods: confusion analysis, ROC/PR curves, calibration bins, K-fold with held-out lock.
+## Procedure
+1. Show accuracy paradox on majority-class baseline for 13-model-evaluation.
+2. Contrast ROC-AUC versus PR-AUC on same scores for 13-model-evaluation.
+3. Calibrate with five bins and plot gaps for 13-model-evaluation.
+4. Recommend one threshold with cost sentence for 13-model-evaluation.
+## Deliverable checks
+- majority-baseline accuracy shown as trap within the 13-model-evaluation mini submission.
+- both AUCs reported with prevalence verified by rerunning 13-model-evaluation commands.
+- five-bin table includes counts per bin readable inside the 13-model-evaluation mini report.
+- cost sentence justifies the threshold pick confirmed before calling 13-model-evaluation mini done.
+## After Metric-misuse demo
+Carry the 13-model-evaluation notes into the full Evaluation harness plus model card build next.
+## Evidence left behind by Metric-misuse demo
+- Input 300 scored outcomes at 10% positive rate snapshot plus row counts for 13-model-evaluation.
+- Command log reproducing the Metric-misuse demo result end to end.
+- Output tables from 13-model-evaluation with sample sizes printed inline.
+- Short Model Evaluation note naming the hardest 13-model-evaluation judgment call.
+- Error log quoting the exact 13-model-evaluation failure seen and its fix.
+## Typical 13-model-evaluation slips this mini exposes
+- Skipping the Show accuracy paradox on majority-class baseline check and paying for it later.
+- Blaming the 13-model-evaluation input instead of documenting the 13-model-evaluation assumption.
+- Reporting a 13-model-evaluation number without the supporting table reference.
+- Closing the Metric-misuse demo without rerunning the 13-model-evaluation commands once.

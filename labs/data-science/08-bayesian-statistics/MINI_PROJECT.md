@@ -1,99 +1,30 @@
-﻿# Bayesian Statistics - Mini Project
-
-## Project Overview
-
-Build a complete Bayesian Statistics application that demonstrates core concepts through a practical, self-contained implementation.
-
-## Project Goals
-- Apply theoretical knowledge to a concrete problem
-- Practice software engineering best skills
-- Create a portfolio-worthy deliverable
-- Demonstrate end-to-end understanding
-
-## Requirements
-
-### Functional Requirements
-1. **Data Ingestion**: Load data from CSV/JSON files
-2. **Processing Pipeline**: Implement at least 3 transformation steps
-3. **Analysis**: Compute relevant statistics and metrics
-4. **Output**: Generate reports and visualizations
-5. **CLI Interface**: Accept command-line arguments
-
-### Non-Functional Requirements
-1. **Performance**: Process 10,000 records in under 5 seconds
-2. **Test Coverage**: Minimum 80% code coverage
-3. **Documentation**: Complete JavaDoc and README
-4. **Error Handling**: Graceful handling of all error cases
-
-## Project Structure
-`
-src/
-+-- main/java/com/ds/mini/
-|   +-- Main.java
-|   +-- data/
-|   |   +-- DataLoader.java
-|   |   +-- DataValidator.java
-|   +-- processing/
-|   |   +-- Pipeline.java
-|   |   +-- transformers/
-|   +-- analysis/
-|   |   +-- StatisticsEngine.java
-|   +-- report/
-|       +-- ReportGenerator.java
-+-- test/java/com/ds/mini/
-    +-- (corresponding tests)
-`
-
-## Implementation Steps
-
-### Step 1: Project Setup
-- Create Maven/Gradle project structure
-- Configure dependencies (JUnit, Apache Commons, etc.)
-- Set up logging framework
-
-### Step 2: Data Layer
-- Implement DataLoader with support for multiple formats
-- Create DataValidator with comprehensive checks
-- Add custom exceptions for data errors
-
-### Step 3: Processing Pipeline
-- Design transformer interface
-- Implement concrete transformers
-- Add pipeline orchestration
-
-### Step 4: Analysis Engine
-- Implement statistical calculations
-- Add aggregation functions
-- Create result data structures
-
-### Step 5: Reporting
-- Generate text-based reports
-- Create simple visualizations
-- Export results to files
-
-### Step 6: Testing
-- Write unit tests for all components
-- Add integration tests
-- Verify performance requirements
-
-## Evaluation Criteria
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Functionality | 30% | All features work correctly |
-| Code Quality | 25% | Clean, maintainable, well-documented |
-| Testing | 20% | Comprehensive test coverage |
-| Performance | 15% | Meets performance requirements |
-| Documentation | 10% | Clear, complete documentation |
-
-## Submission
-- Source code in Git repository
-- README with setup instructions
-- Demo video or screenshots
-- Test results report
-
-## Timeline
-- Week 1: Setup and data layer
-- Week 2: Processing pipeline
-- Week 3: Analysis and reporting
-- Week 4: Testing and documentation
+# Bayesian Statistics - Mini Project: Beta-binomial calculator
+## Assignment
+Build the Beta-binomial calculator for 08-bayesian-statistics in one sitting: 40 conversions in 400 visits with Beta(30,270) prior.
+Scope stays tight so the 08-bayesian-statistics technique itself is what gets practiced.
+## Materials
+Working set for 08-bayesian-statistics: 40 conversions in 400 visits with Beta(30,270) prior.
+Reference methods: beta-binomial conjugacy, credible intervals, prior sensitivity, posterior predictive checks.
+## Method
+1. Plot prior, likelihood shape note, posterior together for 08-bayesian-statistics.
+2. Report posterior mean with 95% credible interval for 08-bayesian-statistics.
+3. Swap to uniform prior and record the shift for 08-bayesian-statistics.
+4. Explain in two sentences what the prior contributed for 08-bayesian-statistics.
+## Grading checks
+- three curves described with parameters within the 08-bayesian-statistics mini submission.
+- credible interval labeled correctly verified by rerunning 08-bayesian-statistics commands.
+- prior-swap shift quantified numerically readable inside the 08-bayesian-statistics mini report.
+- explanation references effective prior sample size confirmed before calling 08-bayesian-statistics mini done.
+## After Beta-binomial calculator
+Carry the 08-bayesian-statistics notes into the full Conversion-rate Bayesian rewrite build next.
+## Evidence left behind by Beta-binomial calculator
+- Input 40 conversions in 400 visits with Beta(30,270) prior snapshot plus row counts for 08-bayesian-statistics.
+- Command log reproducing the Beta-binomial calculator result end to end.
+- Output tables from 08-bayesian-statistics with sample sizes printed inline.
+- Short Bayesian Statistics note naming the hardest 08-bayesian-statistics judgment call.
+- Error log quoting the exact 08-bayesian-statistics failure seen and its fix.
+## Typical 08-bayesian-statistics slips this mini exposes
+- Skipping the Plot prior, likelihood shape note, posterior together check and paying for it later.
+- Blaming the 08-bayesian-statistics input instead of documenting the 08-bayesian-statistics assumption.
+- Reporting a 08-bayesian-statistics number without the supporting table reference.
+- Closing the Beta-binomial calculator without rerunning the 08-bayesian-statistics commands once.
