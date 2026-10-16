@@ -1,45 +1,37 @@
-﻿# Architecture: Model Interpretability Implementation
+﻿# Model Interpretability — Architecture
 
-## System Design
+## Components
+1. Explainer router: maps the stated question to a method (global vs
+   local) and records the choice.
+2. Background store: reference rows for PDP averaging and SHAP
+   baselines, versioned with the dataset.
+3. Perturbation sampler: neighbor generator with kernel weights for
+   LIME-style surrogates.
+4. Surrogate fitter: weighted least squares for local linear models.
+5. Attribution engine: coalition enumeration/approximation for Shapley
+   values with an efficiency check.
+6. Stability checker: reruns explanations under perturbed settings and
+   reports spread.
+7. Report sink: explanations plus settings into the run record.
 
-The Model Interpretability implementation follows a layered architecture:
+## Data flow
+Model + dataset version + question -> router -> method with background
+data -> raw explanation -> stability check -> report with settings.
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Key interfaces
+- `permutationImportance(model, data, seed)`: per-feature accuracy
+  drops with shuffle counts.
+- `pdp(model, background, feature, grid)`: averaged response curve.
+- `limeExplain(f, x0, kernelWidth, n)`: surrogate coefficients.
+- `shapley(v, baseline)`: per-feature attributions summing to total.
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+## Ordering guarantees
+Explanations always reference a registered model version and dataset
+version; background data never includes test rows used for final
+scoring. Stability reruns precede any stakeholder-facing report.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
-
-## Design Patterns
-
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
-
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.modelinterpret/
-â”œâ”€â”€ ModelInterpretability.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Scaling notes
+Permutation and PDP scale with features times scoring passes; exact
+Shapley enumeration is exponential in features (fine for 2, sampled
+beyond); LIME scales with neighbor count times model calls. Budget
+accordingly and cache background aggregates.

@@ -1,61 +1,44 @@
-﻿# Performance: MLOps Orchestration Implementation
+# MLOps Orchestration - Performance
 
-## Performance Analysis
+## Throughput
+- Parallelize independent DAG branches; shard data-heavy tasks by partition.
+- Cache immutable inputs between runs; rebuild only what changed.
+- Separate queues for scheduled, event, and backfill work prevent starvation.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Latency
+- Gate evaluation should be seconds on precomputed metrics, not a retraining loop.
+- Backoff caps bound retry storms during dependency outages.
+- Fail fast on validation errors instead of consuming training budget.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Resource use
+- Request CPU and memory per task from measured peaks, not guesses.
+- Clean intermediate artifacts on a retention policy; lineage pointers keep the record.
+- Limit backfill parallelism so replays do not starve live runs.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+## What to watch
+- Run duration, queue wait, retry counts, and gate outcomes per pipeline.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: MLOps Orchestration Implementation
+## Scheduler lightness
+- Keep scheduling decisions in memory; persist only run state changes.
+- Heavy computation inside the scheduler serializes every lane at once.
+- Shard task dispatch when branch counts grow into the thousands.
 
-## Code Smells and Improvements
+## Cache discipline
+- Immutable inputs cache across runs keyed by data version.
+- Invalidate on version change only; content hashes verify hits.
+- Evict intermediates by retention policy, never while a run references them.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Gate speed
+- Precompute evaluation metrics during training so gates read, not compute.
+- Slice breakdowns materialize beside overall numbers in the same pass.
+- Seconds-scale gates keep promotion snappy; retraining loops stay out.
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+## Backfill pacing
+- Replay windows sequentially to preserve ordering guarantees downstream.
+- Cap parallelism explicitly; unbounded replays look like denial of service.
+- Monitor live-lane waits during replays as the fairness signal.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## Measurement
+- Track run duration, queue wait, retry counts, and gate outcomes per pipeline.
+- Alert on duration drift: slow pipelines delay freshness silently.
+- Review the slowest stage monthly; it owns the next optimization.

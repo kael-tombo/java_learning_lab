@@ -1,31 +1,43 @@
-﻿# References: Model Interpretability
+﻿# Model Interpretability — References
 
-## Textbooks
-1. Standard Textbook on Calculus
-2. Advanced Engineering Mathematics
-3. Numerical Analysis
-4. Real and Complex Analysis
+All entries are real publications. Verify editions and venues locally.
 
-## Academic Papers
-1. Author (Year). Landmark paper on Model Interpretability. *Journal*.
-2. Author (Year). Computational improvements. *Conference*.
-3. Author (Year). Error analysis. *Journal of Numerical Analysis*.
+1. Ribeiro, M. et al. "Why Should I Trust You? Explaining the
+   Predictions of Any Classifier" (2016). LIME local surrogates.
+2. Lundberg, S. and Lee, S. "A Unified Approach to Interpreting Model
+   Predictions" (2017). SHAP Shapley-value attributions.
+3. Hastie, T., Tibshirani, R., Friedman, J. "The Elements of
+   Statistical Learning." Partial dependence, variable importance
+   background.
+4. Sculley, D. et al. "Hidden Technical Debt in Complex Machine
+   Learning Systems" (NIPS 2015). Explanations as debugging/audit
+   tooling in production.
+5. Breck, E. et al. "The ML Test Score: A Rubric for ML Production
+   Readiness." Checks that explanations support rather than replace.
+6. Molnar, C. "Interpretable Machine Learning." Open-access textbook
+   covering permutation importance, PDP/ALE, LIME, and Shapley
+   attributions with worked examples; use for background and for
+   comparing method assumptions side by side.
+7. Shapley, L. "A Value for n-person Games" (1953). The cooperative
+   game-theory source of the Shapley value and its axiomatic
+   characterization; read for the efficiency/symmetry/dummy/additivity
+   framing behind SHAP's claim.
+8. Friedman, J. "Greedy Function Approximation: A Gradient Boosting
+   Machine" (2001). Gradient-boosting context in which partial
+   dependence summaries became standard model-reading tools; pairs
+   with the Hastie/Tibshirani/Friedman textbook treatment.
+9. Sculley, D. et al. "Machine Learning: The High-Interest Credit Card
+   of Technical Debt" (SE4ML workshop, 2014). Short precursor statement
+   of the production-debt argument expanded in the 2015 paper above;
+   useful for the audit-before-persuasion ordering.
 
-## Online Resources
-1. Khan Academy -- https://www.khanacademy.org/math
-2. 3Blue1Brown -- https://www.youtube.com/c/3blue1brown
-3. MIT OpenCourseWare -- https://ocw.mit.edu
-4. Apache Commons Math -- https://commons.apache.org/proper/commons-math
+No vendor docs, no invented papers, no benchmark numbers.
 
-## Software Libraries
-1. Apache Commons Math
-2. EJML (Efficient Java Matrix Library)
-3. JScience
-4. ND4J
-
-## Standards
-1. IEEE 754-2019 -- Floating-point arithmetic
-2. Java Language Specification -- Java 21+
-
-## Citation Format
-Author. "Model Interpretability." Math Academy, Java Learning Lab, 2026.
+## How to read them together
+- Pair Molnar's worked examples with the demo numbers here (0.3333,
+  slope near 4.0, split 5.5/4.5) to see where textbook and lab agree.
+- Read Shapley's axioms beside SHAP's uniqueness claim to separate the
+  mathematics (uncontested) from the estimation choices (contested).
+- Keep Friedman's PDP context next to the height/weight caveat: the
+  averaging construction is the same, and so is the unsupported-region
+  risk.

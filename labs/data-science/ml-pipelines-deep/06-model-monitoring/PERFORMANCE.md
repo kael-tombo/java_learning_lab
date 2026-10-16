@@ -1,61 +1,44 @@
-﻿# Performance: Model Monitoring Implementation
+# Model Monitoring - Performance
 
-## Performance Analysis
+## Cost control
+- Aggregate at serving time into counters and sketches; avoid scanning raw events per dashboard load.
+- Roll up hourly, then daily; keep raw events short-term only.
+- Compute distribution checks on samples when full scans are too slow.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Freshness
+- Dashboard lag of minutes is fine; paging checks run on shorter cadences.
+- Label joins run in batch; provisional metrics are clearly marked.
+- Pinned reference windows avoid recomputation churn.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Scale
+- Shard aggregation by time and slice key; comparator work is per slice.
+- Alert evaluation is cheap boolean logic over precomputed rollups.
+- Cap cardinality: bound the number of tracked slices explicitly.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+## What to watch
+- Monitor the monitors: alert volume, precision, and time-to-detect per rule.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Model Monitoring Implementation
+## Sampling strategy
+- Full scans on every dashboard load waste the serving budget; sample first.
+- Size samples from the narrowest slice: rare segments need absolute counts.
+- Recompute exact numbers only for paging decisions and postmortems.
 
-## Code Smells and Improvements
+## Cardinality discipline
+- Each tracked slice multiplies comparator work; cap the slice registry.
+- Drop slices nobody reads; every kept slice needs an owner and a rule.
+- Prefer hierarchical rollups (region, then device) over flat cross products.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Join efficiency
+- Label joins run in batch keyed once, not per dashboard query.
+- Pre-join maturity flags so queries filter without recomputation.
+- Backfill joins reuse the same keyed path; idempotent by window.
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+## Paging cadence
+- Evaluate paging rules on short cadences over precomputed rollups.
+- Dashboards refresh on the order of minutes; nobody triages a flicker.
+- Alert evaluation stays boolean-cheap; heavy math belongs in rollups.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## Retention arithmetic
+- Raw events cost the most per insight after days; roll them up and drop.
+- Keep one raw sample per window for forensics after bulk deletion.
+- Verify deletion jobs in monitors so drops read as expected, not as outages.

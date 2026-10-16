@@ -1,36 +1,39 @@
-﻿# Interview: Fraud Detection System
+# Fraud Detection System - Interview Questions
 
-## Common Interview Questions
+1. Why is accuracy misleading for fraud?
+   - Extreme skew lets always-legitimate score highly while catching nothing at all.
+2. How do you pick a threshold?
+   - Minimize expected cost of misses versus reviews within review capacity.
+3. Rules versus model: how do they split work?
+   - Rules cover known patterns instantly; the model generalizes; review handles uncertainty.
+4. What belongs in the request path?
+   - Only cheap features, rules, and the warmed model; slow lookups stay async.
+5. How does label delay distort evaluation?
+   - Fresh windows undercount fraud; use mature windows for official metrics.
+6. What is adversarial adaptation?
+   - Attackers change behavior after blocks, so rules and features need refresh.
+7. Queue overflows: options?
+   - Tighten the band, order by risk, add reviewers, add emergency rules.
+8. How do you detect train/serve skew?
+   - Compare logged serving features against training values on overlap traffic.
+9. What must never leak to callers?
+   - Thresholds and rule internals; responses stay generic while logs stay detailed.
+10. Fallback on feature timeout?
+    - Safe default decision plus an alert, never an unbounded wait.
+11. How do you size a review band from staffing?
+    - Flag rate times decisions per hour against reviewer throughput; overflow sets the edge.
+12. What reconciles reviewer labels with truth?
+    - Mature dispute outcomes joined by key; reviewer precision is the tracked gap.
+13. How do you split features across the latency budget?
+    - Measure per-feature cost; inline what fits, precompute the rest with safe defaults.
+14. What signals adversarial shift first?
+    - Rule-hit decay and score-mix movement before labeled metrics can confirm.
+15. Why version rules and thresholds like code?
+    - Instant revert during attacks; unauthorized edits are direct fraud enablers.
+16. What does band precision tell you that overall precision hides?
+    - Whether reviewers' actual workload is fraud-dense or flood-diluted.
+17. When does retraining start after a new attack pattern?
+    - After labels mature; emergency rules cover the gap, never provisional labels.
 
-### Q1: Conceptual
-**Q**: Explain Fraud Detection System and its importance in computing.
-**A**: Fraud Detection System enables precise analysis of quantitative relationships, foundational for scientific computing and ML.
-
-### Q2: Implementation
-**Q**: How to implement Fraud Detection System in Java 21+?
-**A**: Input validation, core algorithm with stable numerics, convergence checking, error bounds.
-
-### Q3: Numerical Analysis
-**Q**: What numerical issues arise?
-**A**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
-
-### Q4: Performance
-**Q**: How to optimize for large inputs?
-**A**: Algorithmic improvements, parallel processing, memory optimization, JVM tuning.
-
-### Q5: System Design
-**Q**: Design a computation service.
-**A**: API design, concurrency model, error handling, monitoring, deployment.
-
-## Coding Challenge
-`java
-public double compute(double[] values) {
-    // O(n) time, O(1) space, handle edge cases
-    return 0.0;
-}
-`
-
-## Behavioral Questions
-1. Describe debugging a numerical issue
-2. How do you ensure code correctness?
-3. Approach to learning new math concepts?
+## How to answer
+- State the skew-aware reasoning first, then the latency and capacity constraints.

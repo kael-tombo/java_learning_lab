@@ -1,70 +1,58 @@
-﻿# Model Interpretability -- Theory
+﻿# Model Interpretability — Theory
 
-## 1. Introduction
+## 1. Global vs local
+A global explanation describes the model everywhere (which features
+matter overall, how outputs vary with inputs). A local explanation
+describes one prediction (why this item scored this way). Methods do
+not transfer automatically: a globally important feature can be
+irrelevant at a given point and vice versa. State which question you
+answer before picking a tool.
 
-Model Interpretability is a fundamental concept in ML Pipelines Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+## 2. Permutation importance (concept)
+Shuffle one feature's values across rows, remeasure accuracy, and take
+the drop: importance = baseline_acc - permuted_acc. Shuffling breaks
+that feature's link to the label while preserving its marginal
+distribution. Demo: baseline 1.0, permuted-x1 0.6667, importance
+0.3333. Correlated features share credit — shuffling one of a pair
+understates both — so read joint behavior, not just ranks.
 
-## 2. Core Definitions
+## 3. PDP concept (partial dependence)
+Fix the feature of interest at a grid value, average model predictions
+over the other features' observed values, plot the averages. The curve
+shows the model's marginal response holding the rest at their data
+distribution. Caveat: averaging over unrealistic combinations (height
+with weight of a child) can describe regions no real input occupies.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Model Interpretability rests on several key definitions and axioms that form the foundation of the theory.
+## 4. LIME local-surrogate concept (Ribeiro 2016)
+To explain prediction f(x0): sample perturbed points near x0, weight by
+proximity with a kernel, fit an interpretable model (e.g. linear) to
+those weighted samples, read its coefficients as the explanation. Demo
+on f(x)=x^2 at x0=2: weighted least squares recovers slope ~4.0
+(observed 3.9999999999999982), matching the true gradient 2x0 = 4. The
+intercept 4.0571 anchors the local line. Explanations depend on the
+kernel width, sample, and surrogate class — all three are choices, not
+facts about the model.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 5. SHAP Shapley-value concept (Lundberg/Lee 2017)
+Credit allocation from cooperative game theory: players are features,
+the payout is the prediction minus baseline. The Shapley value averages
+each player's marginal contribution over all joining orders. Demo game
+v({})=0, v({1})=4, v({2})=3, v({1,2})=10: phi1 = 5.5, phi2 = 4.5, sum =
+10.0 = v({1,2}), confirming efficiency. The four axioms, stated as
+axioms: efficiency (values sum to the total gain), symmetry (identical
+contributors get equal shares), dummy (zero-contributors get zero),
+additivity (values add across combined games). SHAP's claim is that
+Shapley values are the unique attribution satisfying all four.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 6. Interpretability-vs-accuracy framing
+Simple models (small linear, shallow trees) are readable but may
+underfit; rich models fit better but need post-hoc tools. The trade is
+not a law — sometimes simple models win — but a budget: every unit of
+explanation effort buys trust only if the explanation is faithful and
+stable. An unstable explanation of an accurate model is worse than none.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Model Interpretability:
-
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Model Interpretability is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Model Interpretability is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Model Interpretability extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Model Interpretability requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Model Interpretability connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Model Interpretability provide the rigorous basis needed for correct computational implementation and real-world application.
+## 7. Stability caveats
+Permutation ranks shift with seed and correlated features; LIME
+coefficients shift with kernel width and sampling; SHAP values shift
+with baseline and feature-grouping choices. Report explanations with
+their settings and rerun with perturbed settings before acting on them.

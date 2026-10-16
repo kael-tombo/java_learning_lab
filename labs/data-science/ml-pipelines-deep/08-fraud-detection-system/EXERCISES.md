@@ -1,130 +1,41 @@
-﻿# Exercises: Fraud Detection System
+# Fraud Detection System - Exercises
 
-## Theoretical Exercises
+1. Run A08Metrics; raise fp to 240 and recompute precision/recall/F1.
+   - Expect precision near 0.25 with recall unchanged; explain the reviewer impact.
+2. In B08Cost, change the cost ratio to 5:1 and find the new minimum-cost threshold among the three points.
+   - Recompute all three costs and name the winner; compare with the 10:1 answer.
+3. Extend C08Lag with a maturity rule: compute metrics only on days with 90% or more labels.
+   - Print which days qualify and the resulting evaluation window.
+4. Implement the rule layer: two deterministic rules that short-circuit before model scoring.
+   - Count rule hits versus model-scored cases on a twenty-row inline dataset.
+5. Split ten features into inline vs async by a 5 ms budget with measured per-feature costs.
+   - Document the safe default for each async feature when its value is missing.
+6. Build a review queue: order ten scored cases by score, take the top 4, and compute precision in that band.
+   - Report band precision separately from overall precision.
+7. Simulate adversarial shift: move a fraud cluster in feature space and show which rule stops firing.
+    - Report rule-hit rate before and after the shift.
+8. Price a threshold move: given flag counts at three thresholds with the 10:1
+   illustrative ratio, recompute expected cost and confirm the middle wins at 320.
+    - Show all three cost lines; state which term dominates each extreme.
+9. Size the review band from staffing: given decisions per hour and expected flag
+   rate, compute the widest band reviewers can clear before cases age out.
+    - Report band width, expected queue depth, and the overflow threshold.
+10. Reconcile reviewer labels: given ten review decisions and later dispute outcomes,
+    compute reviewer precision and name the cases reviewers missed.
+    - Expect disagreement on at least one; report precision separately.
+11. Split a blended feature set: given per-feature lookup costs and a 5 ms inline
+    budget, choose the inline set maximizing coverage without breaching the cap.
+    - Document async fallbacks for every excluded feature.
+12. Detect rule decay: given twelve weeks of hit rates for three rules, flag the
+    decaying rule and propose its replacement scope.
+    - Report hit-rate slopes, not just endpoints, for each rule.
+13. Audit a decision trail: given a blocked transaction record, verify score, rule
+    hits, feature snapshot, and model version are all present and consistent.
+    - Reject incomplete trails in writing, naming the missing evidence.
+14. Run the adaptation drill: introduce a shifted fraud cluster, watch rule hits
+    decay, ship an emergency rule, then confirm score mix stabilizes.
+    - Log hit rate before, during cover, and after retraining separately.
+   - Report rule-hit rate before and after the shift.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Fraud Detection System in your own words.
-**Answer**: Fraud Detection System involves understanding how mathematical quantities change and relate under specific operations.
-
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Fraud Detection System.
-**Answer**: The proof follows from the definitions and established theorems.
-
-### Exercise 3: Application
-**Question**: Apply the theory of Fraud Detection System to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
-
-## Programming Exercises
-
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Fraud Detection System.
-
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
-
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
-
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
-
-## Challenge Problems
-
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
-
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
-
-## Solutions
-
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Fraud Detection System
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Fraud Detection System?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Fraud Detection System?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+## Submission check
+- All programs compile with `javac --release 21 -encoding UTF-8` and print pure ASCII; no real fraud figures are used anywhere.

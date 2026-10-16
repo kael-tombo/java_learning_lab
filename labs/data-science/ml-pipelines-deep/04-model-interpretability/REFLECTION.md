@@ -1,39 +1,33 @@
-﻿# Reflection: Model Interpretability
+﻿# Model Interpretability — Reflection
 
-## Self-Assessment Questions
+## What surprised you?
+That the most rigorous numbers in the lab (5.5/4.5, slope ~4.0) come
+with the strongest warnings. Shapley values are exact given the game —
+but the game (baseline, grouping) is a choice. The surrogate slope is
+exact given the sample — but width and sample are choices. Rigor
+inside, judgment outside.
 
-### Understanding
-1. Can I explain Model Interpretability to a non-mathematician?
-2. Do I understand when to use each variant?
-3. Can I identify numerical issues before they occur?
+## Check your understanding
+- Can you recompute phi1=5.5 and phi2=4.5 from the two orders' margins
+  without looking?
+- Can you derive importance 1/3 from 6/6 vs 4/6 and explain the
+  repeating decimal print?
+- Can you explain why the LIME intercept (4.0571) sits above f(x0)=4.0
+  using convexity in one sentence?
 
-### Application
-1. Have I implemented the algorithm correctly?
-2. Can I modify for different use cases?
-3. Do I know how to test correctness and performance?
+## Connect to your own work
+Take a model you have trained. Which feature would you bet tops
+permutation importance — and how would you react if an ID or timestamp
+won? Draft the audit you would run before showing any attribution to a
+stakeholder.
 
-### Connection
-1. How does this connect to other math areas?
-2. How does it apply to my work/studies?
-3. What problems can I now solve?
+## What to do next
+- Add the x2 shuffle to the demo and compare ranks against rule weights.
+- Refit the surrogate at widths 0.3/0.6/1.0 and plot slope vs width.
+- Read the Ribeiro 2016 and Lundberg/Lee 2017 papers at concept level
+  and map each figure to a lab snippet.
 
-## Learning Journal Prompts
-- Write a summary in your own words
-- Describe a situation where this would help
-- What questions remain?
-
-## Progress Tracking
-| Concept | Before | After | Confidence |
-|---------|--------|-------|-----------|
-| Core definition | | | |
-| Key theorems | | | |
-| Implementation | | | |
-| Numerical aspects | | | |
-| Applications | | | |
-
-## Goals for Mastery
-- [ ] Implement from memory
-- [ ] Explain to a peer
-- [ ] Apply to novel problems
-- [ ] Fix numerical issues
-- [ ] Teach others
+## One-sentence takeaway
+Explanations are measurements with settings: report the numbers with
+their knobs, check stability before acting, and never mistake the
+model's portrait for the world's causation.

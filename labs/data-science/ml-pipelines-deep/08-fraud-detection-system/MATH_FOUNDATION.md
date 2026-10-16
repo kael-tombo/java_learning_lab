@@ -1,81 +1,45 @@
-﻿# Math Foundation for Fraud Detection System
+# Fraud Detection System - Math Foundation
 
-## Prerequisite Mathematics
+## Precision, recall, F1
+- Precision = TP/(TP+FP); recall = TP/(TP+FN); F1 = 2PR/(P+R).
+- With TP=80, FP=120, FN=20: P=0.400, R=0.800, F1=0.533.
+- Accuracy = (TP+TN)/N is dominated by TN at high skew and hides recall collapse.
 
-This document reviews the mathematical prerequisites needed to study Fraud Detection System effectively.
+## Expected cost
+- Cost = FN * cFN + FP * cFP over a fixed window.
+- The operating point is the threshold minimizing this sum given capacity limits.
+- The 10:1 ratio in the snippet is illustrative; organizations fit their own.
 
-## 1. Algebra Review
+## Label maturity
+- Observed fraud at age d is true fraud times labeled-fraction(d).
+- Early evaluation multiplies recall down by the maturity fraction.
+- Compare windows only at equal maturity ages.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## Threshold monotonicity
+- Lowering the threshold weakly raises both TP and FP; precision can move either way.
+- The precision-recall curve traced over thresholds is the correct summary, not one point.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## Worked precision shift
+- Base triple tp 80, fp 120, fn 20 gives P 0.400, R 0.800, F1 0.533.
+- Raising fp to 240: P = 80/320 = 0.250 with recall unchanged at 0.800.
+- Reviewer impact: three of four flags innocent, queue load up, trust down.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## Worked cost comparison
+- Illustrative 10:1 ratio prices each miss at ten reviews across thresholds.
+- Middle threshold totals 320 against 350 and 440: balance beats extremes.
+- At 5:1 the review term weighs more; recompute all three before moving.
 
-## 2. Functions and Graphs
+## Maturity gating math
+- A 90%-labeled bar admits only days past the threshold into official metrics.
+- Early days multiply observed fraud down by their labeled fraction.
+- Windows graduate explicitly; provisional numbers never revise silently.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## Iso-cost reasoning
+- Equal-cost lines trade misses against reviews at the fitted ratio slope.
+- Steeper ratios (costlier misses) push the operating point toward recall.
+- Capacity caps the feasible region: unaffordable bands are off the map.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
-
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
-
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+## Curve over point
+- The precision-recall curve over thresholds dominates any single reported pair.
+- F1 at one point summarizes the tradeoff there, never the whole frontier.
+- Report the curve, mark the operating point, name the ratio behind it.

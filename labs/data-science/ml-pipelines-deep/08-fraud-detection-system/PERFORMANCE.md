@@ -1,61 +1,44 @@
-﻿# Performance: Fraud Detection System Implementation
+# Fraud Detection System - Performance
 
-## Performance Analysis
+## Request budget
+- Inline path must fit amount checks, velocity counters, rules, and model scoring.
+- Precompute slow aggregates asynchronously; serve them from a fast store.
+- Timeouts fall back to a safe default plus an alert, never an unbounded wait.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Review capacity
+- Threshold sets queue inflow; size reviewer staffing from the expected flag rate.
+- Order the queue by score and value so limited reviews hit the riskiest cases.
+- Track time-to-decision; stale reviews lose their blocking value.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Training cost
+- Retrain on mature windows only; provisional labels waste compute and mislead.
+- Refresh features on a slower cadence than thresholds and rules.
+- Version everything so a bad refresh rolls back cleanly.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+## What to watch
+- Decision latency p99, rule hit rates, score mix, queue depth, label maturity.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Fraud Detection System Implementation
+## Inline path tuning
+- Order rules by hit rate so common patterns short-circuit earliest.
+- Keep velocity counters in memory with fixed windows; evict cold keys.
+- Batch feature lookups per request where the store supports it.
 
-## Code Smells and Improvements
+## Async pipeline pacing
+- Precompute aggregates on a cadence faster than their staleness tolerance.
+- Backpressure slow producers instead of serving partial aggregates silently.
+- Mark staleness on every served value so defaults trigger correctly.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Queue throughput
+- Parallelize independent reviews; reserve senior reviewers for the top band.
+- Time-box per-case review so one hard case cannot stall the lane.
+- Shed low-risk passes first when depth alarms fire, never high-risk blocks.
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+## Retraining economy
+- Train on mature windows sized to pattern stability, not calendar habit.
+- Freeze features during threshold experiments to isolate the lever.
+- Roll back by version pointer when a refresh degrades band precision.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## Latency verification
+- Measure decision p99 at the request edge, not inside the scorer.
+- Include rule time, feature time, and model time in the per-request split.
+- Alert on p99 movement per decision class: block, review, and pass differ.

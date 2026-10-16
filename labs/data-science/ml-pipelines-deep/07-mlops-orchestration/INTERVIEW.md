@@ -1,36 +1,39 @@
-﻿# Interview: MLOps Orchestration
+# MLOps Orchestration - Interview Questions
 
-## Common Interview Questions
+1. Why model pipelines as DAGs?
+   - Dependencies order execution; branches parallelize; acyclicity guarantees a valid order.
+2. What does idempotence buy a retried task?
+   - Safe reruns with identical outputs keyed by run id instead of duplicates.
+3. How does capped exponential backoff behave?
+   - Waits double per attempt up to a cap; jitter desynchronizes retries across tasks.
+4. Cron versus event triggers?
+   - Fixed cadence versus reacting to new data or signals; most systems combine both.
+5. What is artifact lineage?
+   - Pointers to data version, code commit, parameters, and environment per run.
+6. What gates a promotion?
+   - Data validation before training; overall lift plus per-slice no-regression before serving.
+7. How do you backfill safely?
+   - Replay windows in order into versioned outputs without touching live paths.
+8. Rerun diverges from the original: likely cause?
+   - Unpinned dependency or unrecorded seed changing results silently.
+9. Why separate queues for backfill?
+   - Unbounded replays starve scheduled runs on a shared queue.
+10. Which errors should never retry?
+    - Deterministic validation failures; retry transient dependency errors only.
+11. How do you bound retraining staleness under each trigger?
+    - Cron by period plus duration; events by detection delay; run both.
+12. What makes a promotion record complete?
+    - Who, when, lineage pointer, and the gate table snapshot that passed.
+13. How do you test backfill before a full replay?
+    - One window first into versioned paths, then the range after it verifies.
+14. When is a slice exception to a gate veto acceptable?
+    - Documented explicitly with owner sign-off, never silent; the veto is default.
+15. How do you detect zombie schedules?
+    - Run creation sources show duplicate launches; inventory triggers regularly.
+16. What proves rerun equality?
+    - Matching fingerprints across runs with identical lineage pointers.
+17. Where do side effects belong in a retried DAG?
+    - Behind promotion flags only, never inside tasks that retry.
 
-### Q1: Conceptual
-**Q**: Explain MLOps Orchestration and its importance in computing.
-**A**: MLOps Orchestration enables precise analysis of quantitative relationships, foundational for scientific computing and ML.
-
-### Q2: Implementation
-**Q**: How to implement MLOps Orchestration in Java 21+?
-**A**: Input validation, core algorithm with stable numerics, convergence checking, error bounds.
-
-### Q3: Numerical Analysis
-**Q**: What numerical issues arise?
-**A**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
-
-### Q4: Performance
-**Q**: How to optimize for large inputs?
-**A**: Algorithmic improvements, parallel processing, memory optimization, JVM tuning.
-
-### Q5: System Design
-**Q**: Design a computation service.
-**A**: API design, concurrency model, error handling, monitoring, deployment.
-
-## Coding Challenge
-`java
-public double compute(double[] values) {
-    // O(n) time, O(1) space, handle edge cases
-    return 0.0;
-}
-`
-
-## Behavioral Questions
-1. Describe debugging a numerical issue
-2. How do you ensure code correctness?
-3. Approach to learning new math concepts?
+## How to answer
+- Describe the mechanism, state the invariant, then give the incident it prevents.

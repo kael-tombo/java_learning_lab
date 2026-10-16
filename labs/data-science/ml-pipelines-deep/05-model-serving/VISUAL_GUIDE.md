@@ -1,25 +1,52 @@
-﻿# Visual Guide: Model Serving
+# Model Serving - Visual Guide
 
-## Conceptual Diagrams
+## Online path
+```text
+client -> [gateway] -> [preprocess] -> [model] -> [postprocess] -> response
+                        (validate)      (warmed)                  (log version)
+```
 
-### Diagram 1: Core Concept Flow
-`
-Input -> Preprocessing -> Core Algorithm -> Postprocessing -> Output
-`
+## Batch vs online vs streaming
+```text
+batch:     [partition] ==> [shards] ==> [prediction table]   (slow, huge)
+online:    request --> score --> response                    (fast, single)
+streaming: events ~~~> [stateful scorer] ~~~> actions        (continuous)
+```
 
-### Diagram 2: Algorithm Variants
-`
-Input -> Variant Selection -> [Stable | Fast | Precise] -> Result
-`
+## Rollout ladder
+```text
+shadow (0% acted) -> canary (small %) -> stepped shift -> full (rollback = route back)
+```
 
-## Function Behavior
-Visual representation showing how Model Serving transforms inputs to outputs with characteristic patterns.
+## Batching tradeoff sketch
+```text
+throughput ^                                latency ^
+          /                                          /
+         /                                          /
+        +---> batch size                            +---> batch size
+```
 
-## Convergence Pattern
-Error decreases as iterations increase, following exponential decay for well-conditioned problems.
+## Latency legs
+```text
+budget:  [preprocess | model | postprocess | network+queue]  = p99 cap
+alert:        owner1    owner2     owner3        owner4
+```
 
-## Visual Learning Resources
-- Flowcharts for algorithm logic
-- Plots of convergence behavior
-- Heat maps of numerical stability regions
-- Comparison charts for algorithm variants
+## Cache key
+```text
+key = hash(request fields + model version + schema version)
+promote -> invalidate keys with old version -> verify with bump test
+```
+
+## Version pools during shift
+```text
+old pool (90%) ===> responses tagged v3
+new pool (10%) ===> responses tagged v4   (compare p50/p99 + errors)
+rollback = route 100% back to old pool (warm, tested)
+```
+
+## Queue depth warning
+```text
+depth:  low ...... knee ...... flood
+action: watch    warn+add      shed shadow, then shift back
+```

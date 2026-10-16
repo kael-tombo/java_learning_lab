@@ -1,33 +1,54 @@
-﻿# Why It Matters: MLOps Orchestration
+# MLOps Orchestration - Why It Matters
 
-## Real-World Importance
+Cadence decides model freshness: scheduled plus event-driven runs keep models current without heroics.
 
-### 1. Scientific Computing
-Fundamental to simulations in physics, climate, and drug discovery.
+Gates decide blast radius: metric-gated promotion keeps regressions out of production instead of paging about them later.
 
-### 2. Engineering
-Every discipline relies on these foundations for design and analysis.
+Lineage decides auditability: data, code, parameters, and environment per run answer what changed and what to revert.
 
-### 3. Machine Learning and AI
-Core to model training, optimization, and inference.
+Idempotent retries decide reliability: transient outages become delays rather than duplicated side effects and corrupt state.
 
-### 4. Financial Modeling
-Risk analysis, portfolio optimization, quantitative trading.
+Backfill capability decides recovery speed. History repair as routine replay beats emergency surgery on live tables.
 
-### 5. Computer Graphics
-Rendering, animation, physics simulation.
+Queue separation decides fairness between live work and replays. Shared queues let yesterday's fix starve today's training.
 
-## Impact by Industry
-| Industry | Application | Impact |
-|----------|-------------|--------|
-| Healthcare | Imaging, drug discovery | Life-critical |
-| Finance | Risk modeling, trading | Economic |
-| Technology | ML/AI, search | Transformative |
-| Manufacturing | Design optimization | Efficiency |
+Environment pins decide debuggability. When reruns reproduce exactly, incidents become investigations instead of mysteries.
 
-## Why Learn This?
-1. Foundational to modern technology
-2. Transferable across domains
-3. Durable knowledge
-4. Enables innovation
-5. High career value
+Trigger choice decides staleness bounds. Cron bounds by clock, events bound by change; together they cover both failure modes.
+
+## Freshness and safety
+
+Retraining cadence decides whether models track the world or memorialize it: cron
+bounds staleness by the clock while event triggers bound it by change, and most
+systems need both because time passing and the world changing are different risks.
+Staleness unmeasured becomes staleness unmanaged.
+
+Gate strictness decides what production never sees: a vetoed candidate costs a
+notification while a shipped regression costs an incident. Per-slice bars look
+expensive until the first broken segment they stop; then they look like the
+cheapest insurance in the building.
+
+## Reliability mechanics
+
+Idempotent retries convert outages into delays: the same transient failure that
+duplicates side effects in sloppy DAGs merely overwrites identical outputs in
+careful ones. Reliability here is a write-keying discipline, not heroism.
+
+Queue separation converts replays from threats into routine: backfills proceed at
+capped concurrency in their own lane while scheduled runs keep their cadence.
+Shared queues make every history repair a live-training outage wearing a disguise.
+
+## Audit and learning
+
+Lineage completeness decides whether incidents are solvable: with data, code,
+parameters, and environment recorded, each divergence names its unpinned input.
+Without them, reruns disagree and nobody can say why, which is the precise shape
+of an unlearnable lesson.
+
+Promotion records decide accountability: who shipped which lineage pointer when,
+against which gate snapshot. Reverts follow the pointer home instead of hunting
+through chat logs, and the next incident starts from evidence rather than rumor.
+
+Trigger ownership decides hygiene: each cadence with one firing mechanism and a
+reviewed inventory means no zombie schedule double-trains in the background. The
+quarterly inventory is cheap; the duplicate runs it deletes are not.

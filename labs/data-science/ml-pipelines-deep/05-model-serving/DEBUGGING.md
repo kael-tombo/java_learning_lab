@@ -1,35 +1,46 @@
-﻿# Debugging: Model Serving Implementation
+# Model Serving - Debugging
 
-## Common Bugs
+## p99 spikes, p50 flat
+- Cause: tail from cold instances, GC pauses, or a slow downstream call.
+- Check: version-tagged latency histograms; correlate with deploys and traffic peaks.
+- Fix: warmup enforcement, heap tuning, timeout plus fallback on the slow call.
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+## Throughput below expected
+- Cause: batch size too small or batch-wait too short under load.
+- Check: batch-size distribution and items/sec per worker.
+- Fix: raise batch cap within the latency budget; preallocate buffers.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Canary looks worse, then recovers
+- Cause: small-sample noise judged too early.
+- Check: error bars at current traffic share; require predeclared duration.
+- Fix: widen share or extend duration before deciding.
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+## Schema errors after deploy
+- Cause: client sends fields the new schema rejects, or units changed.
+- Check: rejection logs by client version and field.
+- Fix: backward-compatible parsing with explicit version handling.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Rollback fails
+- Cause: rollback path never tested; old artifact evicted.
+- Check: drill logs and artifact retention.
+- Fix: keep prior version warm until the new one is declared stable.
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+## Latency budget overrun per leg
+- Cause: preprocessing grew (new features) while the budget stayed fixed.
+- Check: per-leg timing split: preprocess vs model vs postprocess vs network.
+- Fix: re-split the budget explicitly or move costly features to async paths.
 
-## Debugging Techniques
+## Streaming lag grows
+- Cause: per-key state too large or late events reprocessed repeatedly.
+- Check: state size, watermark lag, and reprocess counts per window.
+- Fix: bound windows, checkpoint state, and pin the late-event policy.
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+## Version skew in responses
+- Cause: mixed versions behind the balancer during a stepped shift.
+- Check: version field distribution in responses over the shift window.
+- Fix: pin balancer pools per version until the shift completes.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
-
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+## Cold batch workers after scale-out
+- Cause: new workers take partitions before warmup finishes.
+- Check: per-worker latency by worker start time.
+- Fix: gate partition assignment on readiness, as with online traffic.

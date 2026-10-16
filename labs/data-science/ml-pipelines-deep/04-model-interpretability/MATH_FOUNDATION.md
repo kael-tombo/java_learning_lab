@@ -1,81 +1,40 @@
-﻿# Math Foundation for Model Interpretability
+﻿# Model Interpretability — Math Foundation
 
-## Prerequisite Mathematics
+## 1. Permutation importance arithmetic
+Baseline 6/6 = 1.0; permuted 4/6 = 0.6666666666666666:
 
-This document reviews the mathematical prerequisites needed to study Model Interpretability effectively.
+  importance = 1.0 - 4/6 = 2/6 = 1/3 = 0.33333333333333337 (observed)
 
-## 1. Algebra Review
+The repeating decimal is exact rational 1/3 in binary floating point.
+Importance is a difference of two rates on the same rows — paired
+comparison, not two independent samples.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Shapley derivation for 2 players
+Orders and margins with v({})=0, v({1})=4, v({2})=3, v({1,2})=10:
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+  order (1,2): m1 = 4-0 = 4, m2 = 10-4 = 6
+  order (2,1): m2 = 3-0 = 3, m1 = 10-3 = 7
+  phi1 = (4+7)/2 = 5.5, phi2 = (3+6)/2 = 4.5
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+Efficiency: 5.5+4.5 = 10.0 = v({1,2}) - v({}). The 0.5 weights are
+1/2! per order — the uniform average over joining orders.
 
-## 2. Functions and Graphs
+## 3. Weighted least squares (LIME surrogate)
+Minimize sum_i w_i (y_i - a - b dx_i)^2. Normal equations give:
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+  b = (Sw Sxy - Sx Sy) / (Sw Sxx - Sx^2)
+  a = (Sy - b Sx) / Sw
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+with Sw, Sx, Sy, Sxx, Sxy the w-weighted sums. Demo yields b =
+3.9999999999999982 against truth 4.0. Symmetric dx with symmetric
+weights makes Sx ~ 0, so b ~ Sxy/Sxx: covariance over variance.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 4. Why the intercept exceeds f(x0)
+For convex f, weighted average of f(x0+dx) exceeds f(x0) (Jensen).
+Observed intercept 4.0571 > 4.0 is that lift: the line anchors to
+lifted neighbor values while the slope still matches the tangent.
 
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+## 5. PDP as a conditional average
+PDP(x_s) = mean over background of f(x_s, x_c). It is an expectation
+over the empirical background distribution — change the background,
+change the curve. No background, no PDP reading.

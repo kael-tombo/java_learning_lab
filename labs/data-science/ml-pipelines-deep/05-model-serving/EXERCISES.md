@@ -1,130 +1,40 @@
-﻿# Exercises: Model Serving
+# Model Serving - Exercises
 
-## Theoretical Exercises
+1. Run A05Latency and change the 120 ms outlier to 20. Recompute p50/p99.
+   - Expect p99 to collapse toward the teens while p50 barely moves; that gap is the tail lesson.
+2. Extend B05Batching with a 40 ms latency cap; print the largest batch size that fits and its throughput.
+   - Solve B <= (cap - overhead)/perItem from the latency formula, then verify by running.
+3. In C05Canary, double the canary traffic (canN=400, canErr=12). Recompute z.
+   - Expect a similar z near 0.9: scaling both keeps the rate; error bars shrink slowly.
+4. Add schema validation to a toy scorer: reject negative amounts and unknown currency codes with a logged reason.
+   - Print accepted versus rejected counts on a ten-row inline dataset.
+5. Write a warmup routine: load weights once, score three sample inputs, then open the traffic flag.
+   - Assert the flag opens only after all three sample scores succeed.
+6. Simulate stepped rollout: move traffic 10% at a time across 10 steps, checking a fake error counter each step.
+   - Halt and roll back at the first step where errors exceed twice baseline.
+7. Measure queueing: simulate arrivals against fixed service and record mean wait at 50%, 80%, and 95% utilization.
+   - Expect wait to climb steeply near saturation; report the three numbers.
+8. Version-replay drill: write ten fake prediction log lines with model version
+   and latency, then replay the incident window filtering by version.
+   - Expect two clean groups (old vs new version) with separate p50/p99.
+9. Shadow-compare harness: score the same ten inputs with two fake model
+   versions and print per-input agreement plus distribution shift.
+   - Decide in writing whether you would promote; cite error and latency bands.
+10. Contract-break test: send five requests with extra fields, missing fields,
+    and wrong units at a validating gateway stub.
+    - Expect explicit accept/reject per versioned contract, never silent guessing.
+11. Replay a mixed-version incident: interleave twenty fake log lines from two
+    versions, then compute p50/p99 per version and name which one regressed.
+    - Expect the regressed version isolated cleanly; report both pairs.
+12. Build a per-leg budget table from a 200 ms p99 cap: split preprocessing,
+    model, postprocess, and network, then justify each share in one line.
+    - Verify the shares sum to the cap and name which leg gets cut first.
+13. Write a rollback drill script: flip routing back, confirm prior version warm,
+    and print the time from decision to restored p99.
+    - Expect routing-only rollback with no artifact rebuild step.
+14. Size replicas from peak load: given peak requests per second and measured
+    per-replica throughput, compute replica count plus headroom.
+    - Show the headroom fraction explicitly; state the queue-depth warning level.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Model Serving in your own words.
-**Answer**: Model Serving involves understanding how mathematical quantities change and relate under specific operations.
-
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Model Serving.
-**Answer**: The proof follows from the definitions and established theorems.
-
-### Exercise 3: Application
-**Question**: Apply the theory of Model Serving to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
-
-## Programming Exercises
-
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Model Serving.
-
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
-
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
-
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
-
-## Challenge Problems
-
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
-
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
-
-## Solutions
-
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Model Serving
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Model Serving?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Model Serving?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+## Submission check
+- All programs compile with `javac --release 21 -encoding UTF-8` and print pure ASCII.

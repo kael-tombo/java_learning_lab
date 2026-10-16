@@ -1,25 +1,45 @@
-﻿# Visual Guide: MLOps Orchestration
+# MLOps Orchestration - Visual Guide
 
-## Conceptual Diagrams
+## DAG
+```text
+        [ingest]
+            |
+       [validate]--(fail--> stop, keep prod)
+            |
+        [train]
+         /     \
+ [evaluate]   [package]
+         \     /
+       [gate]--(fail--> notify, no promote)
+            |
+       [promote]
+```
 
-### Diagram 1: Core Concept Flow
-`
-Input -> Preprocessing -> Core Algorithm -> Postprocessing -> Output
-`
+## Backoff
+```text
+attempt:  0    1    2    3    4    5
+wait:     1s   2s   4s   8s   16s  30s(cap)
+```
 
-### Diagram 2: Algorithm Variants
-`
-Input -> Variant Selection -> [Stable | Fast | Precise] -> Result
-`
+## Lineage pointer
+```text
+run-042 = data(v14) + code(abc1234) + params(lr=0.01,seed=7) + env(pinned)
+```
 
-## Function Behavior
-Visual representation showing how MLOps Orchestration transforms inputs to outputs with characteristic patterns.
+## Triggers
+```text
+cron:   ----*----*----*----      (cadence)
+event:  -------X--------X---      (data lands, alert fires)
+```
 
-## Convergence Pattern
-Error decreases as iterations increase, following exponential decay for well-conditioned problems.
+## Queues
+```text
+scheduled:  [run][run][run]      (cadence lane, never starved)
+event:      [run]                (arrival lane)
+backfill:   [replay]===(capped)==> versioned paths
+```
 
-## Visual Learning Resources
-- Flowcharts for algorithm logic
-- Plots of convergence behavior
-- Heat maps of numerical stability regions
-- Comparison charts for algorithm variants
+## Promotion record
+```text
+promote-117 = who(owner) + when(ts) + lineage(run-042) + gates(all green)
+```

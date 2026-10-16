@@ -1,52 +1,38 @@
-﻿# Flashcards: Fraud Detection System
+# Fraud Detection System - Flashcards
 
-## Front-Back Cards
-
-### Card 1
-**Front**: What is the definition of Fraud Detection System?
-**Back**: Mathematical operations transforming inputs according to established rules.
-
-### Card 2
-**Front**: Key properties of Fraud Detection System?
-**Back**: Continuity, convergence, stability, error bounds.
-
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
-
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
-
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
-
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
-
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
-
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
-
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Fraud Detection System algorithm: ________. **Answer**: O(n)
-
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
-
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
-
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: Why not accuracy? A: Skew rewards always-legitimate; use precision/recall.
+Q: Precision vs recall here? A: Flag correctness vs fraud coverage.
+Q: F1 formula? A: 2PR/(P+R); 0.533 in the worked example.
+Q: Expected-cost formula? A: FN*cFN + FP*cFP per window.
+Q: Cost ratio in the snippet? A: Illustrative 10:1, not a real loss figure.
+Q: Where do slow features live? A: Async precompute, out of the request path.
+Q: Rules vs model split? A: Rules for known patterns; model for the rest.
+Q: Review band? A: Uncertain scores queued for manual labels.
+Q: Why mature windows? A: Labels arrive late; fresh windows understate fraud.
+Q: Maturity example? A: 5% labeled day 0, full coverage around day 6.
+Q: Adversarial adaptation? A: Attackers shift behavior after blocks.
+Q: Queue overflow lever? A: Threshold, ordering, staffing, emergency rules.
+Q: Train/serve skew check? A: Compare logged serving vs training features.
+Q: Never reveal what? A: Thresholds and rule internals to callers.
+Q: Fallback on timeout? A: Safe default plus alert, never unbounded wait.
+Q: Operating point definition? A: Threshold minimizing expected cost within capacity.
+Q: Cost formula terms? A: Misses times miss-cost plus reviews times review-cost.
+Q: Snippet cost numbers? A: 320 middle vs 350 and 440 at extremes, illustrative 10:1.
+Q: Threshold down effects? A: TP and FP both rise; precision either way.
+Q: PR curve why? A: Summarizes all thresholds, not one point.
+Q: Inline budget covers? A: Amount, velocity, rules, warmed model.
+Q: Async default rule? A: Documented safe value, never a blocking wait.
+Q: Feature parity test? A: Overlap join of serving vs training values.
+Q: Emergency rule role? A: Same-day cover while the model retrains.
+Q: Rule expiry? A: Narrow scope, expires unless renewed.
+Q: Queue ordering key? A: Score plus value at risk.
+Q: Queue overflow options? A: Tighten band, order by risk, staff, emergency rules.
+Q: Time-to-decision why? A: Stale reviews lose blocking value.
+Q: Maturity ages? A: 5% day 0 to full around day 6 in the snippet.
+Q: Equal-maturity rule? A: Compare windows only at the same label age.
+Q: Rule-hit decay means? A: Attackers shifted; refresh cycle due.
+Q: Score-mix movement means? A: Pattern change; investigate before retraining.
+Q: Reviewer precision? A: Review labels vs mature dispute outcomes.
+Q: Probing pattern? A: Many near-identical low-value attempts, one source.
+Q: Generic responses why? A: Exact thresholds help attackers tune probes.
+Q: Fallback alert? A: Every safe default pages; survival is not operation.

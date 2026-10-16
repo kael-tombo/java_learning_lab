@@ -1,52 +1,45 @@
-﻿# Flashcards: Model Interpretability
+﻿# Model Interpretability — Flashcards
 
-## Front-Back Cards
+Q: Global vs local explanation?
+A: Global describes the model everywhere (importance ranks, PDP);
+local explains one prediction (LIME coefficients, SHAP shares).
 
-### Card 1
-**Front**: What is the definition of Model Interpretability?
-**Back**: Mathematical operations transforming inputs according to established rules.
+Q: Permutation importance definition?
+A: Baseline accuracy minus accuracy after shuffling one feature.
+Demo: 1.0 - 0.6667 = 0.3333 for x1.
 
-### Card 2
-**Front**: Key properties of Model Interpretability?
-**Back**: Continuity, convergence, stability, error bounds.
+Q: Why does correlation distort permutation ranks?
+A: Shuffling one of a correlated pair leaves the other carrying the
+signal, understating both. Read joint behavior.
 
-### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+Q: PDP in one sentence?
+A: Model output vs one feature, averaged over the other features'
+observed values at each grid point.
 
-### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+Q: LIME concept (Ribeiro 2016)?
+A: Sample near x0, weight by proximity, fit an interpretable
+surrogate, read its coefficients as the local explanation.
 
-### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+Q: Demo LIME numbers?
+A: f(x)=x^2 at x0=2: slope 3.9999999999999982 (true gradient 4.0),
+intercept 4.057135543484657.
 
-### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+Q: SHAP concept (Lundberg/Lee 2017)?
+A: Shapley-value attribution: average marginal contribution over
+joining orders; unique under the four axioms.
 
-### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+Q: The four Shapley axioms?
+A: Efficiency (shares sum to total gain), symmetry (equals share
+equally), dummy (non-contributors get zero), additivity (values add
+across games).
 
-### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+Q: Demo Shapley numbers?
+A: phi1=5.5, phi2=4.5, sum=10.0=v({1,2}), efficiency holds.
 
-## Fill-in-the-Blank
-### Card 9
-Time complexity of Model Interpretability algorithm: ________. **Answer**: O(n)
+Q: Interpretability-vs-accuracy framing?
+A: Simple models read directly but may underfit; rich models need
+post-hoc tools whose faithfulness and stability must be checked.
 
-### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
-
-## True/False
-### Card 11
-Higher precision always means more accurate results. **Answer**: False
-
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+Q: The stability caveat in one line?
+A: Every explanation depends on settings (seeds, widths, baselines) —
+rerun perturbed before acting.

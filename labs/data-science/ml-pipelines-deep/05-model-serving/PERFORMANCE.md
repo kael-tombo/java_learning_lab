@@ -1,61 +1,45 @@
-﻿# Performance: Model Serving Implementation
+# Model Serving - Performance
 
-## Performance Analysis
+## Budgets
+- Interactive paths budget per-request p99; background paths budget items per hour.
+- Split the budget across preprocessing, model compute, postprocessing, and network.
+- Measure the tail under peak load, not average load.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Batching
+- Larger batches raise throughput and latency together; cap batch by the latency budget.
+- Bound the batch-wait time so low-traffic periods do not stall.
+- Keep batch buffers preallocated to avoid per-request allocation spikes.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Sizing
+- Memory follows weight size plus batch and scratch buffers; CPU follows preprocessing cost.
+- Replicate stateless servers with peak load plus headroom; queueing explodes near saturation.
+- Warmup before traffic; cold instances show the worst p99.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+## What to watch
+- p50, p99, timeout rate, and queue depth per model version.
+- Version-tagged metrics so canary regressions are visible separately.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Model Serving Implementation
+## Measurement method
+- Load from warmed instances at peak-like concurrency; cold numbers mislead sizing.
+- Record per-leg timings on every request, sampled when full capture costs too much.
+- Compare versions on identical traffic shape before declaring a winner.
 
-## Code Smells and Improvements
+## Batch tuning loop
+- Start from the latency cap, derive the max batch, then measure realized throughput.
+- If throughput trails the formula, suspect buffer allocation or shard imbalance.
+- Re-tune when preprocessing changes: new features move overhead and per-item cost.
 
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
+## Streaming steadiness
+- Bound per-key state so restarts replay minutes, not hours, of windows.
+- Prefer dropping or updating late events over unbounded reprocessing.
+- Track watermark lag as the streaming analogue of queue depth.
 
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
+## Regression guards
+- Gate promotion on p50/p99 per version staying inside budget at canary share.
+- Alert when timeout rate moves before users report; timeouts precede complaints.
+- Keep one dashboard per version during shifts so regressions cannot hide in blends.
 
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## Cold-start control
+- Warmup sample count scales with model size: bigger weights need more fills.
+- Stagger replica restarts so the fleet never cools all at once.
+- Verify p99 in the first minutes after deploy, not only at steady state.

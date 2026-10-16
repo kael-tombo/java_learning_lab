@@ -1,81 +1,42 @@
-﻿# Math Foundation for Model Serving
+# Model Serving - Math Foundation
 
-## Prerequisite Mathematics
+## Percentile rank
+- For sorted x of length n, rank r = (p/100)(n-1); interpolate between floor and ceiling entries.
+- Standard linear interpolation; no distributional assumption.
 
-This document reviews the mathematical prerequisites needed to study Model Serving effectively.
+## Batching model
+- latency(B) = overhead + B * perItem; throughput(B) = B / latency(B).
+- Throughput increases monotonically toward 1/perItem as B grows; latency grows linearly.
+- Pick B from the latency cap: B <= (cap - overhead) / perItem.
 
-## 1. Algebra Review
+## Difference of proportions
+- Rates r1 = e1/n1, r2 = e2/n2; standard error SE = sqrt(r1(1-r1)/n1 + r2(1-r2)/n2).
+- z = (r2 - r1)/SE; |z| near 1 is noise, larger values are signal at fixed sample size.
+- Wider canary shares shrink SE as 1/sqrt(n).
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## Queueing note
+- When arrival rate nears service rate, waiting time grows steeply; headroom is the control.
+- Tail latency, not the mean, sizes timeouts for interactive paths.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## Worked percentile example
+- Illustrative sorted latencies in ms: [4, 5, 6, 7, 120]; n = 5.
+- p50 rank r = 0.50 * 4 = 2.0, landing exactly on 6 ms.
+- p99 rank r = 0.99 * 4 = 3.96, interpolating 7 + 0.96 * (120 - 7) = 115.5 ms.
+- Replace 120 with 20: p99 becomes 7 + 0.96 * 13 = 19.5 ms while p50 stays 6 ms.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## Worked batching numbers
+- Snippet endpoints: 5.5 ms at B = 1 (181 items/sec) and 100 ms at B = 64 (640 items/sec).
+- Per-item cost = (100 - 5.5) / (64 - 1) = 1.5 ms; overhead = 5.5 - 1.5 = 4.0 ms.
+- Throughput ceiling is 1 / 1.5 ms, about 667 items/sec, approached but never passed.
+- A 40 ms cap admits B <= (40 - 4.0) / 1.5 = 24, moving 600 items/sec.
 
-## 2. Functions and Graphs
+## Worked canary reading
+- Snippet z of 0.88 means the observed rate gap is under one standard error.
+- Quadrupling canary traffic halves SE, turning z near 0.9 into z near 1.8 at the same rates.
+- The decision rule stays predeclared: share, duration, and bar set before traffic flows.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
-
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
-
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
-
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+## Queueing shape
+- Utilization rho = arrival rate / service rate; waiting grows steeply as rho nears 1.
+- Doubling headroom near saturation cuts waits far more than doubling it at low load.
+- Provision from peak rho, and let queue depth confirm the model in production.
+- Timeout budgets use the tail of the wait distribution, not its mean.

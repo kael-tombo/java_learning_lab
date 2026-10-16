@@ -1,70 +1,28 @@
-﻿# Fraud Detection System -- Theory
+# Fraud Detection System - Theory
 
-## 1. Introduction
+Fraud detection flags a small minority of abusive events quickly enough to act, without blocking legitimate users.
 
-Fraud Detection System is a fundamental concept in ML Pipelines Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+## Imbalance framing
+- Fraudulent events are an order of magnitude rarer than legitimate ones, typically far below 1% of traffic.
+- Accuracy is uninformative at that skew: always predicting legitimate scores well above 99% while catching nothing.
+- Report precision (fraction of flags that are fraud) and recall (fraction of fraud flagged), plus review capacity.
 
-## 2. Core Definitions
+## Operating point
+- The score threshold sets the tradeoff: lower thresholds raise recall and review load; higher thresholds cut reviews but miss more fraud.
+- The threshold is picked from cost asymmetry: a missed fraud generally costs more than one manual review, stated qualitatively since real figures vary.
+- Expected cost per window is misses * costPerMiss + reviews * costPerReview; the minimum over thresholds is the operating point.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Fraud Detection System rests on several key definitions and axioms that form the foundation of the theory.
+## Features under latency
+- Inline features must answer inside the request budget: amount, velocity counters, device and session attributes.
+- Slow features (multi-hop graph lookups, long aggregates) stay out of the request path and serve through precomputed stores or async updates.
+- Feature logging must match serving values exactly; train/serve skew here directly becomes missed fraud.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## Hybrid shape
+- Deterministic rules block or step up known-bad patterns immediately and are cheap to update during an attack.
+- The model scores the remaining traffic; scores in an uncertain band go to manual review queues.
+- Reviews produce labels that retrain the model and refine rules, closing the loop.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
-
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Fraud Detection System:
-
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Fraud Detection System is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Fraud Detection System is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Fraud Detection System extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Fraud Detection System requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Fraud Detection System connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Fraud Detection System provide the rigorous basis needed for correct computational implementation and real-world application.
+## Delay and adversaries
+- True labels arrive late because disputes and chargebacks take days, so evaluation uses mature windows.
+- Adversarial adaptation means attackers change patterns once blocked; feature distributions and rule hit rates need refresh cycles.
+- Track rule hit rate, model score mix, review precision, and time-to-label as leading health signals.

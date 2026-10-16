@@ -1,45 +1,43 @@
-﻿# Architecture: Fraud Detection System Implementation
+# Fraud Detection System - Architecture
 
-## System Design
+## Components
+- Feature service: serves cheap inline features inside the request budget.
+- Rules engine: evaluates deterministic patterns first for instant decisions.
+- Model scorer: scores non-ruled traffic and returns calibrated scores.
+- Review queue: holds uncertain cases ordered by score and value.
+- Label joiner: merges late dispute outcomes by transaction key.
 
-The Fraud Detection System implementation follows a layered architecture:
+## Data flow
+- Request -> features -> rules -> model -> decision (block, review, pass), all logged.
+- Async path precomputes slow aggregates into the feature store.
+- Labels flow back into training data and rule tuning on a refresh cadence.
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Latency split
+- Request path carries only cheap features and the warmed model.
+- Slow lookups stay async; missing values use documented defaults, not blocking waits.
+- Timeouts produce a safe default decision plus an alert, never an unbounded wait.
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+## Storage
+- Decisions log with score, rule hits, feature snapshot, and model version.
+- Mature label tables power official metrics; fresh tables are provisional.
+- Rule and threshold changes are versioned like code.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Feature freshness
+- Inline features read from low-latency stores refreshed on short cadences.
+- Async aggregates land on their own schedule with staleness markers.
+- Stale markers route decisions to safe defaults instead of silent old values.
 
-## Design Patterns
+## Queue mechanics
+- Ordering key combines score rank with value at risk for reviewer priority.
+- Aging rules escalate cases whose blocking value decays with time.
+- Depth alarms fire before overflow so thresholds tighten deliberately.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Rule lifecycle
+- Rules deploy versioned with hit-rate dashboards from the first hour.
+- Decaying hit rates trigger review; dead rules retire on schedule.
+- Emergency rules ship narrowly scoped and expire unless renewed.
 
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.frauddetection/
-â”œâ”€â”€ FraudDetectionSystem.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Audit trail
+- Every decision stores score, rule hits, snapshot, version, and timestamp.
+- Reviewer labels join the same record with reviewer id and decision time.
+- Regulators and postmortems read the identical trail, not reconstructions.

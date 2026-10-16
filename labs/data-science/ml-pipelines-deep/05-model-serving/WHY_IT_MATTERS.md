@@ -1,33 +1,58 @@
-﻿# Why It Matters: Model Serving
+# Model Serving - Why It Matters
 
-## Real-World Importance
+Latency behavior is product behavior: tail spikes become timeouts, retries, and abandoned sessions on interactive paths.
 
-### 1. Scientific Computing
-Fundamental to simulations in physics, climate, and drug discovery.
+Version discipline decides incident cost. Teams with shadow/canary practice and routing rollback recover in minutes; teams without them redeploy under pressure.
 
-### 2. Engineering
-Every discipline relies on these foundations for design and analysis.
+Schema stability decides velocity. Versioned contracts let model and client teams evolve independently instead of in lockstep deploys.
 
-### 3. Machine Learning and AI
-Core to model training, optimization, and inference.
+Reproducible prediction logs decide whether incidents are diagnosable or merely regrettable.
 
-### 4. Financial Modeling
-Risk analysis, portfolio optimization, quantitative trading.
+Batching discipline decides unit economics. Right-sized batches multiply throughput on the same hardware; unbounded waits destroy interactivity.
 
-### 5. Computer Graphics
-Rendering, animation, physics simulation.
+Warmup decides deploy safety. The first minutes after a release carry the highest risk, and warmup absorbs exactly that risk.
 
-## Impact by Industry
-| Industry | Application | Impact |
-|----------|-------------|--------|
-| Healthcare | Imaging, drug discovery | Life-critical |
-| Finance | Risk modeling, trading | Economic |
-| Technology | ML/AI, search | Transformative |
-| Manufacturing | Design optimization | Efficiency |
+Preprocessing parity decides quality. The best model underperforms a weaker one when its serving features drift from training.
 
-## Why Learn This?
-1. Foundational to modern technology
-2. Transferable across domains
-3. Durable knowledge
-4. Enables innovation
-5. High career value
+Capacity headroom decides peak survival. Queueing theory is unforgiving near saturation; provisioned slack is the shock absorber.
+
+## Latency as contract
+
+A p99 budget is a promise written in percentiles: 99 of 100 requests answer inside
+the cap at peak, and the hundredth is bounded by timeout plus fallback. Promises
+compose downward into per-leg slices, each owned and alerted, so a slip names its
+culprit instead of starting a search.
+
+Per-version budgets matter because blended metrics forgive regressions: a canary at
+small share barely moves fleet p99 while its own users suffer. Version-tagged
+histograms keep each version's promise separate until the shift completes.
+
+## Rollout economics
+
+Shadow scoring buys comparison without exposure: full production input against a
+version that cannot act. The price is compute headroom, which is why shadow load
+is capped and shed first when budgets tighten.
+
+Canary buys live evidence at bounded blast radius: real traffic, real tail, small
+share. The price is patience — predeclared duration while error bars shrink as
+1/sqrt(n) — and teams that skip the wait buy noise at full price.
+
+Blue-green buys instant reversal: two warm stacks and a routing decision. The price
+is doubled capacity during the shift plus the discipline of keeping the old stack
+warm until the new one is declared stable. Rollback drills protect that purchase.
+
+## Quality plumbing
+
+Preprocessing parity is the cheapest quality control in the building: one shared
+code path, diffed on identical inputs, catching silent feature shifts before any
+user does. Every divergence caught in a diff is an incident that never pages.
+
+Prediction logs are the building's memory: version-tagged inputs, outputs, and
+latencies that replay any window on demand. Incidents without logs are settled by
+confidence; incidents with logs are settled by evidence.
+
+## Capacity honesty
+
+Headroom measured at peak-like load is the only headroom that counts: averages
+understate queues, cold instances understate tails, and hope understates both.
+Queue depth watched per version turns saturation from a surprise into a schedule.

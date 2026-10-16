@@ -1,61 +1,33 @@
-﻿# Performance: Model Interpretability Implementation
+﻿# Model Interpretability — Performance
 
-## Performance Analysis
+## Cost structure
+Permutation importance costs features times shuffles times a scoring
+pass each — linear and parallel across features. PDP costs grid points
+times background size times scoring — the background multiplier
+dominates. LIME costs neighbors times model calls plus one small least
+squares solve. Exact Shapley is exponential in features; sampling
+converts it to a budgeted approximation.
 
-### Algorithmic Complexity
-- **Time Complexity**: O(n) for standard implementations
-- **Space Complexity**: O(1) for iterative implementations
-- **Memory Access Pattern**: Sequential (cache-friendly)
+## Throughput tactics
+- Score once per (feature, shuffle) with batched model calls rather
+  than one call per row.
+- Share one background sample across all PDP features and cache model
+  outputs per background row where the model is deterministic.
+- Parallelize coalition evaluations; they are independent given the
+  value function.
 
-### Microbenchmark Results
-| Input Size | Time (us) | Memory (KB) | Throughput |
-|-----------|-----------|-------------|-----------|
-| 10        | 0.1       | 0.1         | 10,000,000 |
-| 100       | 1.0       | 0.8         | 1,000,000  |
-| 1,000     | 10.0      | 8.0         | 100,000    |
-| 10,000    | 100.0     | 80.0        | 10,000     |
+## Latency tactics
+- Local explanations for single predictions need small neighbor counts
+  and cached backgrounds to meet interactive budgets.
+- Precompute global artifacts (ranks, PDP grids) on release; serve
+  them as static reports rather than recomputing per request.
 
-### Optimization Opportunities
-1. **Loop Unrolling**: Reduce loop overhead
-2. **Parallel Processing**: Use Java parallel streams
-3. **Memory Optimization**: Pre-allocate buffers
-4. **Algorithm Selection**: Choose optimal variant
+## Approximation honesty
+Sampled SHAP and few-shuffle importance are estimates with spread —
+report the spread from the stability reruns, not just the mean. A fast
+explanation without uncertainty is a guess with formatting.
 
-### JVM Tuning
-`ash
-java -XX:+UseParallelGC -Xms256m -Xmx1g -jar target/benchmarks.jar
-`
-"@
-        }
-        "REFACTORING" {
-@"
-# Refactoring: Model Interpretability Implementation
-
-## Code Smells and Improvements
-
-### Smell 1: Duplicated Logic
-**Solution**: Extract common computation into shared helper methods.
-
-### Smell 2: Long Methods
-**Solution**: Break into smaller, focused methods.
-
-### Smell 3: Magic Numbers
-**Solution**: Define named constants with clear documentation.
-
-### Smell 4: Deep Nesting
-**Solution**: Use early returns and guard clauses.
-
-## Refactoring Plan
-
-### Phase 1: Structural
-1. Extract utility methods
-2. Introduce parameter objects
-3. Replace conditional logic with polymorphism
-
-### Phase 2: Performance
-1. Apply loop optimizations
-2. Reduce object allocation in hot paths
-
-### Phase 3: Testability
-1. Extract pure functions
-2. Add dependency injection for configurable components
+## Scale honesty
+Demo costs (6 rows, 5 neighbors, 2 players) illustrate mechanics only.
+Production budgets follow the complexity statements above, sized to
+the team's model-call cost and feature count.

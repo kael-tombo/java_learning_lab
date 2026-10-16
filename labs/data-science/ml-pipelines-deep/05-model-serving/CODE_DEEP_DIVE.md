@@ -1,62 +1,92 @@
-﻿# Code Deep Dive: ModelServing.java
+# Model Serving - Code Deep Dive
 
-## Overview
-This document provides a detailed walkthrough of the Java 21+ implementation for Model Serving.
+Three single-class programs (plain JDK 21+, no libraries). Compile and run:
 
-## Class Structure
+```sh
+javac --release 21 -encoding UTF-8 A*.java B*.java C*.java
+```
 
-### ModelServing.java
-The main class implementing core algorithms for Model Serving.
+## A05Latency.java
 
-## Core Algorithm Implementation
-The primary method implements the fundamental computation for Model Serving:
-
-`java
-public class ModelServing {
-    /**
-     * Computes the core operation for Model Serving.
-     *
-     * @param input the input value
-     * @return the computed result
-     * @throws IllegalArgumentException if input is invalid
-     */
-    public static double compute(double input) {
-        if (!Double.isFinite(input)) {
-            throw new IllegalArgumentException("Input must be finite: " + input);
-        }
-        return coreAlgorithm(input);
+```java
+import java.util.*;
+public class A05Latency {
+    static double percentile(double[] sorted, double p) {
+        if (sorted.length == 0) throw new IllegalArgumentException("empty");
+        double rank = p / 100.0 * (sorted.length - 1);
+        int lo = (int) Math.floor(rank), hi = (int) Math.ceil(rank);
+        if (lo == hi) return sorted[lo];
+        return sorted[lo] + (sorted[hi] - sorted[lo]) * (rank - lo);
     }
-
-    private static double coreAlgorithm(double x) {
-        // Base implementation -- specific to the topic
-        return x;
+    public static void main(String[] args) {
+        double[] lat = {8, 12, 9, 25, 11, 10, 14, 9, 13, 120, 11, 10, 15, 9, 12};
+        Arrays.sort(lat);
+        System.out.printf("n=%d p50=%.1fms p99=%.1fms max=%.0fms%n",
+            lat.length, percentile(lat, 50), percentile(lat, 99), lat[lat.length - 1]);
+        System.out.println("read: p99 >> p50 means tail dominated; size timeouts from p99 not mean");
     }
 }
-`
+```
 
-### Algorithm Walkthrough
-1. **Input Validation**: Check preconditions, handle NaN, infinity, and edge cases
-2. **Preprocessing**: Normalize input if needed for numerical stability
-3. **Core Computation**: Apply the primary algorithm
-4. **Postprocessing**: Apply corrections or refinements
-5. **Result Validation**: Verify the output is finite and within expected range
+Observed output:
 
-## Numerical Considerations
+```
+n=15 p50=11.0ms p99=106.7ms max=120ms
+read: p99 >> p50 means tail dominated; size timeouts from p99 not mean
+```
 
-### Precision
-- Double precision (64-bit IEEE 754) provides approximately 15-17 significant digits
-- Some operations amplify rounding errors (subtractive cancellation)
-- Consider using Kahan summation for repeated addition
+## B05Batching.java
 
-### Stability
-- Algebraically equivalent formulations may have very different numerical properties
-- Prefer algorithms that avoid catastrophic cancellation
-- Use iterative refinement to improve accuracy when needed
+```java
+public class B05Batching {
+    public static void main(String[] args) {
+        double overheadMs = 4.0, perItemMs = 1.5;
+        System.out.println("batch size | latency_ms | items_per_sec");
+        for (int b : new int[]{1, 4, 16, 64}) {
+            double lat = overheadMs + b * perItemMs;
+            double tput = 1000.0 * b / lat;
+            System.out.printf("%10d | %10.1f | %13.1f%n", b, lat, tput);
+        }
+        System.out.println("read: bigger batch raises throughput but also latency");
+    }
+}
+```
 
-## Testing Strategy
-- Unit tests for each public method
-- Edge case coverage (zero, negative, very large/small values)
-- Numerical accuracy verification against known results
+Observed output:
 
-## Complete Source
-See src/main/java/com/mathlab/modelserving/ModelServing.java for the full implementation.
+```
+batch size | latency_ms | items_per_sec
+         1 |        5.5 |         181.8
+         4 |       10.0 |         400.0
+        16 |       28.0 |         571.4
+        64 |      100.0 |         640.0
+read: bigger batch raises throughput but also latency
+```
+
+## C05Canary.java
+
+```java
+public class C05Canary {
+    public static void main(String[] args) {
+        int baseN = 2000, baseErr = 38, canN = 200, canErr = 6;
+        double baseRate = (double) baseErr / baseN, canRate = (double) canErr / canN;
+        double se = Math.sqrt(baseRate * (1 - baseRate) / baseN + canRate * (1 - canRate) / canN);
+        double z = (canRate - baseRate) / se;
+        System.out.printf("baseline=%.3f canary=%.3f diff=%+.4f se=%.4f z=%.2f%n",
+            baseRate, canRate, canRate - baseRate, se, z);
+        System.out.println("read: |z|<2 here, no signal; canary needs enough traffic before judging");
+    }
+}
+```
+
+Observed output:
+
+```
+baseline=0.019 canary=0.030 diff=+0.0110 se=0.0124 z=0.88
+read: |z|<2 here, no signal; canary needs enough traffic before judging
+```
+
+## What each snippet shows
+- A05Latency: core measurement for model serving.
+- B05Batching: central tradeoff or bookkeeping computation.
+- C05Canary: decision rule used before acting on a result.

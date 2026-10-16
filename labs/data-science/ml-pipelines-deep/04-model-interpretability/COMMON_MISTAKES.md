@@ -1,33 +1,40 @@
-﻿# Common Mistakes: Model Interpretability
+﻿# Model Interpretability — Common Mistakes
 
-## Top 10 Common Mistakes
+## 1. Reading attribution as causation
+SHAP 5.5 for player 1 says the model credits it so — not that changing
+the real-world feature causes that gain. Attributions describe the
+model; causal claims need experiments.
 
-### 1. Ignoring Edge Cases
-Failing to handle zero, negative, or extreme values.
+## 2. Publishing one LIME fit
+A single kernel width and sample yields one of many defensible local
+stories. The demo slope matches truth at width 0.3; other widths give
+other slopes. Always report width, sample size, and a rerun spread.
 
-### 2. Assuming Exact Arithmetic
-Floating-point operations do not produce exact results.
+## 3. Ignoring the baseline
+SHAP shares depend on the reference point. Changing baselines
+redistributes credit without touching the model. Fix the baseline in
+versioned config and test sensitivity.
 
-### 3. Premature Optimization
-Optimize only after establishing correctness.
+## 4. Ranking correlated features naively
+Permutation drops split across correlated partners understate each.
+Group them or use joint shuffles before concluding "feature X does not
+matter."
 
-### 4. Algorithm Mismatch
-Using inappropriate algorithms for the input type.
+## 5. Trusting PDP in empty regions
+Averaging over feature combinations no real input occupies describes
+model fantasy, not behavior. Overlay data density and distrust curves
+where support is thin.
 
-### 5. Ignoring Numerical Stability
-Unstable formulations amplify rounding errors.
+## 6. Explaining without versions
+An attribution detached from model and dataset versions is orphaned:
+reruns cannot reproduce it. Pin both versions plus explainer settings.
 
-### 6. Incorrect Boundary Conditions
-Applying formulas outside valid domain.
+## 7. Using explanations to certify fairness
+A benign-looking attribution does not prove benign behavior; models can
+present fair portraits while deciding unfairly. Audit slice metrics and
+counterfactuals directly.
 
-### 7. Missing Convergence Checks
-Iterative algorithms need proper termination criteria.
-
-### 8. Thread Safety Assumptions
-Verify thread safety for concurrent usage.
-
-### 9. Insufficient Testing
-Test edge cases, not just happy paths.
-
-### 10. Documentation Decay
-Keep docs synchronized with implementation.
+## 8. Confusing global with local
+Applying a global rank to justify one decision (or one SHAP vector to
+describe the model) crosses the question boundary. State the question
+first, then pick the tool that answers it.

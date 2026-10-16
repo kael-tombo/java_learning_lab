@@ -1,45 +1,43 @@
-﻿# Architecture: MLOps Orchestration Implementation
+# MLOps Orchestration - Architecture
 
-## System Design
+## Components
+- Scheduler: launches runs on cron or event triggers and tracks run state.
+- DAG runner: executes tasks in dependency order with parallelism for branches.
+- Artifact store: versions datasets, models, and metrics with lineage pointers.
+- Gate evaluator: runs data-validation and metric-gated promotion checks.
+- Secret and config service: injects credentials and environment pins per run.
 
-The MLOps Orchestration implementation follows a layered architecture:
+## Data flow
+- Trigger -> run record -> task execution -> artifact writes -> gate evaluation -> promotion record.
+- Every write carries data version, code commit, parameters, and environment pin.
+- Failed gates halt the run and leave production routing unchanged.
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## State
+- Run store holds status per task for resume and audit.
+- Idempotent tasks make resume safe: completed steps are skipped or rewritten identically.
+- Backfill runs reuse the same DAG with a window parameter and versioned outputs.
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+## Scaling
+- Parallel branches and sharded training data scale throughput; the scheduler itself stays light.
+- Retries with capped backoff bound load during dependency outages.
+- Separate queues for scheduled, event, and backfill runs prevent starvation.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Trigger routing
+- Cron entries own steady retraining; event subscriptions own arrivals and alerts.
+- Each trigger type lands in its own queue so bursts never block cadence.
+- Trigger definitions live in version control beside the DAG they start.
 
-## Design Patterns
+## Promotion path
+- Staging promotion runs full gates on a traffic mirror before production routing.
+- Production promotion flips routing only; artifacts are already in place.
+- Every promotion writes who, when, lineage pointer, and gate table snapshot.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Backfill lane
+- Backfill runs carry window parameters through the identical DAG code.
+- Outputs land in versioned paths namespaced by run id and window.
+- Consumers switch explicitly; no silent overwrite of live tables occurs.
 
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.mlopsorch/
-â”œâ”€â”€ MlopsOrchestration.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Failure containment
+- Task timeouts kill hung steps so one partition cannot stall the run.
+- Failed runs release locks and leave production routing untouched.
+- Poison partitions quarantine to a side path with owner notification.

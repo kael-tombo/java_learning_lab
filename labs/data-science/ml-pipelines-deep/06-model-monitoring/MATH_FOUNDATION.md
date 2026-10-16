@@ -1,81 +1,45 @@
-﻿# Math Foundation for Model Monitoring
+# Model Monitoring - Math Foundation
 
-## Prerequisite Mathematics
+## PSI
+- PSI = sum over bins of (a_i - e_i) * ln(a_i / e_i), with e reference shares and a current shares.
+- Each term is nonnegative; the sum is zero only for identical distributions.
+- Derivation: symmetrized per-bin log-ratio weighted by share difference. Shares must be positive.
 
-This document reviews the mathematical prerequisites needed to study Model Monitoring effectively.
+## KS statistic
+- Empirical CDF F(t) = fraction of sample <= t; D = max_t |F_ref(t) - F_cur(t)|.
+- Evaluated on the pooled sorted grid; no binning choice needed.
+- D lies in [0, 1]; larger means the samples differ more somewhere.
 
-## 1. Algebra Review
+## Alert precision and recall
+- Precision = TP/(TP+FP); recall = TP/(TP+FN) over an incident set.
+- Threshold moves both monotonically in opposite directions.
+- F1 = 2PR/(P+R) summarizes one operating point, not the whole tradeoff.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## Windowing
+- Fixed windows give independent comparisons; sliding windows overlap and correlate.
+- Short windows raise variance as 1/n; long windows delay detection by their length.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## Worked PSI term
+- One bin with e = 0.10 and a = 0.12 contributes (0.02) * ln(1.2) = 0.0036.
+- Terms are nonnegative and zero only when a equals e exactly.
+- The snippet total 0.0378 is about ten such bins, here concentrated in two.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## Worked alert tradeoff
+- Snippet precision 0.300 with recall 0.750 gives F1 = 0.429 at that point.
+- Halving fp raises precision; doubling fn lowers recall; F1 follows the pair.
+- Report the triple (P, R, F1) per threshold instead of a single headline number.
 
-## 2. Functions and Graphs
+## Sample-size scaling
+- Window variance shrinks as 1/n; doubling samples narrows bands by 1/sqrt(2).
+- Short windows react in hours but page on noise; long windows smooth but delay.
+- The fast-dashboard plus gated-alert pair splits these duties deliberately.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## Maturity gating
+- Official mean over mature windows excludes the young, unlabeled tail.
+- As each window graduates, the official series extends by exactly one point.
+- Provisional points never revise history silently; graduation is explicit.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
-
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
-
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+## Gap location use
+- KS reports where distributions differ most, not just how much.
+- The x of the maximum gap selects the first slice and bin to inspect.
+- PSI then attributes the shift across bins for the engineer-readable story.

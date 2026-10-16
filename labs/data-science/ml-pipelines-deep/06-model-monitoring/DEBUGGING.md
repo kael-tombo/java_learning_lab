@@ -1,35 +1,46 @@
-﻿# Debugging: Model Monitoring Implementation
+# Model Monitoring - Debugging
 
-## Common Bugs
+## Alerts fire constantly
+- Cause: thresholds fit to a quiet window; normal variance now pages.
+- Check: alert precision over the last month; distribution of paged values.
+- Fix: retune to high-precision rules; move the rest to dashboards.
 
-### Bug 1: Off-by-One Errors
-**Fix**: Verify loop bounds and array indices (0-indexed).
+## Real incident missed
+- Cause: aggregate metric stable while one slice broke.
+- Check: slice breakdowns for the incident window.
+- Fix: add per-slice monitors for the segments that matter.
 
-### Bug 2: NaN Propagation
-**Fix**: Check for division by zero, log of negative, sqrt of negative.
+## Drift score jumps overnight
+- Cause: pipeline change (new encoder, unit change) rather than world change.
+- Check: deploy and schema-change log against the jump time.
+- Fix: pin the reference correctly; add pipeline-health checks first.
 
-### Bug 3: Floating-Point Comparison
-**Fix**: Use tolerance-based comparison: Math.abs(a - b) < epsilon.
+## Quality metrics look wrong
+- Cause: computed on immature labels with low maturity fraction.
+- Check: label-maturity curve for the window.
+- Fix: restrict official metrics to mature windows; mark fresh ones provisional.
 
-### Bug 4: Integer Division
-**Fix**: Cast to double: (double) a / b.
+## Silent monitor
+- Cause: telemetry stopped; aggregator shows stale flat lines.
+- Check: event volume and last-received timestamps.
+- Fix: alert on missing data, not only on bad values.
 
-### Bug 5: Precision Loss
-**Fix**: Identify subtractive cancellation, reformulate algorithm.
+## Slice regression with clean aggregate
+- Cause: one segment broke while others compensated in the average.
+- Check: per-slice positive rate and error over the incident window.
+- Fix: per-slice monitors plus a segment owner for each tracked slice.
 
-## Debugging Techniques
+## Reference older than the pipeline
+- Cause: encoder or unit change shipped without a reference refresh review.
+- Check: deploy log against drift-score jump time; confirm pipeline diff first.
+- Fix: refresh the reference deliberately and annotate the pipeline reason.
 
-### Using Assertions
-`java
-assert Double.isFinite(result) : "Result must be finite";
-`
+## Maturity illusion
+- Cause: dashboards mix provisional and mature windows in one line.
+- Check: maturity age behind each plotted point.
+- Fix: split lines by maturity state; official numbers from mature only.
 
-### Print Debugging
-`java
-System.out.printf("DEBUG: x=%.6f, result=%.6f%n", x, result);
-`
-
-### Using a Debugger
-1. Set breakpoints at key computation points
-2. Step through with small test cases
-3. Watch variables for unexpected values
+## Feedback-amplified drift
+- Cause: retraining on model-influenced labels reinforced its own bias.
+- Check: label-source audit for the last two retraining rounds.
+- Fix: quarantine looped labels; validate sources before the next round.

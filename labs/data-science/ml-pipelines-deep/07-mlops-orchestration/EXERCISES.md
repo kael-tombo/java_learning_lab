@@ -1,130 +1,41 @@
-﻿# Exercises: MLOps Orchestration
+# MLOps Orchestration - Exercises
 
-## Theoretical Exercises
+1. Run A07Backoff with base 500 ms and cap 8000 ms; print the schedule and total wait over 6 attempts.
+   - Expect 500, 1000, 2000, 4000, 8000, 8000 with total 23500 ms.
+2. Extend B07Lineage with an environment pin string; show the fingerprint changing when the pin changes.
+   - Print both fingerprints to prove the lineage pointer covers the environment.
+3. In C07Gate, fix slice 2 to 0.819 and re-evaluate promotion. State which gate flipped the verdict.
+   - Expect promote to turn true; the slice no-regression bar was the veto.
+4. Make a non-idempotent counter task idempotent by keying writes on run id.
+   - Run it twice with the same id and show identical outputs.
+5. Implement a cron-vs-event trigger table: given three scenarios, choose and justify the trigger.
+   - Cover steady retraining, new-partition arrival, and drift-alert response.
+6. Write a backfill driver: replay days 1-5 in order into versioned paths without touching a live path.
+   - Print each window's output path to show the versioning.
+7. Add a data-validation gate: reject a partition with more than 5% nulls before training starts.
+    - Demonstrate one passing and one failing partition.
+8. Convert a wall-clock schedule to arrival-gated triggers: given five partition
+   landing times and one fixed cron tick, show which runs waited and which raced.
+    - Expect the cron-only design to race twice; report both windows.
+9. Quarantine a poison partition: route one corrupt day aside while days around it
+   train normally, then show the run record marking the quarantine.
+    - Print the quarantine path and the owner notification line.
+10. Reproduce the gate veto: vary slice 2 across three values and tabulate promote
+    true/false beside the failing bar each time.
+    - Expect exactly one flip point; name the bar that vetoes elsewhere.
+11. Verify total-wait arithmetic: compute the partial sum of a six-attempt capped
+    schedule from base and cap, then confirm the cap truncates the tail.
+    - Show each term and mark where the cap first binds.
+12. Freeze an evaluation set: hash its rows, then show a gate verdict changing when
+    one row is swapped and holding when rerun identically.
+    - Print both hashes and both verdicts to prove set-sensitivity.
+13. Audit a promotion record: given a run with lineage pointer, check data version,
+    code commit, parameters, and environment pin are all present.
+    - Reject the record in writing if any pointer is missing, naming the gap.
+14. Starve-then-fix queues: run a backfill beside scheduled work on one shared queue,
+    measure scheduled wait, then repeat on separated queues.
+    - Expect scheduled wait to collapse; report both waits.
+   - Demonstrate one passing and one failing partition.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind MLOps Orchestration in your own words.
-**Answer**: MLOps Orchestration involves understanding how mathematical quantities change and relate under specific operations.
-
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with MLOps Orchestration.
-**Answer**: The proof follows from the definitions and established theorems.
-
-### Exercise 3: Application
-**Question**: Apply the theory of MLOps Orchestration to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
-
-## Programming Exercises
-
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for MLOps Orchestration.
-
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
-
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
-
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
-
-## Challenge Problems
-
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
-
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
-
-## Solutions
-
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: MLOps Orchestration
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying MLOps Orchestration?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of MLOps Orchestration?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+## Submission check
+- All programs compile with `javac --release 21 -encoding UTF-8` and print pure ASCII.

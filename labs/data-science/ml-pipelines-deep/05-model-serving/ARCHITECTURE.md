@@ -1,45 +1,44 @@
-﻿# Architecture: Model Serving Implementation
+# Model Serving - Architecture
 
-## System Design
+## Components
+- Gateway: validates schema, enforces auth and rate limits, routes to versions.
+- Preprocessor: builds features with the same logic used in training.
+- Model server: holds warmed weights in memory and answers score calls.
+- Postprocessor: converts raw outputs to decisions and probabilities.
+- Logger: records request, prediction, version, and latency per call.
 
-The Model Serving implementation follows a layered architecture:
+## Data flow
+- Online: gateway -> preprocessor -> model server -> postprocessor -> response, with async logging.
+- Batch: partition reader -> sharded scorers -> prediction sink plus validation counts.
+- Streaming: event bus -> stateful scorer -> action sink and state store.
 
-### Layer 1: Core API
-- Public methods for core computations
-- Clean interface with input validation
+## Versioning
+- Model registry stores versioned artifacts; serving config maps traffic shares to versions.
+- Shadow, canary, and blue-green are routing policies over these versions.
+- Rollback changes routing only; no redeploy of the old artifact is needed.
 
-### Layer 2: Computation Engine
-- Core algorithm implementations
-- Support for multiple algorithmic variants
+## Scaling
+- Stateless replicas scale horizontally with requests per second; batch workers scale with partition count.
+- Keep preprocessing and model compute co-located to avoid extra hops.
+- Isolate warmup and health checks from live traffic paths.
 
-### Layer 3: Utilities
-- Helper functions for common sub-computations
-- Input parsing and normalization
+## Health and readiness
+- Liveness says the process runs; readiness says warmed weights plus
+  preprocessing are loaded and sample scores succeeded.
+- Only readiness gates traffic; a live-but-cold instance stays out of rotation.
+- Health responses include model version so load balancers detect version skew.
 
-## Design Patterns
+## Failure domains
+- Preprocessing failure returns a validation error, never a guessed score.
+- Model-compute failure triggers timeout plus fallback per the serving contract.
+- Logger failure must not fail the response; events buffer and drain async.
 
-### Strategy Pattern
-Different algorithmic strategies selected at runtime based on input characteristics.
+## Capacity planning
+- Size replicas from peak requests per second divided by per-replica throughput, plus headroom.
+- Rehearse the peak with the warmed artifact, not a smaller stand-in, before declaring headroom.
+- Queue depth is the early warning: rising queues precede timeout storms.
 
-### Template Method
-Common algorithm skeleton with customizable steps.
-
-### Factory Pattern
-Create appropriate algorithm instances based on configuration.
-
-## Package Structure
-`
-com.mathlab.modelserving/
-â”œâ”€â”€ ModelServing.java
-â”œâ”€â”€ util/
-â””â”€â”€ bench/
-`
-
-## Dependencies
-- **Java 21+**: No external dependencies required
-- **JUnit 5**: For unit testing (test scope only)
-
-## Performance Characteristics
-- **Time Complexity**: O(n) for basic operations
-- **Space Complexity**: O(1) for iterative implementations
-- **Numerical Accuracy**: ~1e-15 relative error for well-conditioned inputs
+## Contract evolution
+- Additive field changes stay backward compatible; renames and unit changes need a new version.
+- Keep the previous schema version serving until client metrics show migration is complete.
+- Rejection logs grouped by client version reveal who still sends the old shape.

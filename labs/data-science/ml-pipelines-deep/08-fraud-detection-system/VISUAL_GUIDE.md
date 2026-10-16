@@ -1,25 +1,42 @@
-﻿# Visual Guide: Fraud Detection System
+# Fraud Detection System - Visual Guide
 
-## Conceptual Diagrams
+## Decision path
+```text
+tx -> [features] -> [rules]--hit--> block / step-up
+                      |
+                   no hit
+                      v
+                   [model score]--high--> block
+                                --mid---> review queue --> label
+                                --low---> pass
+```
 
-### Diagram 1: Core Concept Flow
-`
-Input -> Preprocessing -> Core Algorithm -> Postprocessing -> Output
-`
+## Threshold tradeoff
+```text
+threshold low:   recall up, reviews flood
+threshold high:  reviews calm, misses grow
+```
 
-### Diagram 2: Algorithm Variants
-`
-Input -> Variant Selection -> [Stable | Fast | Precise] -> Result
-`
+## Label maturity
+```text
+day:    0    1    2    3    4    5    6
+labeled:5%  18%  42%  70%  88%  96% 100%
+```
 
-## Function Behavior
-Visual representation showing how Fraud Detection System transforms inputs to outputs with characteristic patterns.
+## Adversarial cycle
+```text
+attack -> rule cover -> retrain -> deploy -> attackers shift -> repeat
+```
 
-## Convergence Pattern
-Error decreases as iterations increase, following exponential decay for well-conditioned problems.
+## Review economics
+```text
+band wide:   reviews flood, misses rare     (staffing binds)
+band narrow: reviews calm, misses grow      (loss binds)
+price both with the fitted ratio, then check capacity
+```
 
-## Visual Learning Resources
-- Flowcharts for algorithm logic
-- Plots of convergence behavior
-- Heat maps of numerical stability regions
-- Comparison charts for algorithm variants
+## Parity check
+```text
+training features  --join on key-->  compare  --match--> parity ok
+serving features   --overlap days-->  values   --drift--> shared-path fix
+```

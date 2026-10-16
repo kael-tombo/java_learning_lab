@@ -1,70 +1,29 @@
-﻿# Model Serving -- Theory
+# Model Serving - Theory
 
-## 1. Introduction
+Serving means answering prediction requests from a trained model. Three patterns cover the space.
 
-Model Serving is a fundamental concept in ML Pipelines Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+## Serving patterns
+- Batch inference scores stored rows on a schedule. Highest throughput, latency in minutes to hours.
+- Online inference answers one request at a time over a request/response interface. Latency budget per request, usually summarized with p50 and p99.
+- Streaming inference scores events as they flow through, keeping per-event state such as windows or counters.
 
-## 2. Core Definitions
+## Latency vocabulary
+- p50 is the median request latency; p99 is the value below which 99% of requests fall.
+- Interactive use cases size timeouts and capacity from the tail (p99), not the mean, because one slow dependency stalls the response.
+- Latency per request decomposes into preprocessing + model compute + postprocessing + network and queueing.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Model Serving rests on several key definitions and axioms that form the foundation of the theory.
+## Batching tradeoff
+- Fixed per-call overhead is amortized over a batch: latency(batch) = overhead + batchSize * perItem.
+- Throughput rises with batch size while latency also rises, so online paths cap batch size or wait time.
+- Dynamic batching waits a bounded time to fill a batch; the bound keeps tail latency predictable.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## Versions and rollouts
+- Every served model carries a version; requests and logs record which version answered.
+- Shadow runs the new version alongside production without acting on its outputs, for comparison.
+- Canary sends a small traffic share to the new version and compares error and latency distributions.
+- Blue-green keeps two stacks and moves traffic between them so rollback is a routing change.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
-
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Model Serving:
-
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Model Serving is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Model Serving is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Model Serving extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Model Serving requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Model Serving connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Model Serving provide the rigorous basis needed for correct computational implementation and real-world application.
+## Interfaces and operations
+- Request/response schemas fix field names, types, units, and version handling for missing or extra fields.
+- Warmup loads weights and runs sample inferences before the instance takes traffic, avoiding cold-start spikes.
+- Resource sizing balances weight memory against preprocessing CPU; replicas scale with peak requests per second plus headroom.

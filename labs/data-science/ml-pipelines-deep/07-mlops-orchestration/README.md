@@ -1,76 +1,42 @@
-﻿# MLOps Orchestration
+# MLOps Orchestration - Lab README
 
-## Overview
-This micro-lab provides a deep-dive exploration of **MLOps Orchestration**, a cornerstone topic in ML Pipelines Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Scheduling and connecting the steps that retrain, validate, and promote models.
 
-## Topics Covered
-- pipeline orchestration Airflow, artifact tracking, model registry, deployment pipelines, infrastructure as code
+## What you will learn
+- DAG orchestration (tasks as a directed acyclic graph with dependencies), scheduling (cron for fixed cadence, event triggers for new-data or metric-based runs), artifact lineage (pointers to data version, code commit, and parameters for every run).
+- Tasks retry with backoff and must be idempotent so a retry produces the same result as one run.
+- How to compute the key quantities in plain Java 21+ with no libraries.
+- How the pieces fail in production and which signals warn you first.
 
 ## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- Java 21+ installed; `javac --release 21` must succeed.
+- Comfort with means, medians, and basic probability; no ML library needed.
+- Familiarity with running single-class programs from the command line.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of MLOps Orchestration
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## File map
+- THEORY.md: concepts, vocabulary, and standard formulas for this lab.
+- MATH_FOUNDATION.md: derivations and worked numeric examples.
+- HOW_IT_WORKS.md: end-to-end behavior of the running system.
+- ARCHITECTURE.md: components and data flow between them.
+- INTERNALS.md: mechanics behind each snippet result.
+- CODE_DEEP_DIVE.md: three runnable programs (A07Backoff, B07Lineage, C07Gate).
+- EXERCISES.md: seven hands-on tasks with expected outcomes.
+- PERFORMANCE.md, SECURITY.md, DEBUGGING.md: operations, threats, fixes.
+- INTERVIEW.md, FLASHCARDS.md: review material in Q&A form.
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+## Running the snippets
+```sh
+javac --release 21 -encoding UTF-8 A07Backoff.java B07Lineage.java C07Gate.java
+java --class-path . A07Backoff
+java --class-path . B07Lineage
+java --class-path . C07Gate
+```
 
-## Project Structure
-`
-mlopsorch/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/mlopsorch/MlopsOrchestration.java
-    â””â”€â”€ test/java/com/mathlab/mlopsorch/MlopsOrchestrationTest.java
-`
+## How to work this lab
+1. Read THEORY.md, then run the three snippets and match outputs.
+2. Read INTERNALS.md to connect each output number to its formula.
+3. Do the EXERCISES.md tasks in order; each builds on the previous.
+4. Finish with FLASHCARDS.md and the REFLECTION.md prompts.
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Where this fits
+- Part of the ml-pipelines-deep track: features, training, evaluation, then serving, monitoring, orchestration, and the fraud-detection worked system.

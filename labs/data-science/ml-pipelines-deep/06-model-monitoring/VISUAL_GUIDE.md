@@ -1,25 +1,52 @@
-﻿# Visual Guide: Model Monitoring
+# Model Monitoring - Visual Guide
 
-## Conceptual Diagrams
+## Loop
+```text
+serve -> [log events] -> [rollups] -> [compare vs reference] -> [alert?] -> runbook
+              |                                                        |
+              +---- ground truth joins later --> mature metrics -------+
+```
 
-### Diagram 1: Core Concept Flow
-`
-Input -> Preprocessing -> Core Algorithm -> Postprocessing -> Output
-`
+## Drift sketch
+```text
+reference:  #######-------
+current:    ####-----------
+                     ^ gap region (KS finds max CDF gap; PSI sums binned shifts)
+```
 
-### Diagram 2: Algorithm Variants
-`
-Input -> Variant Selection -> [Stable | Fast | Precise] -> Result
-`
+## Alert tradeoff
+```text
+threshold loose:  recall high, pages noisy   (many false alarms)
+threshold tight:  pages rare, misses grow    (silent regressions)
+```
 
-## Function Behavior
-Visual representation showing how Model Monitoring transforms inputs to outputs with characteristic patterns.
+## Maturity
+```text
+fresh window:  predictions full, labels sparse  (provisional)
+mature window: predictions full, labels joined  (official)
+```
 
-## Convergence Pattern
-Error decreases as iterations increase, following exponential decay for well-conditioned problems.
+## Slice vs aggregate
+```text
+aggregate: ###### stable ######        (hides the break)
+slice A:   ###### stable ######
+slice B:   ### collapsing ###          (page here, with owner)
+```
 
-## Visual Learning Resources
-- Flowcharts for algorithm logic
-- Plots of convergence behavior
-- Heat maps of numerical stability regions
-- Comparison charts for algorithm variants
+## Reference pinning
+```text
+ref v7 (pinned) <---- compare ---- current window
+   |                         (refresh only by review + reason)
+   +-- old v6 kept for back-comparison
+```
+
+## Silent monitor
+```text
+values:   ---- flat, looks healthy ----
+volume:   ████ ..................       (telemetry stopped; page on absence)
+```
+
+## Postmortem loop
+```text
+incident -> pinned case -> rule retune -> reference review -> drill -> close
+```
