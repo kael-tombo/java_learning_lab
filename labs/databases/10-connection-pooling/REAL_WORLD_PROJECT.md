@@ -1,108 +1,39 @@
 # Connection Pooling — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where connection pooling is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing pool sizing with minimum, maximum, and idle eviction on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Service sketch
+Backups, replicas, and dashboards surround the lease path so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model sessions and leases with seed data plus contract tests.
+- M2: Phase 2: harden the checkout path with guards and load probes.
+- M3: phase three runs a backup, restore, and rollback rehearsal.
+- M4: Phase 4: hand over runbooks so on-call owns the pool without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- Pair each schema change with the script that undoes it.
+- Monitor the lease path for errors, saturation, and slow statements.
+- Backup restores to a scratch host run on a calendar.
+- Gate deploys on contract tests covering leases behavior.
+
+## Failure drills
+- pool exhaustion freezing checkout queues under peak load — lower the wait timeout and re-run the drill from the checklist above.
+- connection leaks draining the pool one abandoned lease at a time; enable idle eviction and alarm on the leak counter.
+- oversized maximums overwhelming the database with concurrent sessions; cap max under the database limit.
+- Fact reminder: maximum connections cap load so the database stays upright. Guides every response above.
 
 ## Requirements
-- F1: connection pooling capability 1 with acceptance test.
-- F2: connection pooling capability 2 with acceptance test.
-- F3: connection pooling capability 3 with acceptance test.
-- F4: connection pooling capability 4 with acceptance test.
-- F5: connection pooling capability 5 with acceptance test.
-- F6: connection pooling capability 6 with acceptance test.
-- F7: connection pooling capability 7 with acceptance test.
-- F8: connection pooling capability 8 with acceptance test.
-- F9: connection pooling capability 9 with acceptance test.
-- F10: connection pooling capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for connection pooling.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for connection pooling.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for connection pooling.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for connection pooling.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for connection pooling.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for connection pooling.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers sessions reads with contract tests proving the shape.
+- F2: the service guards leases writes against invalid input.
+- NF1: dashboards light up with query-path error counts and slow statements.
+- NF2: the release is signed off only after the scratch-host restore drill passes.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like leases traffic against the staging store.
+- Inject one fault (pool exhaustion freezing checkout queues under peak load) and confirm the runbook resolves it.
+- Bring the backup back and reconcile row counts before calling it done.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Three things gate sign-off: milestones green, restore drill passed, runbook read by the team.

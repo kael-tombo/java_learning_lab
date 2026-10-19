@@ -1,80 +1,46 @@
-# Cockroachdb — Mini Project
+# CockroachDB — Mini Project
 
-## Goal
-Build a small but complete exercise of cockroachdb in 90 minutes.
+## Objective
+Produce a working exercise in CockroachDB distributed-SQL deployment and retry reasoning in about ninety minutes, ending with scripts a peer can rerun.
 
-## Requirements
-- R1: schema + queries exercising cockroachdb scenario 1.
-- R2: schema + queries exercising cockroachdb scenario 2.
-- R3: schema + queries exercising cockroachdb scenario 3.
-- R4: schema + queries exercising cockroachdb scenario 4.
-- R5: schema + queries exercising cockroachdb scenario 5.
-- R6: schema + queries exercising cockroachdb scenario 6.
-- R7: schema + queries exercising cockroachdb scenario 7.
-- R8: schema + queries exercising cockroachdb scenario 8.
+## Core facts
+- Distributed SQL spreads ranges across nodes for survival. Every placement step below leans on that.
+- Serializable intent means retried transactions stay correct — that is how correctness behaves under checks.
+- Client-side retries re-run transactions aborted by contention; that is the acceptance bar.
 
-## Steps
-1. Step 1: scaffold, load sample data, verify with a query, record observations.
-2. Step 2: scaffold, load sample data, verify with a query, record observations.
-3. Step 3: scaffold, load sample data, verify with a query, record observations.
-4. Step 4: scaffold, load sample data, verify with a query, record observations.
-5. Step 5: scaffold, load sample data, verify with a query, record observations.
-6. Step 6: scaffold, load sample data, verify with a query, record observations.
-7. Step 7: scaffold, load sample data, verify with a query, record observations.
-8. Step 8: scaffold, load sample data, verify with a query, record observations.
-9. Step 9: scaffold, load sample data, verify with a query, record observations.
-10. Step 10: scaffold, load sample data, verify with a query, record observations.
+## Build
+Create one scratch schema dedicated to this drill, seed a handful of rows, then work the task list in order.
 
-## Acceptance criteria
-- All queries return correct results; notes explain one surprising observation.
+## Task list
+1. Shape the multi-node sketch placing account ranges on three nodes, then explain the result to a reviewer aloud.
+2. Assemble the retry-loop sketch re-running one contended payment, and file the script where the next step finds it.
+3. Compose the hot-range review spreading sequential payment keys, while keeping every statement re-runnable.
+4. Frame the follower-read note routing stale-tolerant reports aside, and record what changes in the output.
+5. Trace the schema-change sketch rolling out one online alteration, then note the one surprise worth remembering.
+6. Draft the contention drill colliding two payments on one account, and capture the check query beside it.
 
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
+## Reference snippet
+```text
+ranges spread across three nodes
+client retries re-run aborted payments
+stale-tolerant reports read followers
+```
+
+## Checks
+- Every script reruns cleanly on a fresh schema without manual edits.
+- Row counts reconcile before and after each transformation step.
+- One observed range behavior is written down with its cause.
+- The snippet above executes (or the sketch reads correctly) against the seeded r_accounts data.
+
+## Stretch
+- Break one replication assumption deliberately, then document the error message verbatim.
+- Remove one helper and show the exercise still passes without it.
+
+## Done
+The folder holds scripts, seed data, and a short note naming the trickiest step.
+
+## Hand-off
+- Tag the finished scripts folder so the next lab picks it up without re-reading every file.
+- Hand the notes file to whoever reruns the exercises, so the surprises survive the handoff.
+- Mark this checklist done only after a peer has rerun every script without edits.
+

@@ -1,108 +1,39 @@
 # Transactions — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where transactions is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Situation
+A deployable slice proving ACID transactions across READ COMMITTED and REPEATABLE READ isolation survives contact with production load and operator error.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Topology
+Schema changes roll out behind review gates with a rehearsed rollback route.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Build stages
+- M1: Phase 1: model accounts and transfers with seed data plus contract tests.
+- M2: Phase 2: harden the write path with indexes, guards, and load probes.
+- M3: rehearse the store's backup, restore, and rollback paths.
+- M4: Phase 4: hand over runbooks so on-call owns the transfer flow without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Operations list
+- Attach the rollback script before any schema change lands.
+- Errors, saturation, and slow statements from the query path get watched.
+- Restore the backup onto a scratch host at a steady cadence.
+- Gate deploys on contract tests covering transfers behavior.
+
+## What breaks
+- lost updates when two debits read the same balance concurrently — add the guarded decrement the checklist above demands.
+- deadlocks from transfers locking accounts in opposite order; order every lock acquisition by account id.
+- long transactions holding locks while users think; keep user think-time outside the transaction boundary.
+- Fact reminder: REPEATABLE READ guards repeated reads against phantom changes. Guides every response above.
 
 ## Requirements
-- F1: transactions capability 1 with acceptance test.
-- F2: transactions capability 2 with acceptance test.
-- F3: transactions capability 3 with acceptance test.
-- F4: transactions capability 4 with acceptance test.
-- F5: transactions capability 5 with acceptance test.
-- F6: transactions capability 6 with acceptance test.
-- F7: transactions capability 7 with acceptance test.
-- F8: transactions capability 8 with acceptance test.
-- F9: transactions capability 9 with acceptance test.
-- F10: transactions capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for transactions.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for transactions.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for transactions.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for transactions.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for transactions.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for transactions.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers accounts reads with contract tests proving the shape.
+- F2: the service guards transfers writes against invalid input.
+- NF1: dashboards light up with query-path error counts and slow statements.
+- NF2: release sign-off waits until the restore drill passes on a scratch host.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like transfers traffic against the staging store.
+- Inject one fault (lost updates when two debits read the same balance concurrently) and confirm the runbook resolves it.
+- Bring the backup back and reconcile row counts before calling it done.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Definition of done
+Nobody signs off until milestones are green, the restore drill passed, and the team read the runbook.

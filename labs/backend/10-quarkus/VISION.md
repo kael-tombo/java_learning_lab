@@ -1,30 +1,41 @@
 # VISION — Quarkus
 
-> Where this lab takes you: from hello-world to production judgment on Quarkus.
+## Trajectory
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This Quarkus lab carries learners from classic Java services to build-time-optimized stacks with fast feedback.
+Expect judgment calls about Quarkus trade-offs, not just syntax recall.
+Progress shows when the Quarkus vocabulary enters daily design discussions.
+The seed-library Quarkus service project rewards engineers who question defaults instead of copying them.
+Early exercises build Quarkus fluency; later builds demand Quarkus decisions.
+Treat each Quarkus milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the seed-library Quarkus service project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## The practitioner you become
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains Quarkus choices to teammates with concrete failure stories.
+A graduate operates the solution under degraded conditions without panic.
+A graduate measures Quarkus outcomes instead of asserting them.
+A graduate spots Quarkus misuse during code review before it ships.
+Whatever fits the surrounding system is what a graduate commits to.
+A graduate teaches one Quarkus idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Explicit non-coverage
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This Quarkus lab deliberately leaves the following out.
+- Extension-framework authorship stays outside this Quarkus lab.
+- Native-toolchain deep tuning stays outside this Quarkus lab.
+- Kubernetes operator construction stays outside this lab.
+Meeting those needs belongs to neighboring Quarkus studies.
 
-## Done = You Can
-- Choose, build, test, and operate Quarkus in a real service.
+## Readiness signals
+
+You finish the tasks without going back to the lesson notes.
+You name two live Quarkus risks in any design review.
+You recover the platform from a fault drill calmly.
+You justify each Quarkus trade-off with observed evidence.
+
+## Adjacent labs
+
+Continue into 08-micronaut, 09-helidon, 25-graalvm-native after finishing this Quarkus lab.
+Revisit this Quarkus vision after the real-world build retro.
+Bring one open Quarkus question into the next lab deliberately.

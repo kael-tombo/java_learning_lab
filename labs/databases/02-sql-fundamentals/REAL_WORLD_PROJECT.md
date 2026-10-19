@@ -1,108 +1,42 @@
-# Sql Fundamentals — Real World Project
+# SQL Fundamentals — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where sql fundamentals is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Problem
+A production-flavored specification where constraints, keys, and disciplined DML carry real traffic, real failure, and real on-call pages.
 
 ## Architecture
+```text
+app -> service -> students / enrollments store -> replica + backup -> dashboard
 ```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
-
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
-
-## Requirements
-- F1: sql fundamentals capability 1 with acceptance test.
-- F2: sql fundamentals capability 2 with acceptance test.
-- F3: sql fundamentals capability 3 with acceptance test.
-- F4: sql fundamentals capability 4 with acceptance test.
-- F5: sql fundamentals capability 5 with acceptance test.
-- F6: sql fundamentals capability 6 with acceptance test.
-- F7: sql fundamentals capability 7 with acceptance test.
-- F8: sql fundamentals capability 8 with acceptance test.
-- F9: sql fundamentals capability 9 with acceptance test.
-- F10: sql fundamentals capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for sql fundamentals.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for sql fundamentals.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for sql fundamentals.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for sql fundamentals.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for sql fundamentals.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for sql fundamentals.
+Client requests reach a service layer, which enforces the constraints and keys of the model against the students and enrollments stores.
 
 ## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- M1: Phase 1: model students and enrollments with seed data plus contract tests.
+- M2: Phase 2: harden the write path with indexes, guards, and load probes.
+- M3: phase three runs a backup, restore, and rollback rehearsal.
+- M4: Phase 4: hand over runbooks so on-call owns the guardrails without paging the author.
+
+## Operations checklist
+- No schema change goes in without its rollback script.
+- Keep watch on the query path: errors, saturation, slow statements.
+- Restore the backup onto a scratch host at a steady cadence.
+- Gate deploys on contract tests covering enrollments behavior.
+
+## Failure modes
+- duplicate emails slipping past a missing unique constraint — restore the constraint first, then re-run the checklist above.
+- enrollments pointing at deleted students after an unguarded delete; add the documented delete rule to the foreign key.
+- half-applied multi-statement edits committed without a transaction; wrap the change and verify count parity before shipping.
+- Fact reminder: NOT NULL plus CHECK constraints reject bad data at the gate. Guides every response above.
+
+## Requirements
+- F1: the service answers students reads with contract tests proving the shape.
+- F2: the service guards enrollments writes against invalid input.
+- NF1: the query path reports error counts and slow statements to the dashboard.
+- NF2: release sign-off waits until the restore drill passes on a scratch host.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like enrollments traffic against the staging store.
+- Inject one fault (duplicate emails slipping past a missing unique constraint) and confirm the runbook resolves it.
+- Success is declared only after a backup restore matches row counts.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Sign-off
+Sign-off requires green milestones, a restore drill that passed, and a runbook someone on the team has read.

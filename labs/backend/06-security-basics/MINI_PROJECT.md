@@ -1,32 +1,40 @@
 # Mini Project: Security Basics
 
-## Goal
-Build a small, runnable Security Basics service that demonstrates the core happy path.
+## What to build
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
-
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+This security basics mini build produces a working garden-club member portal you can run locally.
+Scope stays deliberately small so every security basics behavior remains observable.
+Budget roughly one focused evening for the garden-club member portal implementation.
+Success means demonstrating security basics judgment, not just compiling code.
+Keep a lab journal noting each security basics surprise encountered.
+The acceptance checks cap the work; features beyond them wait.
 
 ## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
 
-## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+1. Give the garden club separate member and coordinator areas for the service.
+2. Require login before any plot-assignment page.
+3. Hold coordinator powers to 2 seeded accounts.
+4. Reject hostile input in plot-note submissions.
+5. Confirm responses carry basic hardening headers.
+
+## Architecture in miniature
+
+- Authentication versus authorization.
+- Threat-minded input handling.
+- Password storage concepts.
+- Least-privilege route design.
+- Security response headers concept.
+
+## How it is judged
+
+- [ ] All 6 coordinator pages reject plain members in the solution.
+- [ ] 2 coordinator and 10 member logins behave per role in the platform.
+- [ ] Hostile plot-note payload stored harmlessly and rendered safely.
+- [ ] Password store shows hashes, never plaintext.
+- [ ] Headers review passes on every member page.
+
+## Extension
+
+One realistic complication of your choosing goes into the project.
+Write the two-paragraph retro: which security basics decision proved hardest.
+Demo time: the peer sees the system with just the acceptance checks as the guide.

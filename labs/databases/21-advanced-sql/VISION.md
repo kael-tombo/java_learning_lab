@@ -1,50 +1,39 @@
-# Advanced Sql — Vision
+# Advanced SQL — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about advanced sql.
+## Direction
+Grow from first queries toward dependable judgment about report shapes and set logic, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in advanced sql fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in advanced sql fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in advanced sql fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in advanced sql fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in advanced sql fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in advanced sql fundamentals → internals → production trade-offs.
+## Why it matters here
+- Command of these constructs turns on-call database surprises into routine checklist work.
+- Concretely: ROLLUP adds subtotal and grand-total rows to grouped output.
+- Concretely: pivoting turns row values into columns for cross-tab reports.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate advanced sql skill 1 with a measurable artifact.
-- [ ] M2: demonstrate advanced sql skill 2 with a measurable artifact.
-- [ ] M3: demonstrate advanced sql skill 3 with a measurable artifact.
-- [ ] M4: demonstrate advanced sql skill 4 with a measurable artifact.
-- [ ] M5: demonstrate advanced sql skill 5 with a measurable artifact.
-- [ ] M6: demonstrate advanced sql skill 6 with a measurable artifact.
-- [ ] M7: demonstrate advanced sql skill 7 with a measurable artifact.
-- [ ] M8: demonstrate advanced sql skill 8 with a measurable artifact.
+## Growth path
+1. Foundations: rebuild the mini project starting from an empty schema.
+2. Depth: extend one item (the ROLLUP report subtotaling conversions by channel and month) until a reviewer asks for simplification.
+3. Production: complete the real-world milestones with a restore drill on the record.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about subtotal placement, because ROLLUP marks the summary rows explicitly.
+- Strong after this lab: applying the dedupe-versus-keep rule when reviewing set operations.
+- Still fragile: misread subtotal rows mistaken for real channels remains the most likely incident for beginners.
+- Still fragile: UNION silently dropping rows the report needed twice still needs a senior eye on the set design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Every canned snippet gets its results reproduced before reuse.
+- Stop skipping the conversions row-count reconciliation after each report change.
+- Stop treating the UNION versus UNION ALL comparison on duplicated conversions as optional when the review depends on it.
+
+## Non-coverage
+- This lab does not cover procedural extensions; treat those as separate tracks.
+- It also skips engine-specific pivot syntax, which varies by dialect.
+- The deliberate omissions: invented benchmarks, version trivia, and view names not our own.
+
+## Checkable milestones
+- [ ] From memory, rebuild the seed schema on a blank host.
+- [ ] Explain the pivot sketch turning channels into columns to a peer without notes.
+- [ ] Trigger pivot columns drifting whenever a new channel appears in staging, and recover using the runbook.
+- [ ] Say where report SQL ends and procedural extensions begin in a design review.
+
+## How to use this lab
+Take the items in order, keep every script rerunnable, and honor the non-coverage boundary above.

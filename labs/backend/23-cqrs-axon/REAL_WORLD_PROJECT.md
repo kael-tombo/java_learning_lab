@@ -1,43 +1,42 @@
-# Real World Project: CQRS with Axon
+# Real World Project: Cqrs Sagas And Projections
 
-## Project
-a ticketing system with Axon projections for dashboards.
+## Context
 
-## Why it matters
-In production, CQRS with Axon is rarely a library detail — it is an architectural commitment. Teams choose it to read-optimized reporting from event streams.
+The parcel-network orchestration platform answers a concrete operational need.
+Stakeholders judge it by CQRS sagas and projections behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> CQRS with Axon Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the parcel-network orchestration platform with one happy path live.
+M2: the build hardening plus failure drills against the service.
+M3: the operability instrumentation is in place across the build.
+M4: handover documentation written once the load rehearsal clears.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Shipment saga coordinator.
+- Carrier-adapter steps.
+- Compensation ledger.
+- Projection-lag monitors.
+- Customer-notification timeline.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.axoniq.io/
-- (link removed)
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks the offering's golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- Restart, rollback, and data repair each get a runbook section.
+- Whoever runs the SLO review cadence answers for freshness promises.
+
+## Exit criteria
+
+- [ ] A live demo of the service demonstrating the full journey.
+- [ ] Someone unfamiliar could execute the runbook during an outage.
+- [ ] Retro naming the riskiest remaining assumption.
+
+## Known hazards
+
+- Compensation firing twice after a retry.
+- Projection lag hiding a lost parcel.
+- Event-shape change breaking replay.
+- Deadline misfire cancelling a moving parcel.

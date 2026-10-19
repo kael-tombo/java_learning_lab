@@ -1,43 +1,42 @@
-# Real World Project: Messaging
+# Real World Project: Messaging Fundamentals
 
-## Project
-an order notification worker consuming queue messages with DLQ.
+## System sketch
 
-## Why it matters
-In production, Messaging is rarely a library detail — it is an architectural commitment. Teams choose it to decoupling work via queues.
+- Appointment event publisher serving the regional clinic reminder network.
+- SMS and email adapters serving the regional clinic reminder network.
+- Dead-letter review queue.
+- Delivery-attempt dashboard.
+- Quiet-hours policy engine.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Messaging Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Situation
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+The app answers a concrete operational need.
+Stakeholders judge it by messaging fundamentals behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable messaging fundamentals slices.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Delivery phases
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the build with one happy path live.
+M2: Messaging fundamentals hardening plus failure drills against the service.
+M3: add the operability instrumentation the solution needs.
+M4: load rehearsal done and handover documentation ready for the project.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://spring.io/projects/spring-amqp
-- https://www.rabbitmq.com/docs
+## What breaks
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Duplicate SMS waking patients at night.
+- Poison message blocking morning reminders.
+- Topic subscriber missing critical updates.
+- Ordering loss scrambling dose instructions.
+
+## Runbook expectations
+
+- Dashboard tracks messaging fundamentals golden signals for the system.
+- Alerts page on the offering's error budget burn, not on noise.
+- The runbook handles restart, rollback, and data repair end to end.
+- Platform freshness promises are owned by the SLO review cadence.
+
+## Ship list
+
+- [ ] A live demo of the service demonstrating the full messaging fundamentals journey.
+- [ ] Outage-proof runbook: a stranger can follow it.
+- [ ] Retro naming the riskiest remaining messaging fundamentals assumption.

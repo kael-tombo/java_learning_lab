@@ -1,108 +1,39 @@
-# Plsql Fundamentals — Real World Project
+# PLSQL Fundamentals — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where plsql fundamentals is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Situation
+A deployable slice proving PL/SQL DECLARE, BEGIN, EXCEPTION, and END blocks with cursors survives contact with production load and operator error.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.oracle.com/en/database/oracle/oracle-database/
-- (link removed)
+## Topology
+Schema changes roll out behind review gates with a rehearsed rollback route.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Build stages
+- M1: Phase 1: model clerks and tasks with seed data plus contract tests.
+- M2: Phase 2: harden the block path with indexes, guards, and load probes.
+- M3: the phase-3 rehearsal covers backup, restore, and rollback.
+- M4: Phase 4: hand over runbooks so on-call owns the procedures without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Operations list
+- Every schema change carries its rollback script from day one.
+- Monitor the call path for errors, saturation, and slow statements.
+- Schedule backup restores onto a scratch host.
+- Gate deploys on contract tests covering tasks behavior.
+
+## What breaks
+- unhandled NO_DATA_FOUND escaping a lookup block — catch the named handler the checklist above demands.
+- cursors left open across repeated executions; close every cursor on every exit path.
+- commits accidentally placed inside a row loop; move COMMIT after the loop and re-verify counts.
+- Fact reminder: explicit cursors fetch rows one at a time inside a controlled loop. Guides every response above.
 
 ## Requirements
-- F1: plsql fundamentals capability 1 with acceptance test.
-- F2: plsql fundamentals capability 2 with acceptance test.
-- F3: plsql fundamentals capability 3 with acceptance test.
-- F4: plsql fundamentals capability 4 with acceptance test.
-- F5: plsql fundamentals capability 5 with acceptance test.
-- F6: plsql fundamentals capability 6 with acceptance test.
-- F7: plsql fundamentals capability 7 with acceptance test.
-- F8: plsql fundamentals capability 8 with acceptance test.
-- F9: plsql fundamentals capability 9 with acceptance test.
-- F10: plsql fundamentals capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for plsql fundamentals.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for plsql fundamentals.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for plsql fundamentals.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for plsql fundamentals.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for plsql fundamentals.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for plsql fundamentals.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers clerks reads with contract tests proving the shape.
+- F2: the service guards tasks writes against invalid input.
+- NF1: the call path exposes error counts and slow-statement signals on the dashboard.
+- NF2: release sign-off waits until the restore drill passes on a scratch host.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like tasks traffic against the staging store.
+- Inject one fault (unhandled NO_DATA_FOUND escaping a lookup block) and confirm the runbook resolves it.
+- Bring the backup back and reconcile row counts before calling it done.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Definition of done
+Sign-off happens when milestones are green, the restore drill has passed, and the runbook has been read.

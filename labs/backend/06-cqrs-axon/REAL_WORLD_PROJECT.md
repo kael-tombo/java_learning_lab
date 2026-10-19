@@ -1,43 +1,42 @@
-# Real World Project: CQRS with Axon Framework
+# Real World Project: Cqrs And Event Sourcing
 
-## Project
-a banking app splitting account writes and balance reads via Axon.
+## System sketch
 
-## Why it matters
-In production, CQRS with Axon Framework is rarely a library detail — it is an architectural commitment. Teams choose it to eventual consistency in event-driven systems.
+- Booking command service serving the venue ticketing platform.
+- Event store with ordered streams serving the venue ticketing platform.
+- Seat-availability projections.
+- Resale transfer workflow.
+- Entry-scan read model.
 
-## Architecture sketch
-```
-Client -> API Gateway -> CQRS with Axon Framework Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Situation
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+The app answers a concrete operational need.
+Stakeholders judge it by CQRS and event sourcing behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable slices.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Delivery phases
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the build with one happy path live.
+M2: the offering hardening plus failure drills against the service.
+M3: the solution gains operability instrumentation.
+M4: load rehearsal done and handover documentation ready for the project.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.axoniq.io/
-- https://martinfowler.com/bliki/CQRS.html
+## What breaks
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Projection lag selling an already-held seat.
+- Out-of-order event corrupting a section count.
+- Snapshot gap hiding a refund event.
+- Command retry posting the same hold twice.
+
+## Runbook expectations
+
+- Dashboard tracks the service's golden signals for the system.
+- Alerts page on the platform's error budget burn, not on noise.
+- Restart, rollback, and data repair are all in the runbook.
+- Freshness promises live with the SLO review cadence.
+
+## Ship list
+
+- [ ] A live demo of the platform demonstrating the full journey.
+- [ ] Outage-proof runbook: a stranger can follow it.
+- [ ] Retro naming the riskiest remaining assumption.

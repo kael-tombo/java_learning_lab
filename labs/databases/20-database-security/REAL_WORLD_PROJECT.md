@@ -1,108 +1,39 @@
 # Database Security — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where database security is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Situation
+A deployable slice proving least-privilege roles, masking, and audit trails survives contact with production load and operator error.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Topology
+Schema changes roll out behind review gates with a rehearsed rollback route.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Build stages
+- M1: Phase 1: model patients and access_log with seed data plus contract tests.
+- M2: Phase 2: harden the access path with indexes, guards, and load probes.
+- M3: phase three runs a backup, restore, and rollback rehearsal.
+- M4: Phase 4: hand over runbooks so on-call owns the grant matrix without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Operations list
+- Attach the rollback script before any schema change lands.
+- Monitor the access path for errors, saturation, and slow statements.
+- The backup gets restored to a scratch host on a fixed schedule.
+- Gate deploys on contract tests covering access_log behavior.
+
+## What breaks
+- over-broad grants exposing patient data to every analyst — revoke to the role matrix, per the checklist above.
+- unmasked exports leaking sensitive columns into files; route analyst exports through the masked view.
+- missing audit rows leaving a breach unexplainable; verify trail coverage after every sensitive-read change.
+- Fact reminder: audit trails record who touched sensitive patient rows. Guides every response above.
 
 ## Requirements
-- F1: database security capability 1 with acceptance test.
-- F2: database security capability 2 with acceptance test.
-- F3: database security capability 3 with acceptance test.
-- F4: database security capability 4 with acceptance test.
-- F5: database security capability 5 with acceptance test.
-- F6: database security capability 6 with acceptance test.
-- F7: database security capability 7 with acceptance test.
-- F8: database security capability 8 with acceptance test.
-- F9: database security capability 9 with acceptance test.
-- F10: database security capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for database security.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for database security.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for database security.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for database security.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for database security.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for database security.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers patients reads with contract tests proving the shape.
+- F2: the service guards access_log writes against invalid input.
+- NF1: dashboards show error counts and slow-statement signals from the query path.
+- NF2: the release is signed off only after the scratch-host restore drill passes.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like access_log traffic against the staging store.
+- Inject one fault (over-broad grants exposing patient data to every analyst) and confirm the runbook resolves it.
+- Success is declared only after a backup restore matches row counts.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Definition of done
+Three things gate sign-off: milestones green, restore drill passed, runbook read by the team.

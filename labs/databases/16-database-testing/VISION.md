@@ -1,50 +1,39 @@
 # Database Testing — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about database testing.
+## Direction
+Grow from first queries toward dependable judgment about deterministic test data and safe schema changes, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in database testing fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in database testing fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in database testing fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in database testing fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in database testing fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in database testing fundamentals → internals → production trade-offs.
+## Why it matters here
+- Command of these test habits turns on-call database surprises into routine checklist work.
+- Concretely: fixtures load a known dataset so assertions stay deterministic.
+- Concretely: rolling each test back keeps suites independent and repeatable.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate database testing skill 1 with a measurable artifact.
-- [ ] M2: demonstrate database testing skill 2 with a measurable artifact.
-- [ ] M3: demonstrate database testing skill 3 with a measurable artifact.
-- [ ] M4: demonstrate database testing skill 4 with a measurable artifact.
-- [ ] M5: demonstrate database testing skill 5 with a measurable artifact.
-- [ ] M6: demonstrate database testing skill 6 with a measurable artifact.
-- [ ] M7: demonstrate database testing skill 7 with a measurable artifact.
-- [ ] M8: demonstrate database testing skill 8 with a measurable artifact.
+## Growth path
+1. Foundations: reproduce the mini project, beginning with a blank schema.
+2. Depth: extend one item (the fixture script seeding three deterministic rows) until a reviewer asks for simplification.
+3. Production: complete the real-world milestones with a restore drill on the record.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about determinism, because a fixed dataset makes failures reproducible.
+- Strong after this lab: applying the rollback wrapper during suite reviews.
+- Still fragile: order-dependent tests passing alone and failing together remains the most likely incident for beginners.
+- Still fragile: fixture drift hiding real regressions behind stale data still needs a senior eye on the test design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Snippets stay unused until the results reappear from a local run.
+- Stop skipping the assertions row-count reconciliation after each suite change.
+- Stop treating the constraint test asserting duplicate keys fail loudly as optional when the review depends on it.
+
+## Non-coverage
+- This lab does not cover vendor-specific test framework versions; treat those as separate tracks.
+- It also skips production data cloning procedures, which belong to privacy and ops tracks.
+- Skipping by design: benchmarks that were invented, version trivia, and reused view names.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host from memory.
+- [ ] Explain the rollback-wrapped test proving isolation between cases to a peer without notes.
+- [ ] Trigger untested downgrades trapping production on a bad migration in staging, and recover using the runbook.
+- [ ] Say where suite discipline ends and vendor-specific test framework versions begin in a design review.
+
+## How to use this lab
+Take the items in order, keep every script rerunnable, and honor the non-coverage boundary above.

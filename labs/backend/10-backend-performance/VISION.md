@@ -1,30 +1,41 @@
 # VISION — Backend Performance
 
-> Where this lab takes you: from hello-world to production judgment on Backend Performance.
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This backend performance lab carries learners from guessing at slowness to measured budgets with evidence for every change.
+Expect judgment calls about backend performance trade-offs, not just syntax recall.
+Progress shows when the backend performance vocabulary enters daily design discussions.
+The slow-checkout performance clinic project rewards engineers who question defaults instead of copying them.
+Early exercises build backend performance fluency; later builds demand backend performance decisions.
+Treat each backend performance milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the slow-checkout performance clinic project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains backend performance choices to teammates with concrete failure stories.
+A graduate continues operating through degraded conditions, no panic.
+A graduate measures backend performance outcomes instead of asserting them.
+A graduate spots backend performance misuse during code review before it ships.
+A graduate bounds the work by what the surrounding system tolerates.
+A graduate teaches one backend performance idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This backend performance lab deliberately leaves the following out.
+- Kernel-level profiling theory stays outside this build.
+- Custom garbage-collector development stays outside the course.
+- Hardware capacity procurement stays outside this lab.
+Meeting those needs belongs to neighboring backend performance studies.
 
-## Done = You Can
-- Choose, build, test, and operate Backend Performance in a real service.
+## Signals you are ready
+
+You wrap every task up without the lesson notes back open.
+You name two live backend performance risks in any design review.
+You recover the app when the fault drill fires, and calmly.
+You justify each backend performance trade-off with observed evidence.
+
+## Where next
+
+Continue into 24-backend-performance, 13-caching, 15-webflux-reactive after finishing the lab.
+Revisit this backend performance vision after the real-world build retro.
+Bring one open backend performance question into the next lab deliberately.

@@ -1,108 +1,39 @@
-# Mongodb — Real World Project
+# MongoDB — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where mongodb is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing MongoDB document modeling and find query patterns on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.mongodb.com/docs/manual/
-- https://www.mongodb.com/docs/compass/current/
+## Service sketch
+Backups, replicas, and dashboards surround the query path so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model customers and tickets with seed data plus contract tests.
+- M2: Phase 2: harden the read path with indexes, guards, and load probes.
+- M3: the phase-3 rehearsal covers backup, restore, and rollback.
+- M4: Phase 4: hand over runbooks so on-call owns the document shapes without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- Every schema change carries its rollback script from day one.
+- Errors, saturation, and slow statements from the query path get watched.
+- The backup gets restored to a scratch host on a fixed schedule.
+- Gate deploys on contract tests covering tickets behavior.
+
+## Failure drills
+- unbounded arrays bloating documents past comfortable sizes — cap the list or split the collection, per the checklist above.
+- duplicated customer data drifting after an embedded copy changes; reference the parent instead and reconcile.
+- collection scans from unindexed filter fields; add the index to the contract tests before deploy.
+- Fact reminder: embedding suits contained children while referencing suits shared entities. Guides every response above.
 
 ## Requirements
-- F1: mongodb capability 1 with acceptance test.
-- F2: mongodb capability 2 with acceptance test.
-- F3: mongodb capability 3 with acceptance test.
-- F4: mongodb capability 4 with acceptance test.
-- F5: mongodb capability 5 with acceptance test.
-- F6: mongodb capability 6 with acceptance test.
-- F7: mongodb capability 7 with acceptance test.
-- F8: mongodb capability 8 with acceptance test.
-- F9: mongodb capability 9 with acceptance test.
-- F10: mongodb capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for mongodb.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for mongodb.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for mongodb.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for mongodb.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for mongodb.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for mongodb.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers customers reads with contract tests proving the shape.
+- F2: the service guards tickets writes against invalid input.
+- NF1: the dashboard surfaces query-path error counts and slow-statement signals.
+- NF2: the release is signed off only after the scratch-host restore drill passes.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like tickets traffic against the staging store.
+- Inject one fault (unbounded arrays bloating documents past comfortable sizes) and confirm the runbook resolves it.
+- Row counts must reconcile against the restored backup before any success claim.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Nobody signs off until milestones are green, the restore drill passed, and the team read the runbook.

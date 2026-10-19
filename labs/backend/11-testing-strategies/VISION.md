@@ -1,30 +1,41 @@
 # VISION — Testing Strategies
 
-> Where this lab takes you: from hello-world to production judgment on Testing Strategies.
+## Where this points
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This testing strategies lab carries learners from ad-hoc tests to a layered strategy that earns release confidence.
+Expect judgment calls about testing strategies trade-offs, not just syntax recall.
+Progress shows when the testing strategies vocabulary enters daily design discussions.
+The invoice-service layered suite project rewards engineers who question defaults instead of copying them.
+Early exercises build testing strategies fluency; later builds demand testing strategies decisions.
+Treat each testing strategies milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the invoice-service layered suite project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## Competence profile
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains testing strategies choices to teammates with concrete failure stories.
+Under degraded conditions, a graduate keeps operating the system calmly.
+A graduate measures testing strategies outcomes instead of asserting them.
+A graduate spots testing strategies misuse during code review before it ships.
+Whatever fits the surrounding system is what a graduate commits to.
+A graduate teaches one testing strategies idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## What this lab will not teach
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This testing strategies lab deliberately leaves the following out.
+- Formal verification methods stays outside this build.
+- Performance-benchmark statistics stays outside the course.
+- Security penetration testing stays outside this lab.
+Meeting those needs belongs to neighboring testing strategies studies.
 
-## Done = You Can
-- Choose, build, test, and operate Testing Strategies in a real service.
+## Ready when
+
+You finish the tasks without going back to the lesson notes.
+You name two live testing strategies risks in any design review.
+A fault drill trips the app; recovery stays calm.
+You justify each testing strategies trade-off with observed evidence.
+
+## Follow-ons
+
+Continue into 12-api-documentation, 02-rest-apis, 18-file-processing-batch after finishing the lab.
+Revisit this testing strategies vision after the real-world build retro.
+Bring one open testing strategies question into the next lab deliberately.

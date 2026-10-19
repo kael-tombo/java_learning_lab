@@ -1,32 +1,40 @@
-# Mini Project: GraphQL
+# Mini Project: Graphql
 
-## Goal
-Build a small, runnable GraphQL service that demonstrates the core happy path.
+## The assignment
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+This GraphQL mini build produces a working authors-and-books graph you can run locally.
+Scope stays deliberately small so every GraphQL behavior remains observable.
+Budget roughly one focused evening for the authors-and-books graph implementation.
+Success means demonstrating GraphQL judgment, not just compiling code.
+Keep a lab journal noting each GraphQL surprise encountered.
+Acceptance checks define the edge, and no additions go past them.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Parts you will wire
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+- Schema type definitions.
+- Queries for reading.
+- Mutations for changes.
+- Nested field resolution.
+- Query-depth awareness.
 
-## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+## Build order
+
+1. Draft a schema linking authors to their books and reviews for the service.
+2. Serve nested author-book-review queries in one round trip.
+3. Add mutations creating reviews with validation.
+4. Resolve nested fields without one query per row.
+5. Reject an abusive deeply-nested query deliberately.
+
+## Acceptance checks
+
+- [ ] Schema serves 25 authors, 60 books, 150 reviews in the solution.
+- [ ] One nested query replaces 3 REST round trips in the platform.
+- [ ] Review mutation validates rating range 1 to 5.
+- [ ] Nested listing avoids per-row query explosion.
+- [ ] Depth guard rejects the crafted abusive query.
+
+## Stretch
+
+One realistic complication of your choosing goes into the project.
+Write the two-paragraph retro: which GraphQL decision proved hardest.
+Give the demo to a peer whose only map is the acceptance checks.

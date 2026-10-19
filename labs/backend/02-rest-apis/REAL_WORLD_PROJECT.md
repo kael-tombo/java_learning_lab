@@ -1,43 +1,42 @@
-# Real World Project: REST APIs
+# Real World Project: Rest Apis With Spring
 
-## Project
-a task-tracking REST API with proper status codes and pagination.
+## Problem
 
-## Why it matters
-In production, REST APIs is rarely a library detail — it is an architectural commitment. Teams choose it to designing clean HTTP resources.
+The regional repairs franchise order hub answers a concrete operational need.
+Stakeholders judge it by REST APIs with Spring behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> REST APIs Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Architecture
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+- Order intake service serving the regional repairs franchise order hub.
+- Technician assignment queue.
+- SMS notification adapter.
+- Audit log of status transitions.
+- Admin dashboard feed.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Milestones
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the app with one happy path live.
+M2: the build hardening plus failure drills against the service.
+M3: operability instrumentation lands across the solution.
+M4: load rehearsal first, handover documentation after.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://restfulapi.net/
-- https://www.rfc-editor.org/rfc/rfc9110
+## Operations and SLO checklist
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks the offering's golden signals for the system.
+- Alerts page on the service's error budget burn, not on noise.
+- Restart, rollback, and data repair each get a runbook section.
+- The SLO review cadence is where freshness promises get checked.
+
+## Failure modes
+
+- Completion posted twice by a retrying technician app.
+- Validation gap admitting orders without contact details.
+- Slow listing under franchise-wide polling.
+- Assignment race between two dispatchers.
+
+## Handover
+
+- [ ] A live demo of the solution demonstrating the full journey.
+- [ ] The runbook is followable by a stranger during an outage.
+- [ ] Retro naming the riskiest remaining assumption.

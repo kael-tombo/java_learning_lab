@@ -1,50 +1,39 @@
-# Sql Fundamentals — Vision
+# SQL Fundamentals — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about sql fundamentals.
+## Direction
+Grow from first queries toward dependable judgment about constraints, keys, and day-to-day DML, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in sql fundamentals fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in sql fundamentals fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in sql fundamentals fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in sql fundamentals fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in sql fundamentals fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in sql fundamentals fundamentals → internals → production trade-offs.
+## Why it matters here
+- Command of these guardrails turns on-call database surprises into routine checklist work.
+- Concretely: NOT NULL plus CHECK constraints reject bad data at the gate.
+- Concretely: INSERT, UPDATE, and DELETE change data while SELECT only reads it.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate sql fundamentals skill 1 with a measurable artifact.
-- [ ] M2: demonstrate sql fundamentals skill 2 with a measurable artifact.
-- [ ] M3: demonstrate sql fundamentals skill 3 with a measurable artifact.
-- [ ] M4: demonstrate sql fundamentals skill 4 with a measurable artifact.
-- [ ] M5: demonstrate sql fundamentals skill 5 with a measurable artifact.
-- [ ] M6: demonstrate sql fundamentals skill 6 with a measurable artifact.
-- [ ] M7: demonstrate sql fundamentals skill 7 with a measurable artifact.
-- [ ] M8: demonstrate sql fundamentals skill 8 with a measurable artifact.
+## Growth path
+1. Foundations: rebuild the mini project starting from an empty schema.
+2. Depth: extend one item (the student table with primary key and email uniqueness) until a reviewer asks for simplification.
+3. Production: the restore drill gets recorded alongside the real-world milestones.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about which constraints catch which bad rows, because the gatekeeping rules are explicit.
+- Strong after this lab: applying the read-versus-write split during statement reviews.
+- Still fragile: duplicate emails slipping past a missing unique constraint remains the most likely incident for beginners.
+- Still fragile: enrollments pointing at deleted students after an unguarded delete still needs a senior eye on the design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the enrollments row-count reconciliation after each edit.
+- Stop treating the CHECK constraint that bounds grades to a legal range as optional when the review depends on it.
+
+## Non-coverage
+- This lab does not cover advanced analytics and procedural SQL; treat those as separate tracks.
+- It also skips physical tuning and plan analysis, which belong to optimization tracks.
+- The deliberate omissions: invented benchmarks, version trivia, and view names not our own.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host without peeking at notes.
+- [ ] Explain the enrollment foreign key with a documented delete rule to a peer without notes.
+- [ ] Trigger half-applied multi-statement edits committed without a transaction in staging, and recover using the runbook.
+- [ ] Say where this groundwork ends and advanced analytics and procedural SQL begin in a design review.
+
+## How to use this lab
+Items go in order, scripts stay rerunnable, and the non-coverage boundary above is not crossed.

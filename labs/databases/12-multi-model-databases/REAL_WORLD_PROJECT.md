@@ -1,108 +1,39 @@
-# Multi Model Databases — Real World Project
+# Multi-Model Databases — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where multi model databases is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing multi-model polyglot persistence choices on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Service sketch
+Backups, replicas, and dashboards surround the persistence layer so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model catalog and reviews with seed data plus contract tests.
+- M2: Phase 2: harden each model's read path with indexes, guards, and load probes.
+- M3: Phase 3: rehearse backup, restore, and rollback for the stores.
+- M4: Phase 4: hand over runbooks so on-call owns the boundary map without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- No schema change goes in without its rollback script.
+- Monitor each model's path for errors, saturation, and slow statements.
+- The backup gets restored to a scratch host on a fixed schedule.
+- Gate deploys on contract tests covering reviews behavior.
+
+## Failure drills
+- one model stretched to serve every workload badly — re-route the outlier to its best fit, per the checklist above.
+- cross-model reads with no defined consistency story; document the read contract and add a reconciliation probe.
+- dual writes diverging with no reconciliation job; schedule the job and alarm on divergence counts.
+- Fact reminder: document stores fit variable review payloads with evolving fields. Guides every response above.
 
 ## Requirements
-- F1: multi model databases capability 1 with acceptance test.
-- F2: multi model databases capability 2 with acceptance test.
-- F3: multi model databases capability 3 with acceptance test.
-- F4: multi model databases capability 4 with acceptance test.
-- F5: multi model databases capability 5 with acceptance test.
-- F6: multi model databases capability 6 with acceptance test.
-- F7: multi model databases capability 7 with acceptance test.
-- F8: multi model databases capability 8 with acceptance test.
-- F9: multi model databases capability 9 with acceptance test.
-- F10: multi model databases capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for multi model databases.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for multi model databases.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for multi model databases.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for multi model databases.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for multi model databases.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for multi model databases.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers catalog reads with contract tests proving the shape.
+- F2: the service guards reviews writes against invalid input.
+- NF1: the dashboard surfaces query-path error counts and slow-statement signals.
+- NF2: a passing restore drill on a scratch host gates release sign-off.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like reviews traffic against the staging store.
+- Inject one fault (one model stretched to serve every workload badly) and confirm the runbook resolves it.
+- Restore from the backup first, then reconcile row counts before the success call.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Sign-off requires green milestones, a restore drill that passed, and a runbook someone on the team has read.

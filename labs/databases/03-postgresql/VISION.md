@@ -1,50 +1,39 @@
-# Postgresql — Vision
+# PostgreSQL — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about postgresql.
+## Where this points
+Grow from first queries toward dependable judgment about schema layout, column typing, and transactional DDL, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in postgresql fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in postgresql fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in postgresql fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in postgresql fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in postgresql fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in postgresql fundamentals → internals → production trade-offs.
+## Capabilities gained
+- Command of these habits turns on-call database surprises into routine checklist work.
+- Concretely: schemas namespace tables so tenants and shared objects stay separated.
+- Concretely: PostgreSQL data types include serial-style identity, text, numeric, and timestamps.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate postgresql skill 1 with a measurable artifact.
-- [ ] M2: demonstrate postgresql skill 2 with a measurable artifact.
-- [ ] M3: demonstrate postgresql skill 3 with a measurable artifact.
-- [ ] M4: demonstrate postgresql skill 4 with a measurable artifact.
-- [ ] M5: demonstrate postgresql skill 5 with a measurable artifact.
-- [ ] M6: demonstrate postgresql skill 6 with a measurable artifact.
-- [ ] M7: demonstrate postgresql skill 7 with a measurable artifact.
-- [ ] M8: demonstrate postgresql skill 8 with a measurable artifact.
+## Sequence
+1. Foundations: from a blank schema, reproduce the mini project.
+2. Depth: extend one item (the tenant schema layout separating shared and private tables) until a reviewer asks for simplification.
+3. Production: real-world milestones delivered, restore drill documented.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about namespace boundaries, because the separation rules are explicit.
+- Strong after this lab: applying the type checklist — identity, text, numeric, timestamps — during schema reviews.
+- Still fragile: objects landing in the wrong schema when search-path surprises writers remains the most likely incident for beginners.
+- Still fragile: money rounding drift from choosing floating point over numeric still needs a senior eye on the design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Snippets stay unused until the results reappear from a local run.
+- Stop skipping the invoices row-count reconciliation after each migration.
+- Stop treating the timestamp discipline for time-zone storage as optional when the review depends on it.
+
+## Out of scope
+- This lab does not cover version-specific extension catalogs; treat those as separate tracks.
+- It also skips replication slot administration, which belongs to operations tracks.
+- The deliberate omissions: invented benchmarks, version trivia, and view names not our own.
+
+## Checkable milestones
+- [ ] From memory, rebuild the seed schema on a blank host.
+- [ ] Explain the invoice table with identity key and numeric totals to a peer without notes.
+- [ ] Trigger half-applied migrations from DDL issued outside one transaction in staging, and recover using the runbook.
+- [ ] Say where this scope ends and version-specific extension catalogs begin in a design review.
+
+## Study guidance
+Follow the items in sequence, keep scripts rerunnable, and respect the non-coverage boundary stated above.

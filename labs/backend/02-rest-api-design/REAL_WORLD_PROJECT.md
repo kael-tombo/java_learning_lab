@@ -1,43 +1,42 @@
-# Real World Project: REST API Design
+# Real World Project: Rest Api Design
 
-## Project
-a partner-facing orders API with versioned resources and OpenAPI docs.
+## Context
 
-## Why it matters
-In production, REST API Design is rarely a library detail — it is an architectural commitment. Teams choose it to designing public APIs for partners.
+The multi-tenant bookstore catalog platform answers a concrete operational need.
+Stakeholders judge it by REST API design behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable REST API design slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> REST API Design Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the multi-tenant bookstore catalog platform with one happy path live.
+M2: Rest api design hardening plus failure drills against the service.
+M3: operability instrumentation across the solution.
+M4: load rehearsal runs; handover documentation follows for the project.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Catalog service with versioned routes.
+- Search index fed by change events.
+- Rate-limited partner endpoints.
+- OpenAPI contract with examples.
+- Consumer-driven contract tests.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://restfulapi.net/
-- https://www.rfc-editor.org/rfc/rfc9110
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks REST API design golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- Runbook covers restart, rollback, and data repair.
+- SLO review cadence owns freshness promises of the platform.
+
+## Exit criteria
+
+- [ ] A live demo of the build demonstrating the full REST API design journey.
+- [ ] Runbook a stranger could follow during the outage.
+- [ ] Retro naming the riskiest remaining REST API design assumption.
+
+## Known hazards
+
+- Non-idempotent retry creating duplicate loans.
+- Page drift when new books arrive mid-traversal.
+- Status-code misuse confusing partner retries.
+- Breaking field rename without version bump.

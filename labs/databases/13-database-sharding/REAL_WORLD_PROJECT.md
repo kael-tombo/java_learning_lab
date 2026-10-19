@@ -1,108 +1,42 @@
 # Database Sharding — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where database sharding is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Problem
+A production-flavored specification where shard key selection and cross-shard query costs carry real traffic, real failure, and real on-call pages.
 
 ## Architecture
+```text
+app -> service -> shoppers / baskets store -> replica + backup -> dashboard
 ```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
-
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
-
-## Requirements
-- F1: database sharding capability 1 with acceptance test.
-- F2: database sharding capability 2 with acceptance test.
-- F3: database sharding capability 3 with acceptance test.
-- F4: database sharding capability 4 with acceptance test.
-- F5: database sharding capability 5 with acceptance test.
-- F6: database sharding capability 6 with acceptance test.
-- F7: database sharding capability 7 with acceptance test.
-- F8: database sharding capability 8 with acceptance test.
-- F9: database sharding capability 9 with acceptance test.
-- F10: database sharding capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for database sharding.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for database sharding.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for database sharding.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for database sharding.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for database sharding.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for database sharding.
+Client requests reach a service layer, which routes writes and reads across the shards holding shoppers and baskets data.
 
 ## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- M1: Phase 1: model shoppers and baskets with seed data plus contract tests.
+- M2: Phase 2: harden the routing path with indexes, guards, and load probes.
+- M3: Phase 3: rehearse backup, restore, and rollback for the shard set.
+- M4: Phase 4: hand over runbooks so on-call owns the key ranges without paging the author.
+
+## Operations checklist
+- Pair each schema change with the script that undoes it.
+- Monitor each node for errors, saturation, and slow statements.
+- Restore the backup onto a scratch host at a steady cadence.
+- Gate deploys on contract tests covering baskets behavior.
+
+## Failure modes
+- hot shards melting under a celebrity-tenant key — split the range before the season peak, per the checklist above.
+- cross-shard joins timing out during peak baskets; pre-compute the shared report or co-locate the keyed data.
+- resharding stalls when the key cannot split evenly; pick a finer-grained hash for the next migration.
+- Fact reminder: the shard key decides which node owns each row. Guides every response above.
+
+## Requirements
+- F1: the service answers shoppers reads with contract tests proving the shape.
+- F2: the service guards baskets writes against invalid input.
+- NF1: dashboards show error counts and slow-statement signals from the query path.
+- NF2: the release is signed off only after the scratch-host restore drill passes.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like baskets traffic against the staging store.
+- Inject one fault (hot shards melting under a celebrity-tenant key) and confirm the runbook resolves it.
+- Restore from the backup first, then reconcile row counts before the success call.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Sign-off
+Sign-off requires green milestones, a restore drill that passed, and a runbook someone on the team has read.

@@ -1,108 +1,39 @@
-# Flyway Liquibase — Real World Project
+# Flyway and Liquibase — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where flyway liquibase is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing versioned Flyway and Liquibase schema migrations on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://documentation.red-gate.com/flyway
-- https://documentation.red-gate.com/
+## Service sketch
+Backups, replicas, and dashboards surround the migration path so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model ledgers and entries with seed data plus contract tests.
+- M2: Phase 2: harden the deploy path with indexes, guards, and load probes.
+- M3: rehearse backup, restore, and rollback with the store data.
+- M4: Phase 4: hand over runbooks so on-call owns the migration pipeline without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- No schema change goes in without its rollback script.
+- Monitor the migration path for errors, saturation, and slow statements.
+- Schedule backup restores onto a scratch host.
+- Gate deploys on contract tests covering entries behavior.
+
+## Failure drills
+- checksum mismatches after editing an already-applied migration — never edit applied files; add a new migration per the checklist above.
+- out-of-order migrations applied by two branches simultaneously; renumber and rerun in version order.
+- missing rollback path discovered during a failed deploy; write the undo files before the next release.
+- Fact reminder: repeatable migrations re-run when their checksum changes. Guides every response above.
 
 ## Requirements
-- F1: flyway liquibase capability 1 with acceptance test.
-- F2: flyway liquibase capability 2 with acceptance test.
-- F3: flyway liquibase capability 3 with acceptance test.
-- F4: flyway liquibase capability 4 with acceptance test.
-- F5: flyway liquibase capability 5 with acceptance test.
-- F6: flyway liquibase capability 6 with acceptance test.
-- F7: flyway liquibase capability 7 with acceptance test.
-- F8: flyway liquibase capability 8 with acceptance test.
-- F9: flyway liquibase capability 9 with acceptance test.
-- F10: flyway liquibase capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for flyway liquibase.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for flyway liquibase.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for flyway liquibase.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for flyway liquibase.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for flyway liquibase.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for flyway liquibase.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers ledgers reads with contract tests proving the shape.
+- F2: the service guards entries writes against invalid input.
+- NF1: the query path reports error counts and slow statements to the dashboard.
+- NF2: a scratch-host restore drill is a precondition for release sign-off.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like entries traffic against the staging store.
+- Inject one fault (checksum mismatches after editing an already-applied migration) and confirm the runbook resolves it.
+- Restore from the backup first, then reconcile row counts before the success call.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Nobody signs off until milestones are green, the restore drill passed, and the team read the runbook.

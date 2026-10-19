@@ -1,108 +1,39 @@
-# Query Optimization — Real World Project
+# Query Optimization C — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where query optimization is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Situation
+A deployable slice proving join order and covering-index reasoning in the events domain survives contact with production load and operator error.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Topology
+Schema changes roll out behind review gates with a rehearsed rollback route.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Build stages
+- M1: Phase 1: model events and attendees with seed data plus contract tests.
+- M2: Phase 2: harden the reporting path with indexes, guards, and load probes.
+- M3: rehearse backup, restore, and rollback with the store data.
+- M4: Phase 4: hand over runbooks so on-call owns the plan reviews without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Operations list
+- Every schema change carries its rollback script from day one.
+- Error, saturation, and slow-statement monitoring covers the query path.
+- Restore the backup onto a scratch host at a steady cadence.
+- Gate deploys on contract tests covering attendees behavior.
+
+## What breaks
+- bad join order scanning the huge side first — lead from the selective filter, as the checklist above demands.
+- covering indexes bloating write paths beyond their read value; price each index per insert and drop the unjustified ones.
+- residual filters hiding inside a seemingly indexed plan; audit leftover predicate work after each change.
+- Fact reminder: residual predicates filter rows that the index cannot eliminate. Guides every response above.
 
 ## Requirements
-- F1: query optimization capability 1 with acceptance test.
-- F2: query optimization capability 2 with acceptance test.
-- F3: query optimization capability 3 with acceptance test.
-- F4: query optimization capability 4 with acceptance test.
-- F5: query optimization capability 5 with acceptance test.
-- F6: query optimization capability 6 with acceptance test.
-- F7: query optimization capability 7 with acceptance test.
-- F8: query optimization capability 8 with acceptance test.
-- F9: query optimization capability 9 with acceptance test.
-- F10: query optimization capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for query optimization.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for query optimization.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for query optimization.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for query optimization.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for query optimization.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for query optimization.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers events reads with contract tests proving the shape.
+- F2: the service guards attendees writes against invalid input.
+- NF1: dashboards show error counts and slow-statement signals from the query path.
+- NF2: no release sign-off while the scratch-host restore drill still fails.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like attendees traffic against the staging store.
+- Inject one fault (bad join order scanning the huge side first) and confirm the runbook resolves it.
+- The success call waits for a backup restore with row counts reconciled.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Definition of done
+Sign-off requires green milestones, a restore drill that passed, and a runbook someone on the team has read.

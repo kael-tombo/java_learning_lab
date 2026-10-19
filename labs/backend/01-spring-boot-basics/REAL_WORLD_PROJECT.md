@@ -1,43 +1,42 @@
 # Real World Project: Spring Boot Basics
 
-## Project
-a greetings service bootstrapped with Actuator health.
+## Problem
 
-## Why it matters
-In production, Spring Boot Basics is rarely a library detail — it is an architectural commitment. Teams choose it to bootstrapping production Spring apps.
+The neighborhood library network loan coordination answers a concrete operational need.
+Stakeholders judge it by Spring Boot basics behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable Spring Boot basics slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Spring Boot Basics Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Architecture
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+- Loan service behind a gateway serving the neighborhood library network loan coordination.
+- Relational store for holds and copies.
+- Cache for availability lookups.
+- Structured logs plus RED metrics.
+- Nightly overdue sweep job.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Milestones
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the app with one happy path live.
+M2: Spring boot basics hardening plus failure drills against the service.
+M3: operability instrumentation across the solution.
+M4: the project's load rehearsal and its handover documentation both land.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://spring.io/projects/spring-boot
-- https://docs.spring.io/spring-boot/reference/index.html
+## Operations and SLO checklist
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks Spring Boot basics golden signals for the system.
+- Alerts page on the build's error budget burn, not on noise.
+- Runbook covers restart, rollback, and data repair.
+- SLO review cadence owns freshness promises of the platform.
+
+## Failure modes
+
+- Overdue sweep double-charging during a retry.
+- Availability cache showing a copy already lent.
+- Gateway timeout during hold placement.
+- Migration adding a column while loans post.
+
+## Handover
+
+- [ ] A live demo of the offering demonstrating the full Spring Boot basics journey.
+- [ ] Runbook a stranger could follow during the outage.
+- [ ] Retro naming the riskiest remaining Spring Boot basics assumption.

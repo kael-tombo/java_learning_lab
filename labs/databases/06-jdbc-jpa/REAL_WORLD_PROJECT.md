@@ -1,108 +1,39 @@
-# Jdbc Jpa — Real World Project
+# JDBC and JPA — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where jdbc jpa is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Situation
+A deployable slice proving JDBC DriverManager and DataSource access with JPA EntityManager mapping survives contact with production load and operator error.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Topology
+Schema changes roll out behind review gates with a rehearsed rollback route.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Build stages
+- M1: Phase 1: model products and stock with seed data plus contract tests.
+- M2: Phase 2: harden the data path with indexes, guards, and load probes.
+- M3: phase three runs a backup, restore, and rollback rehearsal.
+- M4: Phase 4: hand over runbooks so on-call owns the access layer without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Operations list
+- Attach the rollback script before any schema change lands.
+- Watch the query path for errors, saturation, and statements running slow.
+- The backup gets restored to a scratch host on a fixed schedule.
+- Gate deploys on contract tests covering stock behavior.
+
+## What breaks
+- leaked connections from statements never closed — enforce try-with-resources everywhere, as the checklist above demands.
+- injection holes opened by string-concatenated SQL; bind every parameter and block ad-hoc SQL in review.
+- detached-entity confusion when edits happen outside a transaction; keep the boundary note next to the persistence code.
+- Fact reminder: EntityManager maps entity state changes onto relational rows. Guides every response above.
 
 ## Requirements
-- F1: jdbc jpa capability 1 with acceptance test.
-- F2: jdbc jpa capability 2 with acceptance test.
-- F3: jdbc jpa capability 3 with acceptance test.
-- F4: jdbc jpa capability 4 with acceptance test.
-- F5: jdbc jpa capability 5 with acceptance test.
-- F6: jdbc jpa capability 6 with acceptance test.
-- F7: jdbc jpa capability 7 with acceptance test.
-- F8: jdbc jpa capability 8 with acceptance test.
-- F9: jdbc jpa capability 9 with acceptance test.
-- F10: jdbc jpa capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for jdbc jpa.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for jdbc jpa.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for jdbc jpa.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for jdbc jpa.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for jdbc jpa.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for jdbc jpa.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers products reads with contract tests proving the shape.
+- F2: the service guards stock writes against invalid input.
+- NF1: the query path reports error counts and slow statements to the dashboard.
+- NF2: a passing restore drill on a scratch host gates release sign-off.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like stock traffic against the staging store.
+- Inject one fault (leaked connections from statements never closed) and confirm the runbook resolves it.
+- Bring the backup back and reconcile row counts before calling it done.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Definition of done
+Sign-off happens when milestones are green, the restore drill has passed, and the runbook has been read.

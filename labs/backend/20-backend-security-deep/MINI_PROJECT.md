@@ -1,32 +1,40 @@
-# Mini Project: Backend Security Deep Dive
+# Mini Project: Backend Security Hardening
 
-## Goal
-Build a small, runnable Backend Security Deep Dive service that demonstrates the core happy path.
+## What to build
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
-
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+This backend security hardening mini build produces a working legal-document vault hardening you can run locally.
+Scope stays deliberately small so every backend security hardening behavior remains observable.
+Budget roughly one focused evening for the legal-document vault hardening implementation.
+Success means demonstrating backend security hardening judgment, not just compiling code.
+Keep a lab journal noting each backend security hardening surprise encountered.
+The acceptance checks cap the work; features beyond them wait.
 
 ## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
 
-## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+1. Inventory every route of a document vault by sensitivity for the service.
+2. Move secrets out of code into managed configuration.
+3. Validate and isolate uploaded documents by type and size.
+4. Log every download with actor, document, and timestamp.
+5. Tighten headers and remove one information leak.
+
+## Architecture in miniature
+
+- Layered access controls.
+- Secret-handling discipline.
+- Upload validation and isolation.
+- Audit logging of sensitive acts.
+- Dependency and header hygiene.
+
+## How it is judged
+
+- [ ] Route inventory maps all 14 endpoints to sensitivity tiers in the solution.
+- [ ] Secret scan finds zero credentials in the repository in the platform.
+- [ ] Hostile upload blocked in all 6 crafted attempts.
+- [ ] Audit log answers who-downloaded-what for 30 sampled events.
+- [ ] Header review shows no stack or version leakage.
+
+## Extension
+
+Choose one realistic complication and bolt it onto the project.
+Write the two-paragraph retro: which backend security hardening decision proved hardest.
+Show the system to a peer armed with nothing but the acceptance checks.

@@ -1,50 +1,39 @@
-# Query Optimization — Vision
+# Query Optimization C — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about query optimization.
+## Trajectory
+Grow from first queries toward dependable judgment about selective joins and index-only reads, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in query optimization fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in query optimization fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in query optimization fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in query optimization fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in query optimization fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in query optimization fundamentals → internals → production trade-offs.
+## Payoff
+- Command of these plan habits turns on-call database surprises into routine checklist work.
+- Concretely: join order starts from the most selective event filter.
+- Concretely: covering indexes answer queries without touching the table.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate query optimization skill 1 with a measurable artifact.
-- [ ] M2: demonstrate query optimization skill 2 with a measurable artifact.
-- [ ] M3: demonstrate query optimization skill 3 with a measurable artifact.
-- [ ] M4: demonstrate query optimization skill 4 with a measurable artifact.
-- [ ] M5: demonstrate query optimization skill 5 with a measurable artifact.
-- [ ] M6: demonstrate query optimization skill 6 with a measurable artifact.
-- [ ] M7: demonstrate query optimization skill 7 with a measurable artifact.
-- [ ] M8: demonstrate query optimization skill 8 with a measurable artifact.
+## Milestones
+1. Foundations: the mini project gets reproduced after clearing the schema.
+2. Depth: extend one item (the join-order rewrite leading from the selective event filter) until a reviewer asks for simplification.
+3. Production: the real-world milestones go out once a restore drill is recorded.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about selectivity-first ordering, since the plan follows from it.
+- Strong after this lab: applying the table-bypass check when reviewing list queries.
+- Still fragile: bad join order scanning the huge side first remains the most likely incident for beginners.
+- Still fragile: covering indexes bloating write paths beyond their read value still needs a senior eye on the index set.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Snippets stay unused until the results reappear from a local run.
+- Stop skipping the attendees row-count reconciliation after each change.
+- Stop treating the residual-predicate audit on one event report as optional when the review depends on it.
+
+## Not covered
+- This lab does not cover invented timing benchmarks on event queries; treat those as separate tracks.
+- It also skips cost-model source internals, which sit below the plan output.
+- The deliberate omissions: invented benchmarks, version trivia, and view names not our own.
+
+## Checkable milestones
+- [ ] From memory, rebuild the seed schema on a blank host.
+- [ ] Explain the covering index for the attendee check-in list to a peer without notes.
+- [ ] Trigger residual filters hiding inside a seemingly indexed plan in staging, and recover using the runbook.
+- [ ] Say where join reasoning ends and invented timing benchmarks on event queries begin in a design review.
+
+## Working agreement
+The items run in order, scripts remain rerunnable, and the non-coverage boundary above holds.

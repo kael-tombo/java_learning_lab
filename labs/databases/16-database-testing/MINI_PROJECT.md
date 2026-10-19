@@ -1,80 +1,46 @@
 # Database Testing — Mini Project
 
-## Goal
-Build a small but complete exercise of database testing in 90 minutes.
+## Objective
+Produce a working exercise on database tests with fixtures, transactions, and migration checks in about ninety minutes, ending with scripts a peer can rerun.
 
-## Requirements
-- R1: schema + queries exercising database testing scenario 1.
-- R2: schema + queries exercising database testing scenario 2.
-- R3: schema + queries exercising database testing scenario 3.
-- R4: schema + queries exercising database testing scenario 4.
-- R5: schema + queries exercising database testing scenario 5.
-- R6: schema + queries exercising database testing scenario 6.
-- R7: schema + queries exercising database testing scenario 7.
-- R8: schema + queries exercising database testing scenario 8.
+## Core facts
+- Fixtures load a known dataset so assertions stay deterministic. Every case below leans on that determinism.
+- Rolling each test back keeps suites independent and repeatable — that is how the suite behaves under checks.
+- Migration tests prove upgrades and downgrades both succeed; that is the acceptance bar.
 
-## Steps
-1. Step 1: scaffold, load sample data, verify with a query, record observations.
-2. Step 2: scaffold, load sample data, verify with a query, record observations.
-3. Step 3: scaffold, load sample data, verify with a query, record observations.
-4. Step 4: scaffold, load sample data, verify with a query, record observations.
-5. Step 5: scaffold, load sample data, verify with a query, record observations.
-6. Step 6: scaffold, load sample data, verify with a query, record observations.
-7. Step 7: scaffold, load sample data, verify with a query, record observations.
-8. Step 8: scaffold, load sample data, verify with a query, record observations.
-9. Step 9: scaffold, load sample data, verify with a query, record observations.
-10. Step 10: scaffold, load sample data, verify with a query, record observations.
+## Build
+Create one scratch schema dedicated to this drill, seed a handful of rows, then work the task list in order.
 
-## Acceptance criteria
-- All queries return correct results; notes explain one surprising observation.
+## Task list
+1. Draft the fixture script seeding three deterministic rows, and record what changes in the output.
+2. Load the rollback-wrapped test proving isolation between cases, then note the one surprise worth remembering.
+3. Run the constraint test asserting duplicate keys fail loudly, and capture the check query beside it.
+4. Shape the migration up-and-down test on a scratch copy, then explain the result to a reviewer aloud.
+5. Assemble the data-volume test with a generated hundred-row batch, and file the script where the next step finds it.
+6. Compose the flaky-order hunt fixing one order-dependent assertion, while keeping every statement re-runnable.
 
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
+## Reference snippet
+```text
+fixture -> three deterministic rows
+test -> run inside a transaction, then roll back
+migration check -> upgrade and downgrade on scratch
+```
+
+## Checks
+- Every script reruns cleanly on a fresh schema without manual edits.
+- Row counts reconcile before and after each transformation step.
+- One observed suite behavior is written down with its cause.
+- The snippet above executes (or the sketch reads correctly) against the seeded fixtures data.
+
+## Stretch
+- Break one fixture assumption deliberately, then document the error message verbatim.
+- Remove one helper and show the exercise still passes without it.
+
+## Done
+The folder holds scripts, seed data, and a short note naming the trickiest step.
+
+## Hand-off
+- Tag the finished scripts folder so the next lab picks it up without re-reading every file.
+- Hand the notes file to whoever reruns the exercises, so the surprises survive the handoff.
+- Mark this checklist done only after a peer has rerun every script without edits.
+

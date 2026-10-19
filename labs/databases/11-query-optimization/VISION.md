@@ -1,50 +1,39 @@
-# Query Optimization — Vision
+# Query Optimization B — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about query optimization.
+## Direction
+Grow from first queries toward dependable judgment about the optimizer's plans, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in query optimization fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in query optimization fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in query optimization fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in query optimization fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in query optimization fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in query optimization fundamentals → internals → production trade-offs.
+## Why it matters here
+- Command of plan reading turns on-call database surprises into routine checklist work.
+- Concretely: EXPLAIN shows the optimizer's chosen access path before execution.
+- Concretely: nested-loop joins suit selective lookups while hash joins suit bulk matches.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate query optimization skill 1 with a measurable artifact.
-- [ ] M2: demonstrate query optimization skill 2 with a measurable artifact.
-- [ ] M3: demonstrate query optimization skill 3 with a measurable artifact.
-- [ ] M4: demonstrate query optimization skill 4 with a measurable artifact.
-- [ ] M5: demonstrate query optimization skill 5 with a measurable artifact.
-- [ ] M6: demonstrate query optimization skill 6 with a measurable artifact.
-- [ ] M7: demonstrate query optimization skill 7 with a measurable artifact.
-- [ ] M8: demonstrate query optimization skill 8 with a measurable artifact.
+## Growth path
+1. Foundations: start from a blank schema and reproduce the mini project.
+2. Depth: extend one item (the EXPLAIN read of a shipment lookup identifying the access path) until a reviewer asks for simplification.
+3. Production: deliver the real-world milestones and keep a restore drill on file.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about access-path previews, since the chosen plan is visible before execution.
+- Strong after this lab: applying the join-selection heuristic during plan reviews.
+- Still fragile: misread plans blamed on the wrong operator remains the most likely incident for beginners.
+- Still fragile: wrong composite order leaving the second column unusable still needs a senior eye on the index design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Snippets stay unused until the results reappear from a local run.
+- Stop skipping the stops row-count reconciliation after each index change.
+- Stop treating the composite index ordered by depot then departure time as optional when the review depends on it.
+
+## Non-coverage
+- This lab does not cover invented timing benchmarks on shipment queries; treat those as separate tracks.
+- It also skips optimizer source-code internals, which sit below the plan output.
+- Skipping by design: benchmarks that were invented, version trivia, and reused view names.
+
+## Checkable milestones
+- [ ] Blank host first, then rebuild the seed schema from memory.
+- [ ] Explain the nested-loop versus hash-join comparison on stop matching to a peer without notes.
+- [ ] Trigger sort spills when ORDER BY columns miss the supporting index in staging, and recover using the runbook.
+- [ ] Say where plan reading ends and invented timing benchmarks on shipment queries begin in a design review.
+
+## How to use this lab
+Work through the items in sequence with rerunnable scripts, and stop where the non-coverage boundary above says.

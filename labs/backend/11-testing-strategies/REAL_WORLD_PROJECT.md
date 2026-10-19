@@ -1,43 +1,42 @@
 # Real World Project: Testing Strategies
 
-## Project
-a CI pipeline gating on unit, slice, integration, and contract tests.
+## Context
 
-## Why it matters
-In production, Testing Strategies is rarely a library detail — it is an architectural commitment. Teams choose it to building confidence ladders and CI gates.
+The freelancer invoicing platform quality gate answers a concrete operational need.
+Stakeholders judge it by testing strategies behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable testing strategies slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Testing Strategies Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the freelancer invoicing platform quality gate with one happy path live.
+M2: Testing strategies hardening plus failure drills against the service.
+M3: the solution gains operability instrumentation.
+M4: the project gets a load rehearsal plus handover documentation.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Layered suite in CI.
+- Ephemeral database per run.
+- Contract checks on exports.
+- Flake-rate dashboard.
+- Release-readiness checklist.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://junit.org/junit5/docs/current/user-guide/
-- https://testcontainers.com/
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks testing strategies golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- Restart, rollback, and data repair are all in the runbook.
+- The SLO review cadence is where freshness promises get checked.
+
+## Exit criteria
+
+- [ ] A live demo of the build demonstrating the full testing strategies journey.
+- [ ] During an outage, a stranger can work from the runbook alone.
+- [ ] Retro naming the riskiest remaining testing strategies assumption.
+
+## Known hazards
+
+- Mock-heavy suite passing while production math errs.
+- Shared database leaking state between tests.
+- Unpinned export breaking accountant imports.
+- Flaky test ignored until release day.

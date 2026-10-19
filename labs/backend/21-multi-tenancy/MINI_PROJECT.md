@@ -1,32 +1,40 @@
 # Mini Project: Multi-Tenancy
 
-## Goal
-Build a small, runnable Multi-Tenancy service that demonstrates the core happy path.
+## The assignment
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+This multi-tenancy mini build produces a working fitness-studio SaaS tenants you can run locally.
+Scope stays deliberately small so every multi-tenancy behavior remains observable.
+Budget roughly one focused evening for the fitness-studio SaaS tenants implementation.
+Success means demonstrating multi-tenancy judgment, not just compiling code.
+Keep a lab journal noting each multi-tenancy surprise encountered.
+Hold the line at the acceptance checks; nothing extra sneaks in beyond them.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Parts you will wire
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+- Tenant-resolution strategies.
+- Schema-per-tenant versus discriminator choice.
+- Tenant-scoped queries.
+- Onboarding and offboarding flows.
+- Cross-tenant leak testing.
 
-## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+## Build order
+
+1. Serve three fitness studios from one deployed service for the service.
+2. Resolve tenants from request context explicitly.
+3. Scope every class-booking query to its tenant.
+4. Onboard a fourth studio without touching existing data.
+5. Attempt cross-tenant reads and prove they fail.
+
+## Acceptance checks
+
+- [ ] 3 seeded studios operate with fully isolated bookings in the solution.
+- [ ] Resolution strategy documented with its trade-off in the platform.
+- [ ] All 40 booking queries carry tenant scope.
+- [ ] Fourth studio onboarded with zero existing-data disturbance.
+- [ ] 10 crafted cross-tenant reads all denied.
+
+## Stretch
+
+Grow the project by adding one realistic complication you select.
+Write the two-paragraph retro: which multi-tenancy decision proved hardest.
+Demo time: the peer sees the system with just the acceptance checks as the guide.

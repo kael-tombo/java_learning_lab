@@ -1,43 +1,42 @@
-# Real World Project: Spring Data JPA
+# Real World Project: Spring Data Jpa Querying
 
-## Project
-an inventory service with repositories, pagination, and audit.
+## Problem
 
-## Why it matters
-In production, Spring Data JPA is rarely a library detail — it is an architectural commitment. Teams choose it to modeling aggregate roots and queries.
+The enterprise staff directory platform answers a concrete operational need.
+Stakeholders judge it by Spring Data JPA querying behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Spring Data JPA Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Architecture
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+- Directory service with faceted search serving the enterprise staff directory platform.
+- HR synchronization importer.
+- Access-review reporting.
+- Cached org-chart snapshots.
+- Audit trail of profile edits.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Milestones
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the app with one happy path live.
+M2: the build hardening plus failure drills against the service.
+M3: the operability instrumentation is in place across the build.
+M4: handover documentation written once the load rehearsal clears.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.spring.io/spring-data/jpa/docs/current/reference/html/
-- https://jakarta.ee/specifications/persistence/
+## Operations and SLO checklist
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks the offering's golden signals for the system.
+- Alerts page on the service's error budget burn, not on noise.
+- The runbook walks through restart, rollback, and data repair.
+- Whoever runs the SLO review cadence answers for freshness promises.
+
+## Failure modes
+
+- Derived-query keyword misread returning wrong staff subset.
+- Unbounded export exhausting memory.
+- Fetch plan change reintroducing N+1 silently.
+- HR sync overwriting manual corrections.
+
+## Handover
+
+- [ ] A live demo of the solution demonstrating the full journey.
+- [ ] During an outage, a stranger can work from the runbook alone.
+- [ ] Retro naming the riskiest remaining assumption.

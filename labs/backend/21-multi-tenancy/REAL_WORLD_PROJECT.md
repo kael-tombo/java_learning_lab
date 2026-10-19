@@ -1,43 +1,42 @@
 # Real World Project: Multi-Tenancy
 
-## Project
-a SaaS orders app with schema-per-tenant resolution.
+## Problem
 
-## Why it matters
-In production, Multi-Tenancy is rarely a library detail — it is an architectural commitment. Teams choose it to SaaS isolation strategies.
+The fitness-booking SaaS platform answers a concrete operational need.
+Stakeholders judge it by multi-tenancy behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable multi-tenancy slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Multi-Tenancy Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Architecture
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+- Tenant-aware booking service serving the fitness-booking SaaS platform.
+- Per-tenant branding overlays.
+- Usage metering per studio.
+- Tenant backup and export.
+- Abuse isolation between studios.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Milestones
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the app with one happy path live.
+M2: Multi-tenancy hardening plus failure drills against the service.
+M3: operability instrumentation across the solution.
+M4: the project's load rehearsal and its handover documentation both land.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#core.entity-system.tenant
-- (link removed)
+## Operations and SLO checklist
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks multi-tenancy golden signals for the system.
+- Alerts page on the build's error budget burn, not on noise.
+- Runbook covers restart, rollback, and data repair.
+- SLO review cadence owns freshness promises of the platform.
+
+## Failure modes
+
+- Missing scope leaking one studios roster.
+- Onboarding script touching live tenant rows.
+- Noisy tenant starving neighbors at peak.
+- Backup restore mixing two studios data.
+
+## Handover
+
+- [ ] A live demo of the offering demonstrating the full multi-tenancy journey.
+- [ ] Runbook a stranger could follow during the outage.
+- [ ] Retro naming the riskiest remaining multi-tenancy assumption.

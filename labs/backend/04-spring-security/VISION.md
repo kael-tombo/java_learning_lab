@@ -1,30 +1,41 @@
 # VISION — Spring Security
 
-> Where this lab takes you: from hello-world to production judgment on Spring Security.
+## Trajectory
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This Spring Security lab carries learners from padlocked endpoints to reasoning about chains, roles, and session lifetimes.
+Expect judgment calls about Spring Security trade-offs, not just syntax recall.
+Progress shows when the Spring Security vocabulary enters daily design discussions.
+The reading-circle notes application project rewards engineers who question defaults instead of copying them.
+Early exercises build Spring Security fluency; later builds demand Spring Security decisions.
+Treat each Spring Security milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the reading-circle notes application project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## The practitioner you become
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains Spring Security choices to teammates with concrete failure stories.
+A graduate runs the system through degraded conditions, panic nowhere in it.
+A graduate measures Spring Security outcomes instead of asserting them.
+A graduate spots Spring Security misuse during code review before it ships.
+Whatever fits the surrounding system is what a graduate commits to.
+A graduate teaches one Spring Security idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Explicit non-coverage
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This Spring Security lab deliberately leaves the following out.
+- OAuth2 provider implementation stays outside this build.
+- Cryptographic protocol design stays outside the course.
+- Mobile biometric authentication stays outside this lab.
+Meeting those needs belongs to neighboring Spring Security studies.
 
-## Done = You Can
-- Choose, build, test, and operate Spring Security in a real service.
+## Readiness signals
+
+Its tasks get finished with the lesson notes left closed.
+You name two live Spring Security risks in any design review.
+Calm recovery of the app is how the fault drill ends.
+You justify each Spring Security trade-off with observed evidence.
+
+## Adjacent labs
+
+Continue into 06-security-basics, 20-backend-security-deep, 21-multi-tenancy after finishing the lab.
+Revisit this Spring Security vision after the real-world build retro.
+Bring one open Spring Security question into the next lab deliberately.

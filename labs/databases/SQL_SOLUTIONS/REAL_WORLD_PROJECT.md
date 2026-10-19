@@ -1,108 +1,42 @@
-# SQL SOLUTIONS — Real World Project
+# SQL Solutions — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where sql solutions is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Problem
+A production-flavored specification where graded SQL solution walkthroughs from basics to analytics carry real traffic, real failure, and real on-call pages.
 
 ## Architecture
+```text
+app -> service -> sol_users / sol_orders store -> replica + backup -> dashboard
 ```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
-
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
-
-## Requirements
-- F1: sql solutions capability 1 with acceptance test.
-- F2: sql solutions capability 2 with acceptance test.
-- F3: sql solutions capability 3 with acceptance test.
-- F4: sql solutions capability 4 with acceptance test.
-- F5: sql solutions capability 5 with acceptance test.
-- F6: sql solutions capability 6 with acceptance test.
-- F7: sql solutions capability 7 with acceptance test.
-- F8: sql solutions capability 8 with acceptance test.
-- F9: sql solutions capability 9 with acceptance test.
-- F10: sql solutions capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for sql solutions.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for sql solutions.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for sql solutions.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for sql solutions.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for sql solutions.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for sql solutions.
+Client requests reach a service layer, which runs the graded report queries over the sol_users and sol_orders stores.
 
 ## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- M1: Phase 1: model sol_users and sol_orders with seed data plus contract tests.
+- M2: Phase 2: harden the report path with indexes, guards, and load probes.
+- M3: backup, restore, and rollback all get a rehearsal this phase.
+- M4: Phase 4: hand over runbooks so on-call owns the walkthrough suite without paging the author.
+
+## Operations checklist
+- Attach the rollback script before any schema change lands.
+- Keep watch on the query path: errors, saturation, slow statements.
+- Restore the backup onto a scratch host at a steady cadence.
+- Gate deploys on contract tests covering sol_orders behavior.
+
+## Failure modes
+- jumping to analytics before filters and joins are solid — re-grade the query first, per the checklist above.
+- copying solutions without reproducing the reasoning steps; require the pattern name before the query in reviews.
+- mistaking a working query for an efficient one; check the plan beside the correct result.
+- Fact reminder: graded solutions move from single-table filters toward multi-table analytics. Guides every response above.
+
+## Requirements
+- F1: the service answers sol_users reads with contract tests proving the shape.
+- F2: the service guards sol_orders writes against invalid input.
+- NF1: error counts and slow-statement signals from the query path are visible on the dashboard.
+- NF2: release sign-off waits until the restore drill passes on a scratch host.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like sol_orders traffic against the staging store.
+- Inject one fault (jumping to analytics before filters and joins are solid) and confirm the runbook resolves it.
+- Restore from the backup first, then reconcile row counts before the success call.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Sign-off
+Sign-off requires green milestones, a restore drill that passed, and a runbook someone on the team has read.

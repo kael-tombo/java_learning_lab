@@ -1,50 +1,39 @@
-# Pl Sql Foundations — Vision
+# PL SQL Foundations — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about pl sql foundations.
+## Where this points
+Grow from first queries toward dependable judgment about subprogram design and transaction boundaries, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in pl sql foundations fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in pl sql foundations fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in pl sql foundations fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in pl sql foundations fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in pl sql foundations fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in pl sql foundations fundamentals → internals → production trade-offs.
+## Capabilities gained
+- Command of these constructs turns on-call database surprises into routine checklist work.
+- Concretely: procedures perform actions while functions compute and return values.
+- Concretely: IN, OUT, and IN OUT modes define parameter direction.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate pl sql foundations skill 1 with a measurable artifact.
-- [ ] M2: demonstrate pl sql foundations skill 2 with a measurable artifact.
-- [ ] M3: demonstrate pl sql foundations skill 3 with a measurable artifact.
-- [ ] M4: demonstrate pl sql foundations skill 4 with a measurable artifact.
-- [ ] M5: demonstrate pl sql foundations skill 5 with a measurable artifact.
-- [ ] M6: demonstrate pl sql foundations skill 6 with a measurable artifact.
-- [ ] M7: demonstrate pl sql foundations skill 7 with a measurable artifact.
-- [ ] M8: demonstrate pl sql foundations skill 8 with a measurable artifact.
+## Sequence
+1. Foundations: the mini project gets reproduced after clearing the schema.
+2. Depth: extend one item (the shift procedure assigning one staff member explicitly) until a reviewer asks for simplification.
+3. Production: deliver the real-world milestones and keep a restore drill on file.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about the action-versus-computation split, since each subprogram type has one job.
+- Strong after this lab: applying parameter-direction rules during call-site reviews.
+- Still fragile: functions with hidden commits breaking caller transactions remains the most likely incident for beginners.
+- Still fragile: OUT parameters masking failed computations with stale values still needs a senior eye on the design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the f_shifts row-count reconciliation after each change.
+- Stop treating the parameter-mode table documenting each argument direction as optional when the review depends on it.
+
+## Out of scope
+- This lab does not cover advanced package hierarchies; treat those as separate tracks.
+- It also skips version-specific compiler settings, which sit outside subprogram fundamentals.
+- The deliberate omissions: invented benchmarks, version trivia, and view names not our own.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host without peeking at notes.
+- [ ] Explain the bonus function computing pay from shift count to a peer without notes.
+- [ ] Trigger partial rosters persisting after a missing ROLLBACK in staging, and recover using the runbook.
+- [ ] Say where subprogram fundamentals end and advanced package hierarchies begin in a design review.
+
+## Study guidance
+Work through the items in sequence with rerunnable scripts, and stop where the non-coverage boundary above says.

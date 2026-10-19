@@ -1,108 +1,39 @@
-# Cassandra Nosql — Real World Project
+# Cassandra NoSQL — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where cassandra nosql is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing Cassandra partition keys with QUORUM read and write reasoning on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://cassandra.apache.org/doc/latest/
-- (link removed)
+## Service sketch
+Backups, replicas, and dashboards surround the telemetry path so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model devices and telemetry with seed data plus contract tests.
+- M2: Phase 2: harden the write path with indexes, guards, and load probes.
+- M3: Phase 3: rehearse backup, restore, and rollback for the ring.
+- M4: Phase 4: hand over runbooks so on-call owns partitioning without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- Every schema change carries its rollback script from day one.
+- Monitor the node path for errors, saturation, and slow statements.
+- Backup restores to a scratch host run on a calendar.
+- Gate deploys on contract tests covering telemetry behavior.
+
+## Failure drills
+- hot partitions from a too-coarse device key — split the bucket boundary first, per the checklist above.
+- unbounded partitions growing until reads choke; add a time bucket to the key and prune old data.
+- consistency confusion when QUORUM expectations go unstated; state the level per call in the contract tests.
+- Fact reminder: wide rows cluster time-ordered readings inside one partition. Guides every response above.
 
 ## Requirements
-- F1: cassandra nosql capability 1 with acceptance test.
-- F2: cassandra nosql capability 2 with acceptance test.
-- F3: cassandra nosql capability 3 with acceptance test.
-- F4: cassandra nosql capability 4 with acceptance test.
-- F5: cassandra nosql capability 5 with acceptance test.
-- F6: cassandra nosql capability 6 with acceptance test.
-- F7: cassandra nosql capability 7 with acceptance test.
-- F8: cassandra nosql capability 8 with acceptance test.
-- F9: cassandra nosql capability 9 with acceptance test.
-- F10: cassandra nosql capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for cassandra nosql.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for cassandra nosql.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for cassandra nosql.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for cassandra nosql.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for cassandra nosql.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for cassandra nosql.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers devices reads with contract tests proving the shape.
+- F2: the service guards telemetry writes against invalid input.
+- NF1: dashboards light up with query-path error counts and slow statements.
+- NF2: release sign-off waits until the restore drill passes on a scratch host.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like telemetry traffic against the staging store.
+- Inject one fault (hot partitions from a too-coarse device key) and confirm the runbook resolves it.
+- Restore from the backup first, then reconcile row counts before the success call.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Sign-off happens when milestones are green, the restore drill has passed, and the runbook has been read.

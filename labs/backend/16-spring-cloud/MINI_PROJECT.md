@@ -1,32 +1,40 @@
-# Mini Project: Spring Cloud
+# Mini Project: Spring Cloud Resilience
 
-## Goal
-Build a small, runnable Spring Cloud service that demonstrates the core happy path.
+## Moving parts
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+- Service discovery concept supporting the bookstore resilient storefront.
+- Client-side load distribution supporting the bookstore resilient storefront.
+- Circuit-breaker boundaries.
+- Retry with backoff discipline.
+- Central configuration.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Build brief
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+This Spring Cloud resilience mini build produces a working bookstore resilient storefront you can run locally.
+Scope stays deliberately small so every Spring Cloud resilience behavior remains observable.
+Budget roughly one focused evening for the implementation.
+Success means demonstrating Spring Cloud resilience judgment, not just compiling code.
+Keep a lab journal noting each Spring Cloud resilience surprise encountered.
+Hold the line at the acceptance checks; nothing extra sneaks in beyond them.
+
+## Sequence
+
+1. Split the bookstore into catalog, pricing, and shipping services for the service.
+2. Register all three behind service discovery.
+3. Break pricing deliberately and watch the breaker open.
+4. Bound retries with backoff on the shipping path.
+5. Change a banner message centrally without restarts.
 
 ## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+
+- [ ] All 3 services discoverable after a rolling restart in the solution.
+- [ ] Pricing outage degrades gracefully with the fallback page in the platform.
+- [ ] Retry audit shows capped attempts with growing delays.
+- [ ] Banner change lands everywhere without restarts.
+- [ ] Breaker transitions recorded open, half-open, then closed.
+
+## If time remains
+
+Grow the project by adding one realistic complication you select.
+Write the two-paragraph retro: which Spring Cloud resilience decision proved hardest.
+Show the system to a peer armed with nothing but the acceptance checks.

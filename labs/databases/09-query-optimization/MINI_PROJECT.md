@@ -1,80 +1,46 @@
-# Query Optimization — Mini Project
+# Query Optimization A — Mini Project
 
-## Goal
-Build a small but complete exercise of query optimization in 90 minutes.
+## Brief
+Six focused exercises on B-tree index choice and sargable predicate design in the orders domain, each ending with a visible artifact and a one-line explanation.
 
-## Requirements
-- R1: schema + queries exercising query optimization scenario 1.
-- R2: schema + queries exercising query optimization scenario 2.
-- R3: schema + queries exercising query optimization scenario 3.
-- R4: schema + queries exercising query optimization scenario 4.
-- R5: schema + queries exercising query optimization scenario 5.
-- R6: schema + queries exercising query optimization scenario 6.
-- R7: schema + queries exercising query optimization scenario 7.
-- R8: schema + queries exercising query optimization scenario 8.
+## Setup
+Prepare seed rows for orders and order_lines, sized so the plan output fits on one screen.
 
-## Steps
-1. Step 1: scaffold, load sample data, verify with a query, record observations.
-2. Step 2: scaffold, load sample data, verify with a query, record observations.
-3. Step 3: scaffold, load sample data, verify with a query, record observations.
-4. Step 4: scaffold, load sample data, verify with a query, record observations.
-5. Step 5: scaffold, load sample data, verify with a query, record observations.
-6. Step 6: scaffold, load sample data, verify with a query, record observations.
-7. Step 7: scaffold, load sample data, verify with a query, record observations.
-8. Step 8: scaffold, load sample data, verify with a query, record observations.
-9. Step 9: scaffold, load sample data, verify with a query, record observations.
-10. Step 10: scaffold, load sample data, verify with a query, record observations.
+## Exercises
+1. Exercise on order lookup index on customer id plus order date: run it, then explain the result to a reviewer aloud.
+2. Exercise on sargability rewrite removing a function around order date: shape it and file the script where the next step finds it.
+3. Exercise on covering-index sketch for the open-orders list: assemble it while keeping every statement re-runnable.
+4. Exercise on selectivity comparison between status and primary-key filters: compose it and record what changes in the output.
+5. Exercise on plan reading noting seek versus scan on one query: frame it, then note the one surprise worth remembering.
+6. Exercise on write-cost note counting index maintenance per insert: trace it and capture the check query beside it.
 
-## Acceptance criteria
-- All queries return correct results; notes explain one surprising observation.
+## Reference snippet
+```sql
+SELECT id, status FROM orders
+WHERE status = 'open'
+ORDER BY id
+FETCH FIRST 50 ROWS ONLY;
+```
 
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
+## Acceptance
+- All six exercises finish with artifacts a reviewer can open.
+- The write-up quotes the rule that B-tree indexes accelerate equality and range lookups on leading columns.
+- A second run reproduces identical row counts.
+- Each exercise names its own failure signal.
+
+## Reflection
+- Which step surprised you, and which fact explains it?
+- What indexing shortcut would you forbid on a shared database?
+- The reflection stays inside the project folder beside the scripts.
+
+## Setup checklist
+- This work runs in a scratch schema isolated from any shared database.
+- Seed rows for orders and order_lines loaded and counted.
+- Surprises worth quoting get jotted in an open notes file.
+- Confirm the rollback or re-seed path before the first edit.
+
+## Hand-off
+- Tag the finished scripts folder; the next lab can pick it up without re-reading everything.
+- Surprises survive the handoff because the notes file goes to whoever reruns the exercises.
+- Only mark the checklist done once a peer has rerun all scripts without edits.
+

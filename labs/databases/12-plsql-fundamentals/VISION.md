@@ -1,50 +1,39 @@
-# Plsql Fundamentals — Vision
+# PLSQL Fundamentals — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about plsql fundamentals.
+## Trajectory
+Grow from first queries toward dependable judgment about block structure, error handling, and cursor control, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in plsql fundamentals fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in plsql fundamentals fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in plsql fundamentals fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in plsql fundamentals fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in plsql fundamentals fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in plsql fundamentals fundamentals → internals → production trade-offs.
+## Payoff
+- Command of these blocks turns on-call database surprises into routine checklist work.
+- Concretely: DECLARE opens the block for variables before executable statements begin.
+- Concretely: EXCEPTION handlers catch named errors before the block closes with END.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate plsql fundamentals skill 1 with a measurable artifact.
-- [ ] M2: demonstrate plsql fundamentals skill 2 with a measurable artifact.
-- [ ] M3: demonstrate plsql fundamentals skill 3 with a measurable artifact.
-- [ ] M4: demonstrate plsql fundamentals skill 4 with a measurable artifact.
-- [ ] M5: demonstrate plsql fundamentals skill 5 with a measurable artifact.
-- [ ] M6: demonstrate plsql fundamentals skill 6 with a measurable artifact.
-- [ ] M7: demonstrate plsql fundamentals skill 7 with a measurable artifact.
-- [ ] M8: demonstrate plsql fundamentals skill 8 with a measurable artifact.
+## Milestones
+1. Foundations: reproduce the mini project, beginning with a blank schema.
+2. Depth: extend one item (the greeting block declaring and printing a clerk name) until a reviewer asks for simplification.
+3. Production: a recorded restore drill travels with the real-world milestones.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about the block skeleton, since section order is now explicit.
+- Strong after this lab: applying named-error handling during code reviews.
+- Still fragile: unhandled NO_DATA_FOUND escaping a lookup block remains the most likely incident for beginners.
+- Still fragile: cursors left open across repeated executions still needs a senior eye on the loop design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the tasks row-count reconciliation after each block change.
+- Stop treating explicit cursor looping over open clerk tasks as optional when the review depends on it.
+
+## Not covered
+- This lab does not cover package administration topics; treat those as separate tracks.
+- It also skips version-specific compiler flags, which sit outside block fundamentals.
+- Left out on purpose: made-up benchmarks, version trivia, and view names borrowed from elsewhere.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host from memory.
+- [ ] Explain the exception handler catching a missing-task lookup to a peer without notes.
+- [ ] Trigger commits accidentally placed inside a row loop in staging, and recover using the runbook.
+- [ ] Say where block fundamentals end and package administration topics begin in a design review.
+
+## Working agreement
+Items go in order, scripts stay rerunnable, and the non-coverage boundary above is not crossed.

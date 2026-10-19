@@ -1,43 +1,42 @@
-# Real World Project: GraphQL with Netflix DGS
+# Real World Project: Graphql With Dgs
 
-## Project
-a product detail service with DGS and batched loaders.
+## System sketch
 
-## Why it matters
-In production, GraphQL with Netflix DGS is rarely a library detail — it is an architectural commitment. Teams choose it to complex product graphs with many fields.
+- Inventory subgraph service serving the city bike-share rider platform.
+- Trip-history subgraph serving the city bike-share rider platform.
+- Batched loaders per relation.
+- Schema-registry checks.
+- Rider-app query analytics.
 
-## Architecture sketch
-```
-Client -> API Gateway -> GraphQL with Netflix DGS Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Situation
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+The app answers a concrete operational need.
+Stakeholders judge it by GraphQL with DGS behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable GraphQL with DGS slices.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Delivery phases
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the build with one happy path live.
+M2: Graphql with dgs hardening plus failure drills against the service.
+M3: operability instrumentation across the solution.
+M4: documentation hands the project over after the load rehearsal.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://netflix.github.io/dgs/getting-started
-- https://graphql.org/learn/
+## What breaks
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Unbatched resolver melting under rush-hour polling.
+- Schema drift between registry and service.
+- Overly deep query stalling trip lookups.
+- Boundary dispute duplicating bike ownership.
+
+## Runbook expectations
+
+- Dashboard tracks GraphQL with DGS golden signals for the system.
+- Alerts page on the offering's error budget burn, not on noise.
+- Runbook covers restart, rollback, and data repair.
+- SLO review cadence owns freshness promises of the platform.
+
+## Ship list
+
+- [ ] A live demo of the service demonstrating the full GraphQL with DGS journey.
+- [ ] Runbook a stranger could follow during the outage.
+- [ ] Retro naming the riskiest remaining GraphQL with DGS assumption.

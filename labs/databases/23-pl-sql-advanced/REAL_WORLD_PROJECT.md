@@ -1,108 +1,39 @@
-# Pl Sql Advanced — Real World Project
+# PL SQL Advanced — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where pl sql advanced is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Situation
+A deployable slice proving PL/SQL packages, bulk binds, and autonomous-transaction logging survives contact with production load and operator error.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Topology
+Schema changes roll out behind review gates with a rehearsed rollback route.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Build stages
+- M1: Phase 1: model a_orders and a_audit with seed data plus contract tests.
+- M2: Phase 2: harden the call path with indexes, guards, and load probes.
+- M3: the phase-3 rehearsal covers backup, restore, and rollback.
+- M4: Phase 4: hand over runbooks so on-call owns the package suite without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Operations list
+- No schema change goes in without its rollback script.
+- Monitor the call path for errors, saturation, and slow statements.
+- Restore the backup onto a scratch host at a steady cadence.
+- Gate deploys on contract tests covering a_audit behavior.
+
+## What breaks
+- row-by-row loops stalling on large order volumes — switch the path to FORALL, per the checklist above.
+- audit rows vanishing when tied to a rolled-back transaction; move the logger into an autonomous transaction.
+- package state leaking between sessions unexpectedly; reset variables at entry or avoid them entirely.
+- Fact reminder: autonomous transactions log audit rows independently of the caller. Guides every response above.
 
 ## Requirements
-- F1: pl sql advanced capability 1 with acceptance test.
-- F2: pl sql advanced capability 2 with acceptance test.
-- F3: pl sql advanced capability 3 with acceptance test.
-- F4: pl sql advanced capability 4 with acceptance test.
-- F5: pl sql advanced capability 5 with acceptance test.
-- F6: pl sql advanced capability 6 with acceptance test.
-- F7: pl sql advanced capability 7 with acceptance test.
-- F8: pl sql advanced capability 8 with acceptance test.
-- F9: pl sql advanced capability 9 with acceptance test.
-- F10: pl sql advanced capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for pl sql advanced.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for pl sql advanced.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for pl sql advanced.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for pl sql advanced.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for pl sql advanced.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for pl sql advanced.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers a_orders reads with contract tests proving the shape.
+- F2: the service guards a_audit writes against invalid input.
+- NF1: the call path exposes error counts and slow-statement signals on the dashboard.
+- NF2: a scratch-host restore drill is a precondition for release sign-off.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like a_audit traffic against the staging store.
+- Inject one fault (row-by-row loops stalling on large order volumes) and confirm the runbook resolves it.
+- Success is declared only after a backup restore matches row counts.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Definition of done
+Sign-off happens when milestones are green, the restore drill has passed, and the runbook has been read.

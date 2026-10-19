@@ -1,50 +1,39 @@
-# Flyway Liquibase — Vision
+# Flyway and Liquibase — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about flyway liquibase.
+## Where this points
+Grow from first queries toward dependable judgment about version-controlled schema changes, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in flyway liquibase fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in flyway liquibase fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in flyway liquibase fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in flyway liquibase fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in flyway liquibase fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in flyway liquibase fundamentals → internals → production trade-offs.
+## Capabilities gained
+- Command of these tools turns on-call database surprises into routine checklist work.
+- Concretely: migrations apply in version order and record checksums after success.
+- Concretely: repeatable migrations re-run when their checksum changes.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate flyway liquibase skill 1 with a measurable artifact.
-- [ ] M2: demonstrate flyway liquibase skill 2 with a measurable artifact.
-- [ ] M3: demonstrate flyway liquibase skill 3 with a measurable artifact.
-- [ ] M4: demonstrate flyway liquibase skill 4 with a measurable artifact.
-- [ ] M5: demonstrate flyway liquibase skill 5 with a measurable artifact.
-- [ ] M6: demonstrate flyway liquibase skill 6 with a measurable artifact.
-- [ ] M7: demonstrate flyway liquibase skill 7 with a measurable artifact.
-- [ ] M8: demonstrate flyway liquibase skill 8 with a measurable artifact.
+## Sequence
+1. Foundations: reproduce the mini project, beginning with a blank schema.
+2. Depth: extend one item (the V1 migration creating the ledger table) until a reviewer asks for simplification.
+3. Production: a recorded restore drill travels with the real-world milestones.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about deterministic apply order, since checksums and versions make it auditable.
+- Strong after this lab: applying the repeatable-migration rule during release reviews.
+- Still fragile: checksum mismatches after editing an already-applied migration remains the most likely incident for beginners.
+- Still fragile: out-of-order migrations applied by two branches simultaneously still needs a senior eye on the design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the entries row-count reconciliation after each migration.
+- Stop treating the repeatable view migration for a balance summary as optional when the review depends on it.
+
+## Out of scope
+- This lab does not cover tool version numbers; treat those as separate tracks.
+- It also skips cloud-managed migration services, which belong to platform tracks.
+- Deliberately omitted: invented benchmarks, version trivia, borrowed view names.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema, working from memory, on a blank host.
+- [ ] Explain the V2 migration adding the entry foreign key to a peer without notes.
+- [ ] Trigger missing rollback path discovered during a failed deploy in staging, and recover using the runbook.
+- [ ] Say where migration practice ends and tool version numbers begin in a design review.
+
+## Study guidance
+Take the items in order, keep every script rerunnable, and honor the non-coverage boundary above.

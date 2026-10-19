@@ -1,50 +1,39 @@
-# Mongodb — Vision
+# MongoDB — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about mongodb.
+## Where this points
+Grow from first queries toward dependable judgment about document shapes and their queries, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in mongodb fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in mongodb fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in mongodb fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in mongodb fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in mongodb fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in mongodb fundamentals → internals → production trade-offs.
+## Capabilities gained
+- Command of MongoDB document modeling and find query patterns turns on-call database surprises into routine checklist work.
+- Concretely: documents store nested fields together so one read returns the whole aggregate.
+- Concretely: embedding suits contained children while referencing suits shared entities.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate mongodb skill 1 with a measurable artifact.
-- [ ] M2: demonstrate mongodb skill 2 with a measurable artifact.
-- [ ] M3: demonstrate mongodb skill 3 with a measurable artifact.
-- [ ] M4: demonstrate mongodb skill 4 with a measurable artifact.
-- [ ] M5: demonstrate mongodb skill 5 with a measurable artifact.
-- [ ] M6: demonstrate mongodb skill 6 with a measurable artifact.
-- [ ] M7: demonstrate mongodb skill 7 with a measurable artifact.
-- [ ] M8: demonstrate mongodb skill 8 with a measurable artifact.
+## Sequence
+1. Foundations: start from a blank schema and reproduce the mini project.
+2. Depth: extend one item (the customer document with an embedded address history) until a reviewer asks for simplification.
+3. Production: the real-world milestones go out once a restore drill is recorded.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about aggregate reads, because nesting keeps every field one read away.
+- Strong after this lab: applying the embed-versus-reference rule during schema reviews.
+- Still fragile: unbounded arrays bloating documents past comfortable sizes remains the most likely incident for beginners.
+- Still fragile: duplicated customer data drifting after an embedded copy changes still needs a senior eye on the design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the tickets row-count reconciliation after each index change.
+- Stop treating the find query filtering tickets by priority and state as optional when the review depends on it.
+
+## Out of scope
+- This lab does not cover MongoDB server version numbers and release claims; treat those as separate tracks.
+- It also skips replica-set administration commands, which belong to operations tracks.
+- The deliberate omissions: invented benchmarks, version trivia, and view names not our own.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host from memory.
+- [ ] Explain the ticket referencing its customer instead of embedding to a peer without notes.
+- [ ] Trigger collection scans from unindexed filter fields in staging, and recover using the runbook.
+- [ ] Say where document modeling ends and MongoDB server version numbers and release claims begin in a design review.
+
+## Study guidance
+Work through the items in sequence with rerunnable scripts, and stop where the non-coverage boundary above says.

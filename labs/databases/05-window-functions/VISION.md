@@ -1,50 +1,39 @@
 # Window Functions — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about window functions.
+## Direction
+Grow from first queries toward dependable judgment about per-partition ranking and neighbor analysis, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in window functions fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in window functions fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in window functions fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in window functions fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in window functions fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in window functions fundamentals → internals → production trade-offs.
+## Why it matters here
+- Command of window functions turns on-call database surprises into routine checklist work.
+- Concretely: ROW_NUMBER assigns a unique sequence inside each partition.
+- Concretely: RANK shares numbers across ties and then skips the next positions.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate window functions skill 1 with a measurable artifact.
-- [ ] M2: demonstrate window functions skill 2 with a measurable artifact.
-- [ ] M3: demonstrate window functions skill 3 with a measurable artifact.
-- [ ] M4: demonstrate window functions skill 4 with a measurable artifact.
-- [ ] M5: demonstrate window functions skill 5 with a measurable artifact.
-- [ ] M6: demonstrate window functions skill 6 with a measurable artifact.
-- [ ] M7: demonstrate window functions skill 7 with a measurable artifact.
-- [ ] M8: demonstrate window functions skill 8 with a measurable artifact.
+## Growth path
+1. Foundations: the mini project gets reproduced after clearing the schema.
+2. Depth: extend one item (ROW_NUMBER ranking deals inside each seller partition) until a reviewer asks for simplification.
+3. Production: deliver the real-world milestones with a restore drill on file.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about sequence guarantees, because the per-partition rule is explicit.
+- Strong after this lab: applying the tie-skip rule when reviewing ranking output.
+- Still fragile: nondeterministic numbering when ORDER BY inside OVER has ties remains the most likely incident for beginners.
+- Still fragile: tie gaps surprising readers who expected dense sequencing still needs a senior eye on the query design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the deals row-count reconciliation after each edit.
+- Stop treating the LAG query computing month-over-month deal deltas as optional when the review depends on it.
+
+## Non-coverage
+- This lab does not cover procedural cursor loops replacing analytics; treat those as separate tracks.
+- It also skips physical plan cost mathematics, which belongs to optimization tracks.
+- Not included on purpose: invented benchmarks, version trivia, and borrowed view names.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema, working from memory, on a blank host.
+- [ ] Explain the RANK comparison showing tie gaps on equal amounts to a peer without notes.
+- [ ] Trigger frame defaults changing totals when rows share sort values in staging, and recover using the runbook.
+- [ ] Say where window analytics end and procedural cursor loops replacing analytics begin in a design review.
+
+## How to use this lab
+Items go in order, scripts stay rerunnable, and the non-coverage boundary above is not crossed.

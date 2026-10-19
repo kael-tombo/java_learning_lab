@@ -1,108 +1,39 @@
 # Databases Deep — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where databases deep is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing end-to-end database internals from storage to optimizer on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Service sketch
+Backups, replicas, and dashboards surround the engine so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model deep_docs and deep_postings with seed data plus contract tests.
+- M2: Phase 2: harden the read path with indexes, guards, and load probes.
+- M3: the phase-3 rehearsal covers backup, restore, and rollback.
+- M4: Phase 4: hand over runbooks so on-call owns layer triage without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- Pair each schema change with the script that undoes it.
+- Monitor each layer for errors, saturation, and slow statements.
+- Schedule backup restores onto a scratch host.
+- Gate deploys on contract tests covering deep_postings behavior.
+
+## Failure drills
+- treating the database as a black box during outages — open the layer trace, per the checklist above.
+- adding indexes without pricing their write cost; run the worksheet before any new index ships.
+- ignoring statistics until every plan goes wrong; refresh stats on a schedule and re-explain the hot queries.
+- Fact reminder: indexes trade write cost for dramatically faster lookups. Guides every response above.
 
 ## Requirements
-- F1: databases deep capability 1 with acceptance test.
-- F2: databases deep capability 2 with acceptance test.
-- F3: databases deep capability 3 with acceptance test.
-- F4: databases deep capability 4 with acceptance test.
-- F5: databases deep capability 5 with acceptance test.
-- F6: databases deep capability 6 with acceptance test.
-- F7: databases deep capability 7 with acceptance test.
-- F8: databases deep capability 8 with acceptance test.
-- F9: databases deep capability 9 with acceptance test.
-- F10: databases deep capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for databases deep.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for databases deep.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for databases deep.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for databases deep.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for databases deep.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for databases deep.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers deep_docs reads with contract tests proving the shape.
+- F2: the service guards deep_postings writes against invalid input.
+- NF1: dashboards show error counts and slow-statement signals from the query path.
+- NF2: release sign-off waits until the restore drill passes on a scratch host.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like deep_postings traffic against the staging store.
+- Inject one fault (treating the database as a black box during outages) and confirm the runbook resolves it.
+- Success is declared only after a backup restore matches row counts.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Three things gate sign-off: milestones green, restore drill passed, runbook read by the team.

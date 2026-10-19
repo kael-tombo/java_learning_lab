@@ -1,30 +1,41 @@
-# VISION — REST APIs
+# VISION — Rest Apis With Spring
 
-> Where this lab takes you: from hello-world to production judgment on REST APIs.
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This REST APIs with Spring lab carries learners from annotated controllers to layered APIs with honest error contracts.
+Expect judgment calls about the system trade-offs, not just syntax recall.
+Progress shows when the vocabulary enters daily design discussions.
+The repairs-shop order API project rewards engineers who question defaults instead of copying them.
+Early exercises build fluency; later builds demand decisions.
+Treat each milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the repairs-shop order API project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains its choices to teammates with concrete failure stories.
+A graduate operates the app under degraded conditions without panic.
+A graduate measures its outcomes instead of asserting them.
+A graduate spots its misuse during code review before it ships.
+A graduate sizes the work to fit how the surrounding system behaves.
+A graduate teaches one idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This lab deliberately leaves the following out.
+- Reactive controller programming stays outside this build.
+- API gateway policy authoring stays outside the course.
+- Client SDK generation pipelines stays outside this lab.
+Meeting those needs belongs to neighboring studies.
 
-## Done = You Can
-- Choose, build, test, and operate REST APIs in a real service.
+## Signals you are ready
+
+You finish the tasks without going back to the lesson notes.
+You name two live risks in any design review.
+You recover the offering from a fault drill calmly.
+You justify each trade-off with observed evidence.
+
+## Where next
+
+Continue into 02-rest-api-design, 03-spring-mvc, 11-testing-strategies after finishing the lab.
+This vision gets a reread after the real-world build retro.
+Bring one open question into the next lab deliberately.

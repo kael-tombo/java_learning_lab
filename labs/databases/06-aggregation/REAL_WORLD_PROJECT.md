@@ -1,108 +1,39 @@
 # Aggregation — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where aggregation is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing GROUP BY aggregation with legal select lists on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Service sketch
+Backups, replicas, and dashboards surround the query path so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model regions and sales with seed data plus contract tests.
+- M2: Phase 2: harden the reporting path with indexes, guards, and load probes.
+- M3: phase three runs a backup, restore, and rollback rehearsal.
+- M4: Phase 4: hand over runbooks so on-call owns the reports without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- Attach the rollback script before any schema change lands.
+- The query path earns monitoring for errors, saturation, and slow statements.
+- A scheduled job restores the backup to a scratch host.
+- Gate deploys on contract tests covering sales behavior.
+
+## Failure drills
+- grouping errors from selecting an ungrouped plain column — quote the legality rule from the checklist above and fix the select list.
+- double counting after joining before aggregating; deduplicate at the join or pre-aggregate in a subquery.
+- HAVING predicates accidentally written against ungrouped rows; move the filter to WHERE and retest totals.
+- Fact reminder: every non-aggregated SELECT column must appear in the GROUP BY list. Guides every response above.
 
 ## Requirements
-- F1: aggregation capability 1 with acceptance test.
-- F2: aggregation capability 2 with acceptance test.
-- F3: aggregation capability 3 with acceptance test.
-- F4: aggregation capability 4 with acceptance test.
-- F5: aggregation capability 5 with acceptance test.
-- F6: aggregation capability 6 with acceptance test.
-- F7: aggregation capability 7 with acceptance test.
-- F8: aggregation capability 8 with acceptance test.
-- F9: aggregation capability 9 with acceptance test.
-- F10: aggregation capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for aggregation.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for aggregation.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for aggregation.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for aggregation.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for aggregation.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for aggregation.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers regions reads with contract tests proving the shape.
+- F2: the service guards sales writes against invalid input.
+- NF1: error counts and slow-statement signals from the query path are visible on the dashboard.
+- NF2: release sign-off waits until the restore drill passes on a scratch host.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like sales traffic against the staging store.
+- Inject one fault (grouping errors from selecting an ungrouped plain column) and confirm the runbook resolves it.
+- Row counts must reconcile against the restored backup before any success claim.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Three things gate sign-off: milestones green, restore drill passed, runbook read by the team.

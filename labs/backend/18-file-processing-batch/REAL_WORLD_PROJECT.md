@@ -1,43 +1,42 @@
-# Real World Project: File Processing & Batch
+# Real World Project: File And Batch Processing
 
-## Project
-an SFTP-driven CSV import with retryable chunk steps.
+## Problem
 
-## Why it matters
-In production, File Processing & Batch is rarely a library detail — it is an architectural commitment. Teams choose it to nightly bulk imports and reports.
+The payroll-bureau nightly intake answers a concrete operational need.
+Stakeholders judge it by file and batch processing behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> File Processing & Batch Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Architecture
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+- File-drop watcher serving the payroll-bureau nightly intake.
+- Chunked import workers.
+- Quarantine review console.
+- Duplicate-run guard.
+- Payroll-audit export.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Milestones
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the app with one happy path live.
+M2: the build hardening plus failure drills against the service.
+M3: the solution gains operability instrumentation.
+M4: handover documentation written once the load rehearsal clears.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.spring.io/spring-batch/reference/
-- https://www.oracle.com/java/technologies/index.html
+## Operations and SLO checklist
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks the offering's golden signals for the system.
+- Alerts page on the service's error budget burn, not on noise.
+- Runbook sections: restart, rollback, data repair.
+- Whoever runs the SLO review cadence answers for freshness promises.
+
+## Failure modes
+
+- Memory blowup on a wide malformed row.
+- Resume re-posting already-paid salaries.
+- Quarantine overflow hiding fraud patterns.
+- Silent encoding change garbling names.
+
+## Handover
+
+- [ ] A live demo of the solution demonstrating the full journey.
+- [ ] Someone unfamiliar could execute the runbook during an outage.
+- [ ] Retro naming the riskiest remaining assumption.

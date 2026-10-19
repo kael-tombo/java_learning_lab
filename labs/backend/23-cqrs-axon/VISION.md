@@ -1,30 +1,41 @@
-# VISION — CQRS with Axon
+# VISION — Cqrs Sagas And Projections
 
-> Where this lab takes you: from hello-world to production judgment on CQRS with Axon.
+## Where this points
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This CQRS sagas and projections lab carries learners from single transactions to long-lived coordinated workflows with honest failure paths.
+Expect judgment calls about the system trade-offs, not just syntax recall.
+Progress shows when the vocabulary enters daily design discussions.
+The parcel-shipment saga tracker project rewards engineers who question defaults instead of copying them.
+Early exercises build fluency; later builds demand decisions.
+Treat each milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the parcel-shipment saga tracker project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## Competence profile
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains its choices to teammates with concrete failure stories.
+A graduate operates the app under degraded conditions without panic.
+A graduate measures its outcomes instead of asserting them.
+A graduate spots its misuse during code review before it ships.
+A graduate sizes the work to fit how the surrounding system behaves.
+A graduate teaches one idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## What this lab will not teach
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This lab deliberately leaves the following out.
+- Workflow-engine product operations stays outside this build.
+- Temporal-logic formal proofs stays outside the course.
+- Carrier-telematics hardware stays outside this lab.
+Meeting those needs belongs to neighboring studies.
 
-## Done = You Can
-- Choose, build, test, and operate CQRS with Axon in a real service.
+## Ready when
+
+You wrap every task up without the lesson notes back open.
+You name two live risks in any design review.
+You recover the offering from a fault drill calmly.
+You justify each trade-off with observed evidence.
+
+## Follow-ons
+
+Continue into 06-cqrs-axon, 08-kafka-integration, 05-transaction-management after finishing the lab.
+The real-world build retro is the moment to reread this vision.
+Bring one open question into the next lab deliberately.

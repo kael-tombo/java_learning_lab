@@ -1,50 +1,39 @@
 # Connection Pooling — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about connection pooling.
+## Where this points
+Grow from first queries toward dependable judgment about lease budgets and eviction policy, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in connection pooling fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in connection pooling fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in connection pooling fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in connection pooling fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in connection pooling fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in connection pooling fundamentals → internals → production trade-offs.
+## Capabilities gained
+- Command of pool sizing turns on-call database surprises into routine checklist work.
+- Concretely: minimum connections keep warm capacity ready for bursts.
+- Concretely: maximum connections cap load so the database stays upright.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate connection pooling skill 1 with a measurable artifact.
-- [ ] M2: demonstrate connection pooling skill 2 with a measurable artifact.
-- [ ] M3: demonstrate connection pooling skill 3 with a measurable artifact.
-- [ ] M4: demonstrate connection pooling skill 4 with a measurable artifact.
-- [ ] M5: demonstrate connection pooling skill 5 with a measurable artifact.
-- [ ] M6: demonstrate connection pooling skill 6 with a measurable artifact.
-- [ ] M7: demonstrate connection pooling skill 7 with a measurable artifact.
-- [ ] M8: demonstrate connection pooling skill 8 with a measurable artifact.
+## Sequence
+1. Foundations: start from a blank schema and reproduce the mini project.
+2. Depth: extend one item (the pool sizing worksheet deriving min and max from measured concurrency) until a reviewer asks for simplification.
+3. Production: close the real-world milestones once a restore drill is on record.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about warm-capacity and load-cap trade-offs, because the min/max rules are explicit.
+- Strong after this lab: applying eviction policy during lease reviews.
+- Still fragile: pool exhaustion freezing checkout queues under peak load remains the most likely incident for beginners.
+- Still fragile: connection leaks draining the pool one abandoned lease at a time still needs a senior eye on the pool design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the leases row-count reconciliation after each configuration change.
+- Stop treating the wait-queue drill observing checkout under saturation as optional when the review depends on it.
+
+## Out of scope
+- This lab does not cover vendor-specific pool parameter names; treat those as separate tracks.
+- It also skips network proxy internals, which belong to infrastructure tracks.
+- Deliberately omitted: invented benchmarks, version trivia, borrowed view names.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host from memory.
+- [ ] Explain the idle-timeout experiment proving eviction reclaims leases to a peer without notes.
+- [ ] Trigger oversized maximums overwhelming the database with concurrent sessions in staging, and recover using the runbook.
+- [ ] Say where pool tuning ends and vendor-specific pool parameter names begin in a design review.
+
+## Study guidance
+Work through the items in sequence with rerunnable scripts, and stop where the non-coverage boundary above says.

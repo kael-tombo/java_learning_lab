@@ -1,43 +1,42 @@
-# Real World Project: API Versioning & Documentation
+# Real World Project: Api Versioning And Documentation
 
-## Project
-a versioned billing API with deprecation headers and spec diffs.
+## Context
 
-## Why it matters
-In production, API Versioning & Documentation is rarely a library detail — it is an architectural commitment. Teams choose it to evolving public APIs without breaking clients.
+The city-transit fare platform answers a concrete operational need.
+Stakeholders judge it by API versioning and documentation behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> API Versioning & Documentation Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the city-transit fare platform with one happy path live.
+M2: the build hardening plus failure drills against the service.
+M3: the solution gains operability instrumentation.
+M4: deliver the load rehearsal and its handover documentation.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Versioned fare service.
+- Snapshot archive per release.
+- Deprecation calendar and alerts.
+- Partner migration tracker.
+- Compatibility test matrix.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.rfc-editor.org/rfc/rfc9110
-- https://swagger.io/specification/
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks the offering's golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- The runbook walks through restart, rollback, and data repair.
+- The SLO review cadence is where freshness promises get checked.
+
+## Exit criteria
+
+- [ ] A live demo of the service demonstrating the full journey.
+- [ ] Outage-proof runbook: a stranger can follow it.
+- [ ] Retro naming the riskiest remaining assumption.
+
+## Known hazards
+
+- Silent field removal breaking turnstile apps.
+- Missing sunset notice stranding a partner.
+- Snapshot drift hiding a breaking change.
+- Version explosion from per-client forks.

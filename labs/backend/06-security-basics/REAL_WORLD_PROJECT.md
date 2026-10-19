@@ -1,43 +1,42 @@
 # Real World Project: Security Basics
 
-## Project
-a login-protected notes app with bcrypt and role checks.
+## Context
 
-## Why it matters
-In production, Security Basics is rarely a library detail — it is an architectural commitment. Teams choose it to protecting basic login pages and APIs.
+The community organizations portal answers a concrete operational need.
+Stakeholders judge it by security basics behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable security basics slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Security Basics Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the community organizations portal with one happy path live.
+M2: Security basics hardening plus failure drills against the service.
+M3: add the operability instrumentation the solution needs.
+M4: load rehearsal first, handover documentation after.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Member directory with roles.
+- Plot-assignment workflow.
+- Announcement broadcaster.
+- Abuse-report inbox.
+- Backup and recovery routine.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.spring.io/spring-security/reference/index.html
-- https://web.archive.org/web/20200125082857/https://owasp.org/www-project-cheat-sheets/
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks security basics golden signals for the system.
+- Alerts page on community organizations portal error budget burn, not on noise.
+- Restart, rollback, and data repair each get a runbook section.
+- Whoever runs the SLO review cadence answers for freshness promises.
+
+## Exit criteria
+
+- [ ] A live demo of the portal demonstrating the full security basics journey.
+- [ ] During an outage, a stranger can work from the runbook alone.
+- [ ] Retro naming the riskiest remaining security basics assumption.
+
+## Known hazards
+
+- Privilege check missing on one coordinator export.
+- Stored hostile note executing in a browser.
+- Weak recovery flow resetting coordinator accounts.
+- Verbose error leaking member emails.

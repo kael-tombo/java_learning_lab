@@ -1,32 +1,40 @@
 # Mini Project: Spring Security
 
-## Goal
-Build a small, runnable Spring Security service that demonstrates the core happy path.
+## Moving parts
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+- Security filter chain ordering concept supporting the reading-circle notes application.
+- Authentication entry points supporting the reading-circle notes application.
+- Authorization rules per route.
+- Password hashing at rest concept.
+- Session and logout handling.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Build brief
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+This Spring Security mini build produces a working app you can run locally.
+Scope stays deliberately small so every Spring Security behavior remains observable.
+Budget roughly one focused evening for the implementation.
+Success means demonstrating Spring Security judgment, not just compiling code.
+Keep a lab journal noting each Spring Security surprise encountered.
+Nothing joins the work beyond what the acceptance checks already ask for.
+
+## Sequence
+
+1. Protect circle notes so anonymous readers see only invitations for the service.
+2. Place login, logout, and denied-access handling on distinct routes.
+3. Restrict circle-admin routes to the organizer role.
+4. Store member passwords only in hashed form.
+5. Verify session expiry returns members to login cleanly.
 
 ## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+
+- [ ] Anonymous access to 8 private notes is denied in the solution.
+- [ ] Organizer-only routes reject 3 regular-member attempts in the platform.
+- [ ] Login succeeds for 5 seeded members with correct credentials.
+- [ ] Stored passwords reveal no plaintext under inspection.
+- [ ] Expired session redirects rather than erroring.
+
+## If time remains
+
+One realistic complication of your choosing goes into the project.
+Write the two-paragraph retro: which Spring Security decision proved hardest.
+Give the demo to a peer whose only map is the acceptance checks.

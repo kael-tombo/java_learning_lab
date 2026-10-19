@@ -1,30 +1,41 @@
 # VISION — Transaction Management
 
-> Where this lab takes you: from hello-world to production judgment on Transaction Management.
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This transaction management lab carries learners from annotating methods transactional to predicting isolation behavior under load.
+Expect judgment calls about transaction management trade-offs, not just syntax recall.
+Progress shows when the transaction management vocabulary enters daily design discussions.
+The community-bank transfer ledger project rewards engineers who question defaults instead of copying them.
+Early exercises build transaction management fluency; later builds demand transaction management decisions.
+Treat each transaction management milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the community-bank transfer ledger project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains transaction management choices to teammates with concrete failure stories.
+A graduate continues operating through degraded conditions, no panic.
+A graduate measures transaction management outcomes instead of asserting them.
+A graduate spots transaction management misuse during code review before it ships.
+The surrounding system sets the frame; a graduate scopes inside it.
+A graduate teaches one transaction management idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This transaction management lab deliberately leaves the following out.
+- Distributed XA protocol engineering stays outside this build.
+- Database engine internals stays outside the course.
+- Blockchain settlement design stays outside this lab.
+Meeting those needs belongs to neighboring transaction management studies.
 
-## Done = You Can
-- Choose, build, test, and operate Transaction Management in a real service.
+## Signals you are ready
+
+You finish the tasks without going back to the lesson notes.
+You name two live transaction management risks in any design review.
+A fault drill trips the app; recovery stays calm.
+You justify each transaction management trade-off with observed evidence.
+
+## Where next
+
+Continue into 03-spring-data-jpa, 18-file-processing-batch, 23-cqrs-axon after finishing the lab.
+Revisit this transaction management vision after the real-world build retro.
+Bring one open transaction management question into the next lab deliberately.

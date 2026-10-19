@@ -1,32 +1,40 @@
-# Mini Project: REST APIs
+# Mini Project: Rest Apis With Spring
 
-## Goal
-Build a small, runnable REST APIs service that demonstrates the core happy path.
+## The assignment
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+This REST APIs with Spring mini build produces a working repairs-shop order API you can run locally.
+Scope stays deliberately small so every behavior remains observable.
+Budget roughly one focused evening for the repairs-shop order API implementation.
+Success means demonstrating its judgment, not just compiling code.
+Keep a lab journal noting each surprise encountered.
+The acceptance checks cap the work; features beyond them wait.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Parts you will wire
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+- Controller request mapping.
+- Service-layer orchestration.
+- Centralized exception translation.
+- Request validation.
+- Paginated order listing.
 
-## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+## Build order
+
+1. Expose repair-order intake, status, and completion endpoints for the service.
+2. Keep dispatch logic in a service the controller delegates to.
+3. Translate missing-order faults into 404 payloads centrally.
+4. Validate intake payloads and reject blanks with 400.
+5. Paginate the order list with explicit sort order.
+
+## Acceptance checks
+
+- [ ] 40 seeded repair orders queryable by status in the solution.
+- [ ] Missing order lookup returns 404, never 500 in the platform.
+- [ ] Blank intake payload rejected with field-level messages.
+- [ ] Paginated listing covers all 40 orders exactly once.
+- [ ] Controller and service each carry focused unit tests.
+
+## Stretch
+
+Grow the project by adding one realistic complication you select.
+Write the two-paragraph retro: which decision proved hardest.
+Walk a peer through the system while they read only the acceptance checks.

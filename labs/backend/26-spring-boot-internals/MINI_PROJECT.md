@@ -1,32 +1,40 @@
-# Mini Project: Spring Boot Internals
+# Mini Project: Spring Boot Configuration Internals
 
-## Goal
-Build a small, runnable Spring Boot Internals service that demonstrates the core happy path.
+## What to build
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
-
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+This Spring Boot configuration internals mini build produces a working configuration-resolution observatory you can run locally.
+Scope stays deliberately small so every behavior remains observable.
+Budget roughly one focused evening for the configuration-resolution observatory implementation.
+Success means demonstrating its judgment, not just compiling code.
+Keep a lab journal noting each surprise encountered.
+Resist adding features beyond the configuration-resolution observatory acceptance checks.
 
 ## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
 
-## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+1. Stack six competing property sources over one observatory service for the service.
+2. Predict the winning value per key before booting.
+3. Prove relaxed-binding variants resolve identically.
+4. Activate profile documents and map their precedence.
+5. Break one binding deliberately and read the failure analyzer.
+
+## Architecture in miniature
+
+- Property-source ordering.
+- Relaxed binding rules.
+- Profile-specific documents.
+- Condition evaluation reports.
+- Failure-analyzer diagnostics.
+
+## How it is judged
+
+- [ ] Prediction sheet scores 10 of 12 winning values correctly in the solution.
+- [ ] Binding proof covers 4 naming variants per key in the platform.
+- [ ] Profile precedence map matches observed behavior.
+- [ ] Failure-analyzer output quoted in the postmortem note.
+- [ ] Conditions report explains 3 surprise inclusions.
+
+## Extension
+
+Grow the project by adding one realistic complication you select.
+Write the two-paragraph retro: which decision proved hardest.
+A peer reads only the acceptance checks, then watches the system demo.

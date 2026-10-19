@@ -1,43 +1,42 @@
-# Real World Project: GraalVM
+# Real World Project: Graalvm Native Image
 
-## Project
-a GraalVM native microservice booted in milliseconds.
+## System sketch
 
-## Why it matters
-In production, GraalVM is rarely a library detail — it is an architectural commitment. Teams choose it to low-latency cold starts and container density.
+- Trail-data compiler serving the field-crew offline mapping tools.
+- Native binary release lane serving the field-crew offline mapping tools.
+- Map-pack distribution.
+- Offline-first sync protocol.
+- Device-fleet update channel.
 
-## Architecture sketch
-```
-Client -> API Gateway -> GraalVM Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Situation
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+The app answers a concrete operational need.
+Stakeholders judge it by GraalVM native image behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable GraalVM native image slices.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Delivery phases
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the build with one happy path live.
+M2: Graalvm native image hardening plus failure drills against the service.
+M3: the operability instrumentation is in place across the build.
+M4: the project gets a load rehearsal plus handover documentation.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.graalvm.org/latest/reference-manual/native-image/
-- https://www.graalvm.org/
+## What breaks
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Undeclared reflection breaking a trail renderer.
+- Build-time initialization freezing a timestamp.
+- Binary size blocking field-device updates.
+- Debugging gap when native stack traces obscure causes.
+
+## Runbook expectations
+
+- Dashboard tracks GraalVM native image golden signals for the system.
+- Alerts page on the offering's error budget burn, not on noise.
+- The runbook handles restart, rollback, and data repair end to end.
+- Whoever runs the SLO review cadence answers for freshness promises.
+
+## Ship list
+
+- [ ] A live demo of the service demonstrating the full GraalVM native image journey.
+- [ ] Someone unfamiliar could execute the runbook during an outage.
+- [ ] Retro naming the riskiest remaining GraalVM native image assumption.

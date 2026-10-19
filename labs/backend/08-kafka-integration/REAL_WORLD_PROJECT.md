@@ -1,43 +1,42 @@
 # Real World Project: Kafka Integration
 
-## Project
-an order events pipeline with partitioned topics and retries.
+## Context
 
-## Why it matters
-In production, Kafka Integration is rarely a library detail — it is an architectural commitment. Teams choose it to event-driven pipelines.
+The museum digital-experience analytics answers a concrete operational need.
+Stakeholders judge it by Kafka integration behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable Kafka integration slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Kafka Integration Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the museum digital-experience analytics with one happy path live.
+M2: Kafka integration hardening plus failure drills against the service.
+M3: add the operability instrumentation the solution needs.
+M4: load rehearsal done and handover documentation ready for the project.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Click-ingest topic family.
+- Sessionization consumer.
+- Real-time dashboard sink.
+- Archival replay bucket.
+- Schema evolution policy.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://kafka.apache.org/documentation/
-- https://spring.io/projects/spring-kafka
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks Kafka integration golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- The runbook walks through restart, rollback, and data repair.
+- Freshness promises live with the SLO review cadence.
+
+## Exit criteria
+
+- [ ] A live demo of the build demonstrating the full Kafka integration journey.
+- [ ] During an outage, a stranger can work from the runbook alone.
+- [ ] Retro naming the riskiest remaining Kafka integration assumption.
+
+## Known hazards
+
+- Rebalance storm stalling intake.
+- Offset committed before handling loses clicks.
+- Hot partition from a viral exhibit.
+- Retention expiry deleting events under dispute.

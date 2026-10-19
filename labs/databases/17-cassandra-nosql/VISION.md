@@ -1,50 +1,39 @@
-# Cassandra Nosql — Vision
+# Cassandra NoSQL — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about cassandra nosql.
+## Where this points
+Grow from first queries toward dependable judgment about partition layout and replica agreement, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in cassandra nosql fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in cassandra nosql fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in cassandra nosql fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in cassandra nosql fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in cassandra nosql fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in cassandra nosql fundamentals → internals → production trade-offs.
+## Capabilities gained
+- Command of partition design turns on-call database surprises into routine checklist work.
+- Concretely: the partition key decides which nodes store each telemetry row.
+- Concretely: wide rows cluster time-ordered readings inside one partition.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate cassandra nosql skill 1 with a measurable artifact.
-- [ ] M2: demonstrate cassandra nosql skill 2 with a measurable artifact.
-- [ ] M3: demonstrate cassandra nosql skill 3 with a measurable artifact.
-- [ ] M4: demonstrate cassandra nosql skill 4 with a measurable artifact.
-- [ ] M5: demonstrate cassandra nosql skill 5 with a measurable artifact.
-- [ ] M6: demonstrate cassandra nosql skill 6 with a measurable artifact.
-- [ ] M7: demonstrate cassandra nosql skill 7 with a measurable artifact.
-- [ ] M8: demonstrate cassandra nosql skill 8 with a measurable artifact.
+## Sequence
+1. Foundations: the mini project gets reproduced after clearing the schema.
+2. Depth: extend one item (the partition-key design keeping one device-day per partition) until a reviewer asks for simplification.
+3. Production: real-world milestones delivered, restore drill documented.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about node placement, since row ownership follows from the partition key.
+- Strong after this lab: applying the quorum-overlap rule when reviewing replica expectations.
+- Still fragile: hot partitions from a too-coarse device key remains the most likely incident for beginners.
+- Still fragile: unbounded partitions growing until reads choke still needs a senior eye on the bucket design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Reproduce a snippet's results before adopting it anywhere.
+- Stop skipping the telemetry row-count reconciliation after each key change.
+- Stop treating the QUORUM write walkthrough on a three-replica sketch as optional when the review depends on it.
+
+## Out of scope
+- This lab does not cover Cassandra server version numbers and release claims; treat those as separate tracks.
+- It also skips compaction-strategy tuning specifics, which belong to operations tracks.
+- Deliberately omitted: invented benchmarks, version trivia, borrowed view names.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host from memory.
+- [ ] Explain the clustering-order sketch sorting readings by timestamp to a peer without notes.
+- [ ] Trigger consistency confusion when QUORUM expectations go unstated in staging, and recover using the runbook.
+- [ ] Say where partition design ends and Cassandra server version numbers and release claims begin in a design review.
+
+## Study guidance
+Follow the items in sequence, keep scripts rerunnable, and respect the non-coverage boundary stated above.

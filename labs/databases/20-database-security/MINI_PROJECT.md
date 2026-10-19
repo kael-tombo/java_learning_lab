@@ -1,80 +1,44 @@
 # Database Security — Mini Project
 
-## Goal
-Build a small but complete exercise of database security in 90 minutes.
+## Brief
+Six focused exercises on least-privilege roles, masking, and audit trails, each ending with a visible artifact and a one-line explanation.
 
-## Requirements
-- R1: schema + queries exercising database security scenario 1.
-- R2: schema + queries exercising database security scenario 2.
-- R3: schema + queries exercising database security scenario 3.
-- R4: schema + queries exercising database security scenario 4.
-- R5: schema + queries exercising database security scenario 5.
-- R6: schema + queries exercising database security scenario 6.
-- R7: schema + queries exercising database security scenario 7.
-- R8: schema + queries exercising database security scenario 8.
+## Setup
+Prepare seed rows for patients and access_log, sized so the grant output fits on one screen.
 
-## Steps
-1. Step 1: scaffold, load sample data, verify with a query, record observations.
-2. Step 2: scaffold, load sample data, verify with a query, record observations.
-3. Step 3: scaffold, load sample data, verify with a query, record observations.
-4. Step 4: scaffold, load sample data, verify with a query, record observations.
-5. Step 5: scaffold, load sample data, verify with a query, record observations.
-6. Step 6: scaffold, load sample data, verify with a query, record observations.
-7. Step 7: scaffold, load sample data, verify with a query, record observations.
-8. Step 8: scaffold, load sample data, verify with a query, record observations.
-9. Step 9: scaffold, load sample data, verify with a query, record observations.
-10. Step 10: scaffold, load sample data, verify with a query, record observations.
+## Exercises
+1. Exercise on role matrix separating reader, writer, and admin grants: load it and record what changes in the output.
+2. Exercise on revoke drill removing one over-broad patient grant: run it, then note the one surprise worth remembering.
+3. Exercise on masking sketch hiding diagnosis codes from analysts: shape it and capture the check query beside it.
+4. Exercise on audit-trail query listing recent sensitive reads: assemble it, then explain the result to a reviewer aloud.
+5. Exercise on connection-security note requiring encrypted sessions: compose it and file the script where the next step finds it.
+6. Exercise on secret-handling note keeping credentials out of scripts: frame it while keeping every statement re-runnable.
 
-## Acceptance criteria
-- All queries return correct results; notes explain one surprising observation.
+## Reference snippet
+```text
+-- conceptual sketch for this lab
+-- keep each statement re-runnable and small
+```
 
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
+## Acceptance
+- All six exercises finish with artifacts a reviewer can open.
+- The write-up quotes the rule that least privilege grants each role only the access it needs.
+- A second run reproduces identical row counts.
+- Each exercise names its own failure signal.
+
+## Reflection
+- Which step surprised you, and which fact explains it?
+- What grant shortcut would you forbid on a shared database?
+- The reflection stays inside the project folder beside the scripts.
+
+## Setup checklist
+- A scratch schema is set aside for this work, away from shared databases.
+- Seed rows for patients and access_log loaded and counted.
+- Keep a notes file open; quote-worthy surprises land there.
+- The rollback or re-seed path is confirmed before any edit.
+
+## Hand-off
+- The next lab inherits a tagged scripts folder instead of re-reading every file.
+- Whoever reruns the exercises receives the notes file, keeping the surprises alive through the handoff.
+- Only mark the checklist done once a peer has rerun all scripts without edits.
+

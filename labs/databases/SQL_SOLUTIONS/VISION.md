@@ -1,50 +1,39 @@
-# SQL SOLUTIONS — Vision
+# SQL Solutions — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about sql solutions.
+## Direction
+Grow from first queries toward dependable judgment about graded problem-solving, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in sql solutions fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in sql solutions fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in sql solutions fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in sql solutions fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in sql solutions fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in sql solutions fundamentals → internals → production trade-offs.
+## Why it matters here
+- Command of the walkthrough ladder turns on-call database surprises into routine checklist work.
+- Concretely: graded solutions move from single-table filters toward multi-table analytics.
+- Concretely: each walkthrough names the pattern before showing the query.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate sql solutions skill 1 with a measurable artifact.
-- [ ] M2: demonstrate sql solutions skill 2 with a measurable artifact.
-- [ ] M3: demonstrate sql solutions skill 3 with a measurable artifact.
-- [ ] M4: demonstrate sql solutions skill 4 with a measurable artifact.
-- [ ] M5: demonstrate sql solutions skill 5 with a measurable artifact.
-- [ ] M6: demonstrate sql solutions skill 6 with a measurable artifact.
-- [ ] M7: demonstrate sql solutions skill 7 with a measurable artifact.
-- [ ] M8: demonstrate sql solutions skill 8 with a measurable artifact.
+## Growth path
+1. Foundations: start from a blank schema and reproduce the mini project.
+2. Depth: extend one item (the Level 1 filter solution on user status) until a reviewer asks for simplification.
+3. Production: complete the real-world milestones with a restore drill on the record.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about grading order, since single-table work precedes joined analytics.
+- Strong after this lab: applying the pattern-first habit when explaining any query.
+- Still fragile: jumping to analytics before filters and joins are solid remains the most likely incident for beginners.
+- Still fragile: copying solutions without reproducing the reasoning steps still needs a senior eye on study habits.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Every canned snippet gets its results reproduced before reuse.
+- Stop skipping the sol_orders row-count reconciliation after each level change.
+- Stop treating the Level 3 aggregation solution totaling orders per user as optional when the review depends on it.
+
+## Non-coverage
+- This lab does not cover procedural SQL topics; treat those as separate tracks.
+- It also skips physical tuning measurements, which belong to optimization tracks.
+- Left out on purpose: made-up benchmarks, version trivia, and view names borrowed from elsewhere.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host from memory.
+- [ ] Explain the Level 2 join solution linking users to orders to a peer without notes.
+- [ ] Trigger mistaking a working query for an efficient one in staging, and recover using the runbook.
+- [ ] Say where graded analytics end and procedural SQL topics begin in a design review.
+
+## How to use this lab
+Follow the items in sequence, keep scripts rerunnable, and respect the non-coverage boundary stated above.

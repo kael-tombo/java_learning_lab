@@ -1,50 +1,39 @@
-# Query Optimization — Vision
+# Query Optimization A — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about query optimization.
+## Trajectory
+Grow from first queries toward dependable judgment about index selection and predicate design, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in query optimization fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in query optimization fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in query optimization fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in query optimization fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in query optimization fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in query optimization fundamentals → internals → production trade-offs.
+## Payoff
+- Command of these tuning habits turns on-call database surprises into routine checklist work.
+- Concretely: B-tree indexes accelerate equality and range lookups on leading columns.
+- Concretely: sargable predicates keep index seeks possible by avoiding wrapped columns.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate query optimization skill 1 with a measurable artifact.
-- [ ] M2: demonstrate query optimization skill 2 with a measurable artifact.
-- [ ] M3: demonstrate query optimization skill 3 with a measurable artifact.
-- [ ] M4: demonstrate query optimization skill 4 with a measurable artifact.
-- [ ] M5: demonstrate query optimization skill 5 with a measurable artifact.
-- [ ] M6: demonstrate query optimization skill 6 with a measurable artifact.
-- [ ] M7: demonstrate query optimization skill 7 with a measurable artifact.
-- [ ] M8: demonstrate query optimization skill 8 with a measurable artifact.
+## Milestones
+1. Foundations: from a blank schema, reproduce the mini project.
+2. Depth: extend one item (the order lookup index on customer id plus order date) until a reviewer asks for simplification.
+3. Production: deliver the real-world milestones and keep a restore drill on file.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about leading-column rules, since seek-versus-scan behavior follows from them.
+- Strong after this lab: applying the sargability check during predicate reviews.
+- Still fragile: function-wrapped predicates forcing full scans over indexed dates remains the most likely incident for beginners.
+- Still fragile: over-indexing slowing every order insert to a crawl still needs a senior eye on the index set.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Every canned snippet gets its results reproduced before reuse.
+- Stop skipping the order_lines row-count reconciliation after each change.
+- Stop treating the covering-index sketch for the open-orders list as optional when the review depends on it.
+
+## Not covered
+- This lab does not cover invented timing benchmarks on order queries; treat those as separate tracks.
+- It also skips storage-engine page internals, which sit below the planner.
+- Not included on purpose: invented benchmarks, version trivia, and borrowed view names.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host without peeking at notes.
+- [ ] Explain the sargability rewrite removing a function around order date to a peer without notes.
+- [ ] Trigger stale statistics steering the optimizer toward a bad plan in staging, and recover using the runbook.
+- [ ] Say where predicate design ends and invented timing benchmarks on order queries begin in a design review.
+
+## Working agreement
+Items go in order, scripts stay rerunnable, and the non-coverage boundary above is not crossed.

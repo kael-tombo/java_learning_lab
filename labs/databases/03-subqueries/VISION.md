@@ -1,50 +1,39 @@
 # Subqueries — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about subqueries.
+## Trajectory
+Grow from first queries toward dependable judgment about nested queries — scalar, IN and EXISTS, and derived tables — measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in subqueries fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in subqueries fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in subqueries fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in subqueries fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in subqueries fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in subqueries fundamentals → internals → production trade-offs.
+## Payoff
+- Command of these subquery forms turns on-call database surprises into routine checklist work.
+- Concretely: a scalar subquery returns one value and fits inside a SELECT or WHERE clause.
+- Concretely: EXISTS stops at the first match and ignores NULL comparison pitfalls.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate subqueries skill 1 with a measurable artifact.
-- [ ] M2: demonstrate subqueries skill 2 with a measurable artifact.
-- [ ] M3: demonstrate subqueries skill 3 with a measurable artifact.
-- [ ] M4: demonstrate subqueries skill 4 with a measurable artifact.
-- [ ] M5: demonstrate subqueries skill 5 with a measurable artifact.
-- [ ] M6: demonstrate subqueries skill 6 with a measurable artifact.
-- [ ] M7: demonstrate subqueries skill 7 with a measurable artifact.
-- [ ] M8: demonstrate subqueries skill 8 with a measurable artifact.
+## Milestones
+1. Foundations: reproduce the mini project, beginning with a blank schema.
+2. Depth: extend one item (the scalar subquery fetching the top course score inline) until a reviewer asks for simplification.
+3. Production: real-world milestones delivered, restore drill documented.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about the one-value rule, since a scalar return must fit inside a SELECT or WHERE clause.
+- Strong after this lab: applying the early-stop behavior of EXISTS during query reviews.
+- Still fragile: NULL poison in NOT IN silently returning zero rows remains the most likely incident for beginners.
+- Still fragile: scalar subqueries erroring when more than one row comes back still needs a senior eye on the query design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the results row-count reconciliation after each edit.
+- Stop treating the EXISTS check for courses that actually have results as optional when the review depends on it.
+
+## Not covered
+- This lab does not cover recursive query hierarchies; treat those as separate tracks.
+- It also skips lateral join syntax variants, which sit outside nested queries.
+- Left out on purpose: made-up benchmarks, version trivia, and view names borrowed from elsewhere.
+
+## Checkable milestones
+- [ ] Blank host first, then rebuild the seed schema from memory.
+- [ ] Explain the IN-list filter for results in a chosen course set to a peer without notes.
+- [ ] Trigger correlated subqueries re-running once per outer row without an index in staging, and recover using the runbook.
+- [ ] Say where nested queries end and recursive query hierarchies begin in a design review.
+
+## Working agreement
+Take the items in order, keep every script rerunnable, and honor the non-coverage boundary above.

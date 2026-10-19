@@ -1,43 +1,42 @@
-# Real World Project: Spring Cloud
+# Real World Project: Spring Cloud Coordination
 
-## Project
-a checkout platform with service discovery, gateway routing, and circuit breakers.
+## Context
 
-## Why it matters
-In production, Spring Cloud is rarely a library detail — it is an architectural commitment. Teams choose it to splitting a monolith into services.
+The neighborhood retail chain platform answers a concrete operational need.
+Stakeholders judge it by Spring Cloud coordination behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable Spring Cloud coordination slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Spring Cloud Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the neighborhood retail chain platform with one happy path live.
+M2: Spring cloud coordination hardening plus failure drills against the service.
+M3: operability instrumentation across the solution.
+M4: the project closes with a load rehearsal and handover documentation.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Configuration service with versioned files.
+- Registry with health-checked members.
+- Gateway with route policies.
+- Fallback catalog pages.
+- Change-audit log.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://spring.io/projects/spring-cloud
-- https://microservices.io/
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks Spring Cloud coordination golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- Runbook covers restart, rollback, and data repair.
+- SLO review cadence owns freshness promises of the platform.
+
+## Exit criteria
+
+- [ ] A live demo of the build demonstrating the full Spring Cloud coordination journey.
+- [ ] Runbook a stranger could follow during the outage.
+- [ ] Retro naming the riskiest remaining Spring Cloud coordination assumption.
+
+## Known hazards
+
+- Stale price served after a failed refresh.
+- Registry flapping during network wobble.
+- Gateway route shadowing a new service.
+- Fallback masking a prolonged till outage.

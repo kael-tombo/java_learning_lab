@@ -1,43 +1,42 @@
-# Real World Project: Backend Security Deep Dive
+# Real World Project: Backend Security Hardening
 
-## Project
-a threat-modeled API with validation, headers, and rate limits.
+## Context
 
-## Why it matters
-In production, Backend Security Deep Dive is rarely a library detail — it is an architectural commitment. Teams choose it to defending against injection, SSRF, and BOLA.
+The law-firm client-document exchange answers a concrete operational need.
+Stakeholders judge it by backend security hardening behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable backend security hardening slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Backend Security Deep Dive Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the law-firm client-document exchange with one happy path live.
+M2: Backend security hardening plus failure drills against the service.
+M3: operability instrumentation lands across the solution.
+M4: load rehearsal done and handover documentation ready for the project.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Vault service with tiered routes.
+- Managed secret store.
+- Upload sandbox and scanner.
+- Immutable audit ledger.
+- Quarterly access recertification.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://owasp.org/www-project-top-ten/
-- https://cheatsheetseries.owasp.org/
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks backend security hardening golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- The runbook walks through restart, rollback, and data repair.
+- Freshness commitments belong to the SLO review cadence.
+
+## Exit criteria
+
+- [ ] A live demo of the build demonstrating the full backend security hardening journey.
+- [ ] A runbook clear enough that a stranger can follow it mid-outage.
+- [ ] Retro naming the riskiest remaining backend security hardening assumption.
+
+## Known hazards
+
+- Upload bypass smuggling an executable.
+- Over-logged PII in the audit trail.
+- Stale contractor account downloading briefs.
+- Header leak guiding a targeted attack.

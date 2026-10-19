@@ -1,80 +1,53 @@
-# Plsql Fundamentals — Mini Project
+# PLSQL Fundamentals — Mini Project
 
-## Goal
-Build a small but complete exercise of plsql fundamentals in 90 minutes.
+## Brief
+Six focused exercises on PL/SQL DECLARE, BEGIN, EXCEPTION, and END blocks with cursors, each ending with a visible artifact and a one-line explanation.
 
-## Requirements
-- R1: schema + queries exercising plsql fundamentals scenario 1.
-- R2: schema + queries exercising plsql fundamentals scenario 2.
-- R3: schema + queries exercising plsql fundamentals scenario 3.
-- R4: schema + queries exercising plsql fundamentals scenario 4.
-- R5: schema + queries exercising plsql fundamentals scenario 5.
-- R6: schema + queries exercising plsql fundamentals scenario 6.
-- R7: schema + queries exercising plsql fundamentals scenario 7.
-- R8: schema + queries exercising plsql fundamentals scenario 8.
+## Setup
+Prepare seed rows for clerks and tasks, sized so the block output fits on one screen.
 
-## Steps
-1. Step 1: scaffold, load sample data, verify with a query, record observations.
-2. Step 2: scaffold, load sample data, verify with a query, record observations.
-3. Step 3: scaffold, load sample data, verify with a query, record observations.
-4. Step 4: scaffold, load sample data, verify with a query, record observations.
-5. Step 5: scaffold, load sample data, verify with a query, record observations.
-6. Step 6: scaffold, load sample data, verify with a query, record observations.
-7. Step 7: scaffold, load sample data, verify with a query, record observations.
-8. Step 8: scaffold, load sample data, verify with a query, record observations.
-9. Step 9: scaffold, load sample data, verify with a query, record observations.
-10. Step 10: scaffold, load sample data, verify with a query, record observations.
+## Exercises
+1. Exercise on greeting block declaring and printing a clerk name: draft it, then explain the result to a reviewer aloud.
+2. Exercise on exception handler catching a missing-task lookup: load it and file the script where the next step finds it.
+3. Exercise on explicit cursor looping over open clerk tasks: run it while keeping every statement re-runnable.
+4. Exercise on parameterized cursor filtering tasks by clerk id: shape it and record what changes in the output.
+5. Exercise on transaction-control note placing COMMIT after the loop: assemble it, then note the one surprise worth remembering.
+6. Exercise on cursor-attribute check using percent-NOTFOUND to exit cleanly: compose it and capture the check query beside it.
 
-## Acceptance criteria
-- All queries return correct results; notes explain one surprising observation.
+## Reference snippet
+```sql
+DECLARE
+  v_name VARCHAR2(100);
+BEGIN
+  SELECT name INTO v_name
+  FROM clerks
+  WHERE id = 1;
+EXCEPTION
+  WHEN NO_DATA_FOUND THEN
+    v_name := 'none';
+END;
+/
+```
 
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
+## Acceptance
+- All six exercises finish with artifacts a reviewer can open.
+- The write-up quotes the rule that DECLARE opens the block for variables before executable statements begin.
+- A second run reproduces identical row counts.
+- Each exercise names its own failure signal.
+
+## Reflection
+- Which step surprised you, and which fact explains it?
+- What block shortcut would you forbid on a shared database?
+- The reflection stays inside the project folder beside the scripts.
+
+## Setup checklist
+- A scratch schema is set aside for this work, away from shared databases.
+- Seed rows for clerks and tasks loaded and counted.
+- Notes file stays open for anything surprising worth quoting.
+- Rollback or re-seed: that path is confirmed before edits begin.
+
+## Hand-off
+- Tag the scripts folder when done, so the next lab starts without re-reading all files.
+- The notes file goes to whoever reruns the exercises, and the surprises survive the handoff that way.
+- A peer reruns every script without edits before this checklist is marked done.
+

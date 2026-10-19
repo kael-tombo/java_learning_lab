@@ -1,30 +1,41 @@
-# VISION — GraalVM
+# VISION — Graalvm Native Image
 
-> Where this lab takes you: from hello-world to production judgment on GraalVM.
+## Trajectory
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This GraalVM native image lab carries learners from JVM deployments to selective native compilation where startup truly matters.
+Expect judgment calls about GraalVM native image trade-offs, not just syntax recall.
+Progress shows when the GraalVM native image vocabulary enters daily design discussions.
+The trail-map native CLI project rewards engineers who question defaults instead of copying them.
+Early exercises build GraalVM native image fluency; later builds demand GraalVM native image decisions.
+Treat each GraalVM native image milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the trail-map native CLI project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## The practitioner you become
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains GraalVM native image choices to teammates with concrete failure stories.
+Under degraded conditions, a graduate keeps operating the system calmly.
+A graduate measures GraalVM native image outcomes instead of asserting them.
+A graduate spots GraalVM native image misuse during code review before it ships.
+Work gets scoped by a graduate to match the surrounding system.
+A graduate teaches one GraalVM native image idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Explicit non-coverage
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This GraalVM native image lab deliberately leaves the following out.
+- Compiler backend engineering stays outside this build.
+- Profile-guided optimization theory stays outside the course.
+- Language-runtime implementation work stays outside this lab.
+Meeting those needs belongs to neighboring GraalVM native image studies.
 
-## Done = You Can
-- Choose, build, test, and operate GraalVM in a real service.
+## Readiness signals
+
+The tasks close out with no second look at the lesson notes.
+You name two live GraalVM native image risks in any design review.
+You bring the app back after a fault drill, staying calm throughout.
+You justify each GraalVM native image trade-off with observed evidence.
+
+## Adjacent labs
+
+Continue into 25-graalvm-native, 08-micronaut, 10-quarkus after finishing the lab.
+After the real-world build retro ends, this vision deserves another look.
+Bring one open GraalVM native image question into the next lab deliberately.

@@ -1,30 +1,41 @@
-# VISION — Messaging
+# VISION — Messaging Fundamentals
 
-> Where this lab takes you: from hello-world to production judgment on Messaging.
+## Trajectory
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This messaging fundamentals lab carries learners from direct calls to durable asynchronous channels with honest delivery semantics.
+Expect judgment calls about messaging fundamentals trade-offs, not just syntax recall.
+Progress shows when the messaging fundamentals vocabulary enters daily design discussions.
+The clinic notification fan-out project rewards engineers who question defaults instead of copying them.
+Early exercises build messaging fundamentals fluency; later builds demand messaging fundamentals decisions.
+Treat each messaging fundamentals milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the clinic notification fan-out project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## The practitioner you become
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains messaging fundamentals choices to teammates with concrete failure stories.
+Operating under degraded conditions is where a graduate stays level.
+A graduate measures messaging fundamentals outcomes instead of asserting them.
+A graduate spots messaging fundamentals misuse during code review before it ships.
+A graduate bounds the work by what the surrounding system tolerates.
+A graduate teaches one messaging fundamentals idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Explicit non-coverage
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This messaging fundamentals lab deliberately leaves the following out.
+- Broker cluster administration stays outside this build.
+- Exactly-once protocol proofs stays outside the course.
+- Stream-processing framework mastery stays outside this lab.
+Meeting those needs belongs to neighboring messaging fundamentals studies.
 
-## Done = You Can
-- Choose, build, test, and operate Messaging in a real service.
+## Readiness signals
+
+Lesson notes stay shut while its tasks complete.
+You name two live messaging fundamentals risks in any design review.
+Calm recovery of the app is how the fault drill ends.
+You justify each messaging fundamentals trade-off with observed evidence.
+
+## Adjacent labs
+
+Continue into 08-kafka-integration, 06-cqrs-axon, 14-scheduling after finishing the lab.
+Revisit this messaging fundamentals vision after the real-world build retro.
+Bring one open messaging fundamentals question into the next lab deliberately.

@@ -1,30 +1,41 @@
 # VISION — Multi-Tenancy
 
-> Where this lab takes you: from hello-world to production judgment on Multi-Tenancy.
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This multi-tenancy lab carries learners from single-customer services to shared platforms with provable isolation.
+Expect judgment calls about multi-tenancy trade-offs, not just syntax recall.
+Progress shows when the multi-tenancy vocabulary enters daily design discussions.
+The fitness-studio SaaS tenants project rewards engineers who question defaults instead of copying them.
+Early exercises build multi-tenancy fluency; later builds demand multi-tenancy decisions.
+Treat each multi-tenancy milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the fitness-studio SaaS tenants project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains multi-tenancy choices to teammates with concrete failure stories.
+Operating under degraded conditions is where a graduate stays level.
+A graduate measures multi-tenancy outcomes instead of asserting them.
+A graduate spots multi-tenancy misuse during code review before it ships.
+A graduate sizes the work to fit how the surrounding system behaves.
+A graduate teaches one multi-tenancy idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This multi-tenancy lab deliberately leaves the following out.
+- Database-engine row-security internals stays outside this build.
+- Hypervisor isolation engineering stays outside the course.
+- Enterprise contract law stays outside this lab.
+Meeting those needs belongs to neighboring multi-tenancy studies.
 
-## Done = You Can
-- Choose, build, test, and operate Multi-Tenancy in a real service.
+## Signals you are ready
+
+Lesson notes stay shut while its tasks complete.
+You name two live multi-tenancy risks in any design review.
+Calm recovery of the app is how the fault drill ends.
+You justify each multi-tenancy trade-off with observed evidence.
+
+## Where next
+
+Continue into 04-spring-security, 20-backend-security-deep, 04-spring-data-jpa after finishing the lab.
+Revisit this multi-tenancy vision after the real-world build retro.
+Bring one open multi-tenancy question into the next lab deliberately.

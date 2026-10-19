@@ -1,30 +1,41 @@
-# VISION — GraphQL
+# VISION — Graphql
 
-> Where this lab takes you: from hello-world to production judgment on GraphQL.
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This GraphQL lab carries learners from fixed endpoints to client-shaped queries with disciplined schema evolution.
+Expect judgment calls about GraphQL trade-offs, not just syntax recall.
+Progress shows when the GraphQL vocabulary enters daily design discussions.
+The authors-and-books graph project rewards engineers who question defaults instead of copying them.
+Early exercises build GraphQL fluency; later builds demand GraphQL decisions.
+Treat each GraphQL milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the authors-and-books graph project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains GraphQL choices to teammates with concrete failure stories.
+A graduate operates the solution under degraded conditions without panic.
+A graduate measures GraphQL outcomes instead of asserting them.
+A graduate spots GraphQL misuse during code review before it ships.
+Whatever fits the surrounding system is what a graduate commits to.
+A graduate teaches one GraphQL idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This GraphQL lab deliberately leaves the following out.
+- Federation gateway operations stays outside this GraphQL lab.
+- GraphQL subscription scaling stays outside this GraphQL lab.
+- Query-cost accounting engines stays outside this lab.
+Meeting those needs belongs to neighboring GraphQL studies.
 
-## Done = You Can
-- Choose, build, test, and operate GraphQL in a real service.
+## Signals you are ready
+
+Lesson notes stay shut while its tasks complete.
+You name two live GraphQL risks in any design review.
+You recover the platform from a fault drill calmly.
+You justify each GraphQL trade-off with observed evidence.
+
+## Where next
+
+Continue into 22-graphql-dgs, 02-rest-api-design, 13-caching after finishing this GraphQL lab.
+Revisit this GraphQL vision after the real-world build retro.
+Bring one open GraphQL question into the next lab deliberately.

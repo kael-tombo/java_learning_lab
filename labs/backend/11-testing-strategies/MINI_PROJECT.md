@@ -1,32 +1,40 @@
 # Mini Project: Testing Strategies
 
-## Goal
-Build a small, runnable Testing Strategies service that demonstrates the core happy path.
+## What to build
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
-
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+This testing strategies mini build produces a working invoice-service layered suite you can run locally.
+Scope stays deliberately small so every testing strategies behavior remains observable.
+Budget roughly one focused evening for the invoice-service layered suite implementation.
+Success means demonstrating testing strategies judgment, not just compiling code.
+Keep a lab journal noting each testing strategies surprise encountered.
+Acceptance checks define the edge, and no additions go past them.
 
 ## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
 
-## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+1. Cover invoice math with fast focused unit tests for the service.
+2. Slice-test the web layer without booting everything.
+3. Run repository tests against a real database.
+4. Lock the PDF-export contract with a boundary test.
+5. Quarantine one flaky timing test with documented cause.
+
+## Architecture in miniature
+
+- Test-slice concept for layers.
+- Integration tests with real dependencies.
+- Contract-style boundary checks.
+- Test-data builders.
+- Flaky-test quarantine discipline.
+
+## How it is judged
+
+- [ ] Suite covers calculation, web, and persistence layers distinctly in the solution.
+- [ ] Web slice runs without full application boot in the platform.
+- [ ] Repository tests execute against a genuine database.
+- [ ] Boundary test pins the export shape.
+- [ ] Flaky test quarantined with cause and re-run evidence.
+
+## Extension
+
+Choose one realistic complication and bolt it onto the project.
+Write the two-paragraph retro: which testing strategies decision proved hardest.
+Give the demo to a peer whose only map is the acceptance checks.

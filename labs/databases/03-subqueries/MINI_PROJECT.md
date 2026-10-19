@@ -1,80 +1,49 @@
 # Subqueries — Mini Project
 
-## Goal
-Build a small but complete exercise of subqueries in 90 minutes.
+## Brief
+Six focused exercises on scalar, IN and EXISTS, plus derived-table subqueries, each ending with a visible artifact and a one-line explanation.
 
-## Requirements
-- R1: schema + queries exercising subqueries scenario 1.
-- R2: schema + queries exercising subqueries scenario 2.
-- R3: schema + queries exercising subqueries scenario 3.
-- R4: schema + queries exercising subqueries scenario 4.
-- R5: schema + queries exercising subqueries scenario 5.
-- R6: schema + queries exercising subqueries scenario 6.
-- R7: schema + queries exercising subqueries scenario 7.
-- R8: schema + queries exercising subqueries scenario 8.
+## Setup
+Prepare seed rows for courses and results, sized so the query results fit on one screen.
 
-## Steps
-1. Step 1: scaffold, load sample data, verify with a query, record observations.
-2. Step 2: scaffold, load sample data, verify with a query, record observations.
-3. Step 3: scaffold, load sample data, verify with a query, record observations.
-4. Step 4: scaffold, load sample data, verify with a query, record observations.
-5. Step 5: scaffold, load sample data, verify with a query, record observations.
-6. Step 6: scaffold, load sample data, verify with a query, record observations.
-7. Step 7: scaffold, load sample data, verify with a query, record observations.
-8. Step 8: scaffold, load sample data, verify with a query, record observations.
-9. Step 9: scaffold, load sample data, verify with a query, record observations.
-10. Step 10: scaffold, load sample data, verify with a query, record observations.
+## Exercises
+1. Exercise on scalar subquery fetching the top course score inline: load it and record what changes in the output.
+2. Exercise on IN-list filter for results in a chosen course set: run it, then note the one surprise worth remembering.
+3. Exercise on EXISTS check for courses that actually have results: shape it and capture the check query beside it.
+4. Exercise on NOT EXISTS hunt for courses with zero results: assemble it, then explain the result to a reviewer aloud.
+5. Exercise on derived table computing per-course averages before filtering: compose it and file the script where the next step finds it.
+6. Exercise on correlated rewrite comparing scalar versus EXISTS plans: frame it while keeping every statement re-runnable.
 
-## Acceptance criteria
-- All queries return correct results; notes explain one surprising observation.
+## Reference snippet
+```sql
+SELECT id FROM courses
+WHERE EXISTS (
+  SELECT 1 FROM results r
+  WHERE r.course_id = courses.id
+)
+ORDER BY id
+FETCH FIRST 20 ROWS ONLY;
+```
 
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
+## Acceptance
+- All six exercises finish with artifacts a reviewer can open.
+- The write-up quotes the rule that a scalar subquery returns one value and fits inside a SELECT or WHERE clause.
+- A second run reproduces identical row counts.
+- Each exercise names its own failure signal.
+
+## Reflection
+- Which step surprised you, and which fact explains it?
+- What subquery shortcut would you forbid on a shared database?
+- The reflection stays inside the project folder beside the scripts.
+
+## Setup checklist
+- Reserve a scratch schema just for this work and keep shared databases out of it.
+- Seed rows for courses and results loaded and counted.
+- Notes file stays open for anything surprising worth quoting.
+- Rollback or re-seed: that path is confirmed before edits begin.
+
+## Hand-off
+- Tag the finished scripts folder; the next lab can pick it up without re-reading everything.
+- The notes file goes to whoever reruns the exercises, and the surprises survive the handoff that way.
+- A peer reruns every script without edits before this checklist is marked done.
+

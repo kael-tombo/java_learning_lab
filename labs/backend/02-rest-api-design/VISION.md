@@ -1,30 +1,41 @@
-# VISION — REST API Design
+# VISION — Rest Api Design
 
-> Where this lab takes you: from hello-world to production judgment on REST API Design.
+## Where this points
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This REST API design lab carries learners from endpoint wiring to designing contracts partners can rely on for years.
+Expect judgment calls about REST API design trade-offs, not just syntax recall.
+Progress shows when the REST API design vocabulary enters daily design discussions.
+The book-catalog resource API project rewards engineers who question defaults instead of copying them.
+Early exercises build REST API design fluency; later builds demand REST API design decisions.
+Treat each REST API design milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the book-catalog resource API project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## Competence profile
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains REST API design choices to teammates with concrete failure stories.
+A graduate continues operating through degraded conditions, no panic.
+A graduate measures REST API design outcomes instead of asserting them.
+A graduate spots REST API design misuse during code review before it ships.
+Work gets scoped by a graduate to match the surrounding system.
+A graduate teaches one REST API design idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## What this lab will not teach
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This REST API design lab deliberately leaves the following out.
+- GraphQL schema design stays outside this build.
+- Event-schema governance stays outside the course.
+- GRPC interface definition stays outside this lab.
+Meeting those needs belongs to neighboring REST API design studies.
 
-## Done = You Can
-- Choose, build, test, and operate REST API Design in a real service.
+## Ready when
+
+You wrap every task up without the lesson notes back open.
+You name two live REST API design risks in any design review.
+The fault drill knocks the app over; you recover it calmly.
+You justify each REST API design trade-off with observed evidence.
+
+## Follow-ons
+
+Continue into 02-rest-apis, 12-api-documentation, 17-api-versioning-documentation after finishing the lab.
+Come back to this vision once the real-world build retro wraps.
+Bring one open REST API design question into the next lab deliberately.

@@ -1,80 +1,47 @@
 # Spring Data — Mini Project
 
-## Goal
-Build a small but complete exercise of spring data in 90 minutes.
+## Objective
+Produce a working exercise on Spring Data repository derivation and query methods in about ninety minutes, ending with scripts a peer can rerun.
 
-## Requirements
-- R1: schema + queries exercising spring data scenario 1.
-- R2: schema + queries exercising spring data scenario 2.
-- R3: schema + queries exercising spring data scenario 3.
-- R4: schema + queries exercising spring data scenario 4.
-- R5: schema + queries exercising spring data scenario 5.
-- R6: schema + queries exercising spring data scenario 6.
-- R7: schema + queries exercising spring data scenario 7.
-- R8: schema + queries exercising spring data scenario 8.
+## Core facts
+- Derived query methods translate method names into generated queries. Every finder below leans on that translation.
+- Paging and sorting parameters keep large result sets bounded — that is how the listings behave under checks.
+- Custom queries override derivation when method names grow unreadable; that is the acceptance bar.
 
-## Steps
-1. Step 1: scaffold, load sample data, verify with a query, record observations.
-2. Step 2: scaffold, load sample data, verify with a query, record observations.
-3. Step 3: scaffold, load sample data, verify with a query, record observations.
-4. Step 4: scaffold, load sample data, verify with a query, record observations.
-5. Step 5: scaffold, load sample data, verify with a query, record observations.
-6. Step 6: scaffold, load sample data, verify with a query, record observations.
-7. Step 7: scaffold, load sample data, verify with a query, record observations.
-8. Step 8: scaffold, load sample data, verify with a query, record observations.
-9. Step 9: scaffold, load sample data, verify with a query, record observations.
-10. Step 10: scaffold, load sample data, verify with a query, record observations.
+## Build
+Create one scratch schema dedicated to this drill, seed a handful of rows, then work the task list in order.
 
-## Acceptance criteria
-- All queries return correct results; notes explain one surprising observation.
+## Task list
+1. Assemble the driver repository with a derived status finder, and record what changes in the output.
+2. Compose the route search combining two criteria in one name, then note the one surprise worth remembering.
+3. Frame the paged driver listing with explicit sort order, and capture the check query beside it.
+4. Trace the custom query replacing an unreadable derived name, then explain the result to a reviewer aloud.
+5. Draft the null-handling review for optional finder parameters, and file the script where the next step finds it.
+6. Load the naming-boundary note marking when derivation stops paying off, while keeping every statement re-runnable.
 
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
+## Reference snippet
+```text
+interface DriverRepo {
+  findByStatusOrderByNameAsc(status, page)
+  // custom query replaces overlong names
+}
+```
+
+## Checks
+- Every script reruns cleanly on a fresh schema without manual edits.
+- Row counts reconcile before and after each transformation step.
+- One observed derivation behavior is written down with its cause.
+- The snippet above executes (or the sketch reads correctly) against the seeded drivers data.
+
+## Stretch
+- Break one derivation assumption deliberately, then document the error message verbatim.
+- Remove one helper and show the exercise still passes without it.
+
+## Done
+The folder holds scripts, seed data, and a short note naming the trickiest step.
+
+## Hand-off
+- Tag the finished scripts folder so the next lab picks it up without re-reading every file.
+- Hand the notes file to whoever reruns the exercises, so the surprises survive the handoff.
+- Mark this checklist done only after a peer has rerun every script without edits.
+

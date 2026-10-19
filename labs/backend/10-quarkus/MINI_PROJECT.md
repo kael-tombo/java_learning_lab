@@ -1,32 +1,40 @@
 # Mini Project: Quarkus
 
-## Goal
-Build a small, runnable Quarkus service that demonstrates the core happy path.
+## Moving parts
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+- Build-time augmentation concept supporting the seed-library Quarkus service.
+- Developer live-reload loop supporting the seed-library Quarkus service.
+- Right-sized extension set.
+- Configuration and health conventions.
+- Test-friendly service shape.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Build brief
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+This Quarkus mini build produces a working app you can run locally.
+Scope stays deliberately small so every Quarkus behavior remains observable.
+Budget roughly one focused evening for the implementation.
+Success means demonstrating Quarkus judgment, not just compiling code.
+Keep a lab journal noting each Quarkus surprise encountered.
+Hold the line at the acceptance checks; nothing extra sneaks in beyond them.
+
+## Sequence
+
+1. Build a seed-library service tracking packets and germination for the service.
+2. Use the live-reload loop for endpoint iteration.
+3. Select only the extensions the library needs.
+4. Expose health reflecting seed-store reachability.
+5. Write one test per endpoint using the idiomatic harness.
 
 ## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+
+- [ ] 40 seed packets tracked with germination notes in the solution.
+- [ ] Live-reload iteration demonstrably shortens a change cycle in the platform.
+- [ ] Extension list justified line by line.
+- [ ] Health reflects seed-store state truthfully.
+- [ ] Endpoint tests pass in a single command.
+
+## If time remains
+
+Choose one realistic complication and bolt it onto the project.
+Write the two-paragraph retro: which Quarkus decision proved hardest.
+Give the demo to a peer whose only map is the acceptance checks.

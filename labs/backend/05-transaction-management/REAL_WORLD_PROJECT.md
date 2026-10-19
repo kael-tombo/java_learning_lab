@@ -1,43 +1,42 @@
 # Real World Project: Transaction Management
 
-## Project
-a payment ledger ensuring atomic debit/credit with explicit rollback.
+## Problem
 
-## Why it matters
-In production, Transaction Management is rarely a library detail — it is an architectural commitment. Teams choose it to safe multi-step writes.
+The cooperative bank payments ledger answers a concrete operational need.
+Stakeholders judge it by transaction management behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable transaction management slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Transaction Management Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Architecture
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+- Transfer orchestration service serving the cooperative bank payments ledger.
+- Double-entry posting store.
+- Reconciliation batch.
+- Fraud-hold interception.
+- Regulator export.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Milestones
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the app with one happy path live.
+M2: Transaction management hardening plus failure drills against the service.
+M3: instrumentation for operability threaded through the solution.
+M4: deliver the load rehearsal and its handover documentation.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.spring.io/spring-framework/reference/data-access/transaction.html
-- https://www.postgresql.org/docs/current/transaction-iso.html
+## Operations and SLO checklist
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks transaction management golden signals for the system.
+- Alerts page on the build's error budget burn, not on noise.
+- Restart, rollback, and data repair are all in the runbook.
+- Freshness commitments belong to the SLO review cadence.
+
+## Failure modes
+
+- Lost update under concurrent withdrawals.
+- Phantom reads shifting a daily total.
+- Overly strict isolation throttling peak traffic.
+- Nested fee call committing apart from its transfer.
+
+## Handover
+
+- [ ] A live demo of the offering demonstrating the full transaction management journey.
+- [ ] The runbook is followable by a stranger during an outage.
+- [ ] Retro naming the riskiest remaining transaction management assumption.

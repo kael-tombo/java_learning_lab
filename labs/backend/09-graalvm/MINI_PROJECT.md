@@ -1,32 +1,40 @@
-# Mini Project: GraalVM
+# Mini Project: Graalvm Native Image
 
-## Goal
-Build a small, runnable GraalVM service that demonstrates the core happy path.
+## Moving parts
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+- Closed-world assumption concept supporting the trail-map native CLI.
+- Ahead-of-time compilation trade-offs supporting the trail-map native CLI.
+- Reflection configuration needs.
+- Startup-time profile.
+- Single-binary distribution.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Build brief
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+This GraalVM native image mini build produces a working app you can run locally.
+Scope stays deliberately small so every GraalVM native image behavior remains observable.
+Budget roughly one focused evening for the implementation.
+Success means demonstrating GraalVM native image judgment, not just compiling code.
+Keep a lab journal noting each GraalVM native image surprise encountered.
+Hold the line at the acceptance checks; nothing extra sneaks in beyond them.
+
+## Sequence
+
+1. Package a trail-map lookup tool as one native binary for the service.
+2. Identify one reflection usage needing explicit configuration.
+3. Measure cold-start against the JVM-mode baseline.
+4. Confirm offline trail lookup works without a runtime install.
+5. Document which dynamic feature was constrained.
 
 ## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+
+- [ ] Binary answers 40 trail lookups correctly in the solution.
+- [ ] Cold start beats JVM mode clearly on the same machine in the platform.
+- [ ] Reflection configuration file checked in beside the build.
+- [ ] Offline run needs no extra runtime present.
+- [ ] Constraint log names the exact dynamic feature adjusted.
+
+## If time remains
+
+One realistic complication of your choosing goes into the project.
+Write the two-paragraph retro: which GraalVM native image decision proved hardest.
+Show the system to a peer armed with nothing but the acceptance checks.

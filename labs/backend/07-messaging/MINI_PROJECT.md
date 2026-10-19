@@ -1,32 +1,40 @@
-# Mini Project: Messaging
+# Mini Project: Messaging Fundamentals
 
-## Goal
-Build a small, runnable Messaging service that demonstrates the core happy path.
+## Moving parts
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+- Queues versus topics distinction supporting the clinic notification fan-out.
+- At-least-once delivery handling supporting the clinic notification fan-out.
+- Idempotent consumer design.
+- Poison-message isolation.
+- Ordering guarantees per channel.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Build brief
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+This messaging fundamentals mini build produces a working app you can run locally.
+Scope stays deliberately small so every messaging fundamentals behavior remains observable.
+Budget roughly one focused evening for the implementation.
+Success means demonstrating messaging fundamentals judgment, not just compiling code.
+Keep a lab journal noting each messaging fundamentals surprise encountered.
+Acceptance checks define the edge, and no additions go past them.
+
+## Sequence
+
+1. Publish appointment reminders to both queue and topic channels for the service.
+2. Make the reminder consumer safe under duplicate delivery.
+3. Isolate one malformed reminder without halting the flow.
+4. Preserve per-patient ordering across 20 reminders.
+5. Measure redelivery behavior after a consumer restart.
 
 ## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+
+- [ ] 100 reminders reach every subscribed channel in the solution.
+- [ ] Duplicate delivery of 20 messages changes nothing in the platform.
+- [ ] Malformed message quarantined within 3 attempts.
+- [ ] Per-patient order holds across all 20 sequences.
+- [ ] Restart loses zero reminders.
+
+## If time remains
+
+The project gains exactly one realistic complication, chosen by you.
+Write the two-paragraph retro: which messaging fundamentals decision proved hardest.
+Walk a peer through the system while they read only the acceptance checks.

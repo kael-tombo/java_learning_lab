@@ -1,50 +1,39 @@
-# R2dbc — Vision
+# R2DBC — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about r2dbc.
+## Direction
+Grow from first queries toward dependable judgment about non-blocking publishers and bounded streams, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in r2dbc fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in r2dbc fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in r2dbc fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in r2dbc fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in r2dbc fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in r2dbc fundamentals → internals → production trade-offs.
+## Why it matters here
+- Command of the reactive stack turns on-call database surprises into routine checklist work.
+- Concretely: R2DBC exposes non-blocking publishers instead of blocking result sets.
+- Concretely: backpressure lets slow consumers throttle fast database producers.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate r2dbc skill 1 with a measurable artifact.
-- [ ] M2: demonstrate r2dbc skill 2 with a measurable artifact.
-- [ ] M3: demonstrate r2dbc skill 3 with a measurable artifact.
-- [ ] M4: demonstrate r2dbc skill 4 with a measurable artifact.
-- [ ] M5: demonstrate r2dbc skill 5 with a measurable artifact.
-- [ ] M6: demonstrate r2dbc skill 6 with a measurable artifact.
-- [ ] M7: demonstrate r2dbc skill 7 with a measurable artifact.
-- [ ] M8: demonstrate r2dbc skill 8 with a measurable artifact.
+## Growth path
+1. Foundations: start from a blank schema and reproduce the mini project.
+2. Depth: extend one item (the reactive reading query streaming sensor rows) until a reviewer asks for simplification.
+3. Production: real-world milestones delivered, restore drill documented.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about publisher mechanics, since the non-blocking contract is explicit.
+- Strong after this lab: applying demand-limit thinking during stream reviews.
+- Still fragile: hidden blocking calls freezing the event loop remains the most likely incident for beginners.
+- Still fragile: unbounded streams exhausting memory without demand limits still needs a senior eye on the pipeline design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Every canned snippet gets its results reproduced before reuse.
+- Stop skipping the readings row-count reconciliation after each change.
+- Stop treating the connection-factory configuration separating pool from pipeline as optional when the review depends on it.
+
+## Non-coverage
+- This lab does not cover driver version numbers; treat those as separate tracks.
+- It also skips reactive framework release claims, which belong to platform tracks.
+- Deliberately omitted: invented benchmarks, version trivia, borrowed view names.
+
+## Checkable milestones
+- [ ] From memory, rebuild the seed schema on a blank host.
+- [ ] Explain the backpressure sketch bounding an unbounded reading feed to a peer without notes.
+- [ ] Trigger transaction boundaries leaking across reactive operators in staging, and recover using the runbook.
+- [ ] Say where reactive access ends and driver version numbers begin in a design review.
+
+## How to use this lab
+Work through the items in sequence with rerunnable scripts, and stop where the non-coverage boundary above says.

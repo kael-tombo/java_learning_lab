@@ -1,30 +1,41 @@
-# VISION — API Documentation
+# VISION — Api Documentation
 
-> Where this lab takes you: from hello-world to production judgment on API Documentation.
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This API documentation lab carries learners from code-first endpoints to documentation partners can build against blind.
+Expect judgment calls about API documentation trade-offs, not just syntax recall.
+Progress shows when the API documentation vocabulary enters daily design discussions.
+The farmers-market documented API project rewards engineers who question defaults instead of copying them.
+Early exercises build API documentation fluency; later builds demand API documentation decisions.
+Treat each API documentation milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the farmers-market documented API project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains API documentation choices to teammates with concrete failure stories.
+Under degraded conditions, a graduate keeps operating the system calmly.
+A graduate measures API documentation outcomes instead of asserting them.
+A graduate spots API documentation misuse during code review before it ships.
+A graduate bounds the work by what the surrounding system tolerates.
+A graduate teaches one API documentation idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This API documentation lab deliberately leaves the following out.
+- Technical-copywriting craft stays outside this build.
+- SDK code generation operations stays outside the course.
+- Developer-community management stays outside this lab.
+Meeting those needs belongs to neighboring API documentation studies.
 
-## Done = You Can
-- Choose, build, test, and operate API Documentation in a real service.
+## Signals you are ready
+
+Lesson notes stay shut while its tasks complete.
+You name two live API documentation risks in any design review.
+You bring the app back after a fault drill, staying calm throughout.
+You justify each API documentation trade-off with observed evidence.
+
+## Where next
+
+Continue into 17-api-versioning-documentation, 02-rest-api-design, 11-testing-strategies after finishing the lab.
+Revisit this API documentation vision after the real-world build retro.
+Bring one open API documentation question into the next lab deliberately.

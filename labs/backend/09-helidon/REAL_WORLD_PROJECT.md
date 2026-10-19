@@ -1,43 +1,42 @@
 # Real World Project: Helidon
 
-## Project
-a Helidon SE reactive endpoint for streaming JSON.
+## Context
 
-## Why it matters
-In production, Helidon is rarely a library detail — it is an architectural commitment. Teams choose it to minimal-footprint services and serverless.
+The maritime facility operations backend answers a concrete operational need.
+Stakeholders judge it by Helidon behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable Helidon slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Helidon Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the maritime facility operations backend with one happy path live.
+M2: Helidon hardening plus failure drills against the service.
+M3: the solution gains operability instrumentation.
+M4: handover documentation written once the load rehearsal clears.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Facility registry.
+- Shift-planning service.
+- Maintenance dispatch.
+- Safety-check aud_SLO.
+- Harbor-master dashboard.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://web.archive.org/web/20190820211857/https://helidon.io/docs/latest/index.html
-- https://helidon.io/
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks Helidon golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- The runbook handles restart, rollback, and data repair end to end.
+- The SLO review cadence is where freshness promises get checked.
+
+## Exit criteria
+
+- [ ] A live demo of the build demonstrating the full Helidon journey.
+- [ ] During an outage, a stranger can work from the runbook alone.
+- [ ] Retro naming the riskiest remaining Helidon assumption.
+
+## Known hazards
+
+- Roster-store lag cascading into lamp reporting.
+- Misrouted request hiding a lamp fault.
+- Health check masking partial degradation.
+- Shift overlap losing lamp coverage.

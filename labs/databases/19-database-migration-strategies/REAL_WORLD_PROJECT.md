@@ -1,108 +1,39 @@
 # Database Migration Strategies — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where database migration strategies is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing zero-downtime migration with expand-contract patterns on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Service sketch
+Backups, replicas, and dashboards surround the migration window so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model profiles and profile_history with seed data plus contract tests.
+- M2: Phase 2: harden the transition path with indexes, guards, and load probes.
+- M3: the phase-3 rehearsal covers backup, restore, and rollback.
+- M4: Phase 4: hand over runbooks so on-call owns the cutover without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- Pair each schema change with the script that undoes it.
+- Monitor the transition path for errors, saturation, and slow statements.
+- A scheduled job restores the backup to a scratch host.
+- Gate deploys on contract tests covering profile_history behavior.
+
+## Failure drills
+- big-bang alters locking profiles during peak traffic — schedule the expand step off-peak, per the checklist above.
+- old code crashing on a column dropped too early; contract only after every writer has cut over.
+- unbounded backfills saturating the primary; run the backfill in bounded batches with sleeps between them.
+- Fact reminder: dual writes keep old and new columns consistent mid-migration. Guides every response above.
 
 ## Requirements
-- F1: database migration strategies capability 1 with acceptance test.
-- F2: database migration strategies capability 2 with acceptance test.
-- F3: database migration strategies capability 3 with acceptance test.
-- F4: database migration strategies capability 4 with acceptance test.
-- F5: database migration strategies capability 5 with acceptance test.
-- F6: database migration strategies capability 6 with acceptance test.
-- F7: database migration strategies capability 7 with acceptance test.
-- F8: database migration strategies capability 8 with acceptance test.
-- F9: database migration strategies capability 9 with acceptance test.
-- F10: database migration strategies capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for database migration strategies.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for database migration strategies.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for database migration strategies.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for database migration strategies.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for database migration strategies.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for database migration strategies.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers profiles reads with contract tests proving the shape.
+- F2: the service guards profile_history writes against invalid input.
+- NF1: the dashboard surfaces query-path error counts and slow-statement signals.
+- NF2: a passing restore drill on a scratch host gates release sign-off.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like profile_history traffic against the staging store.
+- Inject one fault (big-bang alters locking profiles during peak traffic) and confirm the runbook resolves it.
+- Restore from the backup first, then reconcile row counts before the success call.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Green milestones plus a passed restore drill plus a read runbook together amount to sign-off.

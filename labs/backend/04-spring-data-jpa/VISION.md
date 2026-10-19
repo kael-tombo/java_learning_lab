@@ -1,30 +1,41 @@
-# VISION — Spring Data JPA
+# VISION — Spring Data Jpa Querying
 
-> Where this lab takes you: from hello-world to production judgment on Spring Data JPA.
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This Spring Data JPA querying lab carries learners from simple finders to query design that stays fast as data grows.
+Expect judgment calls about the system trade-offs, not just syntax recall.
+Progress shows when the vocabulary enters daily design discussions.
+The staff-directory query service project rewards engineers who question defaults instead of copying them.
+Early exercises build fluency; later builds demand decisions.
+Treat each milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the staff-directory query service project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains its choices to teammates with concrete failure stories.
+A graduate operates the app under degraded conditions without panic.
+A graduate measures its outcomes instead of asserting them.
+A graduate spots its misuse during code review before it ships.
+Whatever fits the surrounding system is what a graduate commits to.
+A graduate teaches one idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This lab deliberately leaves the following out.
+- Stored-procedure engineering stays outside this build.
+- Full-text search engine tuning stays outside the course.
+- Cross-database reporting pipelines stays outside this lab.
+Meeting those needs belongs to neighboring studies.
 
-## Done = You Can
-- Choose, build, test, and operate Spring Data JPA in a real service.
+## Signals you are ready
+
+Lesson notes stay shut while its tasks complete.
+You name two live risks in any design review.
+You recover the offering from a fault drill calmly.
+You justify each trade-off with observed evidence.
+
+## Where next
+
+Continue into 03-spring-data-jpa, 05-transaction-management, 21-multi-tenancy after finishing the lab.
+After the real-world build retro ends, this vision deserves another look.
+Bring one open question into the next lab deliberately.

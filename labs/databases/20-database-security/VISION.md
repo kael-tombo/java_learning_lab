@@ -1,50 +1,39 @@
 # Database Security — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about database security.
+## Trajectory
+Grow from first queries toward dependable judgment about grant discipline and traceable access, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in database security fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in database security fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in database security fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in database security fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in database security fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in database security fundamentals → internals → production trade-offs.
+## Payoff
+- Command of these controls turns on-call database surprises into routine checklist work.
+- Concretely: least privilege grants each role only the access it needs.
+- Concretely: masking hides sensitive columns from roles that must not see them.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate database security skill 1 with a measurable artifact.
-- [ ] M2: demonstrate database security skill 2 with a measurable artifact.
-- [ ] M3: demonstrate database security skill 3 with a measurable artifact.
-- [ ] M4: demonstrate database security skill 4 with a measurable artifact.
-- [ ] M5: demonstrate database security skill 5 with a measurable artifact.
-- [ ] M6: demonstrate database security skill 6 with a measurable artifact.
-- [ ] M7: demonstrate database security skill 7 with a measurable artifact.
-- [ ] M8: demonstrate database security skill 8 with a measurable artifact.
+## Milestones
+1. Foundations: start from a blank schema and reproduce the mini project.
+2. Depth: extend one item (the role matrix separating reader, writer, and admin grants) until a reviewer asks for simplification.
+3. Production: a recorded restore drill travels with the real-world milestones.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about access boundaries, since every role's reach is spelled out.
+- Strong after this lab: applying column masking during analyst access reviews.
+- Still fragile: over-broad grants exposing patient data to every analyst remains the most likely incident for beginners.
+- Still fragile: unmasked exports leaking sensitive columns into files still needs a senior eye on the export design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Snippets stay unused until the results reappear from a local run.
+- Stop skipping the access_log row-count reconciliation after each grant change.
+- Stop treating the masking sketch hiding diagnosis codes from analysts as optional when the review depends on it.
+
+## Not covered
+- This lab does not cover CVE numbers and vendor advisories; treat those as separate tracks.
+- It also skips product-specific vault integrations, which belong to platform tracks.
+- Not included on purpose: invented benchmarks, version trivia, and borrowed view names.
+
+## Checkable milestones
+- [ ] Rebuild the seed schema on a blank host from memory.
+- [ ] Explain the revoke drill removing one over-broad patient grant to a peer without notes.
+- [ ] Trigger missing audit rows leaving a breach unexplainable in staging, and recover using the runbook.
+- [ ] Say where role design ends and CVE numbers and vendor advisories begin in a design review.
+
+## Working agreement
+The items run in order, scripts remain rerunnable, and the non-coverage boundary above holds.

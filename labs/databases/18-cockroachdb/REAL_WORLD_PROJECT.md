@@ -1,108 +1,42 @@
-# Cockroachdb — Real World Project
+# CockroachDB — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where cockroachdb is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.cockroachlabs.com/docs
-- https://www.cockroachlabs.com/docs/stable/
+## Problem
+A production-flavored specification where CockroachDB distributed-SQL deployment and retry reasoning carries real traffic, real failure, and real on-call pages.
 
 ## Architecture
+```text
+app -> service -> r_accounts / r_payments store -> replica + backup -> dashboard
 ```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
-
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
-
-## Requirements
-- F1: cockroachdb capability 1 with acceptance test.
-- F2: cockroachdb capability 2 with acceptance test.
-- F3: cockroachdb capability 3 with acceptance test.
-- F4: cockroachdb capability 4 with acceptance test.
-- F5: cockroachdb capability 5 with acceptance test.
-- F6: cockroachdb capability 6 with acceptance test.
-- F7: cockroachdb capability 7 with acceptance test.
-- F8: cockroachdb capability 8 with acceptance test.
-- F9: cockroachdb capability 9 with acceptance test.
-- F10: cockroachdb capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for cockroachdb.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for cockroachdb.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for cockroachdb.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for cockroachdb.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for cockroachdb.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for cockroachdb.
+Client requests reach a service layer, which routes range-based queries to the r_accounts and r_payments data on the cluster.
 
 ## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- M1: Phase 1: model r_accounts and r_payments with seed data plus contract tests.
+- M2: Phase 2: harden the cluster path with indexes, guards, and load probes.
+- M3: Phase 3: rehearse backup, restore, and rollback for the cluster.
+- M4: Phase 4: hand over runbooks so on-call owns range health without paging the author.
+
+## Operations checklist
+- Attach the rollback script before any schema change lands.
+- Monitor node and range health for errors, saturation, and slow statements.
+- A scheduled job restores the backup to a scratch host.
+- Gate deploys on contract tests covering r_payments behavior.
+
+## Failure modes
+- retry storms when clients hammer contended accounts — back off with jitter, per the checklist above.
+- hot ranges forming behind sequential keys; hash the payment id into the key before inflow grows.
+- missing retry loops surfacing transient aborts to users; wire the retry wrapper around every payment write.
+- Fact reminder: distributed SQL spreads ranges across nodes for survival. Guides every response above.
+
+## Requirements
+- F1: the service answers r_accounts reads with contract tests proving the shape.
+- F2: the service guards r_payments writes against invalid input.
+- NF1: the dashboard surfaces query-path error counts and slow-statement signals.
+- NF2: the release is signed off only after the scratch-host restore drill passes.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like r_payments traffic against the staging store.
+- Inject one fault (retry storms when clients hammer contended accounts) and confirm the runbook resolves it.
+- Success is declared only after a backup restore matches row counts.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Sign-off
+Three things gate sign-off: milestones green, restore drill passed, runbook read by the team.

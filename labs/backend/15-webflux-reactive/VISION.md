@@ -1,30 +1,41 @@
-# VISION — Spring WebFlux (Reactive)
+# VISION — Reactive Webflux
 
-> Where this lab takes you: from hello-world to production judgment on Spring WebFlux (Reactive).
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This reactive WebFlux lab carries learners from request-per-thread thinking to streams with explicit demand management.
+Expect judgment calls about reactive WebFlux trade-offs, not just syntax recall.
+Progress shows when the reactive WebFlux vocabulary enters daily design discussions.
+The river-level streaming feed project rewards engineers who question defaults instead of copying them.
+Early exercises build reactive WebFlux fluency; later builds demand reactive WebFlux decisions.
+Treat each reactive WebFlux milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the river-level streaming feed project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains reactive WebFlux choices to teammates with concrete failure stories.
+A graduate runs the system through degraded conditions, panic nowhere in it.
+A graduate measures reactive WebFlux outcomes instead of asserting them.
+A graduate spots reactive WebFlux misuse during code review before it ships.
+A graduate sizes the work to fit how the surrounding system behaves.
+A graduate teaches one reactive WebFlux idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This reactive WebFlux lab deliberately leaves the following out.
+- Reactor-core internals authorship stays outside this build.
+- Custom reactive-operator design stays outside the course.
+- Kernel asynchronous-IO programming stays outside this lab.
+Meeting those needs belongs to neighboring reactive WebFlux studies.
 
-## Done = You Can
-- Choose, build, test, and operate Spring WebFlux (Reactive) in a real service.
+## Signals you are ready
+
+You finish the tasks without going back to the lesson notes.
+You name two live reactive WebFlux risks in any design review.
+You recover the app when the fault drill fires, and calmly.
+You justify each reactive WebFlux trade-off with observed evidence.
+
+## Where next
+
+Continue into 19-server-sent-events, 08-kafka-integration, 10-backend-performance after finishing the lab.
+Revisit this reactive WebFlux vision after the real-world build retro.
+Bring one open reactive WebFlux question into the next lab deliberately.

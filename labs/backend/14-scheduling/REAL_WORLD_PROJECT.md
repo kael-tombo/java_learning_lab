@@ -1,43 +1,42 @@
 # Real World Project: Scheduling
 
-## Project
-a nightly ETL job guarded by ShedLock and idempotency keys.
+## Context
 
-## Why it matters
-In production, Scheduling is rarely a library detail — it is an architectural commitment. Teams choose it to safe recurring jobs across restarts.
+The bakery-chain overnight operations answers a concrete operational need.
+Stakeholders judge it by scheduling behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable scheduling slices.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Scheduling Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Plan of record
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+M1: walking skeleton of the bakery-chain overnight operations with one happy path live.
+M2: Scheduling hardening plus failure drills against the service.
+M3: operability instrumentation across the solution.
+M4: the project's load rehearsal and its handover documentation both land.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Design
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+- Job scheduler with calendar.
+- Order-placement worker.
+- Report publisher.
+- Overlap and miss dashboards.
+- On-call runbook for failures.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://docs.spring.io/spring-framework/reference/integration/scheduling.html
-- https://cron.hjw.io/
+## Operability bar
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dashboard tracks scheduling golden signals for the system.
+- Alerts page on the app's error budget burn, not on noise.
+- Runbook covers restart, rollback, and data repair.
+- SLO review cadence owns freshness promises of the platform.
+
+## Exit criteria
+
+- [ ] A live demo of the build demonstrating the full scheduling journey.
+- [ ] Runbook a stranger could follow during the outage.
+- [ ] Retro naming the riskiest remaining scheduling assumption.
+
+## Known hazards
+
+- Overlapping runs double-ordering flour.
+- Crash mid-job leaving half-placed orders.
+- Timezone shift firing jobs an hour early.
+- Silent missed run discovered at dawn.

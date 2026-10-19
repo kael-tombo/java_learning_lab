@@ -1,32 +1,40 @@
-# Mini Project: Spring WebFlux (Reactive)
+# Mini Project: Reactive Webflux
 
-## Goal
-Build a small, runnable Spring WebFlux (Reactive) service that demonstrates the core happy path.
+## The assignment
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+This reactive WebFlux mini build produces a working river-level streaming feed you can run locally.
+Scope stays deliberately small so every reactive WebFlux behavior remains observable.
+Budget roughly one focused evening for the river-level streaming feed implementation.
+Success means demonstrating reactive WebFlux judgment, not just compiling code.
+Keep a lab journal noting each reactive WebFlux surprise encountered.
+Hold the line at the acceptance checks; nothing extra sneaks in beyond them.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Parts you will wire
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+- Mono and Flux publisher types.
+- Non-blocking request handling.
+- Backpressure concept.
+- Streaming response shaping.
+- Error propagation in pipelines.
 
-## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+## Build order
+
+1. Publish river-level readings as a continuous stream for the service.
+2. Keep the request path non-blocking end to end.
+3. Apply backpressure when a slow consumer lags.
+4. Shape the stream as server-sent updates.
+5. Propagate one sensor fault without killing the stream.
+
+## Acceptance checks
+
+- [ ] Stream delivers 300 readings in order in the solution.
+- [ ] Blocking call audit finds zero blocking operations on event threads in the platform.
+- [ ] Slow-consumer test shows demand-regulated flow.
+- [ ] Fault injection logs the error while the stream continues.
+- [ ] Late subscriber receives a documented catch-up behavior.
+
+## Stretch
+
+Choose one realistic complication and bolt it onto the project.
+Write the two-paragraph retro: which reactive WebFlux decision proved hardest.
+Demo time: the peer sees the system with just the acceptance checks as the guide.

@@ -1,43 +1,42 @@
 # Real World Project: Caching
 
-## Project
-a catalog service with Caffeine L1 and Redis L2 caches.
+## System sketch
 
-## Why it matters
-In production, Caching is rarely a library detail — it is an architectural commitment. Teams choose it to sub-10ms reads from hot keys.
+- Edge listing cache serving the city-events ticketing front door.
+- Price-change invalidation bus serving the city-events ticketing front door.
+- Stampede guard at origin.
+- Hit-rate SLO dashboard.
+- Cache-warming routine.
 
-## Architecture sketch
-```
-Client -> API Gateway -> Caching Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Situation
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+The app answers a concrete operational need.
+Stakeholders judge it by caching behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable caching slices.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Delivery phases
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the build with one happy path live.
+M2: Caching hardening plus failure drills against the service.
+M3: operability instrumentation across the solution.
+M4: handover documentation sits beside the project's load rehearsal.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://redis.io/docs/latest/develop/get-started/
-- (link removed)
+## What breaks
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Stale price honored after a change.
+- Stampede collapsing origin at on-sale minute.
+- Eviction sweeping hot listings early.
+- Poisoned entry cached from an error response.
+
+## Runbook expectations
+
+- Dashboard tracks caching golden signals for the system.
+- Alerts page on the offering's error budget burn, not on noise.
+- Runbook covers restart, rollback, and data repair.
+- SLO review cadence owns freshness promises of the platform.
+
+## Ship list
+
+- [ ] A live demo of the service demonstrating the full caching journey.
+- [ ] Runbook a stranger could follow during the outage.
+- [ ] Retro naming the riskiest remaining caching assumption.

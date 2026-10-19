@@ -1,30 +1,41 @@
-# VISION — CQRS with Axon Framework
+# VISION — Cqrs And Event Sourcing
 
-> Where this lab takes you: from hello-world to production judgment on CQRS with Axon Framework.
+## Trajectory
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This CQRS and event sourcing lab carries learners from single-model CRUD to separated write and read responsibilities with replayable history.
+Expect judgment calls about the system trade-offs, not just syntax recall.
+Progress shows when the vocabulary enters daily design discussions.
+The concert-seat booking splitter project rewards engineers who question defaults instead of copying them.
+Early exercises build fluency; later builds demand decisions.
+Treat each milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the concert-seat booking splitter project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## The practitioner you become
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains its choices to teammates with concrete failure stories.
+A graduate operates the app under degraded conditions without panic.
+A graduate measures its outcomes instead of asserting them.
+A graduate spots its misuse during code review before it ships.
+A graduate bounds the work by what the surrounding system tolerates.
+A graduate teaches one idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Explicit non-coverage
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This lab deliberately leaves the following out.
+- Axon Server operations at scale stays outside this build.
+- Cryptographic event-chain proofs stays outside the course.
+- Complex saga orchestration engines stays outside this lab.
+Meeting those needs belongs to neighboring studies.
 
-## Done = You Can
-- Choose, build, test, and operate CQRS with Axon Framework in a real service.
+## Readiness signals
+
+Lesson notes stay shut while its tasks complete.
+You name two live risks in any design review.
+You recover the offering from a fault drill calmly.
+You justify each trade-off with observed evidence.
+
+## Adjacent labs
+
+Continue into 23-cqrs-axon, 08-kafka-integration, 07-messaging after finishing the lab.
+Revisit this vision when the real-world build retro has closed.
+Bring one open question into the next lab deliberately.

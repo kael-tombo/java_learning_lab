@@ -1,80 +1,46 @@
-# Mongodb — Mini Project
+# MongoDB — Mini Project
 
-## Goal
-Build a small but complete exercise of mongodb in 90 minutes.
+## Scenario
+A teammate needs a runnable example of MongoDB document modeling and find query patterns by end of day, small enough to review in one sitting.
 
-## Requirements
-- R1: schema + queries exercising mongodb scenario 1.
-- R2: schema + queries exercising mongodb scenario 2.
-- R3: schema + queries exercising mongodb scenario 3.
-- R4: schema + queries exercising mongodb scenario 4.
-- R5: schema + queries exercising mongodb scenario 5.
-- R6: schema + queries exercising mongodb scenario 6.
-- R7: schema + queries exercising mongodb scenario 7.
-- R8: schema + queries exercising mongodb scenario 8.
+## What you ship
+A scripted walkthrough covering the document shapes and their queries, with seed data, ordered steps, and a verification section at the end.
 
-## Steps
-1. Step 1: scaffold, load sample data, verify with a query, record observations.
-2. Step 2: scaffold, load sample data, verify with a query, record observations.
-3. Step 3: scaffold, load sample data, verify with a query, record observations.
-4. Step 4: scaffold, load sample data, verify with a query, record observations.
-5. Step 5: scaffold, load sample data, verify with a query, record observations.
-6. Step 6: scaffold, load sample data, verify with a query, record observations.
-7. Step 7: scaffold, load sample data, verify with a query, record observations.
-8. Step 8: scaffold, load sample data, verify with a query, record observations.
-9. Step 9: scaffold, load sample data, verify with a query, record observations.
-10. Step 10: scaffold, load sample data, verify with a query, record observations.
+## Working sequence
+1. First, load the customer document with an embedded address history, and file the script where the next step finds it.
+2. Next, run the ticket referencing its customer instead of embedding, while keeping every statement re-runnable.
+3. Then, shape the find query filtering tickets by priority and state, and record what changes in the output.
+4. After that, assemble the projection returning only ticket id, title, and state, then note the one surprise worth remembering.
+5. Further, compose the array-field query matching any tag in a ticket, and capture the check query beside it.
+6. Finally, frame the schema-evolution note adding an optional SLA field, then explain the result to a reviewer aloud.
 
-## Acceptance criteria
-- All queries return correct results; notes explain one surprising observation.
+## Reference snippet
+```text
+db.tickets.find({ priority: "high" }, { title: 1, state: 1 })
+db.tickets.createIndex({ state: 1 })
+db.customers.countDocuments({})
+```
 
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
-- Stretch: add one index and compare EXPLAIN output.
+## Verification
+- Rerun the full sequence twice; the second pass must stay green.
+- Show how documents store nested fields together so one read returns the whole aggregate, and point to the line where that shows up in the results.
+- Demonstrate that embedding suits contained children while referencing suits shared entities, backed by one concrete observation.
+- Keep the tickets row counts consistent across every rerun.
+
+## Concept tie-in
+This drill exercises the patterns end to end: find queries filter on fields and project only the needed shape.
+
+## Setup checklist
+- Reserve a scratch schema just for this work and keep shared databases out of it.
+- Seed rows for customers and tickets loaded and counted.
+- Anything surprising enough to quote goes into the open notes file.
+- The first edit waits until the rollback or re-seed path is confirmed.
+
+## Next step
+Carry these scripts into the real-world project as the starting scaffold.
+
+## Hand-off
+- A tagged scripts folder lets the next lab skip re-reading every file.
+- The notes file changes hands with the exercises, and the surprises survive with it.
+- Only mark the checklist done once a peer has rerun all scripts without edits.
+

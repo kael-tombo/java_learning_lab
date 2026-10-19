@@ -1,30 +1,41 @@
 # VISION — Spring Boot Internals
 
-> Where this lab takes you: from hello-world to production judgment on Spring Boot Internals.
+## Trajectory
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This Spring Boot internals lab carries learners from trusting autoconfiguration to predicting and explaining every bean decision.
+Expect judgment calls about Spring Boot internals trade-offs, not just syntax recall.
+Progress shows when the Spring Boot internals vocabulary enters daily design discussions.
+The startup-report diagnostic service project rewards engineers who question defaults instead of copying them.
+Early exercises build Spring Boot internals fluency; later builds demand Spring Boot internals decisions.
+Treat each Spring Boot internals milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the startup-report diagnostic service project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## The practitioner you become
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains Spring Boot internals choices to teammates with concrete failure stories.
+A graduate runs the system through degraded conditions, panic nowhere in it.
+A graduate measures Spring Boot internals outcomes instead of asserting them.
+A graduate spots Spring Boot internals misuse during code review before it ships.
+A graduate sizes the work to fit how the surrounding system behaves.
+A graduate teaches one Spring Boot internals idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Explicit non-coverage
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This Spring Boot internals lab deliberately leaves the following out.
+- Writing a public starter framework stays outside this build.
+- Bytecode-level bean post-processing stays outside the course.
+- Build-tool plugin authoring stays outside this lab.
+Meeting those needs belongs to neighboring Spring Boot internals studies.
 
-## Done = You Can
-- Choose, build, test, and operate Spring Boot Internals in a real service.
+## Readiness signals
+
+You wrap every task up without the lesson notes back open.
+You name two live Spring Boot internals risks in any design review.
+A fault drill trips the app; recovery stays calm.
+You justify each Spring Boot internals trade-off with observed evidence.
+
+## Adjacent labs
+
+Continue into 26-spring-boot-internals, 05-transaction-management, 13-caching after finishing the lab.
+After the real-world build retro ends, this vision deserves another look.
+Bring one open Spring Boot internals question into the next lab deliberately.

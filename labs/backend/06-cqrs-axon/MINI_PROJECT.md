@@ -1,32 +1,40 @@
-# Mini Project: CQRS with Axon Framework
+# Mini Project: Cqrs And Event Sourcing
 
-## Goal
-Build a small, runnable CQRS with Axon Framework service that demonstrates the core happy path.
+## Moving parts
 
-## Requirements
-- Java 17+, Maven, Spring Boot 3.x
-- One controller, one service, one dependency (or in-memory substitute)
-- One happy-path endpoint and one error-path endpoint
-- At least one metric and one structured log line
+- Command versus query separation supporting the concert-seat booking splitter.
+- Event-sourced state rebuild supporting the concert-seat booking splitter.
+- Aggregate command handling concept.
+- Projection building.
+- Event-store ordering.
 
-## Skeleton
-```java
-@SpringBootApplication
-public class App {
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
-}
-```
+## Build brief
 
-## Steps
-1. Model the resource(s) as a small domain object.
-2. Create the service with a single public operation.
-3. Add the controller mapping to the status codes.
-4. Add a Micrometer counter on the happy path.
-5. Write a slice test and an integration test.
+This CQRS and event sourcing mini build produces a working app you can run locally.
+Scope stays deliberately small so every behavior remains observable.
+Budget roughly one focused evening for the implementation.
+Success means demonstrating its judgment, not just compiling code.
+Keep a lab journal noting each surprise encountered.
+The acceptance checks cap the work; features beyond them wait.
+
+## Sequence
+
+1. Split seat booking into command and query responsibilities for the service.
+2. Record seat holds as an append-only event sequence.
+3. Rebuild current seat map purely by replaying events.
+4. Project a read model answering availability in one lookup.
+5. Replay 200 events and confirm the identical seat map.
 
 ## Done when
-- The endpoint returns 200 on success and a stable error body on failure.
-- Tests pass in CI.
-- The README explains how to run it.
+
+- [ ] 200-event replay reproduces the live seat map exactly in the solution.
+- [ ] Command side rejects double-booking of all 40 held seats in the platform.
+- [ ] Availability query answers from the projection alone.
+- [ ] Every state change traces to a stored event.
+- [ ] Late-arriving correction event updates the projection correctly.
+
+## If time remains
+
+One realistic complication of your choosing goes into the project.
+Write the two-paragraph retro: which decision proved hardest.
+Demo time: the peer sees the system with just the acceptance checks as the guide.

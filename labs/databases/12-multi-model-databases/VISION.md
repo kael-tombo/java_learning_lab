@@ -1,50 +1,39 @@
-# Multi Model Databases — Vision
+# Multi-Model Databases — Vision
 
-## Where this lab takes you
-From first principles to production-grade judgment about multi model databases.
+## Where this points
+Grow from first queries toward dependable judgment about which store serves which shape of data, measured by artifacts rather than hours studied.
 
-## The Arc
-1. Stage 1: build competence in multi model databases fundamentals → internals → production trade-offs.
-2. Stage 2: build competence in multi model databases fundamentals → internals → production trade-offs.
-3. Stage 3: build competence in multi model databases fundamentals → internals → production trade-offs.
-4. Stage 4: build competence in multi model databases fundamentals → internals → production trade-offs.
-5. Stage 5: build competence in multi model databases fundamentals → internals → production trade-offs.
-6. Stage 6: build competence in multi model databases fundamentals → internals → production trade-offs.
+## Capabilities gained
+- Command of model selection turns on-call database surprises into routine checklist work.
+- Concretely: relational stores fit ledger-like catalog facts with strict integrity.
+- Concretely: document stores fit variable review payloads with evolving fields.
 
-## Milestones (checkable)
-- [ ] M1: demonstrate multi model databases skill 1 with a measurable artifact.
-- [ ] M2: demonstrate multi model databases skill 2 with a measurable artifact.
-- [ ] M3: demonstrate multi model databases skill 3 with a measurable artifact.
-- [ ] M4: demonstrate multi model databases skill 4 with a measurable artifact.
-- [ ] M5: demonstrate multi model databases skill 5 with a measurable artifact.
-- [ ] M6: demonstrate multi model databases skill 6 with a measurable artifact.
-- [ ] M7: demonstrate multi model databases skill 7 with a measurable artifact.
-- [ ] M8: demonstrate multi model databases skill 8 with a measurable artifact.
+## Sequence
+1. Foundations: reproduce the mini project, beginning with a blank schema.
+2. Depth: extend one item (catalog facts modeled relationally with keys) until a reviewer asks for simplification.
+3. Production: a recorded restore drill travels with the real-world milestones.
 
-## Anti-Goals
-- Memorizing syntax without understanding guarantees or costs.
+## Honest assessment
+- Strong after this lab: reasoning about workload-to-model fit, because ledger facts and evolving payloads each have a home.
+- Strong after this lab: applying the fit rules when reviewing new feature data.
+- Still fragile: one model stretched to serve every workload badly remains the most likely incident for beginners.
+- Still fragile: cross-model reads with no defined consistency story still needs a senior eye on the design.
 
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
-- Motivation check: why does this matter to your next project?
+## Anti-patterns to drop
+- Do not reuse canned snippets until their results have been reproduced locally.
+- Stop skipping the reviews row-count reconciliation after each change.
+- Stop treating session state assigned to a key-value sketch as optional when the review depends on it.
+
+## Out of scope
+- This lab does not cover product version numbers; treat those as separate tracks.
+- It also skips managed-service pricing claims, which belong to procurement discussions.
+- Left out on purpose: made-up benchmarks, version trivia, and view names borrowed from elsewhere.
+
+## Checkable milestones
+- [ ] From memory, rebuild the seed schema on a blank host.
+- [ ] Explain review payloads modeled as flexible documents to a peer without notes.
+- [ ] Trigger dual writes diverging with no reconciliation job in staging, and recover using the runbook.
+- [ ] Say where polyglot persistence ends and product version numbers begin in a design review.
+
+## Study guidance
+Work through the items in sequence with rerunnable scripts, and stop where the non-coverage boundary above says.

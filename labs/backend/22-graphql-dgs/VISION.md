@@ -1,30 +1,41 @@
-# VISION — GraphQL with Netflix DGS
+# VISION — Graphql With Dgs
 
-> Where this lab takes you: from hello-world to production judgment on GraphQL with Netflix DGS.
+## Trajectory
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This GraphQL with DGS lab carries learners from hand-rolled GraphQL to schema-first graphs teams can split safely.
+Expect judgment calls about GraphQL with DGS trade-offs, not just syntax recall.
+Progress shows when the GraphQL with DGS vocabulary enters daily design discussions.
+The bike-share inventory graph project rewards engineers who question defaults instead of copying them.
+Early exercises build GraphQL with DGS fluency; later builds demand GraphQL with DGS decisions.
+Treat each GraphQL with DGS milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the bike-share inventory graph project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## The practitioner you become
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains GraphQL with DGS choices to teammates with concrete failure stories.
+A graduate runs the system through degraded conditions, panic nowhere in it.
+A graduate measures GraphQL with DGS outcomes instead of asserting them.
+A graduate spots GraphQL with DGS misuse during code review before it ships.
+Whatever fits the surrounding system is what a graduate commits to.
+A graduate teaches one GraphQL with DGS idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Explicit non-coverage
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This GraphQL with DGS lab deliberately leaves the following out.
+- Federation-gateway operations stays outside this build.
+- Query-planner algorithm design stays outside the course.
+- Client-cache normalization theory stays outside this lab.
+Meeting those needs belongs to neighboring GraphQL with DGS studies.
 
-## Done = You Can
-- Choose, build, test, and operate GraphQL with Netflix DGS in a real service.
+## Readiness signals
+
+You finish the tasks without going back to the lesson notes.
+You name two live GraphQL with DGS risks in any design review.
+Calm recovery of the app is how the fault drill ends.
+You justify each GraphQL with DGS trade-off with observed evidence.
+
+## Adjacent labs
+
+Continue into 07-graphql, 13-caching, 02-rest-api-design after finishing the lab.
+Revisit this vision when the real-world build retro has closed.
+Bring one open GraphQL with DGS question into the next lab deliberately.

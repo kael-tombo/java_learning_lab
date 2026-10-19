@@ -1,43 +1,42 @@
-# Real World Project: GraalVM Native Image
+# Real World Project: Graalvm Native Deployment
 
-## Project
-a native image API for serverless functions.
+## System sketch
 
-## Why it matters
-In production, GraalVM Native Image is rarely a library detail — it is an architectural commitment. Teams choose it to instant cold starts in serverless/containers.
+- Native build-and-sign lane serving the parcel-locker kiosk fleet.
+- Fleet image distribution serving the parcel-locker kiosk fleet.
+- Kiosk health beacon.
+- Offline parcel manifest.
+- Remote diagnostics bundle.
 
-## Architecture sketch
-```
-Client -> API Gateway -> GraalVM Native Image Service -> Datastore
-                |               |
-                +-> Observability (logs/metrics/traces)
-```
+## Situation
 
-## Implementation notes
-- Prefer constructor injection and small, testable components.
-- Keep the happy path pure; isolate side effects.
-- Version the contract and document it (OpenAPI/schema).
-- Add timeouts, retries with backoff, and a circuit breaker at the boundary.
-- Emit RED metrics (rate, errors, duration) and structured logs.
+The app answers a concrete operational need.
+Stakeholders judge it by GraalVM native deployment behavior under realistic pressure.
+Plan for a four-week delivery with weekly demonstrable GraalVM native deployment slices.
 
-## Failure modes to design for
-- Downstream timeout or partial failure.
-- Retry storms amplifying load.
-- Hidden shared mutable state across threads.
-- Consistency windows between writes and reads.
+## Delivery phases
 
-## Testing the real thing
-- Unit-test the service with mocks.
-- Slice-test the web layer.
-- Integration-test with Testcontainers against a real dependency.
-- Load-test the p99 path with a small k6 script.
+M1: walking skeleton of the build with one happy path live.
+M2: Graalvm native deployment hardening plus failure drills against the service.
+M3: instrumentation for operability threaded through the solution.
+M4: handover documentation written once the load rehearsal clears.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.graalvm.org/latest/reference-manual/native-image/
-- https://quarkus.io/
+## What breaks
 
-## Deliverables
-- [ ] Working service with one happy and one error path
-- [ ] Documented API surface
-- [ ] Metrics and a dashboard panel
-- [ ] A short retro: what surprised you, what you'd change
+- Dynamic feature slipping past the review into production.
+- Image bloat exceeding kiosk storage.
+- Missing agent signal hiding a memory leak.
+- Slow first interaction after cold boot.
+
+## Runbook expectations
+
+- Dashboard tracks GraalVM native deployment golden signals for the system.
+- Alerts page on the offering's error budget burn, not on noise.
+- Runbook sections: restart, rollback, data repair.
+- Platform freshness promises are owned by the SLO review cadence.
+
+## Ship list
+
+- [ ] A live demo of the service demonstrating the full GraalVM native deployment journey.
+- [ ] Outage-proof runbook: a stranger can follow it.
+- [ ] Retro naming the riskiest remaining GraalVM native deployment assumption.

@@ -1,30 +1,41 @@
-# VISION — Backend Performance
+# VISION — Backend Performance Tuning
 
-> Where this lab takes you: from hello-world to production judgment on Backend Performance.
+## Direction
 
-## The Arc
-1. **Foundations** — core vocabulary and the one mental model.
-2. **Fluency** — implement the happy path without docs.
-3. **Discrimination** — know when this beats alternatives.
-4. **Scale** — apply it to a realistic workload.
-5. **Production** — operate it: metrics, alerts, failure drills.
+This backend performance tuning lab carries learners from scattered optimizations to disciplined measurement with recorded rationale.
+Expect judgment calls about backend performance tuning trade-offs, not just syntax recall.
+Progress shows when the backend performance tuning vocabulary enters daily design discussions.
+The tuning-lab for a slugish registry project rewards engineers who question defaults instead of copying them.
+Early exercises build backend performance tuning fluency; later builds demand backend performance tuning decisions.
+Treat each backend performance tuning milestone as preparation for the real-world build pressure.
+Reread this vision halfway through whenever the tuning-lab for a slugish registry project feels routine.
 
-## Milestones (checkable)
-- [ ] M1: explain the core model in 60 seconds.
-- [ ] M2: implement the happy path from memory.
-- [ ] M3: handle the main error case explicitly.
-- [ ] M4: add a slice + integration test.
-- [ ] M5: ship the MINI_PROJECT and write the REAL_WORLD_PROJECT retro.
+## What mastery looks like
 
-## Anti-Goals
-- Memorizing annotations without the model; skipping tests; treating config as code.
+A graduate explains backend performance tuning choices to teammates with concrete failure stories.
+A graduate operates this project under degraded conditions without panic.
+A graduate measures backend performance tuning outcomes instead of asserting them.
+A graduate spots backend performance tuning misuse during code review before it ships.
+The surrounding system sets the frame; a graduate scopes inside it.
+A graduate teaches one backend performance tuning idea to a peer from memory.
 
-## Interview Lens
-- State the trade-off, name the failure mode, pick the right abstraction.
+## Out of scope
 
-## 30-Day Plan
-- Wk1 THEORY + EXERCISES. Wk2 QUIZ/FLASHCARDS to 90%+. Wk3 MINI_PROJECT.
-- Wk4 REAL_WORLD_PROJECT + 5-minute teach-back.
+This backend performance tuning lab deliberately leaves the following out.
+- CPU microarchitecture design stays outside this build.
+- Operating-system scheduler authoring stays outside the course.
+- Custom JIT compiler construction stays outside this lab.
+Meeting those needs belongs to neighboring backend performance tuning studies.
 
-## Done = You Can
-- Choose, build, test, and operate Backend Performance in a real service.
+## Signals you are ready
+
+You wrap every task up without the lesson notes back open.
+You name two live backend performance tuning risks in any design review.
+You recover the effort from a fault drill calmly.
+You justify each backend performance tuning trade-off with observed evidence.
+
+## Where next
+
+Continue into 10-backend-performance, 13-caching, 03-spring-data-jpa after finishing the lab.
+Come back to this vision once the real-world build retro wraps.
+Bring one open backend performance tuning question into the next lab deliberately.

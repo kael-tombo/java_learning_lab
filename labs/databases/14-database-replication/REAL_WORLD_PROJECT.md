@@ -1,108 +1,39 @@
 # Database Replication — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where database replication is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
+## Context
+A service blueprint placing primary and replica lag measurement with failover drills on the critical path between users and durable state.
 
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Service sketch
+Backups, replicas, and dashboards surround the replication path so failures stay visible and recoverable.
 
-## Architecture
-```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
+## Delivery phases
+- M1: Phase 1: model ledger and ledger_replica with seed data plus contract tests.
+- M2: Phase 2: harden the stream path with indexes, guards, and load probes.
+- M3: Phase 3: rehearse backup, restore, and rollback for the cluster.
+- M4: Phase 4: hand over runbooks so on-call owns promotion without paging the author.
 
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
+## Reliability checklist
+- No schema change goes in without its rollback script.
+- Monitor the replication stream for errors, saturation, and slow statements.
+- Backup restores to a scratch host run on a calendar.
+- Gate deploys on contract tests covering ledger_replica behavior.
+
+## Failure drills
+- stale reads served from a lagging replica — quarantine the replica until it catches up, per the checklist above.
+- split brain after two nodes both accept writes; enforce the fencing rule before retrying promotion.
+- replay backlogs growing faster than catch-up capacity; raise replay parallelism or throttle the primary.
+- Fact reminder: lag measurement compares applied positions between primary and replica. Guides every response above.
 
 ## Requirements
-- F1: database replication capability 1 with acceptance test.
-- F2: database replication capability 2 with acceptance test.
-- F3: database replication capability 3 with acceptance test.
-- F4: database replication capability 4 with acceptance test.
-- F5: database replication capability 5 with acceptance test.
-- F6: database replication capability 6 with acceptance test.
-- F7: database replication capability 7 with acceptance test.
-- F8: database replication capability 8 with acceptance test.
-- F9: database replication capability 9 with acceptance test.
-- F10: database replication capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for database replication.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for database replication.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for database replication.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for database replication.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for database replication.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for database replication.
-
-## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- F1: the service answers ledger reads with contract tests proving the shape.
+- F2: the service guards ledger_replica writes against invalid input.
+- NF1: error counts and slow-statement signals from the query path are visible on the dashboard.
+- NF2: release sign-off waits until the restore drill passes on a scratch host.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like ledger_replica traffic against the staging store.
+- Inject one fault (stale reads served from a lagging replica) and confirm the runbook resolves it.
+- Restore from the backup first, then reconcile row counts before the success call.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Exit criteria
+Nobody signs off until milestones are green, the restore drill passed, and the team read the runbook.

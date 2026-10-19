@@ -1,108 +1,42 @@
-# Ctes — Real World Project
+# CTEs — Real World Project
 
-## Scenario
-Design and implement a production-shaped system where ctes is a first-class requirement: correctness under failure, measurable performance, and safe rollout.
-
-## Sourced field notes (fetched Oct 2026 — verify before citing)
-- https://www.postgresql.org/docs/
-- https://use-the-index-luke.com/
+## Problem
+A production-flavored specification where non-recursive and recursive common table expressions carry real traffic, real failure, and real on-call pages.
 
 ## Architecture
+```text
+app -> service -> employees / mentorships store -> replica + backup -> dashboard
 ```
-App (Spring Boot) → Repo/JDBC → Database → Replication/Backup → Observability
-```
-
-## Implementation sketch
-```java
-@Repository
-public interface OrderRepo extends JpaRepository<Order, Long> {
-    @Query("select o from Order o where o.status = :s")
-    List<Order> findByStatus(String s);
-}
-```
-
-## Requirements
-- F1: ctes capability 1 with acceptance test.
-- F2: ctes capability 2 with acceptance test.
-- F3: ctes capability 3 with acceptance test.
-- F4: ctes capability 4 with acceptance test.
-- F5: ctes capability 5 with acceptance test.
-- F6: ctes capability 6 with acceptance test.
-- F7: ctes capability 7 with acceptance test.
-- F8: ctes capability 8 with acceptance test.
-- F9: ctes capability 9 with acceptance test.
-- F10: ctes capability 10 with acceptance test.
-- NF1: p95 latency, backup RPO/RTO, and security baseline for ctes.
-- NF2: p95 latency, backup RPO/RTO, and security baseline for ctes.
-- NF3: p95 latency, backup RPO/RTO, and security baseline for ctes.
-- NF4: p95 latency, backup RPO/RTO, and security baseline for ctes.
-- NF5: p95 latency, backup RPO/RTO, and security baseline for ctes.
-- NF6: p95 latency, backup RPO/RTO, and security baseline for ctes.
+Client requests reach a service layer, which runs the query pipelines built on common table expressions against the employees and mentorships stores.
 
 ## Milestones
-- Week 1: deliver increment 1 with tests and a short design note.
-- Week 2: deliver increment 2 with tests and a short design note.
-- Week 3: deliver increment 3 with tests and a short design note.
-- Week 4: deliver increment 4 with tests and a short design note.
-- Week 5: deliver increment 5 with tests and a short design note.
-- Week 6: deliver increment 6 with tests and a short design note.
+- M1: Phase 1: model employees and mentorships with seed data plus contract tests.
+- M2: Phase 2: harden the query path with indexes, guards, and load probes.
+- M3: phase three runs a backup, restore, and rollback rehearsal.
+- M4: Phase 4: hand over runbooks so on-call owns the pipelines without paging the author.
+
+## Operations checklist
+- No schema change goes in without its rollback script.
+- The query path earns monitoring for errors, saturation, and slow statements.
+- Backup restores to a scratch host run on a calendar.
+- Gate deploys on contract tests covering mentorships behavior.
+
+## Failure modes
+- infinite recursion when the expansion leg never exhausts new rows — the depth guard from the checklist above has to be in place first.
+- cyclic hierarchies looping until a depth guard stops them; cap the leg and verify the stop count.
+- over-chained CTEs hiding a simple join behind five layers; flatten during review before shipping.
+- Fact reminder: a CTE names an intermediate result so the main query stays readable. Guides every response above.
+
+## Requirements
+- F1: the service answers employees reads with contract tests proving the shape.
+- F2: the service guards mentorships writes against invalid input.
+- NF1: the dashboard surfaces query-path error counts and slow-statement signals.
+- NF2: a passing restore drill on a scratch host gates release sign-off.
 
 ## Verification
-- Load test, failure injection, backup restore drill — all must pass before sign-off.
+- Replay production-like mentorships traffic against the staging store.
+- Inject one fault (infinite recursion when the expansion leg never exhausts new rows) and confirm the runbook resolves it.
+- Row counts must reconcile against the restored backup before any success claim.
 
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
-- Ops note: document rollback steps for every schema change.
+## Sign-off
+Nobody signs off until milestones are green, the restore drill passed, and the team read the runbook.
