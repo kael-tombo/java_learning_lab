@@ -1,84 +1,53 @@
-# Mock Interview: CQRS
+# Mock Interview: Splitting Reads from Writes
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Design a reporting dashboard using CQRS
-
-**Interviewer**: "Design a reporting dashboard for an e-commerce platform. How would you approach the read vs write models?"
-
-**Candidate**: "CQRS is a natural fit here. The e-commerce writes are transactional — orders, payments, inventory changes. The reads are analytical — revenue reports, sales trends, customer analytics. They have fundamentally different shapes."
-
-**Interviewer**: "Explain the write side."
-
-**Candidate**: "The write model is the command side. It processes commands like PlaceOrder, ProcessPayment, ShipOrder. Each command goes through validation, business logic, and persistence. The write model is normalized — orders table, order_items table, payments table. Strong consistency within each aggregate."
-
-**Interviewer**: "And the read side?"
-
-**Candidate**: "The read model is denormalized for query performance. A `daily_sales_summary` table might have columns: date, total_revenue, order_count, avg_order_value, top_selling_category. These are pre-computed from the write model and updated asynchronously. Queries are simple SELECT statements with no joins — fast and efficient."
-
-**Interviewer**: "How does data flow from writes to reads?"
-
-**Candidate**: "When the write side processes a command, it emits domain events. OrderPlaced triggers a projection that updates the read models. I'd use an event handler that subscribes to the event stream, transforms the event data into the read model format, and upserts it. For real-time needs, I'd use Kafka with stream processing."
-
-**Interviewer**: "What about eventual consistency? The dashboard shows stale data."
-
-**Candidate**: "Acceptable for reporting — most dashboards have 5-15 minute freshness SLAs. If a specific report needs freshness, I'd either (1) read directly from the write side for that report (bypassing CQRS for that query), or (2) implement a faster projection with CDC from the write database."
-
-**Interviewer**: "When would CQRS be the wrong choice?"
-
-**Candidate**: "When reads and writes have the same shape — simple CRUD where the read model is identical to the write model. When strong consistency between reads and writes is mandatory for every read. When the team is small and the complexity of maintaining two models outweighs the query benefits."
-
-**Interviewer**: "How do you handle schema changes across read and write models?"
-
-**Candidate**: "Versioned projections. Each projection specifies the version of the events it handles. When the write model changes, events get a new version. Old projections continue processing old-version events. New projections handle both. This allows independent evolution of read models without blocking the write side."
-
-**Interviewer**: "What about the API? Does the client know about CQRS?"
-
-**Candidate**: "No, the API abstracts it. The client calls `GET /api/reports/daily-sales` and gets a response. The service determines which read model to query. The client doesn't know or care about CQRS — it's an implementation detail. The API contract is stable even if the internal model changes."
+> Two chairs, one candidate. Halcyon Air runs a fare search page and a booking flow that disagree badly about shape.
 
 ---
 
-## Key Takeaways
+## Round One
 
-- CQRS separates read and write concerns for optimized performance
-- Eventual consistency is acceptable for reporting and analytics
-- Event-based projections keep read models in sync
-- CQRS adds complexity — only use when read/write shapes diverge
-- The API should hide the CQRS implementation from clients
+**Chair**: "Ninety seconds on CQRS."
+
+**Candidate**: "The command side owns every rule for changing state; the query side serves reads from a shape built for the screen. Two models — one stores intent, one answers lookup. The split pays off exactly where reads and writes disagree in volume and shape, and airline seat search is the textbook case: thousands of filter combinations per actual booking."
+
+**Chair**: "Where would you refuse to use it?"
+
+**Candidate**: "Profile pages and admin screens. A form saving one row gains nothing from a second model, and the price is doubled code plus an eventual-consistency explanation nobody wants to give. It belongs where a query cannot be answered cheaply by the write store — full-text search, geo filtering, cross-entity rollups."
+
+**Chair**: "Bookings change seat availability; the search page must see it. Describe the pipe."
+
+**Candidate**: "The booking side emits BookingPlaced; a projector folds it into a denormalized search document — route, date band, seats left, price band. The index is disposable: delete it, replay the command events, and you get the same document back. That rebuildability is the strongest structural argument for the whole pattern."
+
+**Chair**: "I paid for seat 4A and the search page still shows it free."
+
+**Candidate**: "Lag — the projector hadn't caught up. Two mitigations. The confirmation page always reads the authoritative store and never lies. And lists carry a revision marker so a client can tell that its data is older than the decision it is making; when in doubt the screen says 'check availability' instead of selling the same seat twice."
+
+**Chair**: "Who owns the projector?"
+
+**Candidate**: "Whoever consumes the screen. Their contract is the event schema; beyond it, they may reshape documents at will, because any shape is reconstructable from the same stream later."
+
+**Chair**: "Does the query side ever write?"
+
+**Candidate**: "Its own plumbing only — refresh cursors and revision stamps. Business state change belongs to command handlers; the day a query mutates an order, the boundary exists in a diagram and nowhere else."
+
+**Chair**: "Two commands racing on the same aggregate?"
+
+**Candidate**: "Uniqueness and version rules stay with the write store as always. The split changes the read story, not the write discipline; concurrency conflicts remain write-side problems with write-side answers."
 
 ---
 
-## Evaluation Criteria
+## Second-Round Probes
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+- "Commands look like service methods. Why the ceremony?" — one command, one handler keeps a single home for preconditions; validation, authorization and the audit note sit beside the stated intent rather than scattering across three controllers.
+- "Cheap first step for a group that wants 'some of this'?" — pull query endpoints out of the command service's process while keeping one store; promote a second model only when a real query proves it needs one.
+- "What does projector backlog cost, and who pays it?" — the read side, visibly: lag minutes on its own dashboard, and any screen needing fresher answers reads the authoritative store for that field.
+- "State an acceptance criterion for lag." — listings may trail by seconds, but no answer that charges a customer may come from a view; a price or seat decision always consults the source of truth.
+- "Who else reads the events besides the projector?" — the audit trail, then later teams with new screens. The command side publishes once and everyone subscribes — direct table peeks across stores are never the currency.
+- "During a projector deploy?" — the existing projection keeps serving until its replacement passes the diff, so a deploy is a swap of pointers rather than a rebuild in place.
+- "How do you reproject safely?" — build a shadow instance, diff a sampled set of new documents against the existing ones, and let readers switch only after the diff is clean. No downtime, and the diff tells you which rules drifted.
 
+---
 
-## Staff+ Level Expectations
+## Red Flag
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
-
-## Common Follow-Up Questions
-
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
-
-## Key Takeaways
-
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
-
+Any candidate who claims CQRS "buys consistency". The command store is consistent; the sold-out seat may still appear on lists for seconds. Promising otherwise means the split — and its failure modes — have been misunderstood.

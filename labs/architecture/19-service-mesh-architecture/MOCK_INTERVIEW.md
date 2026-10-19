@@ -1,84 +1,59 @@
-# Mock Interview: Service Mesh Architecture
+# Mock Interview: Making the Mesh Case to a Reluctant Estate
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Implementing a service mesh for microservice communication
-
-**Interviewer**: "We have 50+ microservices and are struggling with service-to-service communication — implementing retries, timeouts, mTLS, and tracing in every service is inconsistent. How do you solve this?"
-
-**Candidate**: "I'd implement a service mesh. The service mesh offloads communication concerns — traffic management, security, observability — from application code to a proxy layer. Envoy sidecars intercept all traffic, and a control plane manages the configuration."
-
-**Interviewer**: "Walk me through the mesh architecture."
-
-**Candidate**: "Two planes: Data plane and Control plane. The data plane consists of Envoy proxies deployed as sidecars alongside each service. All inbound and outbound traffic routes through the proxy. The control plane (Istio's istiod, or Linkerd's controller) manages configuration — routing rules, retry policies, mTLS certificates, and observability configuration."
-
-**Interviewer**: "What problems does the mesh solve immediately?"
-
-**Candidate**: "Three categories instantly: (1) Traffic management — canary deployments, traffic splitting, circuit breaking (configured centrally, not per-service). (2) Security — mTLS between all services transparently, no application code changes. (3) Observability — distributed tracing, metrics, and access logs for all service-to-service communication."
-
-**Interviewer**: "How does the mesh handle mTLS?"
-
-**Candidate**: "The control plane issues certificates to each sidecar proxy using SPIFFE identities. Service A's sidecar and Service B's sidecar establish mTLS automatically. The application code sends plain HTTP to localhost; the sidecars handle encryption. This means no code changes for encryption — every service gets encrypted communication without knowing about it."
-
-**Interviewer**: "How do you implement canary deployments with the mesh?"
-
-**Certificate**: "Without mesh: complex load balancer configuration or application-level routing. With mesh: define a VirtualService and DestinationRule in Istio. Route 90% traffic to v1, 10% to v2. Add request headers for canary identification. The mesh handles the routing transparently — services don't know about canary logic."
-
-**Interviewer**: "What are the drawbacks of service mesh?"
-
-**Candidate**: "Complexity is the biggest cost. Running a mesh requires: (1) Managing the control plane infrastructure. (2) Debugging becomes harder — requests go through more hops (client → sidecar → sidecar → server). (3) Resource overhead — each sidecar uses 50-200MB RAM and CPU. (4) Latency — 1-3ms added per hop from the proxy. (5) Learning curve — teams need to understand mesh concepts."
-
-**Interviewer**: "When is service mesh NOT appropriate?"
-
-**Candidate**: "For small deployments (under 10 services) where the complexity of the mesh exceeds the benefits. For latency-sensitive systems where the 1-3ms proxy overhead is unacceptable — though this is rare. For teams without the operational maturity to manage the mesh. Start without a mesh and introduce it when the pain of manual cross-cutting concerns becomes greater than the pain of managing the mesh."
-
-**Interviewer**: "How do you handle a sidecar failure?"
-
-**Candidate**: "The sidecar being unavailable means the service is unreachable. Mitigations: (1) Use Kubernetes liveness probes on the sidecar. (2) Consider 'fail open' or 'fail closed' policies — if the sidecar fails, should traffic bypass it or fail? Usually fail closed is safer for security. (3) Health checks at the service level (readiness probe) depend on both the app and sidecar being healthy."
+> Dialogue. Halcyon runs about 120 services across five languages. Security wants service-to-service encryption and workload identity; meanwhile every team hand-rolls its own retry logic, badly.
 
 ---
 
-## Key Takeaways
+## Round One
 
-- Service mesh offloads communication concerns from application code
-- Data plane (Envoy sidecars) handles traffic; control plane manages config
-- mTLS, traffic splitting, and observability come without code changes
-- Complexity and resource overhead are the main trade-offs
-- Sidecar health must be managed as part of pod lifecycle
+**Chair**: "Plead for a mesh over libraries."
+
+**Candidate**: "One enforcement point for identity, in-flight encryption, call policy, and uniform telemetry — versus five client libraries drifting apart in five languages. Libraries scale their maintenance linearly with languages; a mesh scales once."
+
+**Chair**: "What does mutual TLS actually deliver here?"
+
+**Candidate**: "Every workload receives a cryptographic identity issued by the control plane and rotated automatically. Calls verify both ends before any bytes move. Authorization then attaches to identity — who is calling — rather than to network position, which stops 'internal' meaning 'unauthenticated' the moment a pod moves."
+
+**Chair**: "And the extra leg through a proxy — what does that bill come to?"
+
+**Candidate**: "Each call now crosses two proxies — a real, fixed increment per call. I will not hand-wave it: profile one busy path in a canary with the proxy attached and with it removed, watch the tail and CPU. A latency-critical path that regresses gets deliberately exempted, with the reason recorded — silence on this question is how mesh rollouts die."
+
+**Chair**: "Convince me the mesh improves release mechanics, not just security."
+
+**Candidate**: "Percentage routing lives in the mesh configuration: two percent of order traffic to the new revision, header pinning for staff. Teams stop building rollout plumbing inside applications, and a bad revision sheds traffic in seconds from one policy file."
+
+**Chair**: "Where does the mesh's reach end?"
+
+**Candidate**: "At side effects. A proxy retries the request it observed; only the application knows whether attempt one had consequences — captured a card, booked a seat. Payment semantics stay in code. The mesh also sees request traffic, not business events, so product analytics live where they always did."
+
+**Chair**: "Rollout order for a nervous estate?"
+
+**Candidate**: "Telemetry first — every call's fate reported with zero code churn, which buys trust cheaply. Then encryption in observe mode, then enforced, then routing policy, with authorization last. Each stage earns belief before the next stage can damage anything."
+
+**Chair**: "When should a shop skip this entirely?"
+
+**Candidate**: "A handful of services, one language, one team: a tuned shared client plus a solid edge gateway beats a proxy per pod. The mesh is a response to heterogeneity and headcount, and adopting it for the compliance checkbox alone is the fastest way to inherit a useless data plane."
 
 ---
 
-## Evaluation Criteria
+## Probes
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+- "Egress to third parties through the mesh?" — wrapped as named destinations with the same identity and policy treatment, otherwise partners become the unmanaged hole the whole design exists to close.
+- "Business-level authorization — where?" — in the application, where domain context lives; the mesh answers "may this workload call that one" and nothing finer.
+- "Proxy faults versus app faults — how kept apart?" — mesh-emitted response classes separate transport failures from application errors in the dashboards, and pages filter on that boundary first.
+- "What does the mesh see that app metrics cannot?" — connection truths: TLS outcomes, retries the proxy added, error classes per destination — the difference between "my code" and "the wire".
+- "Who owns mesh incidents?" — the platform team owns the data plane and its changes; teams own their SLOs. The proxy's fate must be visible in every service's dashboard, or outages get misattributed to app regressions.
 
+---
 
-## Staff+ Level Expectations
+## Closing Exchange
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
+**Chair**: "One sentence for the budget holder?"
 
-## Common Follow-Up Questions
+**Candidate**: "The mesh converts security and rollout policy from sixty repositories into one maintained plane — cheaper to audit, and far cheaper to evolve."
 
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
+---
 
-## Key Takeaways
+## Red Flag
 
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
-
+Adopting the mesh without re-measuring the per-hop cost on real traffic. The first latency incident lands on the mesh, and the platform team loses the argument for good.

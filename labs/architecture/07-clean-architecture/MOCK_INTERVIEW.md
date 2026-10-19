@@ -1,86 +1,51 @@
-# Mock Interview: Clean Architecture
+# Mock Interview Prep: Clean Architecture for an Invoicing Run
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Architecture for a loan application processing system
-
-**Interviewer**: "Design a loan application processing system. How do you structure the code to ensure business rules aren't coupled to frameworks?"
-
-**Candidate**: "I'd follow Clean Architecture. The dependency rule is strict: inner circles define policies, outer circles implement details. Dependencies point inward — outer circles depend on inner circles, never the reverse."
-
-**Interviewer**: "Walk me through the layers."
-
-**Candidate**: "Layer 1 — Entities: `Loan`, `Applicant`, `CreditReport`, `UnderwritingDecision`. These are enterprise-wide business rules. A `Loan` has invariants: interest rate within legal limits, loan amount within applicant's credit capacity.
-
-Layer 2 — Use Cases: `SubmitLoanApplication`, `UnderwriteLoan`, `ApproveLoan`. These orchestrate entity behavior. `UnderwriteLoan` checks credit score, debt-to-income ratio, and loan-to-value ratio by calling entity methods.
-
-Layer 3 — Interface Adapters: `LoanController` converts HTTP requests to use case inputs, `LoanPresenter` converts use case outputs to HTTP responses. `LoanRepository` interface defines persistence operations — the implementation is an outer detail.
-
-Layer 4 — Frameworks & Drivers: Spring Boot controllers, JPA repositories, PostgreSQL database. These implement the interfaces defined in inner layers."
-
-**Interviewer**: "How do use cases communicate with the database without depending on it?"
-
-**Candidate**: "The use case depends on an interface — `LoanRepository` interface — defined in the use case layer. The actual implementation (`JpaLoanRepository`) is in the outer layer. This is the Dependency Inversion Principle at work. The use case calls `loanRepository.save(loan)` without knowing whether the implementation uses JPA, JDBC, or a file system."
-
-**Interviewer**: "How does data flow through these layers?"
-
-**Candidate**: "The HTTP request hits the controller (outer). The controller creates a use case input model and calls the use case (inner). The use case calls entity methods and repository interfaces. The repository implementation (outer) persists data. The use case returns an output model. The presenter (outer) formats it as JSON. Data crosses boundaries as simple data structures, not entities."
-
-**Interviewer**: "How do you handle cross-cutting concerns?"
-
-**Candidate**: "Through the Interface Adapter layer. A `LoggingLoanPresenter` decorates the real presenter. An `AuditLoanRepository` decorates the real repository. The use cases don't know about logging or auditing — these are composed in the configuration layer. This keeps use cases clean of cross-cutting concerns."
-
-**Interviewer**: "When would Clean Architecture be overkill?"
-
-**Candidate**: "For CRUD-heavy applications where business logic is thin — simple create, read, update, delete operations. For applications with a single delivery mechanism (just HTTP, no CLI, no batch processing). For small teams where the indirection overhead isn't justified by the benefits."
-
-**Interviewer**: "What's the most common mistake implementing Clean Architecture?"
-
-**Candidate**: "Letting entities leak into the outer layers. I see `LoanEntity` (JPA) being used everywhere, not just in the repository. Or the controller passing `Loan` objects directly to the use case. The boundaries must be strict — entities belong in the innermost layer, and outer layers use their own models for communication."
+> Personal prep notes, first-person throughout, going before a staff hiring panel. AutoLedger produces customer invoices; month-end batch jobs move real money.
 
 ---
 
-## Key Takeaways
+## The Case I Walk In With
 
-- Dependency rule: dependencies point inward
-- Entities contain enterprise-wide business rules
-- Use cases orchestrate application-specific behavior
-- Interface adapters translate between layers
-- Data crosses boundaries as simple structures, not entities
+I frame the layers as risk containment, not aesthetics. Entities carry the rules an auditor rereads: `Invoice.finalize()` refuses lines without a tax code and refuses an empty invoice. Use cases orchestrate: `MonthEndInvoiceRun` fetches orders due, builds invoices, tracks per-customer progress, and reports failures at the end. Adapters translate — a scheduler trigger and a manual admin endpoint both feed the same use case, and a presenter shapes the response object. Storage, mail, and the calendar enter through interfaces the outer ring implements.
 
 ---
 
-## Evaluation Criteria
+## Questions I Expect, With Replies
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+1. "Why not put `finalize()` inside a service?"
+   Because a service imports everything the day does — persistence, queues, whatever — and the rule drowns. The entity keeps the rule plain: constructible, assertable, runnable in a unit test with no container.
 
+2. "What does framework independence actually buy?"
+   A demonstrated swap: replacing the relational store touched adapter classes only. Interactors and entities never noticed, because neither had ever referenced the store.
 
-## Staff+ Level Expectations
+3. "Five DTO layers seems heavy."
+   Agreed if translations happen everywhere. I confine mapping to the ring boundaries — request to command, result to view object — while internal calls pass domain objects untouched. Mapping cost should concentrate, not spread.
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
+4. "Where does authorization get checked?"
+   At the driving adapter, and once more coarsely inside the use case as a guard. The inner check protects the rule from a forgotten controller; the outer check keeps user context from creeping inward.
 
-## Common Follow-Up Questions
+5. "What erodes this architecture fastest?"
+   Persistence annotations creeping onto entities as a shortcut. One annotation drags lazy-loading policy into the enterprise rules, and suddenly the store dictates the business. Module walls that forbid the core from seeing framework packages are the enforcement.
 
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
+6. "Presenters seem like ceremony. Drop them?"
+   For a raw status reply, a presenter is a passthrough and I skip it. Anything that formats, orders, or hides fields needs one tested place to live, and ad-hoc formatting in controllers is exactly where it starts to rot.
 
-## Key Takeaways
+7. "Interactors calling other interactors?"
+   Permitted rarely, suspected always: nested use cases signal a missing rule boundary. Pull the shared rule down into the entity instead, and the nesting disappears on its own.
 
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
+8. "What about the audit log?"
+   An output port: the use case emits facts about itself, and whichever adapter wants to persist or forward them, persists or forwards them. Auditing stays a decision of the outer ring, not of the rules.
 
+---
+
+## The Trap
+
+A candidate who builds the rings but returns persistence rows as views "to save a mapping step". Inversion theatre: if inner layers hand outer layers storage shapes, the dependency rule turns decorative.
+
+## One More Answer I Keep Ready
+
+Asked why this and not ports-and-adapters vocabulary: the mechanics overlap heavily, but stakeholders hear "use case" faster than "port", and month-end invoicing is a use-case-shaped problem — communicate the structure in words the room already owns.
+
+Asked how entity names age: they keep the business word even as storage shifts beneath them. The store may reorganize freely; the language of the rules does not, and that asymmetry is the protection working.
+
+Asked about the batch window: the run receives its period and its sense of "now" through interfaces, so a test can freeze the month-end, and no rule ever consults a system clock directly.

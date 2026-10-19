@@ -1,80 +1,48 @@
-# Mock Interview: Six-Port Architecture (Hexagonal Deep Dive)
+# Mock Interview: Classifying a Module onto the Six Ports
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Designing a multi-channel customer support system
-
-**Interviewer**: "Design a customer support ticket system that handles email, chat, and phone. How do you structure the architecture for flexibility?"
-
-**Candidate**: "I'd use six-port architecture — an evolution of hexagonal architecture that explicitly distinguishes driving (inbound) and driven (outbound) ports. Each communication channel is a driving adapter that translates external protocols into use cases."
-
-**Interviewer**: "Explain the driving and driven ports."
-
-**Candidate**: "Driving ports are the use cases the application exposes: `CreateTicket`, `AssignTicket`, `ResolveTicket`. Driving adapters (email listener, chat bot, phone IVR) convert external inputs into these use case calls. Driven ports are what the application needs from outside: `TicketRepository`, `NotificationService`, `CustomerServiceClient`. Driven adapters implement these — PostgreSQL, Twilio, Salesforce."
-
-**Interviewer**: "How does a new channel get added?"
-
-**Candidate**: "Add a new driving adapter. For a WhatsApp channel, I'd implement a `WhatsAppAdapter` that receives WhatsApp messages, converts them to `CreateTicket` use case calls, and returns responses. The core domain doesn't change — it has no knowledge of WhatsApp. The port defines the contract; the adapter implements the protocol."
-
-**Interviewer**: "How do you handle different state machines per channel?"
-
-**Candidate**: "The core defines a generic ticket state machine: New → Assigned → InProgress → Resolved → Closed. Channel-specific states are handled in the adapter. The email adapter might have a 'waiting for customer response' substate, but it maps back to the core 'InProgress' state. The core stays channel-agnostic."
-
-**Interviewer**: "What about channel-specific routing logic?"
-
-**Candidate**: "Routing is a core use case — 'assign ticket to appropriate agent based on skill and workload.' The routing algorithm is in the core domain. But channel-specific routing rules (e.g., 'premium customers get priority in chat') can be adapter-specific. The adapter sets priority on the `CreateTicket` command; the core doesn't know whether the priority came from the channel or a business rule."
-
-**Interviewer**: "How do you test this architecture?"
-
-**Candidate**: "Core domain: pure unit tests with mock driven ports — fast, no infrastructure. Driving adapters: integration tests against the adapter with a mocked driving port. Driven adapters: integration tests against real infrastructure with a core use case as the driver. End-to-end: full stack tests that send an email and verify the ticket is created and assigned."
-
-**Interviewer**: "What's the main benefit over traditional layered architecture?"
-
-**Candidate**: "Testability and replaceability. In traditional layered architecture, the domain layer depends on the persistence layer (or at least knows about it). In six-port, the domain defines the persistence contract (port), not the implementation. You can replace the database, add a new channel, or change an external service without touching the core domain logic."
+> Exercise format. The panellist hands you components; you classify each and defend what the taxonomy buys. On-SiteOps, a facilities-management back office, is adopting the six-port numbering for its work-order module.
 
 ---
 
-## Key Takeaways
+## The Exercise
 
-- Six-port architecture distinguishes driving (inbound) and driven (outbound) ports
-- Driving adapters convert external protocols into use case calls
-- Core domain is completely isolated from infrastructure
-- Adding new channels requires only adapter code, not domain changes
-- Testing is layered: unit tests for core, integration for adapters
+"Nine candidates," the interviewer says, "name the port type for each, then tell me why the distinction earns its keep."
+
+1. `POST /work-orders` controller — inbound driving: a human at a screen initiates an operation and expects a synchronously shaped reply; the system is the passenger.
+2. Work-order persistence — outbound driven: the module's own durable state, serving no outside caller of its own.
+3. Call-out to a rostering partner — outbound driving: we initiate against a foreign system and care about its answer.
+4. Listener on the building-sensor stream — inbound event: messages arrive at their own pace, and the module reacts without having asked.
+5. WorkOrderCompleted onto the notification bus — outbound event: we emit a fact and take no author on it.
+6. A platform timer poking the module each minute to age stale jobs — inbound driven by our reckoning: the trigger originates inside the estate rather than as a foreign fact stream, though an interviewer may argue otherwise; the defensible position is to pick one convention and apply it consistently.
+7. A retry of a failed rostering call, triggered from inside the module — still outbound driving: classify the hop, not the chain, since each port answers what a single call does, and the sweep merely re-enters the port the original caller used.
 
 ---
 
-## Evaluation Criteria
+## Why the Taxonomy Buys Anything
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+- Test budgets differ per family: driving ports get scenario-level calls, driven ports get fakes, event ports get recorded streams. Rehearsal infrastructure follows the port type.
+- Review depth follows the same split — an outbound driving port can spend money, so it earns the strictest review.
+- Ownership becomes arguable in vocabulary: "the rostering adapter is slow" pinpoints a column of the design instead of a vague complaint.
+- Rewiring order is derivable: classify before you migrate, and the driven ports show up as quick wins because fakes replace their real counterparts on day one.
 
+---
 
-## Staff+ Level Expectations
+## The Nuance Question
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
+8. "A partner webhook lands: inbound event or inbound driving?"
+   It is an external actor initiating and it wants an answer, which argues driving-side; but it arrives message-shaped, which argues event. The honest answer names both readings, picks inbound driving because a response is owed, and logs the decision. Interviewers want the reasoning, not the label.
 
-## Common Follow-Up Questions
+9. "Can two ports share one adapter?"
+   Rarely, and only where the technologies genuinely coincide. Merged adapters blur the review and test budgets that the taxonomy exists to preserve, so I treat the urge as a smell.
 
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
+---
 
-## Key Takeaways
+## Red Flag
 
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
+Collapsing event ports into plain method calls "because a message is just a function call over a wire". That erases the ordering and delivery guarantees the design deliberately isolates, and with them the failure drills.
 
+## Closing Question
+
+"Defend the taxonomy in a sentence."
+
+"It names risk precisely: saying 'the outbound driving surface grew' in a review is an actionable sentence, where 'the module feels complicated' never was."

@@ -1,80 +1,49 @@
-# Mock Interview: Sidecar / Ambassador / Adapter Patterns
+# Mock Interview: What Belongs in a Sidecar
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Adding observability and resilience to legacy services
-
-**Interviewer**: "We have legacy Java services that lack observability and resilience. We can't modify the application code. How do we add these capabilities?"
-
-**Candidate**: "I'd use the sidecar pattern. Deploy a sidecar process alongside each service instance that handles cross-cutting concerns — logging, metrics, service discovery, circuit breaking — without modifying the application code."
-
-**Interviewer**: "How does the sidecar intercept traffic?"
-
-**Candidate**: "The sidecar runs in the same pod/deployment unit. All incoming traffic goes through the sidecar (which proxies to the application on localhost), and all outgoing traffic goes through the sidecar. The application is configured to connect to localhost — it doesn't know about the sidecar. This is how service meshes like Istio work."
-
-**Interviewer**: "What about the ambassador pattern?"
-
-**Candidate**: "The ambassador pattern is a specific type of sidecar focused on external communication. For the legacy services, I'd use an ambassador sidecar that handles: connection pooling, retry with exponential backoff, circuit breaking when calling downstream services, and service discovery. The ambassador knows about the infrastructure; the legacy application doesn't."
-
-**Interviewer**: "And the adapter pattern?"
-
-**Candidate**: "The adapter pattern transforms interfaces. For a legacy service that emits logs in an old format, an adapter sidecar can: consume the old-format logs (via file tail, shared volume, or stdout capture), transform them to structured JSON, and forward to the centralized logging system. The legacy service doesn't change; the adapter translates its output."
-
-**Interviewer**: "Walk me through a concrete implementation."
-
-**Candidate**: "For a legacy order-processing service: (1) Deploy an Envoy sidecar that handles all inbound HTTP traffic — adds distributed tracing headers, enforces rate limits, collects metrics. (2) Deploy an ambassador that handles all outbound calls to the payment service — implements retries, circuit breaking, timeout configuration. (3) Deploy an adapter that consumes the service's flat-file access logs and forwards structured events to Kafka."
-
-**Interviewer**: "How do you manage the sidecar lifecycle?"
-
-**Candidate**: "In Kubernetes, the sidecar runs in the same pod as the application. When the pod starts, the sidecar starts first. When the pod stops, the sidecar handles graceful shutdown — draining connections, flushing logs. I'd use init containers to configure the sidecar before the application starts, and preStop hooks for graceful shutdown."
-
-**Interviewer**: "What are the downsides of sidecar patterns?"
-
-**Candidate**: "Sidecars add latency — every request goes through an additional proxy hop. They consume resources — each sidecar uses CPU and memory, multiplied by every service instance. They add complexity — more processes to debug, more configuration to manage. For some use cases, a library-based approach (Resilience4J, OpenTelemetry SDK) is simpler and more efficient."
+> Probe-list format. A platform with three languages — Java, Go, Python — and one notoriously flaky external partner API. No mesh installed yet; the question is what should leave application code.
 
 ---
 
-## Key Takeaways
+## Probes
 
-- Sidecar adds cross-cutting capabilities without modifying app code
-- Ambassador pattern focuses on external communication
-- Adapter pattern translates interfaces and formats
-- Kubernetes enables sidecar lifecycle management
-- Sidecars add latency and resource overhead — evaluate trade-offs
+1. "Which concerns move out of the process first?"
+   Transport mechanics: certificate rotation between services, endpoint lookup, and per-call timeout policy. No language should own those three times over; they belong to infrastructure once and forever.
+
+2. "What must stay inside the process?"
+   Whatever the domain has to answer for: idempotency keys, business-level retries that need to inspect an outcome, and transactional work against the store. A proxy can happily resend a payment nine times; only application logic knows which of those attempts actually charged the card.
+
+3. "What does the extra hop cost?"
+   Every call gains a loopback traversal — a fixed slice of latency plus per-pod memory and CPU. Budget it in advance: measure the ninety-ninth percentile with and without the proxy on one canary path. If a latency-critical route regresses, exempt it deliberately and write down why.
+
+4. "The partner API keeps flapping. Does an ambassador help?"
+   Enormously — one proxy dedicated to that host delivers pooling, capped retry counts with jitter, and an out-thread circuit state shared by all three languages. Every caller stops re-implementing the same resilience ritual in its own dialect.
+
+5. "The sidecar crashes. What does the app experience?"
+   Sudden unreachability that looks like a network partition rather than a process death. Readiness probes must cover the sidecar, so the pod gets replaced instead of lingering as a black hole accepting nothing.
+
+6. "When is an ordinary library the better buy?"
+   For an internal tool with two services, a shared client library plus one config file buys the same retries at a fraction of the per-pod cost. Sidecars pay off past a handful of languages, or whenever security policy is managed centrally rather than by app teams.
+
+7. "What does the proxy absorb for observability?"
+   Span creation at the wire's edge stitches traces across languages without every runtime learning an exporter. Business-relevant spans remain the application's; transport truths — where a call died, how often it was resent — fall to the proxy.
+
+8. "And when the proxy itself fails?"
+   Silence on everything — an app crash shows in logs, a proxy death shows as total quiet. Per-pod synthetic checks that traverse the proxy turn that silence into a signal within seconds, because an invisible dependency is the most expensive one.
+
+9. "Anything you'd keep in app code even with a full mesh?"
+   Domain judgement around payments and anything needing local state. Infrastructure answers transport questions; whether a payment may be retried after an ambiguous timeout is a business question with the cardholder's money attached.
+
+10. "Fleet upgrades across all of them?"
+   The platform stages it node by node with drains; application teams coordinate nothing, which is the whole benefit stated as an ops plan.
+
+11. "Per-cause transport metrics for the app teams — who publishes them?"
+   The proxy: outcome classes per destination, retry counts it added, and connection failures, so an engineer can tell cable trouble from code trouble without reading stack traces.
+
+12. "How do you size capacity for all this extra machinery?"
+   It rides the pod, so there is no separate fleet to plan — but readiness must treat proxy health as part of pod health, or every capacity dashboard quietly lies.
 
 ---
 
-## Evaluation Criteria
+## Red Flag
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
-
-
-## Staff+ Level Expectations
-
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
-
-## Common Follow-Up Questions
-
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
-
-## Key Takeaways
-
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
-
+Welcoming the proxy because its config offers a retry knob, then moving domain judgement in with it — "should a payment be retried" is not a transport policy, no matter how convenient the placement looks.

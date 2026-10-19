@@ -1,80 +1,53 @@
-# Mock Interview: Circuit Breaker Pattern
+# Mock Interview: A Breaker for the Rate Partner
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Designing resilient microservice communication
-
-**Interviewer**: "Our payment service sometimes takes 30 seconds to respond, causing cascading timeouts across dependent services. How do you prevent this?"
-
-**Candidate**: "I'd implement the circuit breaker pattern. When the payment service starts failing or becoming slow, the circuit breaker 'opens' and subsequent calls fail fast without waiting for the timeout."
-
-**Interviewer**: "Walk me through the circuit breaker states."
-
-**Candidate**: "Three states: CLOSED — normal operation, requests pass through. OPEN — failures exceed threshold, requests fail immediately. HALF-OPEN — after a timeout, a trial request checks if the service has recovered. Success → CLOSED. Failure → OPEN again. The thresholds and timeouts are configurable based on the service's SLOs."
-
-**Interviewer**: "How do you configure the circuit breaker?"
-
-**Candidate**: "Configuration is service-specific. For the payment service with a 10-second P99: sliding window of 100 calls, failure threshold of 50% (if 50 of 100 calls fail, open the circuit), wait duration in OPEN state of 30 seconds, and 5 trial calls in HALF-OPEN. I'd start conservative and tune based on production data."
-
-**Interviewer**: "How does the circuit breaker interact with retry logic?"
-
-**Candidate**: "Carefully. Retry should only happen when the circuit is CLOSED. If the circuit is OPEN, retrying would defeat the purpose — the circuit breaker is telling you the service is down, retrying will waste resources. I'd implement: if CLOSED → retry with exponential backoff up to 3 times. If OPEN → fail fast (don't retry). On transition to HALF-OPEN → allow trial requests (which are effectively retries)."
-
-**Interviewer**: "What about the bulkhead pattern?"
-
-**Candidate**: "Bulkhead isolates resources so a failure in one part doesn't consume all resources. For the payment service, I'd configure a bulkhead with a thread pool of 10 threads and a queue of 20. If all threads are busy serving payment calls, new calls are immediately rejected rather than queuing indefinitely. This prevents the payment service from consuming all application threads."
-
-**Interviewer**: "How do you handle the fallback when the circuit is open?"
-
-**Candidate**: "The fallback behavior depends on criticality. Options: (1) Return a cached response — serve stale data. (2) Return a default — 'payment status unknown, check later.' (3) Queue the request for later processing. (4) Route to an alternative provider. For payment processing, I'd queue the request and notify the user that there's a delay, rather than silently failing."
-
-**Interviewer**: "How do you monitor circuit breaker effectiveness?"
-
-**Candidate**: "Track: (1) Circuit state transitions — how often does each service's circuit open? (2) Time in OPEN state — how long does recovery take? (3) Request volume during OPEN — are we failing fast effectively? (4) Fallback rate — how often are fallbacks triggered? A dashboard showing circuit breaker states across all services helps identify systemic issues."
+> Chair–candidate dialogue. CabinStack, a vacation-rental marketplace, calls an external partner for live nightly prices. Yesterday the whole search page hung for twenty minutes.
 
 ---
 
-## Key Takeaways
+## Round One
 
-- Circuit breaker prevents cascading failures by failing fast
-- Three states: CLOSED (normal), OPEN (failing fast), HALF-OPEN (trial)
-- Retry only when CLOSED; fail fast when OPEN
-- Bulkhead isolates resources to prevent resource exhaustion
-- Monitor circuit state transitions and fallback rates
+**Chair**: "Postmortem says every caller waited on a socket with no timeout. Start there."
+
+**Candidate**: "Outbound calls get our own connection and response timers, never library defaults. After the fix there are no hangs — only bounded waits that fail fast and free the request path."
+
+**Chair**: "That alone doesn't keep the page alive during an outage."
+
+**Candidate**: "Right — that needs the breaker. Outcomes feed a sliding window; when failures cross the configured fraction, calls stop being attempted and a fallback answers: the last-known price from cache, clearly labelled stale, with an accuracy note. For browsing, a flagged older price beats a blank page."
+
+**Chair**: "Describe recovery, without hammering a dying partner."
+
+**Candidate**: "Open state lets time pass; then one or two probe calls go out — not full traffic. Probes succeed and real flow resumes gradually; probes fail and the wait restarts. Probes carry the same strict timers, so a slow probe cannot hold callers hostage either."
+
+**Chair**: "Where do retries fit?"
+
+**Candidate**: "Exactly one retry for timeouts, with a doubling gap and jitter, and never for a business rejection like 'card declined'. Retries rescue transient blips only; against a genuine outage they multiply load precisely when the partner can least absorb it. A token budget caps how much extra demand one instance may add."
+
+**Chair**: "Our service also charges guests. Share any pool with rates?"
+
+**Candidate**: "Never. Per-dependency isolation — separate pools, or semaphores for the fast ones — is a bulkhead: a frozen rate partner cannot starve the charge path. Isolation decides blast radius per dependency, one of those decisions reviewers should see in code."
+
+**Chair**: "Ops says the breaker flaps: opens, closes, opens all day."
+
+**Candidate**: "Three usual causes. A judging window too thin — one success closes it, one hiccup reopens it. Probe counts too small. And business rejections counted as failures, which is a categorization bug: a declined coupon is not an outage. Widen the window, require consecutive probe successes, lengthen the open wait, and re-check what counts as failure."
+
+**Chair**: "Last: summarize the goal in one line."
+
+**Candidate**: "Turn one sick dependency from a whole-page outage into a local, bounded degradation — and make the recovery boring, measured, and unremarkable."
 
 ---
 
-## Evaluation Criteria
+## Probes
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+- "Fallback serves a stale price someone books with. Then what?" — the booking flow re-validates against the partner's authoritative quote at commit; a mismatch surfaces as a changed-price confirmation step, never as silent loss.
+- "Who gets paged for state flapping?" — the owning service, from a panel of state transitions and their durations; minutes spent stuck mid-flap measure recovery quality, not luck.
+- "Window by count or by time?" — time-based for bursty partners: after a quiet stretch, a count window mistakes silence for health, while a time window keeps the recent history that matters.
+- "A fallback on the charge path?" — none, ever. A payment either succeeds or is refused loudly; a pretended success is how double charges happen.
+- "What metric proves the thing works?" — minutes spent open per hour, per dependency: degradation that is bounded and visible is the deliverable, not the absence of error counts.
+- "Who reviews threshold changes?" — the owning team, with the partner's restart profile attached; thresholds tuned by folklore get retuned by the next incident anyway.
+- "Hedged duplicate calls instead?" — fine for reads at low cost: fire one twin to win the race. For charges it doubles capture risk, so parallelism stays a read-side tool only.
 
+---
 
-## Staff+ Level Expectations
+## Red Flag
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
-
-## Common Follow-Up Questions
-
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
-
-## Key Takeaways
-
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
-
+Opening the circuit on any error code whatsoever. Timeouts and business rejections are different species; conflating them makes the breaker flap forever without learning anything about the dependency's real health.

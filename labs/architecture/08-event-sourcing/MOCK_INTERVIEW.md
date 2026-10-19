@@ -1,84 +1,55 @@
-# Mock Interview: Event Sourcing
+# Mock Interview: An Event-Sourced Rewards Ledger
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Design an audit trail system using event sourcing
-
-**Interviewer**: "Design an audit trail system for a financial application. How do you track every state change?"
-
-**Candidate**: "Event sourcing is the natural choice. Instead of storing current state, we store a sequence of events that represent every state change. The current state is derived by replaying the events."
-
-**Interviewer**: "Walk me through the event stream for a bank account."
-
-**Candidate**: "For a bank account, the event stream would be: AccountCreated, DepositMade, WithdrawalMade, FundsTransferred, AccountFrozen, AccountClosed. Each event captures what happened, when, and by whom. The current balance is computed by replaying deposits and withdrawals."
-
-**Interviewer**: "How do you handle concurrent writes to the same account?"
-
-**Candidate**: "Optimistic concurrency. Each event stream has a version number. When appending an event, the caller provides the expected version. If another writer has already appended an event, the version doesn't match, and the append fails. The caller retries by reading the latest events and reconstructing state."
-
-**Interviewer**: "What about querying current state efficiently?"
-
-**Candidate**: "That's the trade-off with event sourcing. Two approaches: (1) Snapshots — periodically save the current state and replay events only since the snapshot. (2) Projections — maintain a read model that's updated as events are appended. For the bank account, a projection table might have `account_id, balance, frozen_status` updated in real-time."
-
-**Interviewer**: "How do you handle schema evolution of events?"
-
-**Candidate**: "Events are immutable — you can't change past events. For schema changes, you add new event versions. Old events stay as they are. Your event processing code must handle all versions. You can also write upcasters — code that transforms old-version events to new-version format when loading."
-
-**Interviewer**: "When would you NOT use event sourcing?"
-
-**Candidate**: "When the benefits don't justify the complexity. Event sourcing adds significant operational overhead — event store management, schema evolution, projection maintenance. It's overkill for simple applications where an audit log can be a separate table alongside current state. Use it when you truly need: complete audit trail, temporal queries, or event-driven projections."
-
-**Interviewer**: "How does event sourcing integrate with CQRS?"
-
-**Candidate**: "They're natural complements. Event sourcing stores the event stream (write side). CQRS provides projections (read side). The write side appends events. A projection subscribes to events and updates denormalized read models. The combination gives you the audit trail of event sourcing and the query performance of CQRS."
-
-**Interviewer**: "What event store technology would you use?"
-
-**Candidate**: "You have a few options: (1) PostgreSQL — events as rows in an `events` table with aggregate ID, version, event type, and payload. Works great for moderate scale. (2) EventStoreDB — purpose-built event store with projections and subscriptions. (3) Kafka — events in topics, though Kafka is better as an event bus than a primary event store. I'd start with PostgreSQL for most applications."
+> Chair-and-candidate format. TrailPoints, a loyalty program, disputes roughly every other quarter, and finance wants a complete trail of who was credited what and when.
 
 ---
 
-## Key Takeaways
+## Round One
 
-- Event sourcing stores state changes as an immutable event stream
-- Current state is derived by replaying events
-- Optimistic concurrency prevents conflicting writes
-- Snapshots and projections optimize query performance
-- Events are immutable; schema changes use new event versions
+**Chair**: "State your storage shape first."
+
+**Candidate**: "One append-only table: stream id — the account — plus a strictly increasing sequence, event type, and payload. A unique constraint on (stream, sequence) admits exactly one writer per version; two concurrent commands, one wins and the loser reloads fresh state and retries. That constraint *is* the optimistic concurrency guarantee — no separate version service needed."
+
+**Chair**: "Withdraw requires a balance check, but there is no balance column."
+
+**Candidate**: "Load the stream, fold the events into current state, then decide. A few thousand events in, replay costs real latency, so a snapshot is punched in every fixed number of events; a load then reads one snapshot plus the short tail."
+
+**Chair**: "Support says March rewarded someone twice. Make it right."
+
+**Candidate**: "March stays untouched. A new RewardReversed event referencing the original lands today; folding it corrects the balance going forward, while March keeps telling the truth. Rewriting history would erase the very audit this design exists to provide."
+
+**Chair**: "A projection broke badly and a rebuild is ordered."
+
+**Candidate**: "Rebuild into a scratch copy by replaying the stream, compare per-account closing balances live-versus-scratch, then switch readers. Downtime is one pointer flip, and the comparison tells us exactly which handler misbehaved."
+
+**Chair**: "Right-to-erasure against an immutable log — reconcile those."
+
+**Candidate**: "Honestly, they fight. The workable compromise: encrypt the account-holder's personal field per account and destroy that key when erasure is requested. Payloads remain, but they are unreadable. Teams must decide before launch, not when the first request lands."
+
+**Chair**: "Sum up what this buys the program."
+
+**Candidate**: "Every dispute terminates at a row, not a recollection. 'Balance as of March 3rd' is a replay, promoted from archaeology to a first-class question. New features — tier math, promo archaeology — read the existing stream instead of inventing new tables."
+
+**Chair**: "Who may write to an account's stream?"
+
+**Candidate**: "One owning service per aggregate type, always. The version constraint makes races safe, but the discipline is ownership: several writers to one stream means nobody owns its invariants, and the audit promise quietly dies."
+
+**Chair**: "What about one account under furious concurrent contention?"
+
+**Candidate**: "Review-worthy by definition: either the contended operation becomes a queue drained by a single writer per account, or it splits into independent events. A hot stream is an ownership signal, not a tuning knob."
 
 ---
 
-## Evaluation Criteria
+## Second-Round Probes
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+- "Snapshots are wrong once in a while. Damage?" — bounded: rebuild the bad snapshot from the stream and compare with expected state; the log never became untrustworthy, only its cache did.
+- "A handler folds events twice mid-crash. Result?" — none: folding is pure, so replay is idempotent by construction; danger only appears when a handler's side effect escapes the fold.
+- "Serialization across years?" — each event carries a type and a payload version, and the fold upgrades legacy shapes on read through upcasting, so ancient rows stay loadable forever.
+- "What does a dispute investigation feel like?" — open the account's stream at the date in question and read forward; every input that shaped the balance is right there, with no reconstruction from scattered logs.
+- "Do we ever read our own writes?" — the command side confirms from the authoritative store; projections serve lists and dashboards, and no customer-facing decision is ever made from a view.
 
+---
 
-## Staff+ Level Expectations
+## Red Flag
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
-
-## Common Follow-Up Questions
-
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
-
-## Key Takeaways
-
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
-
+Choosing event sourcing for the novelty of streams while admitting the product has no audit requirement. Replay machinery with no payoff buries the roadmap in event-schema ceremony.

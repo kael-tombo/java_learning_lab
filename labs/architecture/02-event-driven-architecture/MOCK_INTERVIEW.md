@@ -1,88 +1,49 @@
-# Mock Interview: Event-Driven Architecture
+# Mock Interview: The Outbox Decision
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Design an order processing system using events
-
-**Interviewer**: "Design an order processing system. Walk me through your event-driven approach."
-
-**Candidate**: "I'll model the order lifecycle as a series of domain events. Each service reacts to events it cares about and emits events for things that happen within its domain."
-
-**Interviewer**: "What are the key events in the order lifecycle?"
-
-**Candidate**: "The core events: OrderPlaced, PaymentReceived, InventoryReserved, OrderShipped, OrderDelivered. Each event represents a meaningful state change that other services can react to."
-
-**Interviewer**: "Walk me through the flow."
-
-**Candidate**: "The Order Service receives a place-order request. It validates the order, saves it, and emits an OrderPlaced event on Kafka. The Payment Service subscribes to OrderPlaced, processes the payment, and emits PaymentProcessed. The Inventory Service subscribes to PaymentProcessed, reserves inventory, and emits InventoryReserved. The Shipping Service picks up InventoryReserved, creates a shipment, and emits OrderShipped."
-
-**Interviewer**: "What happens if payment fails?"
-
-**Candidate**: "The Payment Service emits a PaymentFailed event. Any service that needs to compensate can react. The Inventory Service releases the temporary hold. The Order Service updates the order status to 'failed'. The Notification Service sends the customer a failure notification."
-
-**Interviewer**: "How do you handle event ordering within a single order?"
-
-**Candidate**: "Critical question. Kafka partitions by order ID guarantee ordering for a single order's events. Each service processes events for the same order on the same partition. If event processing fails, we retry within the partition, maintaining order. If processing consistently fails, we dead-letter to a separate topic for manual intervention."
-
-**Interviewer**: "What about exactly-once processing between services?"
-
-**Candidate**: "The key is idempotency. Each event has a unique ID. Each consumer tracks processed event IDs in its database. If it receives a duplicate event, it skips processing. This gives us at-least-once delivery with idempotent processing — effectively exactly-once."
-
-**Interviewer**: "How do you handle schema evolution? Events change over time."
-
-**Candidate**: "I'd use a Schema Registry with Avro or Protobuf. Each event has a schema version. The registry enforces backward compatibility — you can add fields but not remove or rename. Consumers can handle multiple schema versions. This prevents a producer from breaking consumers."
-
-**Interviewer**: "How do you test an event-driven system?"
-
-**Candidate**: "Three levels: (1) Unit test each event handler in isolation with mocked producers. (2) Integration test the event flow — produce an event and verify the eventual state change across services. (3) Consumer-driven contract tests — each consumer defines the event shape it expects, and producers must not break those contracts."
-
-**Interviewer**: "What monitoring is critical for event-driven systems?"
-
-**Candidate**: "Consumer lag is the most important metric — are consumers keeping up with producers? Event processing latency — how long between event production and consumption? Dead letter queue depth — how many events failed processing? And event throughput — are we approaching capacity limits?"
+> Question-bank format: a grounded scenario, then the probe list a panellist would run.
 
 ---
 
-## Key Takeaways
+## Scenario
 
-- Events are business facts, not implementation details
-- Idempotency is mandatory for reliable event processing
-- Schema Registry prevents integration failures
-- Testing event flows requires consumer-driven contracts
-- Monitor consumer lag and dead letter queues proactively
+A ticket-resale marketplace. When a buyer checks out, the order service must insert the order row, then tell billing to move money, notify the seller, and feed the fraud scorers. Today the team commits, then calls `publisher.publish(...)` outside that transaction. After every deploy restart, a handful of orders silently reach nobody — billing sees no instruction, and the buyer hears nothing.
 
 ---
 
-## Evaluation Criteria
+## Question Bank
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+1. "How would you prove that publish-after-commit is really the bug?"
+   The sequence is two independent actions: commit, then a network call. A crash in the gap loses the announcement while the money row persists. Tests rarely trip it — the window is milliseconds — but restarts and deploys stretch it to a minute or more. The observable is silence on the consumer sum metric with orders still increasing.
 
+2. "Fix it."
+   An `outbox` record is written inside the same commit as the order row; a relay polls pending rows, ships them to the broker, marks them sent. Writing state and announcing it become one atomic action, and delivery becomes at-least-once by construction.
 
-## Staff+ Level Expectations
+3. "Consumers now see duplicates. Handle it."
+   Each handler maintains a `consumed_events` table with a uniqueness constraint over the message id, committed together with its own state change. A redelivered message hits that constraint and is skipped. The dedupe lives where the state lives.
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
+4. "Why not demand exactly-once from the broker?"
+   A broker can only guarantee what one hop sees; this flow spans several systems, and consumer restarts reorder work regardless. Delivery labels are guidance — the real guarantee is built in the handler: state change and seen-marker recorded in one local commit.
 
-## Common Follow-Up Questions
+5. "Under what conditions does the email run late?"
+   When consumer throughput drops below producer rate, backlog accumulates. Keep in-flight work bounded — a prefetch cap, a bulkhead around the mail provider — and alert on lag minutes rather than queue depth, so somebody pages before a shopper waits an hour.
 
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
+6. "Should events carry the buyer's address or just identifiers?"
+   Minimal notice: order id and buyer id. Consumers fetch detail on demand. Full state transfer weds every consumer to every upstream schema change; small payloads keep the contract narrow and the blast radius small.
 
-## Key Takeaways
+7. "Who owns the relay, and what does its failure look like?"
+   The order service does. Its failure mode is age: pending rows sit unsent. The alarm watches the oldest unsent row, not CPU — a stopped relay is otherwise invisible, since checkout itself still completes without a whisper.
 
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
+---
 
+## Panel Follow-Ups
+
+- "The broker is dark for an hour — what does the outbox feel like?" — the relay stalls, the table grows on disk, and an alarm watches outbox age; producers never stop, because the order path must not stall behind a dependency that isn't the order path.
+- "When do schemas roll forward safely?" — consumers accept old and new field sets for a release cycle; producers never drop a required field in the same window where consumers still expect it.
+- "Poison messages?" — bounded retries, then a parking-lot topic carrying the payload plus failure context, so the consuming team triages with everything needed on the row.
+- "Relay throughput when the broker comes back?" — it drains oldest-first at whatever rate the broker tolerates; recovery is deliberately unheroic, since purchases never paused to wait for it.
+
+---
+
+## Red Flag
+
+Treating "at least once" as a knob on the broker while locating dedupe "somewhere downstream". If a candidate cannot point to the row and index that make replay harmless, the guarantee does not exist.

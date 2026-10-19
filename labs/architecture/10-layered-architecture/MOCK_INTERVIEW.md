@@ -1,84 +1,45 @@
-# Mock Interview: Layered Architecture
+# Mock Interview: When Plain Layers Are the Right Answer
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Design a content management system
-
-**Interviewer**: "Design a content management system (CMS). Walk me through the architecture."
-
-**Candidate**: "I'd use a layered architecture — the traditional N-tier approach. It's a proven pattern for enterprise applications where the primary concern is separation of concerns, not distributed scale."
-
-**Interviewer**: "Define the layers."
-
-**Candidate**: "Four layers: (1) Presentation layer — REST controllers, request/response DTOs. (2) Application layer — service classes that orchestrate business logic. (3) Domain layer — entities that encapsulate business rules. (4) Persistence layer — repositories that handle database access."
-
-**Interviewer**: "Walk me through creating a blog post."
-
-**Candidate**: "The `POST /api/posts` request hits the `PostController` (presentation). The controller creates a `CreatePostRequest` DTO and calls the `PostService` (application). The service validates business rules — 'author has publishing permissions,' 'content passes moderation.' Then it creates a `Post` entity (domain) and calls `postRepository.save(post)` (persistence). The result flows back through the layers to the HTTP response."
-
-**Interviewer**: "What are the dependencies between layers?"
-
-**Candidate**: "Each layer depends on the layer below. Presentation depends on application. Application depends on domain. Domain has no dependencies. Persistence depends on domain (it knows about entities). The direction of dependency follows the layers: higher layers depend on lower layers."
-
-**Interviewer**: "What are the limitations of this architecture?"
-
-**Candidate**: "Three main limitations: (1) As the application grows, a layer becomes a 'god service' — the application layer accumulates all business logic. (2) It tends to become database-driven — domain entities mirror database tables. (3) It doesn't scale to distributed systems well — layers don't map to service boundaries. For a CMS, these limitations are manageable. For complex domains, DDD or hexagonal architecture is better."
-
-**Interviewer**: "How do you prevent the layers from leaking?"
-
-**Candidate**: "Strict layer boundaries. The presentation layer shouldn't know about the persistence layer. The application layer returns domain objects or DTOs, not database entities. The persistence layer handles ORM mapping internally. I enforce this through package structure and module boundaries. If a layer needs data from another, it goes through the proper intermediate layers."
-
-**Interviewer**: "How does testing work in layered architecture?"
-
-**Candidate**: "Each layer is tested independently. Unit tests for domain entities. Service-layer tests with mocked repositories. Controller integration tests. The layered structure makes testing straightforward — each layer has clear inputs and outputs. The challenge is preventing tests from becoming brittle when the internal structure changes."
-
-**Interviewer**: "When is layered architecture the right choice?"
-
-**Candidate**: "For applications with moderate complexity where the primary goal is separation of concerns. Enterprise CRUD applications, simple web services, internal tools. When the team is familiar with the pattern and the application is unlikely to need microservice decomposition. It's pragmatic and well-understood — not innovative, but reliable."
+> Q&A format. Northfield Campus enrolls evening students; admins approve applications; teachers record attendance.
 
 ---
 
-## Key Takeaways
+## Questions
 
-- Layered architecture separates concerns into stacked layers
-- Each layer depends on the layer below
-- Strict boundaries prevent layer leakage
-- Suitable for moderate-complexity enterprise applications
-- Testing benefits from clear layer interfaces
+1. "Justify three tiers for this."
+   One team, one relational store, screens that map to tables. The layered split gives a small team exactly what it needs — thin controllers, rules in services, SQL confined to repositories — without taxing whoever maintains it after hours. Architecture should match the size of the crew.
+
+2. "Where does 'a student can enroll only if prerequisites are signed off' live?"
+   In the enrollment service. It is a rule over several tables, not persistence trivia and not presentation polish. The repository supplies candidates; the service decides. That placement is what keeps the rule verifiable in one place.
+
+3. "A developer calls the repository straight from a controller for a dropdown."
+   Cheap temptation, real cost: that lookup will acquire rules — hidden classes, closed cohorts — and then they live in a controller forever. Route the call through the layer above. If routing one read feels heavy, the read belongs in the service contract anyway.
+
+4. "Which layer owns DTOs?"
+   Presentation builds them from service results; services return domain-shaped types. When DTOs span both boundaries, the web tier has quietly married the persistence schema, and every migration couples three layers instead of two.
+
+5. "How do exceptions travel?"
+   Upward only, translated on the way. Persistence raises a constraint violation; the service reframes it — "cohort full" — and the controller decides the user-facing response. Lower layers never import HTTP types, ever.
+
+6. "Logging and timing touch every tier — where do they live?"
+   One aspect applied at service boundaries keeps them out of every class. The standing rule: nothing hand-written per layer; if a concern must touch all three tiers, it is implemented once and woven in.
 
 ---
 
-## Evaluation Criteria
+## Probes
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+- "Why not skip the service for a pure read?" — because "pure reads" grow opinions: filters, privacy trims, audit notes. The seam costs one method today and buys a stable contract for years.
+- "When does this layout rot?" — when persistence details leak upward as "convenience" or when controllers grow logic. Both are detectable in review, which is the actual defense.
+- "Where does the auth middleware sit?" — presentation, ahead of the service call; controllers receive a principal, and services still enforce coarse checks, because middleware is a deployment fact, not a guarantee.
+- "Scheduled jobs — which tier?" — they enter like users do, through the service layer; a cron trigger is just another presentation-side caller and never touches repositories directly.
+- "Would you ever inject a repository into a controller?" — no, not even for a pure dropdown: the rule is worthless with exceptions, and I have never met a lookup whose rules stayed empty for long.
+- "Testing story per layer?" — deep tests live at the service tier; controller tests rehearse mapping and nothing more; repository checks verify query shape against a real database in CI.
+- "How does this age as the team grows?" — the service interfaces harden into the real contract, so extracting a module later starts at a boundary that already has exactly one caller and one shape.
+- "Read-only pages with trivial logic — same seam?" — yes, thinner content: the service returns what it returns and the controller maps it; the seam survives on consistency, not on every read being interesting.
+- "Anything the layer list itself omits?" — ownership: layers describe dependencies, not responsibility, and two services sharing one business layer still need an explicit owner apiece.
 
+---
 
-## Staff+ Level Expectations
+## Red Flag
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
-
-## Common Follow-Up Questions
-
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
-
-## Key Takeaways
-
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
-
+Five layers and a dispatcher abstraction in a two-person codebase. That is a memorized diagram, not a trade-off — the interviewer hears a candidate who cannot calibrate structure to the size of the problem.

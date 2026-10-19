@@ -1,84 +1,49 @@
-# Mock Interview: Saga Pattern
+# Mock Interview: Choreographed Checkout Under Failure
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Design a distributed transaction for an e-commerce checkout
-
-**Interviewer**: "Design the checkout flow for an e-commerce platform. It involves order creation, payment processing, inventory reservation, and shipping. How do you handle distributed transactions?"
-
-**Candidate**: "I'd use the Saga pattern. A saga is a sequence of local transactions where each step has a compensating action for rollback. For checkout, the saga would orchestrate: CreateOrder, ReserveInventory, ProcessPayment, and ScheduleShipping."
-
-**Interviewer**: "Choreography or orchestration?"
-
-**Candidate**: "For this flow, orchestration. The checkout flow has clear sequential steps with specific compensation logic. An orchestrator manages the flow, tracks state, and handles failures. Choreography works better for simpler, more independent steps where events naturally trigger the next action."
-
-**Interviewer**: "Walk me through the orchestrated saga."
-
-**Candidate**: "The CheckoutOrchestrator receives the checkout request. Step 1: Send CreateOrder command to Order Service. If successful, the orchestrator records the state. Step 2: Send ReserveInventory command to Inventory Service. If successful, move to Step 3. Step 3: Send ProcessPayment to Payment Service. If payment fails, the orchestrator triggers compensating actions in reverse: ReleaseInventory (compensation for ReserveInventory), CancelOrder (compensation for CreateOrder)."
-
-**Interviewer**: "How does the orchestrator handle state between steps?"
-
-**Candidate**: "The orchestrator maintains a saga log. It persists the current state after each step — which steps completed, which failed, the data needed for compensating actions. If the orchestrator itself fails, another instance can recover by reading the saga log and continuing or compensating."
-
-**Interviewer**: "What about semantic locking during the saga?"
-
-**Candidate**: "Good point. The inventory should be 'reserved' not 'deducted' — a temporary hold that prevents other processes from using that inventory. If the saga completes, the reservation becomes a deduction. If the saga fails, the reservation is released. This prevents overselling during the saga execution window."
-
-**Interviewer**: "How do you handle a scenario where a compensation also fails?"
-
-**Candidate**: "That's the hardest case. The saga enters a 'compensation failed' state and requires manual intervention. I'd design the system to minimize this — compensating actions should be simple and unlikely to fail. For example, releasing inventory is a simple state change that shouldn't fail. A monitoring system alerts the operations team if compensations consistently fail."
-
-**Interviewer**: "Isolation is a challenge with sagas. How do you handle concurrent sagas?"
-
-**Candidate**: "Sagas lack ACID isolation. For the checkout scenario, I'd use countermeasures: (1) Semantic locking — reserves prevent concurrent modifications. (2) Commutative updates — inventory deductions are commutative, so order doesn't matter. (3) Pending state — orders are 'pending' until the saga completes, preventing downstream actions on incomplete orders."
-
-**Interviewer**: "When would you choose saga over a distributed transaction (XA)?"
-
-**Candidate**: "Saga is for long-lived transactions (seconds to hours). XA is for short-lived transactions (milliseconds). Saga handles business failures gracefully through compensation. XA requires all participants to support two-phase commit. For e-commerce checkout, saga is the right choice — the steps are long-running and involve external systems."
+> Numbered probes, terse answers. CrateDrop, a subscription-box retailer, runs its order lifecycle across three services with no central coordinator.
 
 ---
 
-## Key Takeaways
+## Setup
 
-- Sagas manage distributed transactions through local transactions + compensation
-- Orchestration provides clear control flow; choreography offers better decoupling
-- Saga logs ensure recovery from orchestrator failures
-- Semantic locking prevents concurrent saga conflicts
-- Design compensating actions to be simple and reliable
+Placing an order fans out through the warehouse, the payment gateway, and a courier partner. Choreography was chosen because the flow is a straight line; the debate is whether it survives contact with failure.
 
 ---
 
-## Evaluation Criteria
+## Probe List
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+1. "Name the chain."
+   OrderCreated → BoxAllocated → PaymentCaptured → PickupScheduled. Each service commits locally, then publishes its outcome for the next subscriber. The flow lives inside the subscribers — that is both its flexibility and its biggest debugging liability.
 
+2. "Payment declines after the box was allocated. Undo it."
+   The warehouse listens for PaymentDeclined and releases the reservation. Compensation runs in the reverse order of completed steps, and every compensator must survive replay — releasing an allocation twice must be harmless, so the release is keyed by order id.
 
-## Staff+ Level Expectations
+3. "What if that decline message is lost?"
+   Silence is treated as failure, never success. Each order that enters "awaiting payment" carries a deadline; when the timer fires with no event seen, the order is marked stalled and compensation is triggered automatically. No endpoint waits forever on an absence.
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
+4. "Events show up misordered — capture before allocation."
+   The courier step refuses to fire on a single prerequisite. Each subscriber keeps a local per-order state row ticking off received prerequisites, and the action triggers only when the row says every predecessor is done. It is a local join, cheap and honest.
 
-## Common Follow-Up Questions
+5. "Where is the audit trail?"
+   Every transition lands in an `order_lifecycle` row keyed by order id — step, status, timestamps. Support asks where order 4421 stands and one query answers. Without that table, choreography is operable in theory only.
 
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
+6. "Why choreography rather than an orchestrator here?"
+   Three steps, one straight line, no branches. An orchestrator earns its keep when the graph branches, joins, or holds mid-flow state; those are absent, so a coordinator would be one more moving part buying nothing.
 
-## Key Takeaways
+7. "Where does the design show its age first?"
+   When a second box type arrives with different allocation rules. A choreographed flow that starts branching deserves rewriting into an orchestration — write down today what would trigger that rewrite, so the call is made by evidence rather than by exhaustion.
 
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
+---
 
+## What the Panel Pushes Next
+
+- "Compensation later becomes impossible — stock already sold out." Retry the release in a bounded queue; if it stays impossible, a dead-letter row flags the order for a human refund decision. Finance must accept that goods and money reconcile asynchronously.
+- "What exercises the failure paths?" — event fixtures that replay decline, timeout, and dupes against real subscribers in CI, asserting the compensators fire in the right order.
+- "Who watches the chain end to end?" — the lifecycle table plus per-step lag metrics; choreography's bill is building that visibility early, because the coupling hides inside consumers.
+- "How long may the customer see 'pending'?" — the payment deadline answers it: once the window passes, the order plainly reports failure and releases the goods, with no support involvement.
+
+---
+
+## Candidate Red Flag
+
+Answering the out-of-order question with "add a distributed lock". Correct design makes each subscriber demand a known order per key; leasing shared state across services papers over the real problem.

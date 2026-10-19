@@ -1,84 +1,47 @@
-# Mock Interview: Event-Driven Architecture Deep Dive
+# Mock Interview: Streams, Ordering, and Rebuildable Projections
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Designing a real-time analytics pipeline
-
-**Interviewer**: "Design a real-time analytics pipeline that tracks user behavior (page views, clicks, purchases) and aggregates metrics in near real-time."
-
-**Candidate**: "I'd build an event-driven pipeline using Kafka for ingestion and stream processing for aggregation. The architecture: Event Producers → Kafka → Stream Processor → Sink to databases."
-
-**Interviewer**: "Walk me through the event flow."
-
-**Candidate**: "The web and mobile clients emit events (PageViewed, ItemClicked, PurchaseCompleted) through an Event Ingestion API. The API writes events to Kafka topics partitioned by event type. A Flink/KSQL stream processor consumes the events, aggregates them into metrics (page views per minute, conversion rate, revenue per hour), and writes the aggregated results to a time-series database for querying."
-
-**Interviewer**: "How do you handle event schema evolution?"
-
-**Candidate**: "Schema Registry with Avro or Protobuf. Each event type has a registered schema with a version. The ingestion API validates events against the schema before writing to Kafka. Consumers read the schema ID from the event and deserialize accordingly. Backward compatibility — adding optional fields — doesn't break existing consumers. Breaking changes require a new event type."
-
-**Interviewer**: "How do you handle late-arriving events?"
-
-**Candidate**: "In stream processing, events are processed within a 'window' — e.g., a tumbling window of 1 minute for page view counts. Events arriving late can either be dropped (simplest), included if they fall within a grace period (say, 5 minutes), or trigger a recalculation. For the analytics pipeline, I'd use a grace period of 5 minutes with a 'lateness' metric tracked."
-
-**Interviewer**: "How do you guarantee exactly-once processing?"
-
-**Candidate**: "Kafka's exactly-once semantics combined with idempotent sinks. The stream processor reads from Kafka with an exactly-once source, processes, and writes to a sink that supports idempotent operations — or uses a transactional approach where the processor writes its results to Kafka (exactly-once sink) which is then read by a downstream sink connector. This eliminates duplicates."
-
-**Interviewer**: "What about data retention?"
-
-**Candidate**: "Kafka topics have retention policies. Raw events are retained for 30 days (for replay, debugging, historical analysis). Aggregated metrics are retained longer — 90 days in the time-series DB with downsampling to hourly/daily granularity for older data. A data lifecycle policy automatically handles archival and deletion."
-
-**Interviewer**: "How do you scale this pipeline?"
-
-**Candidate**: "Kafka partitions enable parallelism. More partitions mean more consumers can process in parallel. The stream processor's parallelism matches the partition count. For higher throughput: increase Kafka partitions, increase stream processor parallelism, ensure the sink database can handle the write throughput. Auto-scaling based on consumer lag — if lag increases, add more processors."
-
-**Interviewer**: "How do you monitor pipeline health?"
-
-**Candidate**: "Critical metrics: (1) Consumer lag — is processing keeping up with production? (2) Event throughput — events per second per topic. (3) Processing latency — time from event production to availability in the sink. (4) Error rate — events that failed processing. (5) Schema compatibility — mismatches between producers and consumers. Alert on lag exceeding 10 minutes or error rate > 1%."
+> Question-and-answer sheet. ParcelLine runs parcel tracking; every scan, dispatch, and delivery is an event, and three projections hang off one stream: a status board, an exception queue, and distance-based billing.
 
 ---
 
-## Key Takeaways
+## Question Sheet
 
-- Kafka provides durable, ordered event storage for real-time pipelines
-- Schema Registry ensures compatibility between producers and consumers
-- Windowed aggregations handle time-based analytics
-- Exactly-once processing is achievable with Kafka's transactional API
-- Monitor consumer lag as the primary health metric
+1. "Two scan events for the same parcel land on different partitions in the wrong sequence."
+   Order per key is the contract: hash the parcel id to one partition so a key's history stays together, and have handlers fold events by their position within the stream rather than by arrival. Folding a scan before its pickup turns "delivered" back into "out for delivery" on the board — a visible lie that costs nothing to prevent at design time.
+
+2. "Retries and restarts redeliver events. Dedupe where?"
+   In the handler's local store: a seen-marker row whose unique key is the message id, and it commits together with the outcome in one local transaction. Redelivery without a marker means process again; with one, skip. Grace lives next to state, never three systems away.
+
+3. "A deploy corrupts the status board. Rebuild path?"
+   Build board v2 from the stream into a shadow store, compare sampled parcels old-versus-new, then flip readers when the sample agrees. Nothing in a projection is precious — the stream is the authority, any read shape is re-derivable, and that property is why bugs in views stay cheap.
+
+4. "Streams run years long. Folding from zero at every startup?"
+   Periodic snapshots of folded state give a warm start: load the snapshot, then replay only the tail. A snapshot is a cache over the log — losing or corrupting one costs replay time, never correctness.
+
+5. "The platform markets exactly-once semantics. Do you believe it?"
+   The claim describes one hop; our pipeline crosses several systems. Guarantee happens where state changes: outcome and seen-marker in a single local commit make a replayed scan touch nothing twice. Vocabulary from the broker is marketing until the handler proves it locally.
+
+6. "Why keep the full stream once projections hold every answer?"
+   Because projections only answer today's questions. The stream answers retronyms: "what did this parcel's status look like in March", debugging by replay, and new views for new enquiries without touching existing systems. Deleting history deletes the ability to be wrong safely.
+
+7. "Can the log compact?"
+   Per topic, no global rule. Billing streams never compact — totals need history. Status feeds may compact to the latest record per key, since only the newest fact matters; each projection chooses, and the choice is written down.
+
+8. "Partition counts — fixable later?"
+   Only expensively: the key-to-partition mapping sets parallelism, so it is sized against peak load at design time, and rekeying is the known, costly escape hatch rather than a plan.
 
 ---
 
-## Evaluation Criteria
+## Probes
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+- "Billing projection diverges from the finance team's manual tally. First move?" — recompute from the log into a shadow projection, diff against finance's numbers, and fix the fold. Never patch a projection row in place; that hides the fold's own defect.
+- "Which consumer ordering do you relax, and when?" the exception queue tolerates mild reordering because its items are independent; billing tolerates none, because totals are sums — tolerance is per projection, not a global setting.
+- "How are reader positions tracked?" — each projection stores its own stream position beside its output; restarts resume from there, and only an explicit rebuild order replays from zero.
+- "What about late corrections?" — a correction enters the stream keyed to the same parcel and folds by position; the board reflects it within ordinary lag, and totals recompute rather than being patched.
+- "Backpressure story?" — a slow reader pulls smaller batches and parks at batch boundaries; the log retains everything meanwhile, so the consequence is delay, never loss.
 
+---
 
-## Staff+ Level Expectations
+## Red Flag
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
-
-## Common Follow-Up Questions
-
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
-
-## Key Takeaways
-
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
-
+Writing events that describe present state — "status = delivered" — instead of completed facts with their own timestamps. Current-state messages cannot be replayed to rebuild anything, which quietly amputates the entire rebuild story.

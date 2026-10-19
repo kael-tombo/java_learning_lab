@@ -1,84 +1,52 @@
-# Mock Interview: Backend for Frontend (BFF) Pattern
+# Mock Interview: One Backend per Client, Not per Server
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Designing APIs for a multi-client platform
-
-**Interviewer**: "We have mobile apps (iOS, Android), a web app, and a third-party API. Currently, all clients consume the same API, causing inefficiencies. How do you fix this?"
-
-**Candidate**: "I'd implement the Backend for Frontend (BFF) pattern. Each client type gets its own dedicated backend that optimizes the API for that specific client's needs."
-
-**Interviewer**: "What problems does the current shared API cause?"
-
-**Candidate**: "Three main problems: (1) Over-fetching — mobile clients download data they don't need because the API serves desktop use cases. (2) Under-fetching — the web client makes multiple round trips to compose a page because the API doesn't aggregate data for that specific view. (3) Client-specific logic leaks into the shared API — conditional parameters, feature flags, platform-specific endpoints."
-
-**Interviewer**: "Define the BFF structure."
-
-**Candidate**: "Three BFFs: Mobile BFF (optimized for low bandwidth, battery efficiency, offline support), Web BFF (optimized for page rendering, SEO, streaming), and Public API (optimized for rate limits, API keys, developer experience). Each BFF sits between the client and the backend services."
-
-**Interviewer**: "What does the Mobile BFF do differently?"
-
-**Candidate**: "The Mobile BFF: (1) Returns smaller payloads — only fields visible on screen. (2) Batches multiple requests into one — a 'home screen' endpoint that aggregates data from 5 backend services. (3) Handles offline synchronization — conflict detection, delta updates. (4) Compresses responses (gzip, protobuf). (5) Implements retry logic for poor network conditions."
-
-**Interviewer**: "How does the Web BFF differ?"
-
-**Candidate**: "The Web BFF: (1) Returns HTML or JSON with full page data — over-fetching is fine on desktop. (2) Handles server-side rendering (SSR) for SEO. (3) Returns streaming HTML for fast page load. (4) Manages session state (cookies, CSRF tokens). (5) Optimizes for cacheability — CDN-friendly responses."
-
-**Interviewer**: "What about the shared backend services?"
-
-**Candidate**: "The backend services remain shared — Order Service, Product Service, User Service. Each BFF is a thin aggregation layer that communicates with these services internally. The BFFs don't contain business logic — they're translation and aggregation layers. Business logic stays in the services."
-
-**Interviewer**: "How do you handle BFF maintainability?"
-
-**Candidate**: "BFFs can become a maintenance burden if they each duplicate logic. Mitigations: (1) Share utility code (auth, logging, retry) via a shared library. (2) Use GraphQL for the BFF layer — each client defines its own query, avoiding per-client API development. (3) Ensure BFFs are thin — if a BFF has business logic, it should be moved to a backend service."
-
-**Interviewer**: "When is BFF the wrong pattern?"
-
-**Candidate**: "When you have a single client type (just a web app). When the shared API already meets all clients' needs efficiently. When the team is small and can't maintain multiple BFFs. BFF adds operational overhead — more services to deploy, monitor, and debug. Only introduce it when the shared API is demonstrably causing problems for specific clients."
+> Dialogue, three-way panel. TrailMate is a hiking product with a phone app (offline-tolerant), a web dashboard, and a support console sharing one general API. The phone pulls megabytes to render a list.
 
 ---
 
-## Key Takeaways
+## Warm-Up
 
-- BFF provides client-specific API optimization
-- Mobile BFF: small payloads, batching, offline support
-- Web BFF: full data, SSR, caching optimization
-- Backend services remain shared; BFFs are thin aggregation
-- Use GraphQL as an alternative to BFF for simpler cases
+**Panel**: "Sell the idea in a sentence."
+
+**Candidate**: "Each client type gets a small backend owned by the squad shipping that client, shaped exactly to its screens, with domain services untouched underneath. The contract belongs to the consumer, not to a committee."
+
+**Panel**: "Who owns each of these backends?"
+
+**Candidate**: "The client team, end to end. When the mobile squad reshapes a screen they change their backend in the same release. Nobody negotiates a generic data contract across three teams to ship one button."
+
+**Panel**: "Doesn't the same logic get written three times?"
+
+**Candidate**: "Duplication of shape — naming, trimming, ordering — is fine and intended. Duplication of rules is not: an age gate or a surcharge computed in two backends is a defect waiting to disagree with itself. These layers compose from domain services and reshape; they do not re-decide."
+
+**Panel**: "Walk me through fixing the phone's payload pain."
+
+**Candidate**: "The mobile backend trims responses to fields the screens actually render, collapses five round trips into one composite call, and can adopt a leaner wire format than the web one uses. Nothing behind it changes — the same services keep answering."
+
+**Panel**: "A downstream service times out mid-request. What does the client see?"
+
+**Candidate**: "Nothing about our internals. The backend holding the client's contract converts the timeout into a per-field degraded signal plus a retry hint — never a stack trace, never a service name. Error shaping is its job, which is why clients can trust the surface."
+
+**Panel**: "Three clients is small. Is a plain gateway enough?"
+
+**Candidate**: "If all screens agree on payload shape and one squad serves everyone, yes — one gateway, one API, no extra tax. The pattern answers divergence, not fashion. It pays when client teams drift apart in release rhythm and needs."
+
+**Panel**: "Trail alerts have to arrive in real time. Where?"
+
+**Candidate**: "Over a persistent socket held by whichever backend needs it — the phone backend translates push events into screen-shaped messages on the spot, while the web side may not need that stream at all."
 
 ---
 
-## Evaluation Criteria
+## Closing Probes
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+- "Rate limiting: per backend or global?" — coarse quotas at the shared edge, fine caps per backend type, because a runaway console script must not exhaust the phone allowance.
+- "Where do sockets terminate?" — in each client's own backend only; domain services stay request-scoped, and push translation is presentation work, so no shared service ever holds a live connection.
+- "Who arbitrates an interface change on the domain services?" — the domain team owns the shape; every backend adapts on its own cadence, which is precisely the decoupling being purchased here.
+- "What if the web team lobbies to absorb the phone backend?" — decline unless they can staff it: each backend exists because its makers feel its consequences, and centralizing it rebuilds the shared API we just dismantled.
+- "Metrics split along which seam?" — every backend owns the service objectives of its own client surface; domain services own theirs, and dashboards express that boundary as ownership rather than plumbing.
+- "Who reviews a proposal to merge two of them?" — whoever can argue the convergence test: identical screens, one team, one release rhythm. Without that evidence the merge is consolidation theatre.
+- "What stops rules drifting into these backends?" — review discipline: anything that prices, gates, or refuses belongs to a domain service; showing up in a backend's code gets it bounced to the service that owns the rule before merge.
+- "Where does testing sit?" — each backend runs against stubbed domain services, plus one thin smoke per client type; the shared services keep their own contract suites untouched.
 
+## Red Flag
 
-## Staff+ Level Expectations
-
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
-
-## Common Follow-Up Questions
-
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
-
-## Key Takeaways
-
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
-
+Treating these per-client layers as a convenient dump for rules "just temporarily". Every rule parked there becomes a second implementation to keep in sync with the domain — and it never moves back.

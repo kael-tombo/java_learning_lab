@@ -1,84 +1,56 @@
-# Mock Interview: Domain-Driven Design
+# Mock Interview: Bounded Contexts on a Ferry Network
 
-> Architecture-focused interview dialogue for staff-level system design.
-
----
-
-## Scenario: Design a payment processing platform using DDD
-
-**Interviewer**: "Design a payment processing platform. Walk me through your DDD approach."
-
-**Candidate**: "I'll start with domain analysis. The domain is payment processing. I identify three core subdomains: Payment Authorization (the core — this is our competitive advantage), Settlement (important but more straightforward), and Fraud Detection (supporting subdomain)."
-
-**Interviewer**: "Define the bounded contexts."
-
-**Candidate**: "Payment Authorization Context, Settlement Context, Fraud Detection Context, Dispute Management Context, and Notification Context. Each owns its own model and data."
-
-**Interviewer**: "Walk me through the Payment Authorization context."
-
-**Candidate**: "Within the Payment Authorization context, I have an aggregate called `Payment`. The aggregate root is `Payment` entity. It contains `Transaction` entities (authorization attempts), a `Money` value object, and `PaymentMethod` value object. Invariant: a payment cannot be captured more than the authorized amount. Another invariant: a refund cannot exceed the captured amount."
-
-**Interviewer**: "Why is Payment the aggregate root and not Transaction?"
-
-**Candidate**: "Because the consistency boundary is the payment — all invariants constrain the payment as a whole. Transactions within a payment can be added but the payment's total captures and refunds must be consistent. If Transaction were the root, we couldn't enforce payment-level invariants atomically."
-
-**Interviewer**: "How do bounded contexts communicate?"
-
-**Candidate**: "Through domain events. When Payment Authorizes, it emits `PaymentAuthorized` event. The Settlement context subscribes, the Fraud context subscribes. For the integration with external contexts, each context has an anti-corruption layer — for example, the Payment context translates the bank's model of a 'transaction' into its own `Authorization` concept."
-
-**Interviewer**: "How do you handle the ubiquitous language across teams?"
-
-**Candidate**: "The language is defined per bounded context. 'Authorization' in the Payment context means one thing; 'Authorization' in the Fraud context means risk scoring. We document the glossary per context. Cross-context communication uses published language — the events define the shared vocabulary. A context map documents how each context relates to others."
-
-**Interviewer**: "When would you NOT use DDD for this system?"
-
-**Candidate**: "If the system had simple CRUD operations — create account, update profile, delete — DDD adds complexity without benefit. DDD shines when you have complex business rules, not complex technology. Payment processing has rich business rules (authorization rules, settlement timing, reconciliation), so DDD is appropriate."
-
-**Interviewer**: "How does DDD influence your microservice boundaries?"
-
-**Candidate**: "Each bounded context maps to one or more microservices. The Payment Authorization context is one service. Fraud Detection is another. They communicate via domain events. If I'd drawn service boundaries differently — say, splitting Payment Authorization into two services — I'd have broken a bounded context and created consistency problems."
+> Simulated transcript. BlueHarbor runs passenger ferries; panellist Priya, a principal engineer, drives the session.
 
 ---
 
-## Key Takeaways
+## Framing
 
-- Start with domain analysis, not technology
-- Bounded contexts define service boundaries
-- Aggregate roots enforce consistency boundaries
-- Anti-corruption layers protect your domain model
-- Ubiquitous language is per-context, not global
+"BlueHarbor sells trips — a customer reserves a seat on a departure — operates vessels with rosters and maintenance windows, and invoices harbour authorities for berth usage. One model currently serves all three, and the word 'reservation' means a passenger seat to sales but a berth slot to operations. Releases fail integration tests weekly for reasons nobody can state."
 
 ---
 
-## Evaluation Criteria
+## Deep Dive
 
-The interviewer assesses:
-- **Architecture thinking**: Clear decomposition into meaningful boundaries
-- **Trade-off awareness**: Understanding of when this pattern helps vs hurts
-- **Failure handling**: Proactive identification of failure modes
-- **Operational maturity**: Discussion of monitoring, deployment, and operations
-- **Communication**: Ability to explain complex concepts clearly
+**Priya**: "Where does the concrete pain show up?"
 
+**Me**: "In reviews. Operations engineers bolt berthing fields onto the trip class; sales then breaks arrival-time logic. One class no longer communicates a purpose. The fix is three contexts — Trip Sales, Sailing Operations, Port Billing — each defining 'reservation' its own way, each owning a separate store."
 
-## Staff+ Level Expectations
+**Priya**: "A reservation still touches a vessel. Isn't one aggregate easier?"
 
-At the staff+ level, the interviewer expects you to:
-- Challenge their assumptions and ask clarifying questions
-- Discuss organizational implications (team boundaries, Conway's Law)
-- Address data consistency challenges proactively
-- Consider migration and evolution strategy
-- Discuss cost and operational trade-offs
-- Connect technical decisions to business outcomes
+**Me**: "No. The reservation aggregate records departure id, seat count, and passenger names; its job is bookkeeping, not capacity truth. Seats live on the departure's ledger in Sailing Operations, where every decrement lands anyway. A reservation is granted by calling that context's small command API, so overselling is structurally impossible no matter how badly Trip Sales is written."
 
-## Common Follow-Up Questions
+**Priya**: "There's a decades-old mainframe still rewriting the booking ledger nightly. How do your models survive it?"
 
-1. ""How would this design change at 100x scale?"" — Discuss partitioning, caching, read replicas
-2. ""How do you handle schema evolution?"" — Backward compatibility, versioning, migration strategies
-3. ""Whats the biggest risk in this architecture?"" — Identify the weakest link and mitigation
-4. ""How would you migrate from the current system?"" — Strangler Fig, feature toggles, parallel run
-5. ""How do you test this system?"" — Unit, integration, contract, and end-to-end testing strategies
+**Me**: "Behind an anticorruption layer. Fixed-width mainframe dumps arrive; a translator converts them into our own snapshot type with real invariants. Legacy vocabulary never enters the new model, and when the mainframe retires, only the translator changes."
 
-## Key Takeaways
+**Priya**: "What language do the teams share?"
 
-This mock interview demonstrates the depth of discussion expected at staff+ level. The interviewer is not looking for a single ""correct"" answer but rather evaluating your thought process, trade-off awareness, and ability to communicate complex architectural decisions clearly.
+**Me**: "Each context keeps a glossary drawn from its own department's words. Where the crew says 'manifest', sales says 'confirmations list'. Forcing a single term across contexts is exactly how the giant shared model grew in the first place."
 
+**Priya**: "Could sales and billing share one money type?"
+
+**Me**: "Each copies the small value types it needs. A shared kernel reads as convenience and behaves as coupling — one side dictates the shape, the other freezes its roadmap."
+
+**Priya**: "Last one: how do you keep the three from quietly re-growing into one?"
+
+**Me**: "Contract tests between contexts, reviewed like surface changes, plus a standing rule that nobody merges a shared type without both owners named in the pull request. Drift gets arrested weekly, not rediscovered yearly."
+
+**Priya**: "And how does Port Billing learn that a trip happened?"
+
+**Me**: "Trip Sales publishes ReservationConfirmed; billing subscribes and prices by berth class. No direct table reads between contexts. If billing is dark, bookings still sell — the event waits in a queue. That asymmetry is why we picked events over a synchronous call here."
+
+---
+
+## Corner Cases the Panel Will Push
+
+- "Draw where each invariant sits." Oversell protection belongs to the departure ledger; refund ceilings belong to Port Billing; cancellations inside the sales window belong to Trip Sales. Boundaries fail when invariants migrate silently.
+- "Two contexts need the same word." Let them disagree, deliberately — one word, two definitions, documented per context. A shared term with two meanings is cheaper than a shared model with two owners.
+- "Whose fact is boarding?" — Sailing Operations publishes BoardingStarted; sales keeps it as read-only reference. Facts flow one way across context edges, and ownership never flips midstream.
+- "Delivery deadlines — who validates them?" — Operations owns schedule truth; sales stores only what it promised the customer. When they disagree, operations wins the fact and sales manages the expectation.
+
+---
+
+## Trap to Avoid
+
+Answering "document the term properly and move on". A bounded context is enforced by separated ownership — teams, deployments, databases. A glossary without ownership changes nothing.
