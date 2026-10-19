@@ -1,200 +1,49 @@
 # Code Deep Dive: 03-activation-functions
-
-## 1. Architecture Overview
-The Java implementation in `com.ailab.activations` follows clean architecture principles. The code is organized into clear layers: data structures, core algorithm, utilities, and configuration. Each layer has a well-defined responsibility and interface.
-
-### 1.1 Package Structure
-The `com.ailab.activations` package contains:
-- Main algorithm class implementing 03-activation-functions concepts
-- Supporting data structures for efficient computation
-- Utility classes for common operations
-- Configuration and parameter management
-
-### 1.2 Design Patterns Used
-Strategy Pattern: Different algorithm variants are implemented as interchangeable strategies.
-Builder Pattern: Complex configurations are constructed using the builder pattern.
-Factory Pattern: Algorithm instances are created based on configuration parameters.
-Template Method: The training loop follows the template method pattern for extensibility.
-
-## 2. Core Implementation Details
-
-### 2.1 Main Algorithm Class
-The primary class implements the core algorithm with clean, well-documented methods. Each method handles a specific aspect of the computation, making the code easy to follow and modify. The class is designed for both learning and production use.
-
-### 2.2 Key Methods
-- **train(double[][] data)**: Main training loop with convergence checking
-  - Validates input data and handles edge cases
-  - Iteratively updates model parameters using the core algorithm
-  - Monitors convergence criteria and terminates appropriately
-  - Returns the learned model parameters
-- **predict(double[] input, double[] weights)**: Inference on new data points
-  - Applies the learned model to make predictions
-  - Handles both single and batch prediction scenarios
-  - Returns predictions in a standardized format
-- **evaluate(double[][] data, double[] weights)**: Performance evaluation
-  - Computes appropriate metrics (MSE, accuracy, etc.)
-  - Provides confidence intervals when applicable
-  - Supports cross-validation strategies
-- **save(String path)** and **load(String path)**: Model persistence
-  - Serializes model parameters to a portable format
-  - Handles versioning for backward compatibility
-  - Supports both binary and text formats
-
-### 2.3 Data Flow
-Data flows through the system in a well-defined pipeline:
-1. **Input Validation**: Check data dimensions, handle missing values, detect anomalies
-2. **Preprocessing**: Normalize/standardize features, encode categorical variables
-3. **Core Algorithm**: Execute the main computation with convergence monitoring
-4. **Post-processing**: Transform results, compute confidence intervals
-5. **Evaluation**: Compute metrics, validate assumptions, generate reports
-
-### 2.4 Error Handling
-Comprehensive error handling with meaningful exception messages helps with debugging and production monitoring. Custom exception classes distinguish between different error types: input validation errors, numerical instability errors, convergence failures, and resource exhaustion errors.
-
-## 3. Performance Optimizations
-
-### 3.1 Memory Efficiency
-- Pre-allocated arrays instead of dynamic collections for predictable memory usage
-- In-place operations where possible to reduce garbage collection pressure
-- Lazy computation of expensive results with caching
-- Object pooling for frequently created temporary objects
-- Memory-mapped files for large datasets that exceed available RAM
-
-### 3.2 Computational Efficiency
-- Vectorized operations using tight loops with minimal branching
-- Early termination when convergence is detected or error tolerances are met
-- Caching of frequently accessed values to avoid redundant computation
-- Parallel execution for independent computations using Java streams and fork-join framework
-- Cache-friendly memory access patterns (row-major traversal)
-
-### 3.3 JVM-Specific Optimizations
-- Leveraging JIT compiler optimizations through predictable code patterns
-- Avoiding boxing/unboxing overhead by using primitive arrays
-- Using thread-local storage for thread-safe operation without synchronization overhead
-- Careful object allocation to reduce GC pause times
-
-## 4. Code Examples
+Plain JDK 21 only, no libraries. Each snippet is a single class.
+Compile: `javac --release 21 <Class>.java`. Run: `java -cp . <Class>`. Output is ASCII.
+## Snippet 1: Nn03A - function values
+sigmoid/tanh/ReLU at -2..2.
 ```java
-package com.ailab.activations;
-
-public class Example {
+public class Nn03A {
     public static void main(String[] args) {
-        var algorithm = new Algorithm();
-        algorithm.setLearningRate(0.01);
-        algorithm.setMaxIterations(1000);
-        algorithm.setTolerance(1e-6);
-        
-        double[][] trainingData = {{1.0, 2.0}, {2.0, 4.0}, {3.0, 6.0}};
-        double[] weights = algorithm.train(trainingData);
-        
-        double[] input = {4.0, 5.0};
-        double prediction = algorithm.predict(input, weights);
-        System.out.println("Prediction: " + prediction);
+        double[] xs={-2,-1,0,1,2};
+        for(double v:xs){
+            double s=1/(1+Math.exp(-v)), th=Math.tanh(v), r=Math.max(0,v);
+            System.out.printf("x=%.0f sig=%.4f tanh=%.4f relu=%.1f%n", v, s, th, r);
+        }
     }
 }
 ```
+Observed output:
+```
+x=-2 sig=0.1192 tanh=-0.9640 relu=0.0
+x=-1 sig=0.2689 tanh=-0.7616 relu=0.0
+x=0 sig=0.5000 tanh=0.0000 relu=0.0
+x=1 sig=0.7311 tanh=0.7616 relu=1.0
+x=2 sig=0.8808 tanh=0.9640 relu=2.0
+```
+## Snippet 2: Nn03B - derivatives
+sigmoid p(1-p), tanh 1-t^2, ReLU step at -1/0/1.
+```java
+public class Nn03B {
+    public static void main(String[] args) {
+        double[] xs={-1,0,1};
+        for(double v:xs){
+            double s=1/(1+Math.exp(-v));
+            double ds=s*(1-s), dt=1-Math.tanh(v)*Math.tanh(v);
+            double dr=v>0?1:(v==0?0:0);
+            System.out.printf("x=%.0f sig'=%.4f tanh'=%.4f relu'=%.0f%n", v, ds, dt, dr);
+        }
+    }
+}
+```
+Observed output:
+```
+x=-1 sig'=0.1966 tanh'=0.4200 relu'=0
+x=0 sig'=0.2500 tanh'=1.0000 relu'=0
+x=1 sig'=0.1966 tanh'=0.4200 relu'=1
+```
+## Checks
+- sigmoid(1)=0.7311, tanh(1)=0.7616, relu(-2)=0: standard table values.
+- Max sigmoid slope 0.25 at 0; tanh slope 1.0 at 0; ReLU 0/1 split.
 
-### Additional Implementation Detail 1
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 2
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 3
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 4
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 5
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 6
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 7
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 8
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 9
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 10
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 11
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 12
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 13
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 14
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 15
-This section covers Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-activation-functions focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.

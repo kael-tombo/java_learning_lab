@@ -1,204 +1,30 @@
-# 03-svm-theory - SVM Theory
-
+# 03-svm-theory - Support Vector Machines
 ## Overview
-SVM Theory: maximum margin, support vectors, Lagrangian dual, kernel trick, RBF kernel, SMO algorithm
-
-This micro-lab provides a comprehensive exploration of the topic, covering theoretical foundations, mathematical derivations, practical Java implementations, and real-world applications. Students will gain both conceptual understanding and hands-on coding experience.
-
-## Learning Objectives
-By completing this micro-lab, you will be able to:
-- Understand the core theoretical concepts and their mathematical formalization
-- Derive key equations and understand their implications for algorithm behavior
-- Implement production-quality Java code using best practices
-- Debug common issues and optimize performance
-- Apply concepts to solve real-world problems
-- Evaluate algorithmic trade-offs and make informed design decisions
-
-## Java Package
-Package: com.ailab.svm
-- Main implementation class with full algorithm
-- JUnit 5 test suite with comprehensive coverage
-- Clean architecture with separation of concerns
-- Well-documented code following Java conventions
-
-## Lab Structure
-This micro-lab contains 24 documentation files and 7 project subdirectories:
-  - **Core Learning**: README.md, THEORY.md, MATH_FOUNDATION.md, CODE_DEEP_DIVE.md, EXERCISES.md, QUIZ.md
-  - **Architecture and Design**: ARCHITECTURE.md, SECURITY.md, PERFORMANCE.md, REFACTORING.md, DEBUGGING.md
-  - **Deep Understanding**: COMMON_MISTAKES.md, STEP_BY_STEP.md, VISUAL_GUIDE.md, INTERNALS.md, HOW_IT_WORKS.md
-  - **Context and Review**: MENTAL_MODELS.md, HISTORY.md, WHY_IT_MATTERS.md, WHY_IT_EXISTS.md, REFERENCES.md, REFLECTION.md, INTERVIEW.md, FLASHCARDS.md
-
-### Project Subdirectories
-  - **MINI_PROJECT/**: Guided hands-on project to solidify concepts
-  - **REAL_WORLD_PROJECT/**: Production-grade implementation challenge
-  - **CHALLENGE/**: Advanced problem-solving tasks
-  - **TESTS/**: Additional test suites and test data
-  - **BENCHMARK/**: Performance benchmarks and comparison scripts
-  - **DIAGRAMS/**: Visual aids including architecture diagrams and math visualizations
-  - **SOLUTION/**: Reference solutions for exercises and projects
-
-## How to Use This Lab
-1. Start with THEORY.md to build conceptual understanding
-2. Study MATH_FOUNDATION.md to work through mathematical derivations
-3. Review CODE_DEEP_DIVE.md to understand Java implementation patterns
-4. Complete EXERCISES.md to test comprehension with graded problems
-5. Build the MINI_PROJECT to apply concepts in a guided project
-6. Tackle the CHALLENGE to push understanding with advanced problems
-7. Test with QUIZ.md to verify knowledge retention
-8. Review FLASHCARDS.md for quick review and long-term retention
-
-## Prerequisites
-- Java 21+ Development Kit (JDK)
-- Maven or Gradle for dependency management
-- Linear algebra fundamentals (vectors, matrices, eigenvalues)
-- Calculus basics (derivatives, partial derivatives, chain rule)
-- Probability and statistics fundamentals
-- Basic understanding of machine learning concepts
-
-## Time Estimate
-- Theory and Math: 2-3 hours
-- Code Review: 1-2 hours
-- Exercises: 2-3 hours
-- Mini Project: 3-4 hours
-- Challenge and Quiz: 2-3 hours
-Total: 10-15 hours
-
-## Additional Resources 1
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 2
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 3
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 4
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 5
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 6
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 7
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 8
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 9
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 10
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 11
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 12
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 13
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 14
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 15
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 16
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 17
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 18
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 19
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 20
-This section covers 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 03-svm-theory resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
+Max-margin classifier: minimize 0.5||w||^2 subject to y_i(w.x_i+b) >= 1. Margin width is 2/||w||; points with equality are support vectors. Hinge loss max(0,1-yf) powers the unconstrained form.
+## Key formulas
+- Margin: 2/||w||; distance of x: |w.x+b|/||w||.
+- Subgradient: -y x when y f < 1 (plus lambda w), else lambda w.
+## What the snippets show
+- Cml03A: width 1.0, two support vectors at distance 1.0.
+- Cml03B: hinge subgradient training to 4/4 accuracy.
+## Try it
+Move (2,2) off the plane and confirm only margin points affect the solution.
+## Formula reference
+- Primal: min 0.5||w||^2 + C sum max(0, 1 - y_i f_i); margin = 2/||w||.
+- Dual: sum alpha_i - 0.5 sum alpha_i alpha_j y_i y_j K(x_i, x_j); w = sum alpha y x.
+- KKT: alpha > 0 only on support vectors (y f = 1).
+## Worked example
+- w = [2,0]: ||w|| = 2, margin = 1.0; f(1,0) = -2, distance 1.0.
+- f(3,1) = 2, distance 1.0: both bind, both are supports.
+- Hinge at m = 0.5: 1 - 0.5 = 0.5 penalty; at m >= 1: zero.
+## Pitfalls
+- Unscaled features distort ||w||; standardize first.
+- C too large overfits noise; too small underfits margin violators.
+- Non-separable data needs kernels or slack; linear plane cannot bend.
+## Connections
+- Hinge subgradient mirrors perceptron update with margin 1 instead of 0.
+- Kernels generalize the dot products in the dual.
+## Exercises
+1. Move (2,2) to (2,0.5) and recompute its distance.
+2. Set C = 0.01 in the hinge loop and watch margins widen.
+3. Verify KKT: which points have nonzero alpha here.

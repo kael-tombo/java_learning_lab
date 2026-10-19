@@ -1,204 +1,31 @@
 # 01-linear-regression - Linear Regression
-
 ## Overview
-Linear Regression: OLS closed-form, gradient descent, R-squared, adjusted R-squared, multicollinearity
-
-This micro-lab provides a comprehensive exploration of the topic, covering theoretical foundations, mathematical derivations, practical Java implementations, and real-world applications. Students will gain both conceptual understanding and hands-on coding experience.
-
-## Learning Objectives
-By completing this micro-lab, you will be able to:
-- Understand the core theoretical concepts and their mathematical formalization
-- Derive key equations and understand their implications for algorithm behavior
-- Implement production-quality Java code using best practices
-- Debug common issues and optimize performance
-- Apply concepts to solve real-world problems
-- Evaluate algorithmic trade-offs and make informed design decisions
-
-## Java Package
-Package: com.ailab.linreg
-- Main implementation class with full algorithm
-- JUnit 5 test suite with comprehensive coverage
-- Clean architecture with separation of concerns
-- Well-documented code following Java conventions
-
-## Lab Structure
-This micro-lab contains 24 documentation files and 7 project subdirectories:
-  - **Core Learning**: README.md, THEORY.md, MATH_FOUNDATION.md, CODE_DEEP_DIVE.md, EXERCISES.md, QUIZ.md
-  - **Architecture and Design**: ARCHITECTURE.md, SECURITY.md, PERFORMANCE.md, REFACTORING.md, DEBUGGING.md
-  - **Deep Understanding**: COMMON_MISTAKES.md, STEP_BY_STEP.md, VISUAL_GUIDE.md, INTERNALS.md, HOW_IT_WORKS.md
-  - **Context and Review**: MENTAL_MODELS.md, HISTORY.md, WHY_IT_MATTERS.md, WHY_IT_EXISTS.md, REFERENCES.md, REFLECTION.md, INTERVIEW.md, FLASHCARDS.md
-
-### Project Subdirectories
-  - **MINI_PROJECT/**: Guided hands-on project to solidify concepts
-  - **REAL_WORLD_PROJECT/**: Production-grade implementation challenge
-  - **CHALLENGE/**: Advanced problem-solving tasks
-  - **TESTS/**: Additional test suites and test data
-  - **BENCHMARK/**: Performance benchmarks and comparison scripts
-  - **DIAGRAMS/**: Visual aids including architecture diagrams and math visualizations
-  - **SOLUTION/**: Reference solutions for exercises and projects
-
-## How to Use This Lab
-1. Start with THEORY.md to build conceptual understanding
-2. Study MATH_FOUNDATION.md to work through mathematical derivations
-3. Review CODE_DEEP_DIVE.md to understand Java implementation patterns
-4. Complete EXERCISES.md to test comprehension with graded problems
-5. Build the MINI_PROJECT to apply concepts in a guided project
-6. Tackle the CHALLENGE to push understanding with advanced problems
-7. Test with QUIZ.md to verify knowledge retention
-8. Review FLASHCARDS.md for quick review and long-term retention
-
-## Prerequisites
-- Java 21+ Development Kit (JDK)
-- Maven or Gradle for dependency management
-- Linear algebra fundamentals (vectors, matrices, eigenvalues)
-- Calculus basics (derivatives, partial derivatives, chain rule)
-- Probability and statistics fundamentals
-- Basic understanding of machine learning concepts
-
-## Time Estimate
-- Theory and Math: 2-3 hours
-- Code Review: 1-2 hours
-- Exercises: 2-3 hours
-- Mini Project: 3-4 hours
-- Challenge and Quiz: 2-3 hours
-Total: 10-15 hours
-
-## Additional Resources 1
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 2
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 3
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 4
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 5
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 6
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 7
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 8
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 9
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 10
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 11
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 12
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 13
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 14
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 15
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 16
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 17
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 18
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 19
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 20
-This section covers 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 01-linear-regression resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
+Ordinary least squares: minimize ||Xw - y||^2. Closed form w = (X^T X)^-1 X^T y; iterative alternative is gradient descent w -= lr * X^T(Xw-y)/n. Fit quality is R^2 = 1 - SSE/SST.
+## Key formulas
+- Normal equations: X^T X w = X^T y.
+- GD update: w -= lr * gradient; R^2 in [0,1] on training data with intercept.
+## What the snippets show
+- Cml01A: exact 2x2 normal-equation solve (w0=1.5000, w1=0.8000, SSE=1.8000).
+- Cml01B: batch GD from zero reaches R^2=0.6320 after 200 steps.
+## Try it
+Change y to [2,4,6,8] and confirm the closed form returns w1=2, w0=0.
+## Formula reference
+- Objective: min_w ||Xw - y||^2; gradient 2 X^T(Xw - y)/n.
+- Normal equations: X^T X w = X^T y; 2x2 inverse via 1/det [[d,-b],[-c,a]].
+- R^2 = 1 - SSE/SST; SST uses mean(y) = 3.5 here, SST = 5.0.
+- Standard errors need sigma^2 (X^T X)^-1; not computed in snippets.
+## Worked example
+- X^T X = [[4,10],[10,30]]: n = 4, sum x = 10, sum x^2 = 30.
+- det = 120 - 100 = 20; w1 = (4*39 - 10*14)/20 = 0.8 with X^T y = [14,39].
+- Predictions: 2.3, 3.1, 3.9, 4.7; residuals -0.3, -0.1, 1.1, -0.7; SSE = 1.8.
+## Pitfalls
+- X^T X singular when features collinear: use GD or drop a column.
+- R^2 on training data overstates; intercept required for the [0,1] reading.
+- GD lr too large diverges; 0.05 works on this scale, not universally.
+## Connections
+- Logistic regression reuses the linear score inside a sigmoid.
+- Regularization adds lambda penalties to this exact objective.
+## Exercises
+1. Recompute w for y = [2,4,6,8] and confirm w0 = 0, w1 = 2.
+2. Raise GD lr to 0.9 and watch the steps diverge.
+3. Drop the bias column and explain why the fit degrades.

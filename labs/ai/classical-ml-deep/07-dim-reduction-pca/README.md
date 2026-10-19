@@ -1,204 +1,30 @@
-# 07-dim-reduction-pca - Dimensionality Reduction PCA
-
+# 07-dim-reduction-pca - PCA
 ## Overview
-Dimensionality Reduction PCA: covariance matrix, eigenvalue decomposition, explained variance, kernel PCA
-
-This micro-lab provides a comprehensive exploration of the topic, covering theoretical foundations, mathematical derivations, practical Java implementations, and real-world applications. Students will gain both conceptual understanding and hands-on coding experience.
-
-## Learning Objectives
-By completing this micro-lab, you will be able to:
-- Understand the core theoretical concepts and their mathematical formalization
-- Derive key equations and understand their implications for algorithm behavior
-- Implement production-quality Java code using best practices
-- Debug common issues and optimize performance
-- Apply concepts to solve real-world problems
-- Evaluate algorithmic trade-offs and make informed design decisions
-
-## Java Package
-Package: com.ailab.pca
-- Main implementation class with full algorithm
-- JUnit 5 test suite with comprehensive coverage
-- Clean architecture with separation of concerns
-- Well-documented code following Java conventions
-
-## Lab Structure
-This micro-lab contains 24 documentation files and 7 project subdirectories:
-  - **Core Learning**: README.md, THEORY.md, MATH_FOUNDATION.md, CODE_DEEP_DIVE.md, EXERCISES.md, QUIZ.md
-  - **Architecture and Design**: ARCHITECTURE.md, SECURITY.md, PERFORMANCE.md, REFACTORING.md, DEBUGGING.md
-  - **Deep Understanding**: COMMON_MISTAKES.md, STEP_BY_STEP.md, VISUAL_GUIDE.md, INTERNALS.md, HOW_IT_WORKS.md
-  - **Context and Review**: MENTAL_MODELS.md, HISTORY.md, WHY_IT_MATTERS.md, WHY_IT_EXISTS.md, REFERENCES.md, REFLECTION.md, INTERVIEW.md, FLASHCARDS.md
-
-### Project Subdirectories
-  - **MINI_PROJECT/**: Guided hands-on project to solidify concepts
-  - **REAL_WORLD_PROJECT/**: Production-grade implementation challenge
-  - **CHALLENGE/**: Advanced problem-solving tasks
-  - **TESTS/**: Additional test suites and test data
-  - **BENCHMARK/**: Performance benchmarks and comparison scripts
-  - **DIAGRAMS/**: Visual aids including architecture diagrams and math visualizations
-  - **SOLUTION/**: Reference solutions for exercises and projects
-
-## How to Use This Lab
-1. Start with THEORY.md to build conceptual understanding
-2. Study MATH_FOUNDATION.md to work through mathematical derivations
-3. Review CODE_DEEP_DIVE.md to understand Java implementation patterns
-4. Complete EXERCISES.md to test comprehension with graded problems
-5. Build the MINI_PROJECT to apply concepts in a guided project
-6. Tackle the CHALLENGE to push understanding with advanced problems
-7. Test with QUIZ.md to verify knowledge retention
-8. Review FLASHCARDS.md for quick review and long-term retention
-
-## Prerequisites
-- Java 21+ Development Kit (JDK)
-- Maven or Gradle for dependency management
-- Linear algebra fundamentals (vectors, matrices, eigenvalues)
-- Calculus basics (derivatives, partial derivatives, chain rule)
-- Probability and statistics fundamentals
-- Basic understanding of machine learning concepts
-
-## Time Estimate
-- Theory and Math: 2-3 hours
-- Code Review: 1-2 hours
-- Exercises: 2-3 hours
-- Mini Project: 3-4 hours
-- Challenge and Quiz: 2-3 hours
-Total: 10-15 hours
-
-## Additional Resources 1
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 2
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 3
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 4
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 5
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 6
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 7
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 8
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 9
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 10
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 11
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 12
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 13
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 14
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 15
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 16
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 17
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 18
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 19
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 20
-This section covers 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-dim-reduction-pca resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
+PCA diagonalizes the covariance: principal components are its eigenvectors, variances are eigenvalues. Keep top-k for max-variance projection; explained ratio is lambda_i / sum lambda.
+## Key formulas
+- 2x2 eigenvalues: (tr +- sqrt(tr^2 - 4 det))/2.
+- Projection: z = v^T (x - mean); ratio = lambda_1 / (lambda_1 + lambda_2).
+## What the snippets show
+- Cml07A: full solve with trace/det cross-check (5.5616, 1.4384).
+- Cml07B: projection energies giving ratio 0.8000.
+## Try it
+Use C=[[5,0],[0,1]] and confirm eigenvalues 5 and 1 by hand.
+## Formula reference
+- Covariance C = X^T X/(n-1) centered; eigenpairs give components/variances.
+- 2x2: l = (tr +- sqrt(tr^2 - 4det))/2; explained = l_i/sum l.
+- Reconstruction with k PCs minimizes squared error among rank-k projections.
+## Worked example
+- tr = 7, det = 8; disc = sqrt(49-32) = sqrt(17) = 4.1231.
+- l1 = (7+4.1231)/2 = 5.5616; l2 = 1.4384; ratio 5.5616/7 = 0.7945.
+- Eigenvector check: residual [0,-0] printed by snippet.
+## Pitfalls
+- Unstandardized units let large-scale features dominate; z-score first.
+- PCA is linear; curved manifolds need kernels or nonlinear methods.
+- Sign of eigenvectors arbitrary; compare spans, not signs.
+## Connections
+- SVD of centered X gives the same components (singular values sqrt((n-1) l)).
+- Eigen math reused in spectral clustering and neural net analysis.
+## Exercises
+1. Solve C = diag(5,1) and name both PCs.
+2. Project [2,1] onto PC1 of the snippet matrix.
+3. Standardize two different-unit features, then redo.

@@ -1,204 +1,30 @@
 # 07-positional-encoding - Positional Encoding
-
 ## Overview
-Positional Encoding: sinusoidal, learned, RoPE, ALiBi, relative position bias, NoPE
-
-This micro-lab provides a comprehensive exploration of the topic, covering theoretical foundations, mathematical derivations, practical Java implementations, and real-world applications. Students will gain both conceptual understanding and hands-on coding experience.
-
-## Learning Objectives
-By completing this micro-lab, you will be able to:
-- Understand the core theoretical concepts and their mathematical formalization
-- Derive key equations and understand their implications for algorithm behavior
-- Implement production-quality Java code using best practices
-- Debug common issues and optimize performance
-- Apply concepts to solve real-world problems
-- Evaluate algorithmic trade-offs and make informed design decisions
-
-## Java Package
-Package: com.ailab.posencoding
-- Main implementation class with full algorithm
-- JUnit 5 test suite with comprehensive coverage
-- Clean architecture with separation of concerns
-- Well-documented code following Java conventions
-
-## Lab Structure
-This micro-lab contains 24 documentation files and 7 project subdirectories:
-  - **Core Learning**: README.md, THEORY.md, MATH_FOUNDATION.md, CODE_DEEP_DIVE.md, EXERCISES.md, QUIZ.md
-  - **Architecture and Design**: ARCHITECTURE.md, SECURITY.md, PERFORMANCE.md, REFACTORING.md, DEBUGGING.md
-  - **Deep Understanding**: COMMON_MISTAKES.md, STEP_BY_STEP.md, VISUAL_GUIDE.md, INTERNALS.md, HOW_IT_WORKS.md
-  - **Context and Review**: MENTAL_MODELS.md, HISTORY.md, WHY_IT_MATTERS.md, WHY_IT_EXISTS.md, REFERENCES.md, REFLECTION.md, INTERVIEW.md, FLASHCARDS.md
-
-### Project Subdirectories
-  - **MINI_PROJECT/**: Guided hands-on project to solidify concepts
-  - **REAL_WORLD_PROJECT/**: Production-grade implementation challenge
-  - **CHALLENGE/**: Advanced problem-solving tasks
-  - **TESTS/**: Additional test suites and test data
-  - **BENCHMARK/**: Performance benchmarks and comparison scripts
-  - **DIAGRAMS/**: Visual aids including architecture diagrams and math visualizations
-  - **SOLUTION/**: Reference solutions for exercises and projects
-
-## How to Use This Lab
-1. Start with THEORY.md to build conceptual understanding
-2. Study MATH_FOUNDATION.md to work through mathematical derivations
-3. Review CODE_DEEP_DIVE.md to understand Java implementation patterns
-4. Complete EXERCISES.md to test comprehension with graded problems
-5. Build the MINI_PROJECT to apply concepts in a guided project
-6. Tackle the CHALLENGE to push understanding with advanced problems
-7. Test with QUIZ.md to verify knowledge retention
-8. Review FLASHCARDS.md for quick review and long-term retention
-
-## Prerequisites
-- Java 21+ Development Kit (JDK)
-- Maven or Gradle for dependency management
-- Linear algebra fundamentals (vectors, matrices, eigenvalues)
-- Calculus basics (derivatives, partial derivatives, chain rule)
-- Probability and statistics fundamentals
-- Basic understanding of machine learning concepts
-
-## Time Estimate
-- Theory and Math: 2-3 hours
-- Code Review: 1-2 hours
-- Exercises: 2-3 hours
-- Mini Project: 3-4 hours
-- Challenge and Quiz: 2-3 hours
-Total: 10-15 hours
-
-## Additional Resources 1
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 2
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 3
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 4
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 5
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 6
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 7
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 8
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 9
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 10
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 11
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 12
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 13
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 14
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 15
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 16
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 17
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 18
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 19
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 20
-This section covers 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-positional-encoding resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
+Sinusoids PE(pos,2i)=sin(pos/10000^(2i/d)) give each position a unique phase vector. RoPE rotates Q/K pairs by angle proportional to position (relative via angle differences). ALiBi subtracts slope*|i-j| instead of adding vectors.
+## Key formulas
+- Sinusoid: sin/cos(pos / 10000^(2i/d)); wavelength grows geometrically.
+- ALiBi score -= slope * distance; RoPE rotates by theta*pos.
+## What the snippets show
+- Dl07A: exact PE components plus 628.3 wavelength instance.
+- Dl07B: ALiBi linear table and one RoPE rotation.
+## Try it
+Evaluate pos=0 and confirm PE is [0,1,0,1,...] pattern start.
+## Formula reference
+- PE(pos,2i) = sin(pos/10000^(2i/d)); PE(pos,2i+1) = cos(same).
+- Wavelength 2 pi 10000^(2i/d): 2 pi at i = 0 to 2 pi*10000 at top.
+- RoPE: rotate pair by angle pos*theta_i; ALiBi: score -= slope*dist.
+## Worked example
+- pos 1, d 4: divisors 1, 100; sin(1) = 0.8415, cos(1) = 0.5403.
+- sin(0.01) = 0.0100, cos = 1.0000: slow dims barely move per step.
+- ALiBi slope 0.5: distances 1,2,4,8 -> -0.5,-1,-2,-4 linear.
+## Pitfalls
+- Absolute PE extrapolates poorly past training length; relative/RoPE/ALiBi help.
+- Even/odd interleave: keep sin/cos pairing aligned in code.
+- Learned PE: same table shape, none of the extrapolation structure.
+## Connections
+- Attention is permutation-equivariant; this is its order input.
+- Normalization keeps these added scales stable.
+## Exercises
+1. Evaluate PE at pos = 0.
+2. Show ALiBi bias at dist 16, slope 0.25.
+3. Rotate by pi; confirm sign flip.

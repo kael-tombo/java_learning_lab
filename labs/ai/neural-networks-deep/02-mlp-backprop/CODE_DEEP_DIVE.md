@@ -1,200 +1,49 @@
 # Code Deep Dive: 02-mlp-backprop
-
-## 1. Architecture Overview
-The Java implementation in `com.ailab.mlp` follows clean architecture principles. The code is organized into clear layers: data structures, core algorithm, utilities, and configuration. Each layer has a well-defined responsibility and interface.
-
-### 1.1 Package Structure
-The `com.ailab.mlp` package contains:
-- Main algorithm class implementing 02-mlp-backprop concepts
-- Supporting data structures for efficient computation
-- Utility classes for common operations
-- Configuration and parameter management
-
-### 1.2 Design Patterns Used
-Strategy Pattern: Different algorithm variants are implemented as interchangeable strategies.
-Builder Pattern: Complex configurations are constructed using the builder pattern.
-Factory Pattern: Algorithm instances are created based on configuration parameters.
-Template Method: The training loop follows the template method pattern for extensibility.
-
-## 2. Core Implementation Details
-
-### 2.1 Main Algorithm Class
-The primary class implements the core algorithm with clean, well-documented methods. Each method handles a specific aspect of the computation, making the code easy to follow and modify. The class is designed for both learning and production use.
-
-### 2.2 Key Methods
-- **train(double[][] data)**: Main training loop with convergence checking
-  - Validates input data and handles edge cases
-  - Iteratively updates model parameters using the core algorithm
-  - Monitors convergence criteria and terminates appropriately
-  - Returns the learned model parameters
-- **predict(double[] input, double[] weights)**: Inference on new data points
-  - Applies the learned model to make predictions
-  - Handles both single and batch prediction scenarios
-  - Returns predictions in a standardized format
-- **evaluate(double[][] data, double[] weights)**: Performance evaluation
-  - Computes appropriate metrics (MSE, accuracy, etc.)
-  - Provides confidence intervals when applicable
-  - Supports cross-validation strategies
-- **save(String path)** and **load(String path)**: Model persistence
-  - Serializes model parameters to a portable format
-  - Handles versioning for backward compatibility
-  - Supports both binary and text formats
-
-### 2.3 Data Flow
-Data flows through the system in a well-defined pipeline:
-1. **Input Validation**: Check data dimensions, handle missing values, detect anomalies
-2. **Preprocessing**: Normalize/standardize features, encode categorical variables
-3. **Core Algorithm**: Execute the main computation with convergence monitoring
-4. **Post-processing**: Transform results, compute confidence intervals
-5. **Evaluation**: Compute metrics, validate assumptions, generate reports
-
-### 2.4 Error Handling
-Comprehensive error handling with meaningful exception messages helps with debugging and production monitoring. Custom exception classes distinguish between different error types: input validation errors, numerical instability errors, convergence failures, and resource exhaustion errors.
-
-## 3. Performance Optimizations
-
-### 3.1 Memory Efficiency
-- Pre-allocated arrays instead of dynamic collections for predictable memory usage
-- In-place operations where possible to reduce garbage collection pressure
-- Lazy computation of expensive results with caching
-- Object pooling for frequently created temporary objects
-- Memory-mapped files for large datasets that exceed available RAM
-
-### 3.2 Computational Efficiency
-- Vectorized operations using tight loops with minimal branching
-- Early termination when convergence is detected or error tolerances are met
-- Caching of frequently accessed values to avoid redundant computation
-- Parallel execution for independent computations using Java streams and fork-join framework
-- Cache-friendly memory access patterns (row-major traversal)
-
-### 3.3 JVM-Specific Optimizations
-- Leveraging JIT compiler optimizations through predictable code patterns
-- Avoiding boxing/unboxing overhead by using primitive arrays
-- Using thread-local storage for thread-safe operation without synchronization overhead
-- Careful object allocation to reduce GC pause times
-
-## 4. Code Examples
+Plain JDK 21 only, no libraries. Each snippet is a single class.
+Compile: `javac --release 21 <Class>.java`. Run: `java -cp . <Class>`. Output is ASCII.
+## Snippet 1: Nn02A - 2-2-1 forward pass
+Fixed W1, b1, W2: sigmoid hidden, linear out; hand-checkable arithmetic.
 ```java
-package com.ailab.mlp;
-
-public class Example {
+public class Nn02A {
     public static void main(String[] args) {
-        var algorithm = new Algorithm();
-        algorithm.setLearningRate(0.01);
-        algorithm.setMaxIterations(1000);
-        algorithm.setTolerance(1e-6);
-        
-        double[][] trainingData = {{1.0, 2.0}, {2.0, 4.0}, {3.0, 6.0}};
-        double[] weights = algorithm.train(trainingData);
-        
-        double[] input = {4.0, 5.0};
-        double prediction = algorithm.predict(input, weights);
-        System.out.println("Prediction: " + prediction);
+        double[] x={0.5,-0.5};
+        double[][] W1={{0.4,-0.2},{0.1,0.3}}; double[] b1={0.1,-0.1};
+        double[] h=new double[2];
+        for(int j=0;j<2;j++){double s=b1[j]+W1[0][j]*x[0]+W1[1][j]*x[1];h[j]=1/(1+Math.exp(-s));}
+        double[] W2={0.6,-0.4}; double b2=0.0;
+        double o=b2+W2[0]*h[0]+W2[1]*h[1];
+        System.out.printf("h=[%.4f,%.4f]%n", h[0],h[1]);
+        System.out.printf("out=%.4f%n", o);
     }
 }
 ```
+Observed output:
+```
+h=[0.5622,0.4134]
+out=0.1720
+```
+## Snippet 2: Nn02B - one sigmoid-CE gradient step
+p=0.5498 at w=0.4; analytic dL/dw, dL/db then lr=0.5 step.
+```java
+public class Nn02B {
+    public static void main(String[] args) {
+        double x=0.5, t=1.0;
+        double w=0.4, b=0.0;
+        double z=w*x+b, p=1/(1+Math.exp(-z));
+        double loss=-(t*Math.log(p)+(1-t)*Math.log(1-p));
+        double dzdw=(p-t)*x, dzdb=(p-t);
+        System.out.printf("p=%.4f loss=%.4f dL/dw=%.4f dL/db=%.4f%n", p, loss, dzdw, dzdb);
+        w-=0.5*dzdw;
+        System.out.printf("w_new=%.4f%n", w);
+    }
+}
+```
+Observed output:
+```
+p=0.5498 loss=0.5981 dL/dw=-0.2251 dL/db=-0.4502
+w_new=0.5125
+```
+## Checks
+- h=[0.5622,0.4134], out=0.1720: recompute z1=0.25 -> sigmoid 0.5622 by hand.
+- Gradients (-0.2251,-0.4502) equal (p-t)x,(p-t); w moves 0.4 -> 0.5125.
 
-### Additional Implementation Detail 1
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 2
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 3
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 4
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 5
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 6
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 7
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 8
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 9
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 10
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 11
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 12
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 13
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 14
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 15
-This section covers Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 02-mlp-backprop focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.

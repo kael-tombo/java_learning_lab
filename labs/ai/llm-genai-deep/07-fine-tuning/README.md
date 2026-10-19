@@ -1,204 +1,30 @@
-# 07-fine-tuning - Fine-Tuning
-
+# 07-fine-tuning - Fine-Tuning and LoRA
 ## Overview
-Fine-Tuning: full fine-tuning, LoRA, QLoRA 4-bit NF4, DoRA, AdaLoRA, PEFT comparison
-
-This micro-lab provides a comprehensive exploration of the topic, covering theoretical foundations, mathematical derivations, practical Java implementations, and real-world applications. Students will gain both conceptual understanding and hands-on coding experience.
-
-## Learning Objectives
-By completing this micro-lab, you will be able to:
-- Understand the core theoretical concepts and their mathematical formalization
-- Derive key equations and understand their implications for algorithm behavior
-- Implement production-quality Java code using best practices
-- Debug common issues and optimize performance
-- Apply concepts to solve real-world problems
-- Evaluate algorithmic trade-offs and make informed design decisions
-
-## Java Package
-Package: com.ailab.finetune
-- Main implementation class with full algorithm
-- JUnit 5 test suite with comprehensive coverage
-- Clean architecture with separation of concerns
-- Well-documented code following Java conventions
-
-## Lab Structure
-This micro-lab contains 24 documentation files and 7 project subdirectories:
-  - **Core Learning**: README.md, THEORY.md, MATH_FOUNDATION.md, CODE_DEEP_DIVE.md, EXERCISES.md, QUIZ.md
-  - **Architecture and Design**: ARCHITECTURE.md, SECURITY.md, PERFORMANCE.md, REFACTORING.md, DEBUGGING.md
-  - **Deep Understanding**: COMMON_MISTAKES.md, STEP_BY_STEP.md, VISUAL_GUIDE.md, INTERNALS.md, HOW_IT_WORKS.md
-  - **Context and Review**: MENTAL_MODELS.md, HISTORY.md, WHY_IT_MATTERS.md, WHY_IT_EXISTS.md, REFERENCES.md, REFLECTION.md, INTERVIEW.md, FLASHCARDS.md
-
-### Project Subdirectories
-  - **MINI_PROJECT/**: Guided hands-on project to solidify concepts
-  - **REAL_WORLD_PROJECT/**: Production-grade implementation challenge
-  - **CHALLENGE/**: Advanced problem-solving tasks
-  - **TESTS/**: Additional test suites and test data
-  - **BENCHMARK/**: Performance benchmarks and comparison scripts
-  - **DIAGRAMS/**: Visual aids including architecture diagrams and math visualizations
-  - **SOLUTION/**: Reference solutions for exercises and projects
-
-## How to Use This Lab
-1. Start with THEORY.md to build conceptual understanding
-2. Study MATH_FOUNDATION.md to work through mathematical derivations
-3. Review CODE_DEEP_DIVE.md to understand Java implementation patterns
-4. Complete EXERCISES.md to test comprehension with graded problems
-5. Build the MINI_PROJECT to apply concepts in a guided project
-6. Tackle the CHALLENGE to push understanding with advanced problems
-7. Test with QUIZ.md to verify knowledge retention
-8. Review FLASHCARDS.md for quick review and long-term retention
-
-## Prerequisites
-- Java 21+ Development Kit (JDK)
-- Maven or Gradle for dependency management
-- Linear algebra fundamentals (vectors, matrices, eigenvalues)
-- Calculus basics (derivatives, partial derivatives, chain rule)
-- Probability and statistics fundamentals
-- Basic understanding of machine learning concepts
-
-## Time Estimate
-- Theory and Math: 2-3 hours
-- Code Review: 1-2 hours
-- Exercises: 2-3 hours
-- Mini Project: 3-4 hours
-- Challenge and Quiz: 2-3 hours
-Total: 10-15 hours
-
-## Additional Resources 1
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 2
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 3
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 4
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 5
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 6
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 7
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 8
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 9
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 10
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 11
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 12
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 13
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 14
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 15
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 16
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 17
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 18
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 19
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
-
-## Additional Resources 20
-This section covers 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns.
-
-The mathematical framework for 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior.
-
-Implementing 07-fine-tuning resources and references for further study including recommended textbooks, research papers, online courses, and practice platforms requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets.
+LoRA freezes W and trains low-rank delta BA (r << d,k), scaled by alpha/r. Trainable count r*(d+k) vs full d*k: rank 4 on 64x64 is 1/8 the params.
+## Key formulas
+- Delta = (alpha/r) B A; trainable = r*(d+k).
+- Base frozen: only A,B get gradients.
+## What the snippets show
+- Lg07A: 512 vs 4096 with 0.1250 ratio.
+- Lg07B: scale 2.0 and 0.2500 update.
+## Try it
+Set r=8 and confirm the ratio doubles to 0.25.
+## Formula reference
+- LoRA: W' = W + (alpha/r) B A; A ~ N(0,1), B = 0 start (delta 0).
+- Trainable r(d+k) vs dk full; rank trades capacity for params.
+- Target modules usually Q,V (sometimes all); alpha/r scales updates.
+## Worked example
+- 4*(64+64) = 512; 64*64 = 4096; 512/4096 = 0.125.
+- scale 8/4 = 2.0; update 2.0 * B A x with toy values = 0.25.
+- r=8 doubles to 1024/4096 = 0.25 (linear in r).
+## Pitfalls
+- Rank too low for hard style shifts; raise r or target more modules.
+- Forgetting base freeze trains everything (not LoRA anymore).
+- Merged vs unmerged inference: merge for speed, keep adapter for swapping.
+## Connections
+- RLHF SFT stage often uses LoRA for efficiency.
+- Quantized base + LoRA (QLoRA) compresses further.
+## Exercises
+1. Set r = 8; confirm ratio 0.25.
+2. Scale alpha = 4; recompute update.
+3. Count LoRA for d = k = 256, r = 8.

@@ -1,200 +1,50 @@
 # Code Deep Dive: 03-svm-theory
-
-## 1. Architecture Overview
-The Java implementation in `com.ailab.svm` follows clean architecture principles. The code is organized into clear layers: data structures, core algorithm, utilities, and configuration. Each layer has a well-defined responsibility and interface.
-
-### 1.1 Package Structure
-The `com.ailab.svm` package contains:
-- Main algorithm class implementing 03-svm-theory concepts
-- Supporting data structures for efficient computation
-- Utility classes for common operations
-- Configuration and parameter management
-
-### 1.2 Design Patterns Used
-Strategy Pattern: Different algorithm variants are implemented as interchangeable strategies.
-Builder Pattern: Complex configurations are constructed using the builder pattern.
-Factory Pattern: Algorithm instances are created based on configuration parameters.
-Template Method: The training loop follows the template method pattern for extensibility.
-
-## 2. Core Implementation Details
-
-### 2.1 Main Algorithm Class
-The primary class implements the core algorithm with clean, well-documented methods. Each method handles a specific aspect of the computation, making the code easy to follow and modify. The class is designed for both learning and production use.
-
-### 2.2 Key Methods
-- **train(double[][] data)**: Main training loop with convergence checking
-  - Validates input data and handles edge cases
-  - Iteratively updates model parameters using the core algorithm
-  - Monitors convergence criteria and terminates appropriately
-  - Returns the learned model parameters
-- **predict(double[] input, double[] weights)**: Inference on new data points
-  - Applies the learned model to make predictions
-  - Handles both single and batch prediction scenarios
-  - Returns predictions in a standardized format
-- **evaluate(double[][] data, double[] weights)**: Performance evaluation
-  - Computes appropriate metrics (MSE, accuracy, etc.)
-  - Provides confidence intervals when applicable
-  - Supports cross-validation strategies
-- **save(String path)** and **load(String path)**: Model persistence
-  - Serializes model parameters to a portable format
-  - Handles versioning for backward compatibility
-  - Supports both binary and text formats
-
-### 2.3 Data Flow
-Data flows through the system in a well-defined pipeline:
-1. **Input Validation**: Check data dimensions, handle missing values, detect anomalies
-2. **Preprocessing**: Normalize/standardize features, encode categorical variables
-3. **Core Algorithm**: Execute the main computation with convergence monitoring
-4. **Post-processing**: Transform results, compute confidence intervals
-5. **Evaluation**: Compute metrics, validate assumptions, generate reports
-
-### 2.4 Error Handling
-Comprehensive error handling with meaningful exception messages helps with debugging and production monitoring. Custom exception classes distinguish between different error types: input validation errors, numerical instability errors, convergence failures, and resource exhaustion errors.
-
-## 3. Performance Optimizations
-
-### 3.1 Memory Efficiency
-- Pre-allocated arrays instead of dynamic collections for predictable memory usage
-- In-place operations where possible to reduce garbage collection pressure
-- Lazy computation of expensive results with caching
-- Object pooling for frequently created temporary objects
-- Memory-mapped files for large datasets that exceed available RAM
-
-### 3.2 Computational Efficiency
-- Vectorized operations using tight loops with minimal branching
-- Early termination when convergence is detected or error tolerances are met
-- Caching of frequently accessed values to avoid redundant computation
-- Parallel execution for independent computations using Java streams and fork-join framework
-- Cache-friendly memory access patterns (row-major traversal)
-
-### 3.3 JVM-Specific Optimizations
-- Leveraging JIT compiler optimizations through predictable code patterns
-- Avoiding boxing/unboxing overhead by using primitive arrays
-- Using thread-local storage for thread-safe operation without synchronization overhead
-- Careful object allocation to reduce GC pause times
-
-## 4. Code Examples
+Plain JDK 21 only, no libraries. Each snippet is a single class.
+Compile: `javac --release 21 <Class>.java`. Run: `java -cp . <Class>`. Output is ASCII.
+## Snippet 1: Cml03A - margin width and support distances
+For w=[2,0], b=-4: width = 2/||w||; signed value f and |f|/||w|| for 3 points.
 ```java
-package com.ailab.svm;
-
-public class Example {
+public class Cml03A {
     public static void main(String[] args) {
-        var algorithm = new Algorithm();
-        algorithm.setLearningRate(0.01);
-        algorithm.setMaxIterations(1000);
-        algorithm.setTolerance(1e-6);
-        
-        double[][] trainingData = {{1.0, 2.0}, {2.0, 4.0}, {3.0, 6.0}};
-        double[] weights = algorithm.train(trainingData);
-        
-        double[] input = {4.0, 5.0};
-        double prediction = algorithm.predict(input, weights);
-        System.out.println("Prediction: " + prediction);
+        double[] w={2.0,0.0}; double b=-4.0;
+        double norm=Math.sqrt(w[0]*w[0]+w[1]*w[1]);
+        System.out.printf("margin_width=%.4f%n", 2.0/norm);
+        double[][] pts={{1,0},{3,1},{2,2}};
+        for(double[] p:pts){double f=w[0]*p[0]+w[1]*p[1]+b;System.out.printf("pt(%.0f,%.0f) f=%.1f dist=%.4f%n",p[0],p[1],f,Math.abs(f)/norm);}
     }
 }
 ```
+Observed output:
+```
+margin_width=1.0000
+pt(1,0) f=-2.0 dist=1.0000
+pt(3,1) f=2.0 dist=1.0000
+pt(2,2) f=0.0 dist=0.0000
+```
+## Snippet 2: Cml03B - hinge subgradient descent
+Primal objective 0.5 lambda ||w||^2 + max(0, 1 - y f); 50 passes, lr=0.1, lambda=0.01.
+```java
+public class Cml03B {
+    public static void main(String[] args) {
+        double[][] X={{1,1},{2,0},{0,2},{3,3}}; int[] y={-1,-1,1,1};
+        double[] w={0,0}; double b=0, lr=0.1;
+        for(int e=0;e<50;e++) for(int i=0;i<4;i++){
+            double m=y[i]*(w[0]*X[i][0]+w[1]*X[i][1]+b);
+            if(m<1){w[0]+=lr*(y[i]*X[i][0]-0.01*w[0]);w[1]+=lr*(y[i]*X[i][1]-0.01*w[1]);b+=lr*y[i];}
+            else{w[0]-=lr*0.01*w[0];w[1]-=lr*0.01*w[1];}
+        }
+        System.out.printf("w=[%.4f,%.4f] b=%.4f%n", w[0],w[1],b);
+        int ok=0; for(int i=0;i<4;i++){int pr=(w[0]*X[i][0]+w[1]*X[i][1]+b)>=0?1:-1; if(pr==y[i])ok++;}
+        System.out.printf("train_acc=%d/4%n", ok);
+    }
+}
+```
+Observed output:
+```
+w=[-0.5060,1.7273] b=-2.3000
+train_acc=4/4
+```
+## Checks
+- Margin width = 1.0; points (1,0) and (3,1) sit at distance exactly 1.0 (support vectors), (2,2) on the plane.
+- Hinge trainer reaches 4/4 train accuracy; w=[-0.5060,1.7273], b=-2.3.
 
-### Additional Implementation Detail 1
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 2
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 3
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 4
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 5
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 6
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 7
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 8
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 9
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 10
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 11
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 12
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 13
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 14
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 15
-This section covers Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 03-svm-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.

@@ -1,200 +1,42 @@
 # Code Deep Dive: 07-information-theory
-
-## 1. Architecture Overview
-The Java implementation in `com.ailab.infotheory` follows clean architecture principles. The code is organized into clear layers: data structures, core algorithm, utilities, and configuration. Each layer has a well-defined responsibility and interface.
-
-### 1.1 Package Structure
-The `com.ailab.infotheory` package contains:
-- Main algorithm class implementing 07-information-theory concepts
-- Supporting data structures for efficient computation
-- Utility classes for common operations
-- Configuration and parameter management
-
-### 1.2 Design Patterns Used
-Strategy Pattern: Different algorithm variants are implemented as interchangeable strategies.
-Builder Pattern: Complex configurations are constructed using the builder pattern.
-Factory Pattern: Algorithm instances are created based on configuration parameters.
-Template Method: The training loop follows the template method pattern for extensibility.
-
-## 2. Core Implementation Details
-
-### 2.1 Main Algorithm Class
-The primary class implements the core algorithm with clean, well-documented methods. Each method handles a specific aspect of the computation, making the code easy to follow and modify. The class is designed for both learning and production use.
-
-### 2.2 Key Methods
-- **train(double[][] data)**: Main training loop with convergence checking
-  - Validates input data and handles edge cases
-  - Iteratively updates model parameters using the core algorithm
-  - Monitors convergence criteria and terminates appropriately
-  - Returns the learned model parameters
-- **predict(double[] input, double[] weights)**: Inference on new data points
-  - Applies the learned model to make predictions
-  - Handles both single and batch prediction scenarios
-  - Returns predictions in a standardized format
-- **evaluate(double[][] data, double[] weights)**: Performance evaluation
-  - Computes appropriate metrics (MSE, accuracy, etc.)
-  - Provides confidence intervals when applicable
-  - Supports cross-validation strategies
-- **save(String path)** and **load(String path)**: Model persistence
-  - Serializes model parameters to a portable format
-  - Handles versioning for backward compatibility
-  - Supports both binary and text formats
-
-### 2.3 Data Flow
-Data flows through the system in a well-defined pipeline:
-1. **Input Validation**: Check data dimensions, handle missing values, detect anomalies
-2. **Preprocessing**: Normalize/standardize features, encode categorical variables
-3. **Core Algorithm**: Execute the main computation with convergence monitoring
-4. **Post-processing**: Transform results, compute confidence intervals
-5. **Evaluation**: Compute metrics, validate assumptions, generate reports
-
-### 2.4 Error Handling
-Comprehensive error handling with meaningful exception messages helps with debugging and production monitoring. Custom exception classes distinguish between different error types: input validation errors, numerical instability errors, convergence failures, and resource exhaustion errors.
-
-## 3. Performance Optimizations
-
-### 3.1 Memory Efficiency
-- Pre-allocated arrays instead of dynamic collections for predictable memory usage
-- In-place operations where possible to reduce garbage collection pressure
-- Lazy computation of expensive results with caching
-- Object pooling for frequently created temporary objects
-- Memory-mapped files for large datasets that exceed available RAM
-
-### 3.2 Computational Efficiency
-- Vectorized operations using tight loops with minimal branching
-- Early termination when convergence is detected or error tolerances are met
-- Caching of frequently accessed values to avoid redundant computation
-- Parallel execution for independent computations using Java streams and fork-join framework
-- Cache-friendly memory access patterns (row-major traversal)
-
-### 3.3 JVM-Specific Optimizations
-- Leveraging JIT compiler optimizations through predictable code patterns
-- Avoiding boxing/unboxing overhead by using primitive arrays
-- Using thread-local storage for thread-safe operation without synchronization overhead
-- Careful object allocation to reduce GC pause times
-
-## 4. Code Examples
+Plain JDK 21 only, no libraries. Each snippet is a single class.
+Compile: `javac --release 21 <Class>.java`. Run: `java -cp . <Class>`. Output is ASCII.
+## Snippet 1: Mt07A - entropy and KL in bits
+p=[.5,.25,.25]: H=1.5; KL to [.25,.25,.5] = 0.25; uniform refs.
 ```java
-package com.ailab.infotheory;
-
-public class Example {
+public class Mt07A {
     public static void main(String[] args) {
-        var algorithm = new Algorithm();
-        algorithm.setLearningRate(0.01);
-        algorithm.setMaxIterations(1000);
-        algorithm.setTolerance(1e-6);
-        
-        double[][] trainingData = {{1.0, 2.0}, {2.0, 4.0}, {3.0, 6.0}};
-        double[] weights = algorithm.train(trainingData);
-        
-        double[] input = {4.0, 5.0};
-        double prediction = algorithm.predict(input, weights);
-        System.out.println("Prediction: " + prediction);
+        double[] p={0.5,0.25,0.25};
+        double h=0; for(double v:p) h-=v*Math.log(v)/Math.log(2);
+        double[] q={0.25,0.25,0.5};
+        double kl=0; for(int i=0;i<3;i++) kl+=p[i]*(Math.log(p[i]/q[i])/Math.log(2));
+        System.out.printf("H=%.4f bits KL=%.4f bits%n", h, kl);
+        System.out.printf("H_uniform2=%.1f H_uniform4=%.1f%n", 1.0, 2.0);
     }
 }
 ```
+Observed output:
+```
+H=1.5000 bits KL=0.2500 bits
+H_uniform2=1.0 H_uniform4=2.0
+```
+## Snippet 2: Mt07B - CE = H + KL identity
+Natural-log check: 0.8018+0.0268=0.8286 exactly.
+```java
+public class Mt07B {
+    public static void main(String[] args) {
+        double[] p={0.7,0.2,0.1}, q={0.6,0.3,0.1};
+        double h=0,kl=0; for(int i=0;i<3;i++){h-=p[i]*Math.log(p[i]);kl+=p[i]*Math.log(p[i]/q[i]);}
+        double ce=0; for(int i=0;i<3;i++) ce-=p[i]*Math.log(q[i]);
+        System.out.printf("H=%.4f KL=%.4f CE=%.4f H+KL=%.4f%n", h, kl, ce, h+kl);
+    }
+}
+```
+Observed output:
+```
+H=0.8018 KL=0.0268 CE=0.8286 H+KL=0.8286
+```
+## Checks
+- H=1.5 sits between 1-bit (2 outcomes) and 2-bit (4 outcomes) refs as expected.
+- CE computed directly equals H+KL to 4 decimals: identity verified numerically.
 
-### Additional Implementation Detail 1
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 2
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 3
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 4
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 5
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 6
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 7
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 8
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 9
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 10
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 11
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 12
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 13
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 14
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 15
-This section covers Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 07-information-theory focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.

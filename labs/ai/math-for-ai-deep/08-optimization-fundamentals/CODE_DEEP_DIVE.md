@@ -1,200 +1,45 @@
 # Code Deep Dive: 08-optimization-fundamentals
-
-## 1. Architecture Overview
-The Java implementation in `com.ailab.optimization` follows clean architecture principles. The code is organized into clear layers: data structures, core algorithm, utilities, and configuration. Each layer has a well-defined responsibility and interface.
-
-### 1.1 Package Structure
-The `com.ailab.optimization` package contains:
-- Main algorithm class implementing 08-optimization-fundamentals concepts
-- Supporting data structures for efficient computation
-- Utility classes for common operations
-- Configuration and parameter management
-
-### 1.2 Design Patterns Used
-Strategy Pattern: Different algorithm variants are implemented as interchangeable strategies.
-Builder Pattern: Complex configurations are constructed using the builder pattern.
-Factory Pattern: Algorithm instances are created based on configuration parameters.
-Template Method: The training loop follows the template method pattern for extensibility.
-
-## 2. Core Implementation Details
-
-### 2.1 Main Algorithm Class
-The primary class implements the core algorithm with clean, well-documented methods. Each method handles a specific aspect of the computation, making the code easy to follow and modify. The class is designed for both learning and production use.
-
-### 2.2 Key Methods
-- **train(double[][] data)**: Main training loop with convergence checking
-  - Validates input data and handles edge cases
-  - Iteratively updates model parameters using the core algorithm
-  - Monitors convergence criteria and terminates appropriately
-  - Returns the learned model parameters
-- **predict(double[] input, double[] weights)**: Inference on new data points
-  - Applies the learned model to make predictions
-  - Handles both single and batch prediction scenarios
-  - Returns predictions in a standardized format
-- **evaluate(double[][] data, double[] weights)**: Performance evaluation
-  - Computes appropriate metrics (MSE, accuracy, etc.)
-  - Provides confidence intervals when applicable
-  - Supports cross-validation strategies
-- **save(String path)** and **load(String path)**: Model persistence
-  - Serializes model parameters to a portable format
-  - Handles versioning for backward compatibility
-  - Supports both binary and text formats
-
-### 2.3 Data Flow
-Data flows through the system in a well-defined pipeline:
-1. **Input Validation**: Check data dimensions, handle missing values, detect anomalies
-2. **Preprocessing**: Normalize/standardize features, encode categorical variables
-3. **Core Algorithm**: Execute the main computation with convergence monitoring
-4. **Post-processing**: Transform results, compute confidence intervals
-5. **Evaluation**: Compute metrics, validate assumptions, generate reports
-
-### 2.4 Error Handling
-Comprehensive error handling with meaningful exception messages helps with debugging and production monitoring. Custom exception classes distinguish between different error types: input validation errors, numerical instability errors, convergence failures, and resource exhaustion errors.
-
-## 3. Performance Optimizations
-
-### 3.1 Memory Efficiency
-- Pre-allocated arrays instead of dynamic collections for predictable memory usage
-- In-place operations where possible to reduce garbage collection pressure
-- Lazy computation of expensive results with caching
-- Object pooling for frequently created temporary objects
-- Memory-mapped files for large datasets that exceed available RAM
-
-### 3.2 Computational Efficiency
-- Vectorized operations using tight loops with minimal branching
-- Early termination when convergence is detected or error tolerances are met
-- Caching of frequently accessed values to avoid redundant computation
-- Parallel execution for independent computations using Java streams and fork-join framework
-- Cache-friendly memory access patterns (row-major traversal)
-
-### 3.3 JVM-Specific Optimizations
-- Leveraging JIT compiler optimizations through predictable code patterns
-- Avoiding boxing/unboxing overhead by using primitive arrays
-- Using thread-local storage for thread-safe operation without synchronization overhead
-- Careful object allocation to reduce GC pause times
-
-## 4. Code Examples
+Plain JDK 21 only, no libraries. Each snippet is a single class.
+Compile: `javac --release 21 <Class>.java`. Run: `java -cp . <Class>`. Output is ASCII.
+## Snippet 1: Mt08A - GD on convex quadratic
+f=(w-1)^2 from 5, lr=0.2: 5 steps 5.76 -> 0.0967; f''=2>0.
 ```java
-package com.ailab.optimization;
-
-public class Example {
+public class Mt08A {
     public static void main(String[] args) {
-        var algorithm = new Algorithm();
-        algorithm.setLearningRate(0.01);
-        algorithm.setMaxIterations(1000);
-        algorithm.setTolerance(1e-6);
-        
-        double[][] trainingData = {{1.0, 2.0}, {2.0, 4.0}, {3.0, 6.0}};
-        double[] weights = algorithm.train(trainingData);
-        
-        double[] input = {4.0, 5.0};
-        double prediction = algorithm.predict(input, weights);
-        System.out.println("Prediction: " + prediction);
+        double w=5.0;
+        for(int t=0;t<5;t++){double g=2*(w-1);w-=0.2*g;System.out.printf("t%d w=%.4f f=%.4f%n",t,w,(w-1)*(w-1));}
+        System.out.printf("f''=2>0 convex global_min_at_w=1%n");
     }
 }
 ```
+Observed output:
+```
+t0 w=3.4000 f=5.7600
+t1 w=2.4400 f=2.0736
+t2 w=1.8640 f=0.7465
+t3 w=1.5184 f=0.2687
+t4 w=1.3110 f=0.0967
+f''=2>0 convex global_min_at_w=1
+```
+## Snippet 2: Mt08B - conditioning and stability edge
+cond=10 rate 0.6694; lr=0.19 near 2/L=0.2 overshoots to -1.916.
+```java
+public class Mt08B {
+    public static void main(String[] args) {
+        double lmax=10, lmin=1;
+        System.out.printf("cond=%.1f rate=((k-1)/(k+1))^2=%.4f%n", lmax/lmin, Math.pow((lmax/lmin-1)/(lmax/lmin+1),2));
+        double w=5.0;
+        for(int t=0;t<3;t++){double g=10*(w-1);w-=0.19*g;}
+        System.out.printf("steep_dir_w=%.4f (lr near 2/L edge oscillates slowly)%n", w);
+    }
+}
+```
+Observed output:
+```
+cond=10.0 rate=((k-1)/(k+1))^2=0.6694
+steep_dir_w=-1.9160 (lr near 2/L edge oscillates slowly)
+```
+## Checks
+- Monotone descent 5.76/2.07/0.75/0.27/0.10: linear convergence on convex bowl.
+- Rate ((10-1)/(10+1))^2=0.6694 per step predicted; lr near limit overshoots past minimum.
 
-### Additional Implementation Detail 1
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 2
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 3
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 4
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 5
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 6
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 7
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 8
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 9
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 10
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 11
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 12
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 13
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 14
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
-
-### Additional Implementation Detail 15
-This section covers Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs in depth. Understanding this concept is fundamental to mastering the broader topic area. We explore the theoretical underpinnings, practical implications, and common implementation patterns. Students should focus on grasping both the intuitive understanding and the formal mathematical specification of each concept.
-
-The mathematical framework for Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs builds upon foundational concepts from linear algebra and calculus. We derive the key equations step by step, showing how each component contributes to the overall algorithm behavior. Special attention is given to edge cases and numerical stability considerations.
-
-Implementing Implementation pattern for 08-optimization-fundamentals focusing on specific algorithmic components and their Java realization with complete code walkthroughs requires careful attention to numerical stability and computational efficiency. We present optimized Java code that handles edge cases gracefully while maintaining high performance on large datasets. The implementation follows industry best practices and design patterns.
