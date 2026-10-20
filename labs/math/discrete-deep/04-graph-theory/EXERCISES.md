@@ -1,130 +1,59 @@
-﻿# Exercises: Graph Theory
+# Exercises — Graph Theory
 
-## Theoretical Exercises
+Five problems with worked solutions; every figure is quoted from the
+captured runs in CODE_DEEP_DIVE.md.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Graph Theory in your own words.
-**Answer**: Graph Theory involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Handshake Audit
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Graph Theory.
-**Answer**: The proof follows from the definitions and established theorems.
+On edges (0,1),(0,2),(1,2),(1,3),(2,3),(3,4),(4,1), list degrees and
+verify Σ deg = 2|E|.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Graph Theory to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+**Solution**: Run-printed: 0:2, 1:4, 2:3, 3:3, 4:2. Sum = 14 and
+2|E| = 14, equal True. Odd vertices are 2 and 3 — exactly two, the
+Euler-trail signature.
 
-## Programming Exercises
+## Problem 2. Locate the Euler Trail
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Graph Theory.
+Find an Euler trail on that graph and confirm every edge is used once.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: The search returned edge sequence [1,0,2,4,3,6,5]
+reconstructing walk 2 → 0 → 1 → 2 → 3 → 1 → 4 → 3, with
+"all 7 edges once: True" printed and start at odd vertex 2. Edge
+residues: 1=(0,2) consumed from 2; 0=(0,1) from 0; 2=(1,2); 4=(2,3);
+3=(1,3); 6=(4,1); 5=(3,4).
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 3. Four Odd Vertices Kill It
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+Delete edge (4,1): degrees become 0:2, 1:3, 2:3, 3:3, 4:1. Does an
+Euler trail exist?
 
-## Challenge Problems
+**Solution**: No — four odd vertices, and the earlier run's searcher
+returned None on precisely this shape. Reason: each visit to a vertex
+pair-consumes incidences; any vertex with odd degree must be a trail
+endpoint, and a walk has only two ends. 0 odd ⟺ circuit;
+2 odd ⟺ trail; anything else: impossible.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## Problem 4. Cayley at n = 5, Two Roads
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Verify 5^(5−2) = 125 by independent enumeration, and state K₄'s
+spanning-tree count the same way.
 
-## Solutions
+**Solution**: Brute union-find filter printed 125 for n = 5,
+equal True, as well as 1, 3, 16 at n = 2, 3, 4 and 1296 at n = 6.
+For K₄: 16 = 4² spanning trees, again printed twice — once as the
+m = 3 census row, once as the summed tree column of the program-2
+run.
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Graph Theory
+## Problem 5. Planar Budget Arithmetic
 
-## Multiple Choice Questions
+(a) How do K5 and K3,3 fail planarity by counting alone? (b) Why can't
+the same arithmetic reject the Petersen graph? (c) State the tight
+case.
 
-### Question 1
-What is the fundamental principle underlying Graph Theory?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Graph Theory?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+**Solution**: (a) Run rows: K5: |E| = 10 > 3n−6 = 9 (True), rejected.
+K3,3: |E| = 9 > 2n−4 = 8 (True), rejected by the sharper bipartite
+bound — its girth is 4, so faces have ≥ 4 edges. (b) Petersen has
+|E| = 15 ≤ 3·10−6 = 24, so the bound passes and only the K3,3-minor
+argument rejects it — arithmetic limits, not full classifications.
+(c) K4 at |E| = 6 = 3·4−6 exactly: the maximal-planar equality where
+every face is a triangle.

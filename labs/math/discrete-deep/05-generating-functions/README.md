@@ -1,76 +1,42 @@
-﻿# Generating Functions
+# Generating Functions — Lab 05 of Discrete Deep
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Generating Functions**, a cornerstone topic in Discrete Math and Combinatorics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Coefficient extraction as exact integer arithmetic: binomial and
+trinomial expansions, a dice product read row by row, the partition
+GF to degree 12, Euler's distinct = odd collapse on five rows, and a
+change-making table certified by brute triples. All numbers from
+captured runs.
 
-## Topics Covered
-- ordinary/exponential generating functions, recurrence solving, combinatorial species, Catalan numbers
+## What each file contains
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: the formal-series stance (no convergence); product rule
+  semantics at i + j = n; the x = 1 evaluation ledger (2·3 = 6, 3³ =
+  27, 2⁴ = 16 all printed); dice D(x)²; the partition recurrence as
+  1/∏(1−xᵏ); Euler's product identity realised as a DP.
+- MATH_FOUNDATION.md: the printed arrays with one-step derivations —
+  1, 4, 6, 4, 1; 1, 3, 6, 7, 6, 3, 1; dice 1..6..1; partitions to
+  p(12) = 77; the 4·5·6·8·10 identity rows; the ten paying triples.
+- CODE_DEEP_DIVE.md: two executed Python programs — exact polynomial
+  multiplication with the x = 1 ledger; dice/coin product semantics,
+  the partition GF with brute and Euler cross-checks, and the coin
+  table.
+- EXERCISES.md: five worked problems (extraction by hand, the x = 1
+  homomorphism, dice coefficients, the 10-paying census, partitions
+  and Euler).
+- FLASHCARDS.md: twelve cards, run-verified figures only.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Generating Functions
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Prerequisites within the track
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Lab 03's stars-and-bars is this lab's [x³] = 7 case in disguise, and
+the xi ≤ 5 census is [x¹⁰] of (1+x+⋯+x⁵)³. Lab 02's product/bijection
+frame underlies the pairing semantics of multiplication here. The
+integer recurrence carries into Lab 06's modular-exponentiation DP,
+and Euler's distinct = odd collapse is the lab's deepest result: five
+checked equalities falling out of one telescoping product.
 
-## Project Structure
-`
-generatingfunc/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/generatingfunc/GeneratingFunctions.java
-    â””â”€â”€ test/java/com/mathlab/generatingfunc/GeneratingFunctionsTest.java
-`
+## Do this
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+Type the dice row (1..6 apex) from memory, then compare: six at total
+7 is the convolution's center-of-mass signature. Then re-derive the
+10-pay table by hand through amount 6 and check against the printed
+1, 1, 2, 2, 3, 4, 5, 6, ... — the first disagreement anywhere means
+your coin loop got the order of coins wrong.

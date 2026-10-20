@@ -1,76 +1,41 @@
-﻿# Combinatorics
+# Combinatorics — Lab 03 of Discrete Deep
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Combinatorics**, a cornerstone topic in Discrete Math and Combinatorics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Stars-and-bars closed forms matched against brute censuses, an
+upper-bound case where the refund level stays dead, derangements by
+two routes, and a thousand-integer divisibility census. All numbers
+from captured runs.
 
-## Topics Covered
-- permutations, combinations, binomial theorem, stars and bars, pigeonhole principle, inclusion-exclusion
+## What each file contains
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: counting-as-bijection with the star-string witness (4,2,4)
+  ↦ ★★★★|★★|★★★★; both stars-and-bars forms with four and three
+  verified cases; the inclusion–exclusion principle with the level
+  identity Σ(−1)^{j+1}C(m,j) = 1; derangements !2..!6; the 1..1000
+  census with floors and complement identity.
+- MATH_FOUNDATION.md: the same numbers shown as printed pairs —
+  66/84/6/1820 nonnegative, 36/84/6 positive, the 21-census at xi ≤ 5
+  with C(6,2) = 15 per bad axis, signed terms 120,−120,60,−20,5,−1,
+  and the 734/266 union-survivor split.
+- CODE_DEEP_DIVE.md: two executed Python programs — brute-vs-closed
+  stars and bars; the bounded census, both derangement engines, and
+  the divisibility census with floor list and complement identity.
+- EXERCISES.md: five worked problems (candies three ways, five
+  variables, capped coordinates, !5 by hand-level arithmetic, the
+  thousand-case reassembly with residue classes).
+- FLASHCARDS.md: twelve cards, all figures run-verified.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Combinatorics
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Prerequisites within the track
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Lab 01's induction supports the binomial artifact checks; Lab 02's
+inclusion-exclusion view of set unions is the three-set census's
+foundation (|A₂∩A₃| floors). Products of choices feed Lab 04's
+Hamilton-path counting; the capped-dole census reappears in Lab 05's
+generating-function coefficient extraction (x¹⁰ in (1+x+⋯+x⁵)³).
 
-## Project Structure
-`
-combinatorics/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/combinatorics/Combinatorics.java
-    â””â”€â”€ test/java/com/mathlab/combinatorics/CombinatoricsTest.java
-`
+## Do this
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+Run program 1 twice: once trusting the closed form, once reading the
+printed lex-order sample for x₁+x₂ = 5 — six solutions, C(6,1), oldest
+tool confirmed. The upper-bound problem (21) is the one to redo by
+hand: one subtraction and an empty refund level teaches more
+inclusion–exclusion than a generic two-set example.

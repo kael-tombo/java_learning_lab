@@ -1,81 +1,52 @@
-﻿# Math Foundation for Combinatorics
+# Combinatorics — Math Foundation
 
-## Prerequisite Mathematics
+Every figure below appears in the captured runs of CODE_DEEP_DIVE.md;
+enumeration and closed formulas had to agree digit-for-digit.
 
-This document reviews the mathematical prerequisites needed to study Combinatorics effectively.
+## 1. Stars and Bars, Brute Force Committee
 
-## 1. Algebra Review
+Nonnegative solutions of x₁+⋯+xₖ = n. Brute counts vs closed C(n+k−1,
+k−1), printed as pairs: (10,3): 66 = 66; (6,4): 84 = 84; (5,2): 6 = 6;
+(12,5): 1820 = 1820 — four matches, no exceptions. Positive case
+xᵢ ≥ 1 refits to C(n−1, k−1): (10,3): 36; (10,4): 84; (7,2): 6 —
+observed matches again. The run also showed the lexicographic start of
+x₁+x₂ = 5: (0,5), (1,4), (2,3), (3,2), with 6 total = C(6,1).
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Upper-Bound Census: xi ≤ 5 With Triple Overlap Empty
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+Target x₁+x₂+x₃ = 10, all coordinates ≤ 5. Levels, as printed:
+unbounded base C(12,2) = 66; a fixed axis violating xi ≥ 6 leaves
+C(6,2) = 15; three such bad sets → union 45; pairs of bad sets empty
+because 6+6 > 10. Inclusion–exclusion: 66 − 45 + 0 = 21, and the brute
+enumerator printed 21. One changed bound moves the whole count: the
+do-not-care ceiling is doing all the work here.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Derangements Both Ways
 
-## 2. Functions and Graphs
+Brute permutation scans of Sₙ print !2 = 1, !3 = 2, !4 = 9, !5 = 44,
+!6 = 265, matched by Σ(−1)^m C(n,m)(n−m)!. For n = 5 the signed level
+terms printed: 120, −120, 60, −20, 5, −1, partial sum 44. Level data:
+|S₅| = 120 is the 0-level; subtracting permutations with at least one
+fixed point at level 1 = C(5,1)·4! = 120 undoes everything, and the
+deeper levels rebuild — the alternating machinery subtracts its way to
+exactly the no-fixed-point residue.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Thousand-Case Divisibility Census
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+Over 1..1000, observed memberships: divisible by 2 → 500; by 3 → 333;
+by 5 → 200; pairs by floor(1000/6) = 166, /10 = 100, /15 = 66; triple
+/30 = 33. Inclusion–exclusion union: 500+333+200−166−100−66+33 = 734.
+Complement identity, both printed on the run: 1000 − 734 = 266 equals
+the brute count of integers with no factor in {2,3,5}. Survivors come
+in residue classes coprime to 30 — the printed first candidates in
+1..60 are 1, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 49, 53, 59
+(8 per full 30-window since φ(30) = 8, and 266 = 8·33 + 2).
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 5. Sanity Bijection for the Bar-Counting
 
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+A solution to x₁+⋯+x₃ = 10 corresponds to a 12-slot binary string with
+exactly 2 bars: for example (4,2,4) is ★★★★|★★|★★★★. Brute/C(12,2)
+agreement at 66 IS the statement that this correspondence is a
+bijection and not a many-to-one projection. The sampler printed the
+2-variable case's page-one solutions as a smell test before trusting
+the formula's authority.

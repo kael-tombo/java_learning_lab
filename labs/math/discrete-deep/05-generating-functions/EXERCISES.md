@@ -1,130 +1,57 @@
-﻿# Exercises: Generating Functions
+# Exercises — Generating Functions
 
-## Theoretical Exercises
+Five problems with worked solutions; numbers quoted from the captured
+runs in CODE_DEEP_DIVE.md.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Generating Functions in your own words.
-**Answer**: Generating Functions involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Extract by Hand, Then Trust the Engine
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Generating Functions.
-**Answer**: The proof follows from the definitions and established theorems.
+State all coefficients of (1+x)⁴ and their sum; state [x³] of
+(1+x+x²)³ and characterize its witnesses.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Generating Functions to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+**Solution**: Run array: 1, 4, 6, 4, 1, summing to 16 = 2⁴ — the
+C(4,k) row. [x³] of the trinomial cube printed 7: the choices are the
+six permutations of (0,1,2) plus the (1,1,1) entry, i.e. 3 + 3 + 1.
+Full row: 1, 3, 6, 7, 6, 3, 1 with coefficient sum 27 = 3³ (printed
+equal both ways).
 
-## Programming Exercises
+## Problem 2. The x = 1 Evaluation Homomorphism
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Generating Functions.
+Why does the sum of coefficients multiply? Verify on
+(1+x)(1+x+x²).
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: Substituting x = 1 turns Σ aₖ into A(1), and
+(A·B)(1) = A(1)·B(1) is just multiplication respecting evaluation.
+Run printed both: sum 6 for the product, and 2·3 = 6 for the factors.
+Any missed cross-term would break this ledger instantly.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 3. Dice Totals as Coefficients
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+Give the two-dice count of each total and the total-accounting line.
 
-## Challenge Problems
+**Solution**: Printed row 2..12: 1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1,
+summing to 36. [x⁷] = 6 counts ordered pairs (1,6),(2,5),(3,4),(4,3),
+(5,2),(6,1); [x²] and [x¹²] are 1 apiece; [x¹] = 0 cannot arise from
+two positive dice.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## Problem 4. Change for 10 Under {1, 2, 5}
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Count ways and enumerate them against the GF table.
 
-## Solutions
+**Solution**: The DP run printed ways for amounts 0..10 as
+1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 10, so exactly 10 ways for ten. The
+brute triple scan substantiates each: (0,0,2), (0,5,0), (1,2,1),
+(2,4,0), (3,1,1), (4,3,0), (5,0,1), (6,2,0), (8,1,0), (10,0,0) — the
+coefficient of x¹⁰ in the product of the three unary parts is 10.
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Generating Functions
+## Problem 5. Partitions and Euler's Collapse
 
-## Multiple Choice Questions
+Report p(10) and p(12) by the GF, verify by brute force, and exhibit
+the distinct = odd identity at n = 9.
 
-### Question 1
-What is the fundamental principle underlying Generating Functions?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Generating Functions?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+**Solution**: GF row (run-printed): 1, 1, 2, 3, 5, 7, 11, 15, 22, 30,
+42, 56, 77 for n = 0..12, so p(10) = 42 and p(12) = 77; the brute
+partitions counter printed 42 and 77 in the same columns. At n = 9:
+distinct-part count 8 equals odd-part count 8 (run equal True, on all
+five displayed rows 4, 5, 6, 8, 10) — the telescoping (1+xᵏ) =
+(1−x²ᵏ)/(1−xᵏ) does in one algebra move what enumeration does in
+seven.

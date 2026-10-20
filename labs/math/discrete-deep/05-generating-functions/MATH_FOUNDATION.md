@@ -1,81 +1,52 @@
-﻿# Math Foundation for Generating Functions
+# Generating Functions — Math Foundation
 
-## Prerequisite Mathematics
+Figures below are pasted from the captured runs of CODE_DEEP_DIVE.md
+or follow by one exact step on a printed value. All arithmetic integer.
 
-This document reviews the mathematical prerequisites needed to study Generating Functions effectively.
+## 1. Binomial and Trinomial Expansions, Coefficient by Coefficient
 
-## 1. Algebra Review
+(1+x)⁴ printed as the array 1, 4, 6, 4, 1 with sum 16 — the C(4,k)
+row, total weight-checked at 2⁴. (1+x+x²)³ printed 1, 3, 6, 7, 6, 3, 1
+with the per-index line [x³] = 7 among them; sum of coefficients
+27 = 3³ printed against the literal power. Coefficient-sum equality is
+the product rule read at x = 1: sums multiply when polynomials do.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. The x = 1 Ledger
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+Σ coefficients of (1+x)(1+x+x²) = 6, printed against 2·3 = 6. The dot
+that "all weights at once" makes the evaluation homomorphism explicit:
+setting x = 1 in a product multiplies the totals. This identity line
+is the cheapest sanity check any generating-function program can carry.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Two Dice, One Product
 
-## 2. Functions and Graphs
+D(x) = x + x² + ⋯ + x⁶ has coefficients c₁..c₆ = 1. D(x)² printed
+per total: 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:5, 9:4, 10:3, 11:2, 12:1 —
+sum 36, certified on the run. [x⁷] = 6 is the six ordered pairs
+(1,6),(2,5),(3,4),(4,3),(5,2),(6,1); the extremes 2 and 12 hold one
+pair each, and [x¹] printed 0 as a constraint outlier.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Partitions by Coefficient Extraction
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+1/∏_{k≥1}(1−xᵏ) truncated to degree 12 printed: p(0..12) =
+1, 1, 2, 3, 5, 7, 11, 15, 22, 30, 42, 56, 77. Independent brute count:
+p(10) = 42 = 42 and p(12) = 77 = 77 (run equal via paired prints). At
+n = 10 the census alternative would scan every multiset of parts; the
+GF recurrence instead costs 10 · (10/k) additions per k — exact
+integers throughout, no closed form needed.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 5. Euler Distinct = Odd, on Five Rows
 
-## 3. Trigonometry
+Distinct-part counts and odd-part counts printed side-by-side:
+n = 6: 4 = 4; n = 7: 5 = 5; n = 8: 6 = 6; n = 9: 8 = 8; n = 10: 10 =
+10. The identity ∏(1+xᵏ) = ∏(1−x^{2k})/(1−xᵏ) telescopes even factors
+and is the reason one DP with an inner sign flip converts between the
+two, observed at all five n.
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+## 6. Change-Making, Verified by Triples
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+Coin set {1, 2, 5}: ways table printed for amounts 0..10 as
+1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 10. The brute triple scan printed the
+10 witnesses (x₁, x₂, x₅): (0,0,2), (0,5,0), (1,2,1), (2,4,0),
+(3,1,1), (4,3,0), (5,0,1), (6,2,0), (8,1,0), (10,0,0) — count 10,
+matching [x¹⁰] of (1+x+⋯+x¹⁰)(1+x²+x⁴+⋯)(1+x⁵+x¹⁰) at the same degree.

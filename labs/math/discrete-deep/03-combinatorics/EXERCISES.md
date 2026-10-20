@@ -1,130 +1,58 @@
-﻿# Exercises: Combinatorics
+# Exercises — Combinatorics
 
-## Theoretical Exercises
+Five problems with worked solutions; every number is quoted from the
+captured runs in CODE_DEEP_DIVE.md.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Combinatorics in your own words.
-**Answer**: Combinatorics involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Count a Dole Three Ways
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Combinatorics.
-**Answer**: The proof follows from the definitions and established theorems.
+In how many ways can 10 identical candies go to 3 children, with no
+constraint? With each child getting at least one?
 
-### Exercise 3: Application
-**Question**: Apply the theory of Combinatorics to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+**Solution**: Unconstrained: C(12,2) = 66 — the run's brute census
+printed 66 and match True. Positive version: C(9,2) = 36, brute print
+36. The shift of 3 units off the target is the entire difference
+between bars without and with a guaranteed unit per child.
 
-## Programming Exercises
+## Problem 2. Five Variables, Twelve Units
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Combinatorics.
+How many nonnegative solutions has x₁+⋯+x₅ = 12?
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: 1820. The run printed brute 1820 and C(16,4) = 1820 —
+12 stars with 4 bars among 16 slots. The scale compounds quadratically
+in n and to the fourth power in k's binomial coefficient; the brute
+grid would have scanned all C(16,4)-worth of candidates.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 3. Cap the Coordinates
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+Count solutions of x₁+x₂+x₃ = 10 with 0 ≤ xᵢ ≤ 5.
 
-## Challenge Problems
+**Solution**: 21. Levels from the run: unbounded C(12,2) = 66;
+each bad-axis condition xᵢ ≥ 6 contributes C(6,2) = 15; three such
+axes give 45; pairs of violations are impossible (6+6 > 10), so plus
+level is 0. Inclusion–exclusion: 66 − 45 + 0 = 21 = brute print. The
+parity here is one subtraction and nothing else, since the refund
+never activates.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## Problem 4. Derangements: Verify !5 by Hand-Level Arithmetic
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+Compute !5 with the alternating-sum formula and reconcile with brute.
 
-## Solutions
+**Solution**: Signed terms (run-printed): 120, −120, 60, −20, 5, −1,
+total 44 = !5. Reconciliation: brute permutation scan of S₅ also
+printed 44. Term provenance: 120 = C(5,0)5!; −120 = −C(5,1)4!;
++60 = +C(5,2)3!; −20 = −C(5,3)2!; +5; −1. !5/5! = 44/120 ≈ 0.3667.
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Combinatorics
+## Problem 5. The Thousand-Case Census, Reassembled
 
-## Multiple Choice Questions
+Of integers 1..1000, how many are divisible by 2, 3, or 5? How many
+survivors? Check the complement identity and the 30-residue structure.
 
-### Question 1
-What is the fundamental principle underlying Combinatorics?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Combinatorics?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+**Solution**: Levels (run-printed floors): 500, 333, 200 for single
+divisibility; 166, 100, 66 pairwise; 33 for /30. Union:
+500+333+200−166−100−66+33 = 734. Survivors: 1000 − 734 = 266, equal
+True on the run, matching the brute count of integers surviving both
+filters. Structure: survivors in 1..60 are 1, 7, 11, 13, 17, 19, 23,
+29, 31, 37, 41, 43, 47, 49, 53, 59 — eight residues per 30-block,
+namely 1, 7, 11, 13, 17, 19, 23, 29 (mod 30), and φ(30) = 8 counts
+them; 266 = 8·33 + 2 accounts for the two extra survivors 31·30's
+remainder classes in the final window.

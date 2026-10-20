@@ -1,76 +1,42 @@
-﻿# Logic and Proofs
+# Logic and Proofs — Lab 01 of Discrete Deep
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Logic and Proofs**, a cornerstone topic in Discrete Math and Combinatorics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Truth tables that actually decide, induction executed to n = 1000, and
+a counterexample finder that shows why forty cases prove nothing. All
+numbers pasted from captured runs.
 
-## Topics Covered
-- propositional/predicate logic, truth tables, natural deduction, proof techniques, contradiction, induction
+## What each file contains
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+- THEORY.md: the connectives as truth functions; natural deduction
+  rules and the central sequent (p→q)∧(q→r) ⊢ p→r; weak/strong/
+  structural induction; contraposition vs contradiction as two
+  machines; a soundness/completeness sketch with the Kalmár route and
+  compactness; the decidability boundary (2ⁿ enumeration vs
+  semi-decidable first-order validity).
+- MATH_FOUNDATION.md: the 8-valuation enumeration of the central
+  sequent (hypotheses hold on 4 of 8), the reversed chain's failure at
+  p=false,q=false,r=true, ¬(p→q) ≡ p∧¬q checked on 4 rows, the
+  contradiction templates, the induction step n²+(2n+1) = (n+1)²
+  verified on 0..999, and the Euler near-miss n²−n+41 dying at n = 41.
+- CODE_DEEP_DIVE.md: two executed Python programs — a truth-table
+  engine with counterexample extraction; the negation/contradiction/
+  contraposition battery followed by induction to n = 1000 and the
+  checkerbreaker.
+- EXERCISES.md: five problems with solutions quoting the runs
+  (validity by counting, the falsifying valuation, correct negation,
+  vacuous truth behind reductio, induction-vs-checking).
+- FLASHCARDS.md: twelve front-back cards; every figure (8 rows, 4 of
+  8, 0 of 8 satisfying ⊥, 0 mismatches to 1000, first failure 41)
+  carried from verified output.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Logic and Proofs
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Prerequisites within the track
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+None — this is the entry lab. It supplies the proof patterns used by
+set theory (Lab 02) and combinatorics (Lab 03): counting assignments,
+constructing bijections of valuations, and induction for sum/product
+identities.
 
-## Project Structure
-`
-logicproofs/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/logicproofs/LogicProofs.java
-    â””â”€â”€ test/java/com/mathlab/logicproofs/LogicProofsTest.java
-`
+## Do this
 
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+Run both programs first with the outputs in view; then re-do
+Problem 2 by hand to feel one counterexample defeating a candidate
+proof — the cheapest skill in this lab and the one most often missing.

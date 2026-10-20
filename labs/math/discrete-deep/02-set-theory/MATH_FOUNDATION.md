@@ -1,81 +1,69 @@
-﻿# Math Foundation for Set Theory
+# Set Theory — Math Foundation
 
-## Prerequisite Mathematics
+Every figure below is pasted from the captured runs of
+CODE_DEEP_DIVE.md or is one exact step further from a printed value.
 
-This document reviews the mathematical prerequisites needed to study Set Theory effectively.
+## 1. De Morgan, Exhausted Over a Universe
 
-## 1. Algebra Review
+Over U = {1,2,3} the lab checks all subset pairs: 2³ = 8 subsets, 8² =
+64 pairs. Observed: De Morgan union failures 0, intersection failures
+0. Witness pair A = {1,2}, B = {2,3}: (A∪B)ᶜ = ∅ and Aᶜ∩Bᶜ = ∅ — U is
+covered by the two sets, so only the empty set survives both complements.
+The check is exhaustive at |U| = 3, so the law is proven for that
+universe, not merely sampled.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Inclusion–Exclusion Census, Both Sizes
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+A = {1,2,3,4}, B = {3,4,5}, C = {4,5,6}; the three pairwise overlaps
+are A∩B = {3,4}, A∩C = {4}, B∩C = {4,5}, and the triple is A∩B∩C = {4}.
+Observed: |A∪B∪C| = 6 and the six-term sum
+4 + 5 + 3 − 1 − 2 − 2 + 1 = 6 — the pair runs agree to the digit. The
+element 4 appears once in each pair-term (3 penalties) and once in the
+triple (1 refund), which is the net bookkeeping of belonging everywhere.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Power-Set Size and the Bit Bijection
 
-## 2. Functions and Graphs
+Observed values of |P(S)|: 1, 2, 4, 8, 16, 1024 for n = 0, 1, 2, 3, 4,
+10 — exactly 2ⁿ at every step. For S = {1,2,3} the run lists all
+subsets (8 of them) and their membership bit strings 000 through 111,
+then decodes each to its integer and recovers every subset on
+round-trip (run: identity True on all 8). The decoded integers came out
+a permutation of 0..7, so the run exhibits P(S) of size 8 = 2³ and a
+two-sided bijection, both machine-verified.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Pairing Function, Valued
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+Cantor pairing π(i,j) = (i+j)(i+j+1)/2 + j. Observed: π(0,0) = 0,
+π(1,0) = 1, π(0,1) = 2, π(2,0) = 3, π(1,1) = 4, π(0,2) = 5, π(3,0) = 6,
+π(2,1) = 7, π(1,2) = 8, π(0,3) = 9 — the first ten outputs walk the
+diagonals, each diagonal t = i+j contributing t+1 fresh pairs. The
+shell i+j ≤ 6 therefore holds 28 = 1+2+⋯+7 pairs. Injectivity is
+structural: t is a strictly increasing function of i+j, and j breaks
+ties inside a diagonal, so (i,j) is recoverable from π.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 5. Rationals After Lowest-Term Filtering
 
-## 3. Trigonometry
+Numerator ≤ 3, denominator ≤ 4, gcd(n,d) = 1 gives exactly 9 fractions:
+1/1, 1/2, 1/3, 1/4, 2/1, 2/3, 3/1, 3/2, 3/4 (run-verified list). Cases
+2/2 and 2/4 are excluded by the gcd filter because 2/2 = 1/1 and
+2/4 = 1/2 already sit in the list — filtering reduced pairs is what
+turns the naïve double-count into an honest enumeration of Q⁺.
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+## 6. The Anti-Diagonal Refutes Any List
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
+Handed the 8-row list 00000000, 00100000, 01000000, 01100000,
+10000000, 10100000, 11000000, 11100000, the machine built d = 11111111
+and found it absent from the claimed list, with d[i] ≠ sᵢ[i] confirmed
+at all 8 diagonal positions. The construction is list-universal:
+whatever rows appear, position i is read from row i alone. This finite
+mirror is the entire proof structure; the infinite version just never
+runs out of positions to disagree at.
 
-## 4. Key Formulas for Reference
+## 7. Finite Jump vs Infinite Strata
 
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+The doubling 2ⁿ is exact on finite witnesses (8 subsets for n = 3,
+1024 for n = 10); at infinity it breaks the ceiling — P(N) cannot line
+up with N, by the diagonal argument above, so |P(N)| = 2^ℵ₀ > ℵ₀.
+Schröder–Bernstein closes the sandwich for countable products:
+|N×N| = ℵ₀ via pairing, and Q ⊆ N×N (reduced pairs) with N ⊆ Q (n ↦ n),
+both injections, hence |Q| = ℵ₀.

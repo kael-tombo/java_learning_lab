@@ -1,81 +1,57 @@
-﻿# Math Foundation for Graph Theory
+# Graph Theory — Math Foundation
 
-## Prerequisite Mathematics
+Values below are pasted from the captured runs of CODE_DEEP_DIVE.md;
+each census ran before any claim was written.
 
-This document reviews the mathematical prerequisites needed to study Graph Theory effectively.
+## 1. Handshaking on the 7-Edge Graph
 
-## 1. Algebra Review
+Edges: (0,1),(0,2),(1,2),(1,3),(2,3),(3,4),(4,1). Observed degrees:
+0:2, 1:4, 2:3, 3:3, 4:2; sum 14 = 2|E| = 14 (run: equal True). Odd
+vertices: {2, 3} — two of them, which is the Euler-trail license.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. The Trail, Located and Certified
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+Run output: edge sequence [1, 0, 2, 4, 3, 6, 5] reconstructs the walk
+2 → 0 → 1 → 2 → 3 → 1 → 4 → 3 (verified residues below). Edge 1 is
+(0,2): 2→0; edge 0 is (0,1): 0→1; edge 2 is (1,2); edge 4 is (2,3);
+edge 3 is (1,3); edge 6 is (4,1); edge 5 is (3,4). All 7 edges appear
+once (run: all edges once True), starting at odd vertex 2. Contrast
+run: the 4-odd-vertex variant returned None — 0 or 2 odd vertices is
+an if-and-only-if, and the fourth odd kills it.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Cayley, Six-Way Checked
 
-## 2. Functions and Graphs
+Brute spanning-tree counts vs n^(n−2): n=2: 1 = 1; n=3: 3 = 3;
+n=4: 16 = 16; n=5: 125 = 125; n=6: 1296 = 1296; each row printed equal
+True. Growth accelerates: 125/16 ≈ 7.8 from n = 4 to 5, then
+1296/125 = 10.368 to n = 6 — Cayley's factor grows roughly linearly.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 4. Connectivity Census Over All 64 Subgraphs of K4
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+Printed rows as (m, connected, acyclic, trees):
+- (0,0,1,0), (1,0,6,0), (2,0,15,0): zero connected graphs, but acyclic
+  members number 1, 6, 15 — every ≤ 2-edge subset is a forest, since a
+  cycle needs 3 edges on 4 vertices.
+- (3,16,16,16): connected and acyclic coincide — the 16 trees = 4².
+- (4,15,0,0), (5,6,0,0), (6,1,0,0): connected 15, 6, 1, acyclic 0 —
+  ≥ n edges force a cycle (Pigeonhole).
+Total graphs = 2^C(4,2) = 64; total trees across all m = 16 = 4^2,
+the Cayley value for n = 4. One row carries the whole theory: exactly
+m = n − 1 = 3 slots admit connected-acyclic graphs, and there all 16
+live.
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+## 5. Planarity Bounds, Numeric Row
 
-## 3. Trigonometry
+|E| ≤ 3n−6: K5 rejected, 10 > 9 (run-printed True). Bipartite form
+|E| ≤ 2n−4: K3,3 rejected, 9 > 8 (run True). K4 boundary: 6 = 6,
+covered by equality as a maximal planar (triangulated) graph. Petersen:
+n = 10, |E| = 15 ≤ 24, run says the edge bound does not reject it —
+actual rejection demands the K3,3 minor. Budget row printed:
+C(5,2) = 10 vs 9; C(6,2) = 15 vs 12; C(7,2) = 21 vs 15; C(10,2) = 45
+vs 24 — the complete graph crosses the planar budget from n = 5 on.
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+## 6. Degree-Sum Double-Check on K3,3
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+Six vertices each of degree 3: sum 18 = 2·9 = 2|E| (printed). The
+handshake ledger licenses the bipartite count: edges cross only
+between parts, so each part's degrees sum to 9, the total edge count.

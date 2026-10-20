@@ -1,81 +1,60 @@
-﻿# Math Foundation for Logic and Proofs
+# Logic and Proofs — Math Foundation
 
-## Prerequisite Mathematics
+Numbers below are pasted from the executed runs of CODE_DEEP_DIVE.md;
+verification is enumeration, never inspection.
 
-This document reviews the mathematical prerequisites needed to study Logic and Proofs effectively.
+## 1. The Central Sequent, Fully Enumerated
 
-## 1. Algebra Review
+Claim: (p→q) ∧ (q→r) ⊢ p→r. Observed run: the hypotheses (p→q)∧(q→r)
+are satisfied at 4 of the 8 valuations, and on all of those the
+conclusion p→r is true, so the conditional is a tautology (engine
+printed True). The reversed sequent (q→r) ∧ (p→q) ⊢ r→p is not valid:
+the run printed False, with counterexample valuation p=false, q=false,
+r=true. Enumerating 8 rows is a complete proof in propositional logic —
+no proof-search required. ∎
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 2. Negating an Implication the Exact Way
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+¬(p→q) and p∧¬q agree on all 4 valuations (run printed True, all four
+rows shown). The only witness row is p=true, q=false, where both sides
+read True. This equivalence is what makes "the theorem failed" mean "the
+premise held and the conclusion broke" — the falsifying configuration
+has a precise shape, not a vague "something went wrong".
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 3. Contradiction Soundness in Two Counts
 
-## 2. Functions and Graphs
+- ⊥ = p∧¬p has 0 satisfying assignments (run printed 0 of 8).
+- Therefore (p∧¬p)→q is a tautology (run: True): implication with a
+  false antecedent is vacuously true on every row.
+- Depth form p→(¬p→q): also a tautology (run: True), which is the
+  exported version of exactly the same statement.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+Contraposition: (¬q→¬p)→(p→q) tautology, run printed True. And the
+converse trap: (p→q) vs (¬p→¬q) do NOT agree (run printed False) —
+the false converse, checked row-by-row rather than warned about.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
+## 4. Induction Step as Arithmetic
 
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
+Target: 1 + 3 + 5 + ... + (2n−1) = n². The step is the identity
+n² + (2n+1) = (n+1)², verified on n = 0..999 with zero failures (run:
+"failed steps ...: 0"). Full check of the closed form against the
+explicit sum matched on all of n = 0..1000 (run: "mismatches: 0").
+Sampled witnesses: first 7 odds sum to 49; first 10 to 100; first 100
+to 10000. ∎
 
-## 3. Trigonometry
+## 5. Checking Is Not Proving — The Euler Near-Miss
 
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
+n² − n + 41 is prime for n = 0, 1, 2, ..., 40 — forty consecutive
+successes — and the run's counterexample finder prints the first
+failure at exactly n = 41, where 41² − 41 + 41 = 1681 = 41², composite. The gap
+between "verified 40 cases" and "proved for all n" is not a corner
+case; it has a named example. Truth-table projection is the exception:
+for propositional formulas, 2ⁿ complete enumeration IS a proof.
 
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
+## 6. Cost of Complete Verification
 
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+Run-printed table: 2¹=2, 2²=4, 2³=8, 2⁵=32, 2¹⁰=1024, 2²⁰=1048576.
+Every added variable doubles the table; ten variables is a screenful,
+twenty is a multi-megabyte scan. Syllogistic validity for the specific
+sequent above needs only n = 3, but unbounded n is what makes SAT
+hard in general.

@@ -1,130 +1,67 @@
-﻿# Exercises: Set Theory
+# Exercises — Set Theory
 
-## Theoretical Exercises
+Five problems with worked solutions; each number is quoted from the
+captured runs in CODE_DEEP_DIVE.md or follows by one exact step on a
+printed value.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Set Theory in your own words.
-**Answer**: Set Theory involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Exhaustive De Morgan
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Set Theory.
-**Answer**: The proof follows from the definitions and established theorems.
+Over U = {1,2,3}, does (A∪B)ᶜ = Aᶜ∩Bᶜ hold for every pair of subsets?
+How many pairs were checked?
 
-### Exercise 3: Application
-**Question**: Apply the theory of Set Theory to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+**Solution**: Yes. The run enumerated all 8² = 64 pairs of subsets
+(there are 2³ = 8 subsets) and reported 0 union failures and 0
+intersection failures. Witness run also shown: A = {1,2}, B = {2,3}
+gives (A∪B)ᶜ = ∅ = Aᶜ∩Bᶜ. Exhaustion at |U| = 3 is a proof for that
+universe, since every case was individually evaluated.
 
-## Programming Exercises
+## Problem 2. A Three-Set Census by Hand and Formula
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Set Theory.
+A = {1,2,3,4}, B = {3,4,5}, C = {4,5,6}. Compute |A∪B∪C| directly and
+by the six-term formula; identify which elements pay the triple
+interaction.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: Direct union is {1,2,3,4,5,6}, size 6. Formula:
+4 + 5 + 3 − 1 − 2 − 2 + 1 = 6 (run printed both sides as 6). Element 4
+lies in all three sets: it is counted three times by the plus terms,
+cancelled by all three pair terms (it is in every pair), then restored
+once by the triple term. Elements 3 and 5 sit in exactly two sets, on
+the even level, and vanish.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 3. Size of the Power Set, and Its Bijection
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+State |P(S)| for |S| = 0, 1, 2, 3, 4, 10 and exhibit a bijection from
+P({1,2,3}) to a 8-element standard set.
 
-## Challenge Problems
+**Solution**: Sizes are 1, 2, 4, 8, 16, 1024 — each equal to 2ⁿ (run
+verified all six). The bijection: subset ↦ membership bit string in
+element order; e.g. {1,3} ↦ 101 ↦ integer 5. The run decoded all 8
+subsets to integers forming exactly {0,...,7} (printed "each of 0..7
+exactly once: True"), so the map is a two-sided correspondence.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+## Problem 4. Count a Rational Slice Without Double-Counting
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+How many positive rationals have numerator ≤ 3 and denominator ≤ 4?
+Why does the naïve 3 × 4 = 12 grid overcount?
 
-## Solutions
+**Solution**: Exactly 9 — the run's gcd-filtered list is 1/1, 1/2,
+1/3, 1/4, 2/1, 2/3, 3/1, 3/2, 3/4. The 12-cell grid double-counts
+equal values: 2/2 = 1/1 and 2/4 = 1/2 are duplicates of earlier cells;
+each duplicate shows up wherever gcd(n,d) > 1; keeping only reduced
+pairs (n,d) with gcd 1 removes them (3 cells are reducible — 2/2,
+2/4, 3/3 — leaving 9).
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Set Theory
+## Problem 5. Cantor, Twice
 
-## Multiple Choice Questions
+(a) Given the 8-row list 00000000, 00100000, 01000000, 01100000,
+10000000, 10100000, 11000000, 11100000, build the anti-diagonal and
+show it escapes. (b) Compute π(1,1) for the Cantor pairing and explain
+how diagonal walks make N×N countable.
 
-### Question 1
-What is the fundamental principle underlying Set Theory?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Set Theory?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+**Solution**: (a) The machine printed anti-diagonal 11111111, absent
+from the list, disagreeing with row i at position i for all 8 rows
+(observed). Every row is beaten because position i only consults row
+i. (b) π(1,1) = (1+1)(1+1+1)/2 + 1 = 3 + 1 = 4 (observed:
+pair(1,1) = 4). Diagonal t carries t+1 pairs, so diagonals 0..5 hold
+21 pairs (run printed 21) and diagonal 6 reaches 28 in total; every
+pair eventually receives a natural number, giving a bijection N×N → N.
