@@ -64,6 +64,6 @@ public class AnalyticsService {
 ## Architecture Patterns
 
 BIT is often part of a larger data pipeline:
-1. Data ingestion â†’ BIT updates
-2. Query processing â†’ BIT prefix sums
-3. Result aggregation â†’ Response formatting
+1. Data ingestion → BIT updates
+2. Query processing → BIT prefix sums
+3. Result aggregation → Response formatting

@@ -64,12 +64,12 @@ String node = ring.getNode(key);
 - Throttle during business hours
 
 ### Code Smells to Detect
-1. Hardcoded node mappings â†’ Externalize to configuration
-2. Cross-node joins in queries â†’ Poor routing key choice
-3. Distributed transactions everywhere â†’ Consider saga pattern
-4. Manual failover procedures â†’ Automate with health checks
-5. Hardcoded connection strings â†’ Use service discovery
-6. Missing correlation IDs â†’ Add distributed tracing
+1. Hardcoded node mappings → Externalize to configuration
+2. Cross-node joins in queries → Poor routing key choice
+3. Distributed transactions everywhere → Consider saga pattern
+4. Manual failover procedures → Automate with health checks
+5. Hardcoded connection strings → Use service discovery
+6. Missing correlation IDs → Add distributed tracing
 
 ### Refactoring Safety Checklist
 - [ ] Comprehensive test suite before refactoring

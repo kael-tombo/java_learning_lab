@@ -1,7 +1,7 @@
 ﻿# Mathematical Foundation: Performance
 
 ## Little's Law
-L = Î» * W (number of requests in system = arrival rate * response time)
+L = λ * W (number of requests in system = arrival rate * response time)
 For 100 req/sec with 200ms response: L = 100 * 0.2 = 20 concurrent requests
 
 ## Amdahl's Law

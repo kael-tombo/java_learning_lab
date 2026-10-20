@@ -3,17 +3,17 @@
 ## Persistent List Add
 
 `
-list1 = empty() â†’ add(1):
-[1] â†’ null
+list1 = empty() → add(1):
+[1] → null
 
 list2 = list1.add(2):
-[2] â†’ [1] â†’ null
-       â†‘list1.head (shared!)
+[2] → [1] → null
+       →‘list1.head (shared!)
 
 list3 = list2.add(3):
-[3] â†’ [2] â†’ [1] â†’ null
-       â†‘list2 (shared!)
-              â†‘list1 (shared!)
+[3] → [2] → [1] → null
+       →‘list2 (shared!)
+              →‘list1 (shared!)
 `
 
 ## Persistent BST Insert

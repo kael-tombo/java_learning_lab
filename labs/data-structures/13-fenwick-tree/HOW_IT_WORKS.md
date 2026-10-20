@@ -30,9 +30,9 @@ function add(i, val):
 
 Traversal for add(3, 5) in BIT of size 8:
 - Start at i = 3 (011)
-- bit[3] += 5, i += 1 â†’ i = 4 (100)
-- bit[4] += 5, i += 4 â†’ i = 8 (1000)
-- bit[8] += 5, i += 8 â†’ i = 16 (stop, > 8)
+- bit[3] += 5, i += 1 → i = 4 (100)
+- bit[4] += 5, i += 4 → i = 8 (1000)
+- bit[8] += 5, i += 8 → i = 16 (stop, > 8)
 
 Updated indices: 3, 4, 8.
 
@@ -51,9 +51,9 @@ function prefixSum(i):
 
 Traversal for prefixSum(7):
 - Start at i = 7 (111)
-- sum += bit[7], i -= 1 â†’ i = 6 (110)
-- sum += bit[6], i -= 2 â†’ i = 4 (100)
-- sum += bit[4], i -= 4 â†’ i = 0 (stop)
+- sum += bit[7], i -= 1 → i = 6 (110)
+- sum += bit[6], i -= 2 → i = 4 (100)
+- sum += bit[4], i -= 4 → i = 0 (stop)
 - Result = bit[7] + bit[6] + bit[4]
 
 ## Range Sum Query
@@ -117,24 +117,24 @@ Examples:
 ### Update Path (Upward)
 From index i, the next index is i + lsb(i):
 `
-1 â†’ 2 â†’ 4 â†’ 8 â†’ 16 â†’ ...
-2 â†’ 4 â†’ 8 â†’ 16 â†’ ...
-3 â†’ 4 â†’ 8 â†’ 16 â†’ ...
-5 â†’ 6 â†’ 8 â†’ 16 â†’ ...
-6 â†’ 8 â†’ 16 â†’ ...
-7 â†’ 8 â†’ 16 â†’ ...
+1 → 2 → 4 → 8 → 16 → ...
+2 → 4 → 8 → 16 → ...
+3 → 4 → 8 → 16 → ...
+5 → 6 → 8 → 16 → ...
+6 → 8 → 16 → ...
+7 → 8 → 16 → ...
 `
 
 ### Query Path (Downward)
 From index i, the next index is i - lsb(i):
 `
-15 â†’ 14 â†’ 12 â†’ 8 â†’ 0
-14 â†’ 12 â†’ 8 â†’ 0
-13 â†’ 12 â†’ 8 â†’ 0
-12 â†’ 8 â†’ 0
-11 â†’ 10 â†’ 8 â†’ 0
-10 â†’ 8 â†’ 0
-9 â†’ 8 â†’ 0
+15 → 14 → 12 → 8 → 0
+14 → 12 → 8 → 0
+13 → 12 → 8 → 0
+12 → 8 → 0
+11 → 10 → 8 → 0
+10 → 8 → 0
+9 → 8 → 0
 `
 
 ## Internal State Example

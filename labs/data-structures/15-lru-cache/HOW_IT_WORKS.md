@@ -3,8 +3,8 @@
 ## Data Structure
 
 `
-HashMap: key â†’ Node
-Doubly Linked List: Head (MRU) â†” ... â†” Tail (LRU)
+HashMap: key → Node
+Doubly Linked List: Head (MRU) →” ... →” Tail (LRU)
 `
 
 ## Internal Operations
@@ -63,7 +63,7 @@ class Node {
 
 Using sentinel (dummy) head and tail nodes eliminates null checks:
 `
-head â†” node1 â†” node2 â†” ... â†” nodek â†” tail
+head →” node1 →” node2 →” ... →” nodek →” tail
 `
 
 ## Capacity Tracking

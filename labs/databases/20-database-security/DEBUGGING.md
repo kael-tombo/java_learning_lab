@@ -118,11 +118,11 @@ for (String node : manager.getAllStats().keySet()) {
 
 ### Troubleshooting Flowchart
 1. Is the issue specific to one node or all?
-   - One node â†’ Check that node's health and resources
-   - All nodes â†’ Check routing layer and upstream dependencies
+   - One node → Check that node's health and resources
+   - All nodes → Check routing layer and upstream dependencies
 2. Performance or correctness?
-   - Performance â†’ Check latency metrics, identify bottlenecks
-   - Correctness â†’ Check consistency guarantees
+   - Performance → Check latency metrics, identify bottlenecks
+   - Correctness → Check consistency guarantees
 3. Ongoing or intermittent?
-   - Ongoing â†’ Check configuration, recent changes
-   - Intermittent â†’ Look for patterns
+   - Ongoing → Check configuration, recent changes
+   - Intermittent → Look for patterns

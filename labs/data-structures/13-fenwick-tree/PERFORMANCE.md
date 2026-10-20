@@ -9,8 +9,8 @@
 | Range Sum | O(log n) |
 | Range Update (difference) | O(log n) |
 | Range Update + Range Query | O(log n) |
-| 2D Update | O(logÂ² n) |
-| 2D Query | O(logÂ² n) |
+| 2D Update | O(log² n) |
+| 2D Query | O(log² n) |
 
 ## Empirical Benchmarks
 

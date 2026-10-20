@@ -11,11 +11,11 @@ Persistent data structures are foundational for:
 
 `
 Application
-  â†’ Service (pure functions)
-    â†’ PersistentStore
-      â†’ PersistentList (audit log)
-      â†’ PersistentMap (configuration)
-      â†’ PersistentTree (index)
+  → Service (pure functions)
+    → PersistentStore
+      → PersistentList (audit log)
+      → PersistentMap (configuration)
+      → PersistentTree (index)
 `
 "@
 

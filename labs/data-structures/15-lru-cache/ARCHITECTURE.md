@@ -4,10 +4,10 @@
 
 `
 Application
-  â†’ CacheService
-    â†’ LRUCache<K, V>
-      â†’ Node<K, V> (Doubly Linked List)
-      â†’ HashMap<K, Node<K, V>>
+  → CacheService
+    → LRUCache<K, V>
+      → Node<K, V> (Doubly Linked List)
+      → HashMap<K, Node<K, V>>
 `
 
 ## Design Patterns Used

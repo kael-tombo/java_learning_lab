@@ -34,7 +34,7 @@
 **A:** Multiple nodes think they're primary for the same data, causing inconsistency.
 
 ## Q: Two-phase commit (2PC)?
-**A:** Prepare (all agree) â†’ Commit (all commit) or Abort. Blocking protocol.
+**A:** Prepare (all agree) → Commit (all commit) or Abort. Blocking protocol.
 
 ## Q: Client-side vs proxy routing?
 **A:** Client-side: embedded, faster, needs updates. Proxy: centralized, transparent, adds hop.

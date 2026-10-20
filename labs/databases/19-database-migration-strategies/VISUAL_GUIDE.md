@@ -8,19 +8,19 @@
          |
          v
    +-----+-----+
-   |  Router   |     â† Consistent hash ring
+   |  Router   |     → Consistent hash ring
    +-----+-----+
          |
     +----+----+----+----+
     |    |    |    |    |
     v    v    v    v    v
   +--+  +--+  +--+  +--+
-  |N0|  |N1|  |N2|  |N3|  â† Database nodes
+  |N0|  |N1|  |N2|  |N3|  → Database nodes
   +--+  +--+  +--+  +--+
     |    |    |    |
     v    v    v    v
   +--+  +--+  +--+  +--+
-  |R0|  |R1|  |R2|  |R3|  â† Replicas
+  |R0|  |R1|  |R2|  |R3|  → Replicas
   +--+  +--+  +--+  +--+
 `
 
@@ -65,7 +65,7 @@ Client → API Gateway → Router (hash routing key)
               | Replica A |    | Replica B |  Async replication
               +-----------+    +-----------+
 
-              Client â† Acknowledged (after quorum)
+              Client → Acknowledged (after quorum)
 `
 
 ### Read Flow (Single Node)

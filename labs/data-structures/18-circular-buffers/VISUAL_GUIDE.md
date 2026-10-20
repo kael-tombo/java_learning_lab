@@ -12,14 +12,14 @@ head=0, tail=0, size=0
 After adding A, B, C:
 `
 head=0, tail=3, size=3
-[A] [B] [C] [Â·] [Â·]
+[A] [B] [C] [·] [·]
  H        T
 `
 
 After polling A, B and adding D, E:
 `
-head=2, tail=5â†’0, size=3
-[D] [E] [C] [Â·] [Â·]
+head=2, tail=5→0, size=3
+[D] [E] [C] [·] [·]
      T    H
 `
 "@

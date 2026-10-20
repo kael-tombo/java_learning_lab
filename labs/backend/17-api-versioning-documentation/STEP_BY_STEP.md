@@ -129,8 +129,8 @@ openapi: 3.0.3
 ## API Version Lifecycle
 
 `
-v1.0.0 â”€â”€â†’ v1.1.0 â”€â”€â†’ v1.2.0 â”€â”€â†’ v2.0.0 â”€â”€â†’ v2.1.0
-  â†‘          â†‘          â†‘          â†‘          â†‘
+v1.0.0 â”€â”€→ v1.1.0 â”€â”€→ v1.2.0 â”€â”€→ v2.0.0 â”€â”€→ v2.1.0
+  →‘          →‘          →‘          →‘          →‘
 Release   Additive   Additive   Breaking   Additive
                      Deprecate  v1.x       Deprecate
                      v1.0.0               v2.0.0

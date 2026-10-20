@@ -11,10 +11,10 @@
 
 `
 Application
-  â†’ Service Layer (thread-safe)
-    â†’ ConcurrentHashMap (cache)
-    â†’ ConcurrentLinkedQueue (work queue)
-    â†’ LockFreeStack (pool)
+  → Service Layer (thread-safe)
+    → ConcurrentHashMap (cache)
+    → ConcurrentLinkedQueue (work queue)
+    → LockFreeStack (pool)
 `
 "@
 

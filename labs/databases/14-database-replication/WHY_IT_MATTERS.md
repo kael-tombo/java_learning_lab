@@ -51,7 +51,7 @@ Understanding distributed databases provides:
 ## Why Now?
 
 ### Data Growth is Accelerating
-- Global data creation: 64ZB (2020) â†’ 180ZB (2025)
+- Global data creation: 64ZB (2020) → 180ZB (2025)
 - Enterprise data doubles every 2 years
 - Distribution is becoming mandatory, not optional
 

@@ -4,18 +4,18 @@
 
 Thread 1: push(3)
 `
-top â†’ [2] â†’ [1] â†’ null
+top → [2] → [1] → null
 1. oldTop = top (2)
 2. newTop.next = oldTop (2)
-3. CAS(&top, 2, newTop) â†’ success
-top â†’ [3] â†’ [2] â†’ [1] â†’ null
+3. CAS(&top, 2, newTop) → success
+top → [3] → [2] → [1] → null
 `
 
 ## Michael-Scott Queue Enqueue
 
 `
-head â†’ sentinel â†’ [A] â†’ [B] â†’ null
-                          â†‘tail
+head → sentinel → [A] → [B] → null
+                          →‘tail
 1. Create new node [C]
 2. CAS(tail.next, null, [C])
 3. CAS(tail, [B], [C])

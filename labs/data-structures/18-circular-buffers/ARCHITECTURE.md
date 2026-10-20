@@ -2,12 +2,12 @@
 
 Circular buffers integrate as:
 `
-Producer â†’ CircularBuffer â†’ Consumer
+Producer → CircularBuffer → Consumer
 `
 
 Used in pipelines:
 `
-Network â†’ PacketBuffer â†’ Decoder â†’ AudioBuffer â†’ Speaker
+Network → PacketBuffer → Decoder → AudioBuffer → Speaker
 `
 
 Design patterns:

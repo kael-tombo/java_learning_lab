@@ -3,9 +3,9 @@
 Spatial data structures typically integrate as:
 `
 Application Layer
-  â†’ Query Service (nearest, range)
-    â†’ Spatial Index (QuadTree / KdTree)
-      â†’ Coordinate System
+  → Query Service (nearest, range)
+    → Spatial Index (QuadTree / KdTree)
+      → Coordinate System
 `
 
 Design decisions:

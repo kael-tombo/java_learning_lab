@@ -8,7 +8,7 @@ The circuit breaker can be modeled as a Markov chain with three states (CLOSED, 
 
 Let p = probability of failure for a single request.
 
-**CLOSED â†’ OPEN**: Occurs when failure count exceeds threshold in sliding window.
+**CLOSED → OPEN**: Occurs when failure count exceeds threshold in sliding window.
 
 For a sliding window of size N with failure threshold F:
 - P(open) = P(X â‰¥ F) where X ~ Binomial(N, p)

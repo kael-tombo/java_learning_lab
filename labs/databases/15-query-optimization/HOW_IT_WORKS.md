@@ -8,7 +8,7 @@ Query Optimization works by distributing data and query load across multiple ind
 ### Step 1: Key Extraction
 When a query arrives, the system extracts the routing key from the query parameters.
 
-Example: SELECT * FROM orders WHERE order_id = 12345 â†’ routing key = 12345
+Example: SELECT * FROM orders WHERE order_id = 12345 → routing key = 12345
 
 ### Step 2: Hash Computation
 The routing key is hashed to produce a uniform random value:
@@ -20,13 +20,13 @@ hash = SHA-256(\"12345\") & 0x7FFFFFFFFFFFFFFF
 ### Step 3: Node Lookup
 The hash is used to find the responsible node on the consistent hash ring:
 `
-ring.lookup(0x8F3B5A2C1D4E6F78) â†’ \"node-03\"
+ring.lookup(0x8F3B5A2C1D4E6F78) → \"node-03\"
 `
 
 ### Step 4: Query Routing
 The query is forwarded to the determined node's connection pool:
 `
-connectionPool(\"node-03\").execute(query) â†’ Result
+connectionPool(\"node-03\").execute(query) → Result
 `
 
 ### Step 5: Result Return
@@ -37,7 +37,7 @@ The result is returned to the client. For cross-node queries, steps 2-4 are repe
 ### Distribution
 Hashing provides mathematically guaranteed uniform distribution across nodes:
 `
-P(key â†’ node_i) = 1/N for all i
+P(key → node_i) = 1/N for all i
 `
 
 ### Scalability
@@ -73,8 +73,8 @@ def scatter_gather(query):
 ## The Math Behind It
 Given N nodes and K keys:
 - Expected keys per node: K/N
-- Variance: K(N-1)/NÂ²
-- Standard deviation: âˆš(K(N-1)/NÂ²)
+- Variance: K(N-1)/N²
+- Standard deviation: âˆš(K(N-1)/N²)
 
 For K=1,000,000 keys and N=10 nodes:
 - Expected: 100,000 keys/node

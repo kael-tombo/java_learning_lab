@@ -29,14 +29,14 @@ For array [1, 3, 5, 7, 9, 11]:
 
 Result = 5 + 27 = 32
 
-## Part 3: Point Update at index 2 â†’ 6
+## Part 3: Point Update at index 2 → 6
 
 `
-          36 â†’ 37
+          36 → 37
          /       \
-       9â†’10     27
+       9→10     27
       /    \    / \
-     4    5â†’6 16  11
+     4    5→6 16  11
     / \    |   / \  |
    1  3    6  7  9 11
 `
@@ -48,11 +48,11 @@ Adding 2 to range [1, 4]:
 `
          36 â”€â”€ lazy[0,5] = 0
         /        \
-    9â†’[0,2]=9  27â†’[3,5]=27
+    9→[0,2]=9  27→[3,5]=27
     /         \
- [0,1]       [2]=5â†’[2]=7 (lazy)
+ [0,1]       [2]=5→[2]=7 (lazy)
  /     \     
-[0]=1  [1]=3â†’[1]=5 (lazy)
+[0]=1  [1]=3→[1]=5 (lazy)
 `
 
 Lazy values are pushed down only when queries need to traverse through the node.

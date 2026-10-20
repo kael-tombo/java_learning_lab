@@ -4,11 +4,11 @@
 Traditional JVM:                    Native Image:
 â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”            â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
 â”‚ Java Source         â”‚            â”‚ Java Source         â”‚
-â”‚         â†“           â”‚            â”‚         â†“           â”‚
+â”‚         →“           â”‚            â”‚         →“           â”‚
 â”‚   javac (bytecode)  â”‚            â”‚   javac (bytecode)  â”‚
-â”‚         â†“           â”‚            â”‚         â†“           â”‚
+â”‚         →“           â”‚            â”‚         →“           â”‚
 â”‚   JIT at Runtime    â”‚            â”‚   AOT at Build Time â”‚
-â”‚         â†“           â”‚            â”‚         â†“           â”‚
+â”‚         →“           â”‚            â”‚         →“           â”‚
 â”‚   Machine Code      â”‚            â”‚   Native Executable â”‚
 â”‚   + JVM (200MB)     â”‚            â”‚   (~20-50MB)        â”‚
 â”‚   + JIT Compiler    â”‚            â”‚   + SubstrateVM     â”‚

@@ -69,6 +69,6 @@ Caffeine uses:
 ## JIT Compilation
 HotSpot JVM identifies hot methods and compiles them to native code:
 - -XX:+PrintCompilation to see compilation
-- Tiered compilation: interpreter â†’ C1 â†’ C2
+- Tiered compilation: interpreter → C1 → C2
 - Inlining threshold: -XX:MaxInlineSize (default 35 bytes)
 - On-stack replacement (OSR) for long-running loops

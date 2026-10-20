@@ -6,13 +6,13 @@
 [5] [2] [8] [1] [9] [3] [7] [4]
 
 ### Level 1 (length 2):
-[2] [2] [1] [1] [3] [3] [4]  â† min of each pair
+[2] [2] [1] [1] [3] [3] [4]  → min of each pair
 
 ### Level 2 (length 4):
-[1] [1] [1] [1] [3]  â† min of each pair of level-1 results
+[1] [1] [1] [1] [3]  → min of each pair of level-1 results
 
 ### Level 3 (length 8):
-[1]  â† min of the two level-2 results
+[1]  → min of the two level-2 results
 
 ### Query min(2, 6):
 length = 5, k = log2(5) = 2

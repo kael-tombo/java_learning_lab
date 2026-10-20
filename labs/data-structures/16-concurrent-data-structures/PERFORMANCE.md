@@ -13,4 +13,4 @@
 - Lock-free structures scale near-linearly with cores
 - Lock-based structures bottleneck at lock contention
 - CAS operations cost ~10ns on modern hardware
-- Context switching costs ~1-10Î¼s
+- Context switching costs ~1-10μs

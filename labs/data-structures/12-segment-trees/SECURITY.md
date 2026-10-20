@@ -46,7 +46,7 @@ Segment trees are not thread-safe by default. For concurrent access:
 ## Memory Exhaustion
 
 4*n array allocation for large n:
-- n = 10^8 â†’ 1.6 GB (may cause OutOfMemoryError)
+- n = 10^8 → 1.6 GB (may cause OutOfMemoryError)
 - Monitor memory and use incremental construction if needed
 - Consider using disk-based or memory-mapped segment trees
 

@@ -3,9 +3,9 @@
 Sparse tables are typically used as a component within larger systems:
 `
 QueryProcessor
-  â†’ SparseTable (static data)
-  â†’ SegmentTree (dynamic data)
-  â†’ CacheLayer (LRU for hot ranges)
+  → SparseTable (static data)
+  → SegmentTree (dynamic data)
+  → CacheLayer (LRU for hot ranges)
 `
 
 Design decisions:

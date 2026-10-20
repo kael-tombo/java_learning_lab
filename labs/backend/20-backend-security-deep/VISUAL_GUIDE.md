@@ -1,9 +1,9 @@
 ﻿# Visual Guide: Security
 
 `
-Attack â†’ [WAF] â†’ [Rate Limit] â†’ [CORS] â†’ [Auth] â†’ [CSRF] â†’ [Validation] â†’ [App]
-                                                   â†“
-                                             [Parameterized SQL] â†’ [DB]
+Attack → [WAF] → [Rate Limit] → [CORS] → [Auth] → [CSRF] → [Validation] → [App]
+                                                   →“
+                                             [Parameterized SQL] → [DB]
 `
 "@
 

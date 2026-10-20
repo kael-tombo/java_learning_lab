@@ -4,20 +4,20 @@
 
 Before:
 `
-L3: header â”€â”€â†’ 5
-L2: header â”€â”€â†’ 3 â”€â”€â†’ 5
-L1: header â†’ 1 â†’ 3 â†’ 5
-L0: header â†’ 1 â†’ 2 â†’ 3 â†’ 5
+L3: header â”€â”€→ 5
+L2: header â”€â”€→ 3 â”€â”€→ 5
+L1: header → 1 → 3 → 5
+L0: header → 1 → 2 → 3 → 5
 `
 
-Search path for 4: header(L3)â†’5(L2â†’drop to L2)â†’3(L2)â†’5(L1â†’drop to L1)â†’3(L1)â†’5(L0â†’drop to L0)â†’3(L0)â†’4 (found position)
+Search path for 4: header(L3)→5(L2→drop to L2)→3(L2)→5(L1→drop to L1)→3(L1)→5(L0→drop to L0)→3(L0)→4 (found position)
 
 After insertion:
 `
-L3: header â”€â”€â”€â”€â”€â”€â”€â”€â†’ 5
-L2: header â”€â”€â†’ 3 â”€â”€â”€â†’ 5
-L1: header â†’ 1 â†’ 3 â†’ 4 â†’ 5
-L0: header â†’ 1 â†’ 2 â†’ 3 â†’ 4 â†’ 5
+L3: header â”€â”€â”€â”€â”€â”€â”€â”€→ 5
+L2: header â”€â”€→ 3 â”€â”€â”€→ 5
+L1: header → 1 → 3 → 4 → 5
+L0: header → 1 → 2 → 3 → 4 → 5
 `
 "@
 

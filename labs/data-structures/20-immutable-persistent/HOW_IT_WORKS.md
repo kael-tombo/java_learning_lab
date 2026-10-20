@@ -3,9 +3,9 @@
 ## Persistent Singly Linked List
 
 `
-list1 = [] â†’ add(1) â†’ [1]
-list2 = list1.add(2) â†’ [2] â†’ [1]  (shares [1])
-list3 = list2.add(3) â†’ [3] â†’ [2] â†’ [1] (shares [2]â†’[1])
+list1 = [] → add(1) → [1]
+list2 = list1.add(2) → [2] → [1]  (shares [1])
+list3 = list2.add(3) → [3] → [2] → [1] (shares [2]→[1])
 
 Structural sharing: list1.tail == list2.tail.tail
 `
@@ -13,7 +13,7 @@ Structural sharing: list1.tail == list2.tail.tail
 ## Persistent Binary Search Tree
 
 `
-tree1 = empty â†’ insert(5)
+tree1 = empty → insert(5)
 tree2 = tree1.insert(3)
 tree3 = tree2.insert(7)
 

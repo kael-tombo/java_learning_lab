@@ -2,7 +2,7 @@
 
 `
 Performance Testing Pipeline:
-  [JMH Microbenchmarks] â†’ [Integration Tests] â†’ [Load Tests] â†’ [Production Monitoring]
+  [JMH Microbenchmarks] → [Integration Tests] → [Load Tests] → [Production Monitoring]
          Unit-level           Service-level        System-level       Real-world
 
 Profiling Tools:

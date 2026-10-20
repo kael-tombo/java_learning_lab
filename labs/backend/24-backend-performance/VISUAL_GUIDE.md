@@ -11,4 +11,4 @@ Latency Distribution:
 Cache Performance:
 Without cache: DB queries = N
 With cache:    DB queries = N * (1 - hit_rate)
-               hit_rate = 0.95 â†’ 95% fewer DB calls
+               hit_rate = 0.95 → 95% fewer DB calls

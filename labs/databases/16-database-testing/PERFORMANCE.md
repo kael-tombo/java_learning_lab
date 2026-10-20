@@ -25,7 +25,7 @@
 - Solution: Striped locks, copy-on-write for ring state
 
 #### 3. Hash Computation
-- Cryptographic hashes (SHA-256) add 1-5Î¼s per operation
+- Cryptographic hashes (SHA-256) add 1-5μs per operation
 - At 100K ops/sec, this becomes 100-500ms of CPU time
 - Solution: Use MurmurHash3 for non-security applications
 

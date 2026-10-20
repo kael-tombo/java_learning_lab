@@ -1,14 +1,14 @@
 ﻿# Visual Guide: GraphQL DGS
 
 `
-REST: /api/shows â†’ returns ALL fields (overfetch)
-      /api/shows/1/reviews â†’ separate call (underfetch)
+REST: /api/shows → returns ALL fields (overfetch)
+      /api/shows/1/reviews → separate call (underfetch)
 
 GraphQL:
 query {
   shows { title, reviews { rating } }
 }
-â†’ One request, exactly the data needed
+→ One request, exactly the data needed
 `
 "@
 
