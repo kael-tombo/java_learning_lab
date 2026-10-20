@@ -1,52 +1,46 @@
-﻿# Generative Adversarial Networks - THEORY
+# Generative Adversarial Networks — Theory
 
-## 1. Introduction
-This is the comprehensive THEORY section for Generative Adversarial Networks. This section provides in-depth coverage of all aspects related to THEORY.
+A **generative adversarial network** is a two-player game between a generator `G`, which
+maps noise `z` to synthetic samples, and a discriminator `D`, which scores inputs as real
+or fake. $G$ tries to make samples that $D$ cannot distinguish from data; $D$ tries to keep
+telling them apart. Training is the search for an equilibrium of this game, not for a
+single global minimum.
 
-## 2. Core Concepts
+## The game and its equilibrium
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Generative Adversarial Networks approach to THEORY.
+- Generator: transforms a low-dimensional latent vector into a candidate sample.
+- Discriminator: a binary classifier without any generative component.
+- Equilibrium: the theoretical result for a large, flexible $D$ is that the globally
+  optimal discriminator for a fixed generator is the posterior ratio
+  `p_data(x) / (p_data(x) + p_model(x))`.
+- Another standard fact: at the true optimum, the generator has collapsed the model onto
+  the real data distribution entirely, the discriminator outputs one-half everywhere... and
+  — this is the classic parity result — neither side can improve further because fake and
+  real are matched exactly.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Training dynamics
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+In practice both networks are updated alternately:
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+1. Sample a real batch and a fake batch; ascend the discriminator objective on both.
+2. Sample a fresh fake batch; ascend the generator's objective (with a so-called
+   non-saturating surrogate so that early, hopeless-looking samples still carry gradient).
+3. Alternate until samples look plausible or until dynamics become clearly unstable.
 
-## 4. Examples
+Known failure modes covered conceptually in this lab: oscillation, vanishing generator
+gradient when the discriminator wins outright, and mode dropping (the generator covering
+fewer data modes than the true distribution).
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Evaluation
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+There is no single likelihood-based score because the game is implicit — the model samples,
+it does not expose densities. Evalua-tion in practice uses sample-level heuristics
+(quality + diversity rankings, a trained classifier's confidence at fake samples) and
+human review; treat all such metrics as proxies and say so in reports.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## Why Java learners should care
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential THEORY knowledge for Generative Adversarial Networks. Mastery of these concepts is crucial for successful implementation and application.
+The alternating-updates pattern is a general tool: any system where two components' losses
+fight (blind ranking, a policy and its critic, simulated opponents) follows the same
+template. Our snippets reproduce the essential dynamic on one scalar with zero
+dependencies, then show how step size destabilizes the game.

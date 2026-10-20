@@ -1,52 +1,46 @@
-﻿# Explainable AI - EXERCISES
+# Explainable AI — Exercises
 
-## 1. Introduction
-This is the comprehensive EXERCISES section for Explainable AI. This section provides in-depth coverage of all aspects related to EXERCISES.
+JDK 21+, `javac --release 21 -encoding UTF-8`; start from the snippets in
+CODE_DEEP_DIVE.
 
-## 2. Core Concepts
+## 1. Orderings, not shortcuts
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Explainable AI approach to EXERCISES.
+Rewrite Snippet 1 to iterate all `n! = 2` orderings explicitly (feature lists
+`[x0, x1]` and `[x1, x0]`), accumulating `delta` per subset step, then divide by `2!`.
+Report whether the results match the closed average form; they must (`3.0`, `6.0`).
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## 2. Baseline sensitivity
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Move the baseline to `(1, 1)`. Evaluations change: `f(bar)` becomes `4.0`, and with the
+instance still `(2, 3)` the subset set reads `{empty: 4.0, {x0}: 5.5, {x1}: 8.0,
+both: 9.5}`. Compute the new phi values by hand first (expect `phi_0 = 1.5` and
+`phi_1 = 4.0` after both orderings average), confirm by running, and write what the
+efficiency check now evaluates to (it must still close: `4.0 + 5.5 = 9.5`).
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## 3. Non-additive interaction feature
 
-## 4. Examples
+Change the black box to `f = 1.5*x0 + 2*x1 + 0.5*x0*x1 + 0.5` and recompute the four
+subset evaluations with the instance still `(2, 3)`. The interaction makes
+`phi_0 = 4.5` and `phi_1 = 7.5`; show the intermediate margins in a table and state which
+subset steps absorbed the interaction (`x0` entering solo vs after `x1`).
+Also confirm the sum: `phi_0 + phi_1 = 12.0 = f(x) - f(bar)` with `f(x) = 12.5`.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## 4. Weighted LIME, mild nonlinearity
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Make the black box `f = 1.5*x0 + 2*x1 + 0.2*x0^2` and rerun Snippet 2's fit WITHOUT the
+quadratic term in the surrogate design matrix. Quote residuals for the four grid rows;
+the largest residuals now sit away from the instance. Then narrow the grid to a smaller
+radius around the instance and report how the surrogate coefficients move — compare
+against the unweighted fit from CODE_DEEP_DIVE.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## 5. Explanation audit rap sheet
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+For the interactive case in Exercise 3, print per-ordering deltas as a JSON-ish line per
+feature. Verify additivity yourself (sum = `f(x) - f(bar)`), and write two lines: one
+claim you WOULD put in a stakeholder summary, one claim you would refuse (causal
+phrasing), with your justification.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Evidence rule
 
-## 8. Summary
-This section has covered the essential EXERCISES knowledge for Explainable AI. Mastery of these concepts is crucial for successful implementation and application.
+For any figure quoted in your submission, the grep-able string must exist in a run log
+you keep (name pattern: `xaie-<task>.log`); in doubt, rerun.

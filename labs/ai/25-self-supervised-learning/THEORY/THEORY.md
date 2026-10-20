@@ -1,52 +1,47 @@
-﻿# Self-Supervised Learning - THEORY
+# Self-Supervised Learning — Theory
 
-## 1. Introduction
-This is the comprehensive THEORY section for Self-Supervised Learning. This section provides in-depth coverage of all aspects related to THEORY.
+**Self-supervised learning** trains a representation without human-provided labels:
+signals are manufactured from the data itself. The leading recipe is *contrastive*: create
+two variants of the same object ("views"), keep views of the same object close in
+embedding space, and push views of different objects apart.
 
-## 2. Core Concepts
+## The contrastive setup
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Self-Supervised Learning approach to THEORY.
+- An augmentation policy generates views (color jitter and crops for images; masking and
+  shuffling for text; time-warping for signals). The view pair is a *positive*.
+- Everything else in the batch acts as a *negative* (in the one-sided variant), which is
+  why batch composition matters more than in supervised learning.
+- The encoder maps views to vectors; a small projection head usually maps further before
+  the loss is applied (SimCLR-style practice) — the head is thrown away afterward, and the
+  frozen encoder is transferred to downstream tasks.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Loss shape
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+The standard objective is InfoNCE — a softmax over cosine similarities between the anchor
+and the candidate set, compared at a temperature `tau`. At small `tau` the near-identical
+positive dominates and the loss approaches 0; at large `tau` all candidates pull their
+weight and the loss approaches a uniform baseline. The temperature is thus a soft
+"selector sharpness" knob, and the snippet in this folder makes that behavior numeric.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Other families (brief, concept-level only)
 
-## 4. Examples
+- Predictive: predict one view from the other (or from a context), turning the signal into
+  a masked-prediction task rather than a ranking task.
+- Clustering-based: group embeddings, then treat cluster-membership agreement between two
+  views as the label; avoids explicit negatives but introduces its own instability tricks.
+- Bootstrap-style pairs: two encoders, one updated more slowly than the other, keeping
+  targets stable without negatives at all.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## What gets evaluated
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Linear-probe style transfer: freeze the encoder, train a linear classifier on a small
+labelled set, and report its accuracy against a from-scratch baseline. Image retrieval and
+nearest-neighbor transfer are also common. Any accuracy number you read is tied to a
+specific dataset and augmentation stack; generalizing across them is not automatic — the
+exercises here only build the loss machinery, never a benchmark claim.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## Connection to the rest of the lab
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential THEORY knowledge for Self-Supervised Learning. Mastery of these concepts is crucial for successful implementation and application.
+The same seeded-RNG discipline and fixed-vector arithmetic used elsewhere applies here:
+InfoNCE reduces to exp/log arithmetic over a handful of stored vectors, so Java can
+reproduce every intermediate value by hand.

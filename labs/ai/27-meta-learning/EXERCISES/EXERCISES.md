@@ -1,52 +1,42 @@
-﻿# Meta-Learning - EXERCISES
+# Meta-Learning — Exercises
 
-## 1. Introduction
-This is the comprehensive EXERCISES section for Meta-Learning. This section provides in-depth coverage of all aspects related to EXERCISES.
+Built on the two snippets in CODE_DEEP_DIVE; `javac --release 21` throughout.
 
-## 2. Core Concepts
+## 1. Derive the inner contract closed form
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Meta-Learning approach to EXERCISES.
+For task A at `lr = 0.05`, prove by induction `a_k = 0.5 * (1 - 0.6^k)` and check it
+against the printed `0.46112` at `k = 5`. Do the same for task B:
+`b_k = -0.5 + 0.5 * (-0.6)^k`. Both derivations belong in your source comment block.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## 2. Inner-loop divergence demo
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Rerun Snippet 2's task B inner loop with `lr = 0.1` for 8 steps WITHOUT the Reptile
+interpolation. Report the 8 values; the update factor becomes `-2.2` and magnitudes blow
+up (11.2128 by step 4). State the stability bound in one line: a scalar Newton-like step
+on curvature `c` needs `lr < 2/c`, and `2/32 = 0.0625` here.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## 3. Meta-step sweep
 
-## 4. Examples
+Modify Snippet 1 to loop `inner alpha` over `{0.02, 0.05, 0.1, 0.25}` for task A and
+report the query loss at `theta1` each time. At the largest alpha, does the query loss
+beat the no-adaptation initial loss of `2.25`? Explain overshoot in one sentence using
+the fixed point 0.5.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## 4. Three-task generalization
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Add task C: `y = 0.25x`, support `(4, 1)`, query `(6, 1.5)`. Predict on paper the FOMAML
+gradient sign at `theta0 = 0`, then confirm; after computing all three tasks' meta-steps
+with `beta = 0.1`, state which task dominates the averaged meta-point and by what ratio
+(gradient-magnitude comparison, one number).
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## 5. Reptile with epsilon schedule
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+Change Snippet 2 to use `epsilon_k = 0.5 / sqrt(k)` across 20 meta-rounds, keeping inner
+k = 5 fixed, and print theta after each round. Expected qualitative shape: an initial fast
+walk toward the between-task mean, then tiny corrections; report the theta values at
+rounds 1, 5, 20 and the total displacement from 0.0.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Output authenticity
 
-## 8. Summary
-This section has covered the essential EXERCISES knowledge for Meta-Learning. Mastery of these concepts is crucial for successful implementation and application.
+Quote each claimed number from stdout you captured after an actual run; any formula cited
+above must appear verbatim in a comment of the modified source.

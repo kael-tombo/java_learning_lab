@@ -1,52 +1,42 @@
-﻿# Reinforcement Learning - EXERCISES
+# Reinforcement Learning — Exercises
 
-## 1. Introduction
-This is the comprehensive EXERCISES section for Reinforcement Learning. This section provides in-depth coverage of all aspects related to EXERCISES.
+All tasks run on plain JDK 21+; every snippet from CODE_DEEP_DIVE is your starting point.
 
-## 2. Core Concepts
+## 1. Reproduce the bandit table
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Reinforcement Learning approach to EXERCISES.
+Recreate `EpsGreedyBandit` and print all 20 rows without truncation. Then verify each row
+by hand: with seed 42, the first three pulls of arm 0 are exploitative (Q ties break to the
+first arm), so `q[0]` must follow `0.1, 0.15, 0.175`. Confirm your output matches
+`pulls = [3, 16, 1]` and `total reward = 9.4`.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## 2. Change the discount, predict first
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Set `gamma = 0.5` in the grid world. Before compiling, write down your prediction for
+`V(s0)` — it should be the discounted one-step entry reward. Run it, then explain in one
+sentence why sweeps 2 and 3 give identical vectors (reuse of values already at their
+fixed point).
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## 3. Synchronous vs in-place sweeps
 
-## 4. Examples
+Modify the update so that `v` is overwritten during the sweep (Gauss-Seidel order
+`s0, s1, s2`). Report how many sweeps until `maxDelta < 1e-12` for each variant, with the
+reward-on-entry convention unchanged. Values at convergence must still be
+`[0.9, 1.0, 1.0, 0.0]` either way.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## 4. Off-policy check
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Alter the bandit so the target for the Q update incorporates the actually chosen action
+rather than `max`; with noiseless rewards, argue on paper which estimate changes and by how
+much, then test your claim by running the modified class.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## 5. Optimism experiment
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+Initialize all `q` entries to `+1` and rerun the bandit for 50 steps with `epsilon = 0.1`
+and the exact sample-mean update instead of a fixed alpha. Report the pull counts; the
+optimistic start should pull every arm at least once early. State your observed counts in
+your notes.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Acceptance criterion for the set
 
-## 8. Summary
-This section has covered the essential EXERCISES knowledge for Reinforcement Learning. Mastery of these concepts is crucial for successful implementation and application.
+Every modified program must recompile with `javac --release 21` and every claimed number
+must appear in your own captured log, not copied from this document.

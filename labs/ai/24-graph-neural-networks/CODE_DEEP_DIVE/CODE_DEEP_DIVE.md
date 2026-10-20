@@ -1,52 +1,95 @@
-﻿# Graph Neural Networks - CODE_DEEP_DIVE
+# Graph Neural Networks — Code Deep Dive
 
-## 1. Introduction
-This is the comprehensive CODE_DEEP_DIVE section for Graph Neural Networks. This section provides in-depth coverage of all aspects related to CODE_DEEP_DIVE.
+Two deterministic snippets: a two-round message pass on a 4-node cycle, and the
+normalization comparison on a star graph. Compile with `javac --release 21 -encoding
+UTF-8`, run on JDK 23; outputs quoted as observed.
 
-## 2. Core Concepts
+## Snippet 1 — message passing round on a fixed 4-node graph
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Graph Neural Networks approach to CODE_DEEP_DIVE.
+Cycle `0-1-2-3-0`, features `h = [1, 0, 2, 3]`, weights `W = I`. Every node's self-inclusive
+degree is exactly 3, so the symmetric-norm GCN formula equals the plain mean `(h_i + h_left + h_right) / 3`.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+```java
+import java.util.Arrays;
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+public class GcnMessagePass {
+    public static void main(String[] args) {
+        int[][] adj = {{0, 1, 0, 1}, {1, 0, 1, 0}, {0, 1, 0, 1}, {1, 0, 1, 0}}; // cycle
+        double[] h = {1, 0, 2, 3};
+        System.out.println("h0 = " + Arrays.toString(h));
+        double[] h1 = round(adj, h);
+        System.out.println("h1 = " + Arrays.toString(h1));
+        double[] h2 = round(adj, h1);
+        System.out.println("h2 = " + Arrays.toString(h2));
+        System.out.println("hand check node0 h1 = (h_self + h_left + h_right)/3");
+    }
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+    static double[] round(int[][] adj, double[] h) {
+        double[] out = new double[4];
+        for (int i = 0; i < 4; i++) {
+            double sum = h[i];
+            for (int j = 0; j < 4; j++) if (adj[i][j] == 1) sum += h[j];
+            out[i] = sum / 3.0;
+        }
+        return out;
+    }
+}
+```
 
-## 4. Examples
+Observed output:
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+```
+h0 = [1.0, 0.0, 2.0, 3.0]
+h1 = [1.3333333333333333, 1.0, 1.6666666666666667, 2.0]
+h2 = [1.4444444444444444, 1.3333333333333333, 1.5555555555555556, 1.6666666666666667]
+```
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Hand-checked aggregations: `h1[0] = (1 + 0 + 3)/3 = 4/3`, `h1[1] = (0 + 1 + 2)/3 = 1.0`,
+`h1[2] = (2 + 0 + 3)/3 = 5/3`, `h1[3] = (3 + 2 + 1)/3 = 2.0`; second round: `h2[0] = (4/3 + 1 + 2)/3 = 13/9`, `h2[2] = 14/9`.
+Node-to-node spreading is visible: after two rounds the values moved toward their cycle-average — over-smoothing in miniature.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## Snippet 2 — normalization comparison on a star graph
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+Hub node 0 with leaves 1..3; pairs differ in how a hub's many adjacency entries are
+damped. `h = [3, 1, 2, 0]`, degrees `[4, 2, 2, 2]`.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+```java
+public class GcnNormalize {
+    public static void main(String[] args) {
+        int n = 4;
+        int[][] adj = {{1, 1, 1, 1}, {1, 1, 0, 0}, {1, 0, 1, 0}, {1, 0, 0, 1}}; // A + I
+        double[] h = {3, 1, 2, 0};
+        int[] deg = new int[n]; // degrees: hub 4, each leaf 2 (A + I matrix, self-loops kept)
+        for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) if (adj[i][j] == 1) deg[i]++;
+        double[] rowNorm = new double[n], sym = new double[n];
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++) if (adj[i][j] == 1) {
+                rowNorm[i] += h[j] / deg[i];                        // (D^-1 A) h
+                sym[i] += h[j] / Math.sqrt((double) deg[i] * deg[j]); // (D^-1/2 A D^-1/2) h
+            }
+        System.out.println("degrees = " + java.util.Arrays.toString(deg));
+        System.out.printf("rowNorm  = %s%n", java.util.Arrays.toString(fmt(rowNorm)));
+        System.out.printf("symNorm  = %s%n", java.util.Arrays.toString(fmt(sym)));
+        System.out.println("hand checks: rowNorm leaf1 = (1+3)/2 = 2.0; sym leaf1 = 0.5 + 3/2.8284 = 1.5607");
+        System.out.println("hand checks: sym hub = 3/4 + (1+2+0)/2.8284 = 1.8107");
+    }
+    static double[] fmt(double[] v) {
+        double[] r = new double[v.length];
+        for (int i = 0; i < v.length; i++) r[i] = Math.round(v[i] * 10000.0) / 10000.0;
+        return r;
+    }
+}
+```
 
-## 8. Summary
-This section has covered the essential CODE_DEEP_DIVE knowledge for Graph Neural Networks. Mastery of these concepts is crucial for successful implementation and application.
+Observed output:
+
+```
+degrees = [4, 2, 2, 2]
+rowNorm  = [1.5, 2.0, 2.5, 1.5]
+symNorm  = [1.8107, 1.5607, 2.0607, 1.0607]
+```
+
+Confirm the printed sanity lines: leaf 1 gets `(1 + 3)/2 = 2.0` under row-norm and
+`0.5 + 3/sqrt(8) = 1.5607` under the symmetric operator; the hub computes
+`3/4 + (1 + 2 + 0)/sqrt(8) = 1.8107`. Leaves shrank while the hub grew — that rebalancing
+is the point of `D^-1/2 A D^-1/2`.

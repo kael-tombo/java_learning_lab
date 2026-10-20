@@ -1,10 +1,10 @@
 ﻿# Visual Guide: Meta-Learning
 
 ## 1. System Architecture Diagram
-[Input Data] â†’ [Preprocessing] â†’ [Model Forward Pass] â†’ [Loss Computation] â†’ [Backward Pass] â†’ [Parameter Update]
+[Input Data] → [Preprocessing] → [Model Forward Pass] → [Loss Computation] → [Backward Pass] → [Parameter Update]
 
 ## 2. Training Process
-Epoch 1-N: [Batch Load] â†’ [Forward] â†’ [Loss] â†’ [Backward] â†’ [Update] â†’ [Validate]
+Epoch 1-N: [Batch Load] → [Forward] → [Loss] → [Backward] → [Update] → [Validate]
 
 ## 3. Component Hierarchy
 Model
@@ -14,11 +14,11 @@ Model
  â””â”€â”€ Optimizer (SGD, Adam, RMSprop)
 
 ## 4. Data Flow
-Raw Data â†’ Clean â†’ Transform â†’ Normalize â†’ Batch â†’ Train â†’ Evaluate â†’ Deploy
+Raw Data → Clean → Transform → Normalize → Batch → Train → Evaluate → Deploy
 
 ## 5. Performance Monitoring
-Loss Curve: Training Loss (â†“ decreasing) and Validation Loss (â†“ then possibly â†‘ if overfitting)
+Loss Curve: Training Loss (→“ decreasing) and Validation Loss (→“ then possibly →‘ if overfitting)
 Accuracy Curve: Training and Validation accuracy over epochs
 
 ## 6. Debugging Flow
-Symptom â†’ Hypothesize â†’ Test â†’ Isolate â†’ Fix â†’ Verify â†’ Monitor
+Symptom → Hypothesize → Test → Isolate → Fix → Verify → Monitor

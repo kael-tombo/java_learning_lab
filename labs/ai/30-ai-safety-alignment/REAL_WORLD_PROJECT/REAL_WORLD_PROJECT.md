@@ -1,52 +1,42 @@
-﻿# AI Safety and Alignment - REAL_WORLD_PROJECT
+# AI Safety & Alignment — Real-World Project
 
-## 1. Introduction
-This is the comprehensive REAL_WORLD_PROJECT section for AI Safety and Alignment. This section provides in-depth coverage of all aspects related to REAL_WORLD_PROJECT.
+**Goal**: design a review-and-abstain flow for an automated assistant inside a company
+data terminal — Java-side orchestration concepts with a visible audit trail. All examples
+are self-written; no workplace data is ingested.
 
-## 2. Core Concepts
+## The flow to design (and prototype the ledger)
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the AI Safety and Alignment approach to REAL_WORLD_PROJECT.
+1. A classifier (stubbed as `ScoreProvider` returning a quality score + category tag)
+   screens every generated answer on its way to a user.
+2. Answers scoring below the auto-answer threshold escalate to reviewer triage; answers
+   in an ambiguous band get flagged for sampling-based audit.
+3. A `FeedbackLoopStub` records reviewer outcomes; the design memo explains what retraining
+   on that feedback must guard against.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Prototype pieces to build
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+- `ScoreProviderStub`: 12 hand-typed cases covering on-topic/wrong/correct categories
+  (a table, exactly like the two deep-dive snippets').
+- `AbstainRouter`: thresholds `(autoAnswer = 0.9, flagBand = [0.6, 0.9))` from config;
+  emits a routing case per case (auto/flag/review) plus a queue-length counter.
+- `AuditTrail`: append-only log (in-memory) of each decision with category, score, and
+  policy version constant; supports a `replay()` that reprints decisions from the log.
+- `BiasProbe`: category-conditional routing rates with a check — flagBand must NOT
+  concentrate categories; print per-category routing table and name the guard you'd add
+  if concentration appears.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Required write-up (where candor earns marks)
 
-## 4. Examples
+- Limits: score stubs are guesses; real score drift, calibration loss under distribution
+  change, and adversarial prompts are all untested here — one bullet each, no specifics
+  claimed about deployed systems.
+- The retraining trap: reviewer feedback is filtered through the very thresholds you set;
+  state that the feedback pipeline sees mostly medium-confidence items and what that skews.
+- Escalation economics: from your routing table, compute triage hours vs auto-share at
+  two threshold settings — a trade-off you present to stakeholders with both numbers
+  visible rather than one recommended silently.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Constraints
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential REAL_WORLD_PROJECT knowledge for AI Safety and Alignment. Mastery of these concepts is crucial for successful implementation and application.
+`javac --release 21`; single file; deterministic; stdout ASCII-only with a fixed-width
+log; include a `README` block noting nothing here constitutes a production policy.

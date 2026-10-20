@@ -1,52 +1,45 @@
-﻿# Federated Learning - THEORY
+# Federated Learning — Theory
 
-## 1. Introduction
-This is the comprehensive THEORY section for Federated Learning. This section provides in-depth coverage of all aspects related to THEORY.
+**Federated learning (FL)** trains a shared model across many data holders while the raw
+data never leaves their premises. A coordinator ships the current weights, participants
+compute local updates on their own private batches, and the coordinator merges updates.
 
-## 2. Core Concepts
+## The loop (standard rounds)
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Federated Learning approach to THEORY.
+1. **Selection**: choose a subset of participants for the round (all of them in our toy).
+2. **Broadcast**: send the current global model to the chosen clients.
+3. **Local update**: each client does some private training/steps on its own data.
+4. **Aggregation**: the server fuses client updates — the classic scheme is a weighted
+   mean proportional to each client's data count (the canonical FedAvg averaging rule)
+   and weights update.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+The essential discipline is projection: participants hold data the server cannot read;
+the math only sees vectors of numbers. Everything in our snippets reduces to client
+gradient vectors and weighted summation on the server.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+## Distribution shift is the central difficulty
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+- **Non-IID partitions**: client datasets differ in size, class balance, and feature
+  ranges. A plain uniform average of update directions then encodes the majority, not the
+  population — the weighted variant exists for exactly this reason and the drift snippet
+  quantifies the difference.
+- **Client drift within a round**: between two aggregations, clients wander along their
+  own gradients; the longer the local phase, the farther they drift from whatever the
+  server believes — known measures and fixes (proximal penalties in the loss,
+  server-side momentum) exist at concept level here.
 
-## 4. Examples
+## Practical concerns that dominate engineering time
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+- Participation turnover: clients join and leave; stale updates from a past round are a
+  correctness hazard (they must be dropped or explicitly down-weighted).
+- Cost model: a full round costs upload plus download of the weights that many times;
+  sparsification/quantization families exist to shrink payload (not implemented here).
+- Robustness: malicious or buggy clients can inject extreme vectors; anomaly detection on
+  submitted update norms belongs in any real design review (literature exists freely but
+  is not benchmarked in this lab).
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+## Where this lab puts Java
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential THEORY knowledge for Federated Learning. Mastery of these concepts is crucial for successful implementation and application.
+The aggregation math and the round bookkeeping are pure arithmetic; the snippets build a
+two-dimension gradient toy where every average can be recomputed by hand. The writing
+projects (per folder) then scale the bookkeeping sketch up to a mock service layout.

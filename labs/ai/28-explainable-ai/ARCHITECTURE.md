@@ -1,7 +1,7 @@
 ﻿# Explainable AI System Architecture
 
 ## 1. High-Level Architecture
-The Explainable AI system follows a layered architecture: Data Layer â†’ Model Layer â†’ Training Layer â†’ Evaluation Layer. Each layer has well-defined responsibilities and communicates through interfaces.
+The Explainable AI system follows a layered architecture: Data Layer → Model Layer → Training Layer → Evaluation Layer. Each layer has well-defined responsibilities and communicates through interfaces.
 
 ## 2. Component Design
 

@@ -1,52 +1,43 @@
-﻿# Self-Supervised Learning - QUIZ
+# Self-Supervised Learning — Quiz
 
-## 1. Introduction
-This is the comprehensive QUIZ section for Self-Supervised Learning. This section provides in-depth coverage of all aspects related to QUIZ.
+Answer keys stated; standard results only.
 
-## 2. Core Concepts
+**Q1. Write the InfoNCE formula.**
+A: `-log [ exp(s+ / tau) / sum_i exp(s_i / tau) ]`, with `s_i = cos(q, k_i)` and `tau` the
+temperature.
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Self-Supervised Learning approach to QUIZ.
+**Q2. What role does the temperature play?**
+A: A sharpness knob for the softmax over similarities: small `tau` makes the ranking
+winner take nearly all probability; large `tau` drives all candidates toward uniform.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+**Q3. What is a positive pair and where do negatives come from?**
+A: Two augmented views of the same instance; negatives are the other samples' embeddings
+in the batch (one-sided contrastive convention).
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+**Q4. Why is a projection head used before the loss?**
+A: Similarity comparison happens in a separate head's space while the representation the
+downstream tasks consume stays in the encoder output; the head is discarded afterward.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+**Q5. What does the masked diagonal in NT-Xent mean?**
+A: The anchor's similarity to itself (`cos = 1`) is excluded from the denominator, so the
+softmax ranks the positive against other candidates, not against a trivial constant.
 
-## 4. Examples
+**Q6. What is the standard evaluation for a learned encoder?**
+A: Linear-probe transfer: freeze the encoder, fit a linear classifier on a small labelled
+set, compare against a from-scratch training-run baseline.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+**Q7. How do predictive (masked-style) objectives differ from contrastive ones?**
+A: They learn by reconstructing or predicting a held part of the input rather than by
+ranking candidates, so they need no negatives.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+**Q8. Why can't you compare an InfoNCE loss of `0.3` across two papers directly?**
+A: Because batch size, augmentation stack, temperature, and dataset all change the
+attainable value; the safe answer is to retrain your own baseline.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+**Q9. Why does batch composition matter more here than in supervised learning?**
+A: Negatives are the other instances' views; batch diversity sets the difficulty and the
+attainable loss pair of the run.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential QUIZ knowledge for Self-Supervised Learning. Mastery of these concepts is crucial for successful implementation and application.
+**Q10. What does `p(pos)` collapsing toward uniform indicate about an encoder?**
+A: Similarities have flattened — the representation fails to separate positive pairs from
+background; check augmentation and temperature before anything else.

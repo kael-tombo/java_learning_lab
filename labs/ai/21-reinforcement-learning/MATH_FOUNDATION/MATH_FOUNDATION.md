@@ -1,52 +1,61 @@
-﻿# Reinforcement Learning - MATH_FOUNDATION
+# Reinforcement Learning — Mathematical Foundation
 
-## 1. Introduction
-This is the comprehensive MATH_FOUNDATION section for Reinforcement Learning. This section provides in-depth coverage of all aspects related to MATH_FOUNDATION.
+Everything below is the standard result set for tabular RL. We use ASCII math with
+`gamma` for the discount and `E` for expectation.
 
-## 2. Core Concepts
+## Definitions
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Reinforcement Learning approach to MATH_FOUNDATION.
+An MDP is `(S, A, P, R, gamma)`; a trajectory is a sequence of states, actions, rewards.
+The **discounted return** from time `t`:
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+```
+G_t = sum_{k >= 0} gamma^k * r_{t+k+1},   with gamma in [0,1)
+```
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Because `gamma < 1` and rewards are bounded, `|G_t| <= r_max / (1 - gamma)`, so returns are
+always finite — a fact used everywhere in the proofs.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Bellman equations (exact statements)
 
-## 4. Examples
+For a fixed policy `pi`, the state-value and action-value functions obey:
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+```
+V^pi(s) = sum_a pi(a|s) * sum_{s'} P(s'|s,a) * [ r + gamma * V^pi(s') ]
+Q^pi(s,a) = sum_{s'} P(s'|s,a) * [ r + gamma * sum_{a'} pi(a'|s') * Q^pi(s',a') ]
+```
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+For the optimal policy, the expectation over actions is replaced by a maximum:
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+```
+V*(s) = max_a sum_{s'} P(s'|s,a) * [ r + gamma * V*(s') ]
+Q*(s,a) = sum_{s'} P(s'|s,a) * [ r + gamma * max_{a'} Q*(s',a') ]
+```
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+The optimality operator is a **contraction mapping** in the sup norm with modulus `gamma`;
+with `gamma < 1` it has exactly one fixed point, and repeated application of the operator
+converges to `V*` geometrically (error shrinks by at least gamma per sweep).
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Tabular TD and Q-learning
 
-## 8. Summary
-This section has covered the essential MATH_FOUNDATION knowledge for Reinforcement Learning. Mastery of these concepts is crucial for successful implementation and application.
+The temporal-difference error for state values is `delta = r + gamma * V(s') - V(s)`.
+The off-policy Q-learning update after observing `(s, a, r, s')`:
+
+```
+Q(s,a) <- Q(s,a) + alpha * [ r + gamma * max_{a'} Q(s',a') - Q(s,a) ]
+```
+
+Its target mixes the bellman optimality form; if every `(s,a)` is visited infinitely often
+and `alpha` decays per the Robbins-Monro sequence, `Q` converges to `Q*`.
+
+## Bandit special case
+
+Arms have fixed means `mu_i`; epsilon-greedy selects the argmax of current estimates with
+probability `1 - epsilon` and a uniformly random arm otherwise. Our snippet uses a
+fixed-step exponential-averaging update (alpha = 0.5), which is a common bookkeeping choice
+rather than the exact sample mean.
+
+## Quantities used in the exercises
+
+- `V*` of the tiny grid world: one-step states get exactly the entry reward 1.0; the
+  two-step-away start cell gets `gamma * 1.0 = 0.9`.
+- Greedy-policy tie-break: choose the action that appears first in the action list.

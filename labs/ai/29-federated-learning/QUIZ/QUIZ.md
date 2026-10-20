@@ -1,52 +1,34 @@
-﻿# Federated Learning - QUIZ
+# Federated Learning — Quiz
 
-## 1. Introduction
-This is the comprehensive QUIZ section for Federated Learning. This section provides in-depth coverage of all aspects related to QUIZ.
+Keys follow the questions; standard statements only.
 
-## 2. Core Concepts
+**Q1. State the FedAvg aggregation formula.**
+A: `w_{t+1} = sum_{i in S_t} (n_i / sum_j n_j) * w_{t+1}^i` over chosen clients, with
+`n_i` each client's data count.
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Federated Learning approach to QUIZ.
+**Q2. What never moves between client and server in classical FL?**
+A: The raw training data; only parameter vectors and update tensors are exchanged.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+**Q3. Why does non-IID data make uniform averaging misleading?**
+A: With skewed client sizes or distributions, the plain mean over clients no longer
+approximates any global objective; size-weighted averaging keeps the population balance.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+**Q4. What is client drift?**
+A: The divergence of participants' local models from the shared state between
+aggregation events, growing with local steps and local learning rate.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+**Q5. Name the two costs an FL round pays.**
+A: The download (server→client) and the upload (client→server) of model weights for each
+selected participant.
 
-## 4. Examples
+**Q6. Why refuse stale updates from late clients in practice?**
+A: They were computed against an older global model; folding them in ignores the fact
+that weights already moved, corrupting the aggregation.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+**Q7. What does a proximal local-penalty approach add to the client's own loss?**
+A: A quadratic term keeping local weights close to the transmitted global weights, so
+drift between aggregation rounds is dampened.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential QUIZ knowledge for Federated Learning. Mastery of these concepts is crucial for successful implementation and application.
+**Q8. When could uniform and weighted averaging coincide exactly?**
+A: When all client data counts are equal — the toy's uniform row then equals the
+weighted row; otherwise they differ (observed in snippet 1's outputs).

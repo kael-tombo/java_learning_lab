@@ -1,52 +1,43 @@
-﻿# Multi-Task Learning - MINI_PROJECT
+# Multi-Task Learning — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for Multi-Task Learning. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: a three-task shared-trunk trainer in pure Java with a live weight controller —
+small enough to read, big enough to exhibit every pathology from THEORY.
 
-## 2. Core Concepts
+## Model
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Multi-Task Learning approach to MINI_PROJECT.
+- Trunk: 2-dimensional input, 6 hidden units, tanh. Heads: linear scalar per task
+  (3 heads, weights by hand from a fixture).
+- Tasks (data hand-written, 16 points each): MSE regression, logistic classification
+  (2 classes), quantile-style ABS loss (a third family, different scale on purpose).
+- Backprop implemented per-op with derivative comments; use loops, no matrix library.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Controller requirements
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. Weight modes selectable at runtime: `uniform`, `inverse-noise` (sigma = sqrt of a
+   running loss EMAs), `GradNorm-inspired` (scale weights per step so that per-task
+   gradient norms become near-equal — a 1e-3-tolerance loop within each step is fine).
+2. After every 100 steps print: per-task loss, per-task gradient norm, combined gradient
+   norm, and current weight triple.
+3. A conflict probe: every 100 steps print the pairwise cosine matrix of the three
+   per-task gradients.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Required observations in your final report
 
-## 4. Examples
+- Which mode produced the smallest max/min loss-spread at step 1000.
+- Whether any mode drove a task's loss UP by step 500 (the negative-transfer signature).
+- The single cosine pair that went below `-0.5` during training, if any, and whether the
+  GradNorm-inspired mode softened it.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Acceptance criteria
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+- Compiles with `javac --release 21`; fully deterministic under fixed seed.
+- All.stdout rows are 4-dp rounded; capture 11 printed checkpoints (step 0, 100, ...,
+  1000) in a commented block or a log file.
+- Statement of scope: results on 16-point fixtures say NOTHING about large-scale regimes;
+  keep the word "surprising" tied to what you actually observed.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## Stretch
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for Multi-Task Learning. Mastery of these concepts is crucial for successful implementation and application.
+Add a fourth task with a deliberately conflicting objective (e.g., predicting the inverse
+of task A's target) and rerun the probe matrix — describe (2 sentences) how the cosine
+history differs.

@@ -1,52 +1,37 @@
-﻿# Explainable AI - MINI_PROJECT
+# Explainable AI — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for Explainable AI. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: a single-file explanation console for a tiny predictors suite: additive,
+interaction, and tiny-tree families; read-only attributions, printed as review sheets.
 
-## 2. Core Concepts
+## Model set (hand-coded, no training)
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Explainable AI approach to MINI_PROJECT.
+- `AdditiveBox`: `f = 1.5*x0 + 2*x1 + 0.5`.
+- `InteractionBox`: `f = 1.5*x0 + 2*x1 + 0.5*x0*x1 + 0.5`.
+- `ConjunctionBox`: `f = 1` if `x0 > 1 && x1 > 2` else `0` (a rule-tree).
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Attributions implemented
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `Shapley.exact(box, instance, baseline)` — full `2^n` subset enumeration with the
+   correct subset weights; assert the efficiency sum each call.
+2. `Lime.gridSurrogate(box, instance, radius, gridDims)` — per-axis grid around the
+   instance, weighted least squares for `AdditiveBox`/`InteractionBox` (unweighted
+   variant allowed if you justify it in comments).
+3. Print for each box and a fixed instance set of 3 rows: phi vector, surrogate
+   coefficients, residuals, and the efficiency closing line.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Review-sheet acceptance tests (hard asserts)
 
-## 4. Examples
+- `AdditiveBox` phis match `w * (x - bar)` to `1e-9` for every instance tested.
+- `ConjunctionBox` at instance `(2, 3)`: the printed phis should both read `0.5` (each
+  ordering contributes 0 once the other feature is already high); add one line of your
+  own judgment on whether symmetric attribution is a sensible explanation here (the rule
+  fires only when both features are high).
+- `InteractionBox` phis reproduce the hand enumeration from EXERCISES.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Report
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for Explainable AI. Mastery of these concepts is crucial for successful implementation and application.
+- A four-line stdout per (model, instance) triple — the "review sheet".
+- A markdown paragraph: which family's LIME surrogate was trustworthy, and what phrasing
+  you would use with a non-technical stakeholder for each.
+- Not in scope, stated explicitly: counterfactual scoring, causal graphs, distributional
+  baselines — list them as unknowns rather than half-implement them.

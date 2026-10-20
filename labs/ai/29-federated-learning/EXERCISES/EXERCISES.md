@@ -1,52 +1,44 @@
-﻿# Federated Learning - EXERCISES
+# Federated Learning — Exercises
 
-## 1. Introduction
-This is the comprehensive EXERCISES section for Federated Learning. This section provides in-depth coverage of all aspects related to EXERCISES.
+Start from the two snippets in CODE_DEEP_DIVE; `javac --release 21` on JDK 21+.
 
-## 2. Core Concepts
+## 1. Re-derive both aggregates before running
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Federated Learning approach to EXERCISES.
+With `g = ([0.2, -0.1], [0.4, 0.2], [-0.3, 0.5])` and `n = (1, 2, 3)`, compute uniform and
+weighted means on paper, then confirm the console rows `[0.1, 0.2]` and
+`[0.016667, 0.3]`. Show the ratio arithmetic in comments.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## 2. Invert the weights
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Set `n = (3, 2, 1)` and rerun Snippet 1. Predict the weighted gradient's components by
+hand first — `(3*0.2 + 2*0.4 - 0.3)/6 = 0.183333` and
+`(3*(-0.1) + 2*0.2 + 0.5)/6 = 0.100000`; the third-round weighted position must then be
+`[-0.055, -0.030]`. Verify both predictions against the printed rows and note any
+corrections next to them in your log.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## 3. Drift distance versus number of local steps
 
-## 4. Examples
+Modify Snippet 2 to loop local step count `k over {1, 3, 10, 30}` and print, for each,
+the norm of `(client-average end - theta_0)` minus `norm of one aggregated step`. Write
+one sentence quantifying the growth linearity claim (`~k` behavior) and where it breaks
+(the 30-step row will exceed the initial distance scale — number-quote it).
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## 4. Client dropout mid-round
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Simulate selection: client 2 drops out of round 2 (skip its vector for that round only,
+keep it in rounds 1 and 3). Report the four-round trajectory with the missing line
+marked. Explain in your log why aggregation with the *previous* round's vector for the
+no-show is usually refused (stale-update hazard, said in THEORY).
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## 5. Norm screen
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+Add a guard function `maxNormAllowed = 0.6`: any client whose submitted gradient norm
+exceeds it gets scaled down to that bound before aggregation (a crude but standard
+anomaly screen). Rerun Snippet 1 with a fifth client `g_5 = [3.0, -2.0]` (`n = 4`) and
+report round-3 weighted coordinates with and without the screen; both sets of numbers
+go to your log.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Reporting rule
 
-## 8. Summary
-This section has covered the essential EXERCISES knowledge for Federated Learning. Mastery of these concepts is crucial for successful implementation and application.
+Numbers must come from your own captured runs; predictions-by-hand get written BEFORE the
+run, then confirmed or corrected with a one-line note.

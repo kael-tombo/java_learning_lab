@@ -1,52 +1,58 @@
-﻿# Variational Autoencoders - MATH_FOUNDATION
+# Variational Autoencoders — Mathematical Foundation
 
-## 1. Introduction
-This is the comprehensive MATH_FOUNDATION section for Variational Autoencoders. This section provides in-depth coverage of all aspects related to MATH_FOUNDATION.
+## The lower bound (exact decomposition statement)
 
-## 2. Core Concepts
+For data point `x`, prior `p(z)`, decoder `p_theta(x|z)`, and encoder `q_phi(z|x)`:
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Variational Autoencoders approach to MATH_FOUNDATION.
+```
+log p_theta(x) >= ELBO(x) = E_{q_phi(z|x)}[ log p_theta(x|z) ] - KL( q_phi(z|x) || p(z) )
+```
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+Equivalently, `ELBO = log p_theta(x) - KL(q_phi(z|x) || p_theta(z|x))`, revealing that the
+bound is exactly tight when the encoder equals the true posterior. Both readings are the
+standard pair: reconstruction term minus penalty, and log-evidence minus mismatch.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+## Gaussian closed forms used everywhere in this lab
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+Prior `p(z) = N(z; 0, 1)`, posterior `q(z|x) = N(z; mu, sigma^2)`. Then
 
-## 4. Examples
+```
+KL( N(mu, sigma^2) || N(0,1) ) = 0.5 * ( sigma^2 + mu^2 - ln(sigma^2) - 1 )
+```
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+If the decoder likelihood is Gaussian `p(x|z) = N(x; z, tau^2)` with scalar `x`,
+`tau^2 = 1`, and `q = N(mu, sigma^2)`:
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+```
+E_q[ ln N(x; z, tau^2) ] = -0.5 * ( (x - mu)^2 + sigma^2 ) - 0.5 * ln(2 * pi * tau^2)
+```
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+The second term averages to the mixture density: with `z ~ N(mu, sigma^2)` and decoder
+variance 1, the distribution `p(x) = N(x; mu, sigma^2 + 1)` is a convolution products of
+two normals, which is how the snippet computes the exact marginal likelihood
+`log p(x)` to compare against the bound.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+## Reparameterization
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+Write `z = mu + sigma * epsilon, epsilon ~ N(0, I)`; the Monte Carlo estimate
 
-## 8. Summary
-This section has covered the essential MATH_FOUNDATION knowledge for Variational Autoencoders. Mastery of these concepts is crucial for successful implementation and application.
+```
+ELBO_hat(x) = log p_theta(x | mu + sigma * epsilon) - KL(q || p)
+```
+
+is differentiable in `theta, phi` because sampling enters through `epsilon`, which carries
+no learned parameters. Our MC snippet averages 50,000 draws of this one-sample form.
+
+## The reconstruction/regularization trade-off
+
+Introducing a coefficient `beta >= 0` on the KL term (the "beta-VAE" reweighting) shifts
+capacity between terms: larger `beta` pulls the posterior toward the prior (smoother,
+more disentangled codes at the cost of reconstruction sharpness). The direction of the
+trade is the robust part of that literature; magnitude-dependent claims should be treated
+as dataset-specific. Keep this conceptual, as in the exercises.
+
+## Pitfall in the bound's reading
+
+`ELBO` is a bound on a single datapoint's log-likelihood, NOT on the total dataset
+evidence unless you sum per-point; do not average bounds across points and then compare
+against pooled marginal densities.

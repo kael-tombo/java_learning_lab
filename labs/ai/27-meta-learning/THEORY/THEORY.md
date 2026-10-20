@@ -1,52 +1,48 @@
-﻿# Meta-Learning - THEORY
+# Meta-Learning — Theory
 
-## 1. Introduction
-This is the comprehensive THEORY section for Meta-Learning. This section provides in-depth coverage of all aspects related to THEORY.
+**Meta-learning** ("learning to learn") reframes training so the outer objective is a task
+performance: the model should quickly adapt to NEW tasks from a few examples. The inner
+loop handles one task; the outer loop updates the initialization or other shared pieces.
 
-## 2. Core Concepts
+## The canonical framing
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Meta-Learning approach to THEORY.
+- The task distribution `p(T)` supplies small datasets: within a task, a *support set*
+  for adaptation and a *query set* for evaluation.
+- The outer learner is anything shaped across tasks: a good initialization (model-based
+  family), a metric kernel (similarity-based family), or an adaptation network (amortized
+  family). This lab implements the initialization family on scalar tasks only.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## First-order approximation
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Exact gradients through adaptation are expensive; the standard approximation drops the
+second-order term and reads the outer gradient directly at the adapted point:
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+- Inner step on one minibatch: `theta' = theta - alpha * dL_support/d theta`.
+- Outer step on query data evaluated at `theta'`, but with the gradient computed
+  one-step-local (the pseudo-gradient).
+- Later literature refines this idea (memory, attention variants, learned optimizers);
+  none of these re-introduced results is claimed numerically here.
 
-## 4. Examples
+## Reptile: the simple sibling
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+Instead of split support/query, Reptile-style approaches simply run several SGD steps toward
+each task's optimum, then interpolate the shared initialization toward the average of the
+inner solutions. Both methods rely on the same intuition: a good starting point is one
+from which any nearby task is a short downhill walk — mathematically, the initial point
+minimizes a trade-off between post-adaptation loss across the task distribution.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+## The two failure statements everyone needs
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+- Inner-loop instability: with too-large `alpha`, inner adaptation diverges and the outer
+  signal is garbage (we show divergence numerically in one exercise at lr 0.1 on a
+  curvature-32 task).
+- Overfitting to the training tasks: the initialization can memorize the task family
+  instead of learning fast adaptation; the check is on held-out tasks with genuinely
+  different optima.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+## What this lab provides
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential THEORY knowledge for Meta-Learning. Mastery of these concepts is crucial for successful implementation and application.
+Two snippets: one first-order meta-step computed by construction (no autograd), and one
+interpolation run; both on tasks `y = a*x` with slopes `+0.5` and `-0.5` so sign flips in
+the outer gradient are visible directly in stdout. All numbers hand-checkable; nothing
+about large networks is claimed or measured here.

@@ -1,52 +1,38 @@
-﻿# Generative Adversarial Networks - REAL_WORLD_PROJECT
+# Generative Adversarial Networks — Real-World Project
 
-## 1. Introduction
-This is the comprehensive REAL_WORLD_PROJECT section for Generative Adversarial Networks. This section provides in-depth coverage of all aspects related to REAL_WORLD_PROJECT.
+**Goal**: design (and prototype the evaluation half of) a semantically reasonable
+synthetic-to-augmentation pipeline: an image-domain tool where Java handles orchestration
+and the model side stays concept-level.
 
-## 2. Core Concepts
+## Project: augmentation audit for tabular fraud-simulation data
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Generative Adversarial Networks approach to REAL_WORLD_PROJECT.
+Practical and buildable in Java end to end: generate a small, structured fake dataset,
+then an adversarial-audit harness that tries to tell real rows from generated rows.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Components
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `RealTableSource`: loads a small CSV of non-sensitive, self-made numeric rows (for
+   example a toy loan-timing table you fabricate yourself; state the columns clearly).
+2. `Copier` (your "generator"): a hand-fit parametric model — sample a column-wise
+   bootstrap plus small Gaussian jitter driven by a seeded LCG.
+3. `Auditor` ("discriminator"): logistic regression on a row passed as real or synthetic.
+   Train on half the mixed table, evaluate accuracy on a held-out half.
+4. `EquilibriumLoop`: alternate `Copier` parameter updates (nudged to raise synthetic rows'
+   realness score) with `Auditor` refits; log accuracy each round.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Interpretation requirements
 
-## 4. Examples
+- Report the accuracy trajectory: rising auditor accuracy means the copier is being caught;
+  accuracy near half means rows are indistinguishable to this weak auditor.
+- Write down the threat-model caveat: a full neural generator-in-the-loop on richer data
+  leaks privacy risks you are NOT testing here; name two such risks conceptually (membership
+  inference, memorization of rare rows) as open items.
+- Recommend (1 paragraph) what would have to be measured before considering any real use:
+  downstream utility of synthetic rows plus diversity statistics, both defined by you.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Deliverables
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential REAL_WORLD_PROJECT knowledge for Generative Adversarial Networks. Mastery of these concepts is crucial for successful implementation and application.
+- `javac --release 21` compile, seeded runs, a summary CSV-equivalent stdout table with
+  one line per loop round (round, auditor-accuracy).
+- A memo: architecture sketch, two failure modes you would watch for, and unproven pieces
+  you would need a real model stack to test.

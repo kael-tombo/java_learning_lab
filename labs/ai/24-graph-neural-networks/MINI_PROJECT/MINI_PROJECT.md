@@ -1,52 +1,38 @@
-﻿# Graph Neural Networks - MINI_PROJECT
+# Graph Neural Networks — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for Graph Neural Networks. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: a small in-memory graph-convolution library plus a label-propagation experiment,
+all deterministic, no external frameworks.
 
-## 2. Core Concepts
+## Core API (single file acceptable)
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Graph Neural Networks approach to MINI_PROJECT.
+- `Graph(int n)` + `addEdge(a, b)` + `addWeightedEdge(a, b, w)`; `degrees()` returns the
+  self-inclusive degree vector.
+- `MessagePasser.apply(double[] h, Mode mode)` where `mode` selects `ROW_NORM`,
+  `SYMMETRIC`, or `MEAN` (symmetric formula as in GCN with `W = I`).
+- `Layer` chains an activation of your choice (`tanh` or `relu`) after the aggregate when
+  a boolean flag is set — leave it off for value-less hand-checks.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Experiment (the actual deliverable)
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Graph: 6 nodes = two triangles connected by a single bridge edge
+(edges within triangle a: 0-1-2-0; triangle b: 3-4-5-3; bridge: 2-3).
+Labels: `[0, 0, 0, 1, 1, 1]`.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+1. Run 3 rounds of MESSAGE dropping with each mode and print per-mode `h` after each.
+2. Node-classify by a one-parameter scan (Exercise-5 style rule): threshold on first
+   coordinate; report train accuracy after 1, 2, 3 layers for each mode.
+3. Bridge analysis: state, citing specific printed numbers, how the bridge edge favors
+   mixing (node 2's value bending toward triangle b) under each normalization.
 
-## 4. Examples
+## Acceptance
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+- All prints deterministic: sorted mode names, 4-dp rounding.
+- A short captured stdout report pasted at the bottom of your source in a comment.
+- Identify at least one place where `ROW_NORM` and `SYMMETRIC` disagree by more than
+  `0.1`; explain the disagreement from the `d_i d_j` denominator.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+## Stretch
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for Graph Neural Networks. Mastery of these concepts is crucial for successful implementation and application.
+Add 20 random graphs (seed-fixed, Erdos-Renyi with `p = 0.2`) and report average node-value
+spread (max minus min) after 3 rounds — expect the spread to shrink; that is smoothing in
+aggregate. Any claim goes in the report with its captured evidence.

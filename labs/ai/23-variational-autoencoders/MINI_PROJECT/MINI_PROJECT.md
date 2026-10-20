@@ -1,52 +1,36 @@
-﻿# Variational Autoencoders - MINI_PROJECT
+# Variational Autoencoders — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for Variational Autoencoders. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: an "ELBO workbench" — a small Java library that holds Gaussian-family VAE math
+and a test harness proving each formula numerically.
 
-## 2. Core Concepts
+## Library surface (one file is fine)
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Variational Autoencoders approach to MINI_PROJECT.
+- `record Gauss(double mu, double var)` with `klToStd()`, `logPdf(x)`, `plusNoiseVar(v)`
+  (the mixture/convolution helper used for exact marginals).
+- `Elbo.closedForm(x, Gauss q, double decVar)` returning recon, kl, elbo, and the exact
+  marginal via `q.plusNoiseVar(decVar)`; all doubles, no sampling.
+- `Elbo.monteCarlo(x, q, decVar, n, seed)` — LCG plus one Box-Muller draw per sample,
+  seedable and deterministic.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Required tests (assert in main, fail loudly on mismatch)
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `klToStd()` on `N(0, 1)` returns exactly 0.
+2. `closedForm` for `x = 0, q = N(0, 1), decVar = 1`: recon must equal
+   `-0.5 * (0 + 1 + ln 2pi)` and the bound must equal the marginal `log N(0; 0, 2)` — the
+   standard baseline where posterior equals prior.
+3. Tightness: for `x` in `{-3, 0, 2}` and the true posterior `N(x/2, 0.5)`, the gap prints
+   0 within `1e-9`.
+4. MC/ClosedForm agreement at `n = 200000` inside `5e-3` for at least one fixed seed; if a
+   seed fails that tolerance, print both numbers instead of asserting (sample noise) and
+   document it.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Report requirements
 
-## 4. Examples
+- A table (rows = four scenarios above) with closed-form vs sampled values side by side.
+- One paragraph on when the bound is loose in real models: non-Gaussian decoders, high
+  dimensions with unseen codes, and implicit likelihoods are all beyond closed form.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Constraint
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for Variational Autoencoders. Mastery of these concepts is crucial for successful implementation and application.
+No third-party libraries, `javac --release 21`, deterministic output given the seed; the
+whole thing fits comfortably in ~150 lines if you resist feature creep.

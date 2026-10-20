@@ -1,52 +1,42 @@
-﻿# Generative Adversarial Networks - EXERCISES
+# Generative Adversarial Networks — Exercises
 
-## 1. Introduction
-This is the comprehensive EXERCISES section for Generative Adversarial Networks. This section provides in-depth coverage of all aspects related to EXERCISES.
+Run on JDK 21+; every task compiles with `javac --release 21 -encoding UTF-8`.
 
-## 2. Core Concepts
+## 1. Extend the toy to two data modes
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Generative Adversarial Networks approach to EXERCISES.
+Change the data to two points, `-1.0` and `+1.0`, and evaluate the discrim function on
+both when updating (`L_D = log D(-1) + log D(1) + log(1-D(g))`). Verify with your own run
+that the generator's single point cannot sit on both modes at once; report where it ends
+after 20 alternations. This is mode dropping in miniature.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## 2. Non-saturating switch
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Replace the generator step (`drift`, `ascent`) with the *saturating* rule
+`dg = -D(g) * w` derived from ascending `log(1 - D(g))`... i.e., compare gradients out of
+both surrogates at `D(g) = 0.02`. State in writing which surrogate keeps its magnitude and
+why the community calls one of them saturating.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## 3. Track the value function
 
-## 4. Examples
+In Snippet 1 print `V = log D(1.0) + log(1 - D(g))` every 5 iterations. Confirm that it
+does NOT shrink monotonically: the alternating updates change `V` in both directions,
+which is the signature of a game rather than a minimization.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## 4. Equilibrium distance metric
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Instrument both snippets to print `|D(1.0) - D(g)|` at the end. The theory section states
+that at a global saddle this quantity is `0.0` with `D = 0.5` everywhere; measure how far
+each learning-rate variant lands from that and put the three numbers in a table.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## 5. Second generated point
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+Give the generator two points `g1, g2` starting at `-0.5` and `+0.5`, updating both with
+the non-saturating rule. Brief written answer: does the pair drift toward the data point
+symmetrically or asymmetrically? Justify from the logit function's monotonicity, then
+check numerically.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Rules of engagement
 
-## 8. Summary
-This section has covered the essential EXERCISES knowledge for Generative Adversarial Networks. Mastery of these concepts is crucial for successful implementation and application.
+Every number you report must come from a run you executed; quote the compile command and
+paste the tail of stdout. Hand-deriving gradient formulas in comments is encouraged and
+eliminates copying risk.

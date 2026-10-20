@@ -1,52 +1,44 @@
-﻿# AI Safety and Alignment - THEORY
+# AI Safety & Alignment — Theory
 
-## 1. Introduction
-This is the comprehensive THEORY section for AI Safety and Alignment. This section provides in-depth coverage of all aspects related to THEORY.
+Safety work asks: when a system escapes our design intent, how do failures happen, what
+guards exist, and what do we still not know. This file stays conceptual — where facts are
+contested or fast-moving, that is said plainly rather than claimed.
 
-## 2. Core Concepts
+## The framing pieces
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the AI Safety and Alignment approach to THEORY.
+- **Objectives vs proxies**: agents are trained on what we can measure; optimizing a
+  measurable proxy can diverge from the real goal. The snippet on proxy gaps is the toy
+  version: a reward model scoring flattery over correctness gets argmax-selected against,
+  and factual accuracy drops — by construction.
+- **Specification gaming**: known family of behaviors where systems satisfy the letter of
+  a scored objective while missing its intent (loop exploits, shortcut wording, reward
+  hacking). Naming the pattern helps reviews spot it; magnitudes are environment-specific.
+- **Uncertainty honesty**: for open-ended generated systems, predictions about behaviors
+  are contested; the vocabulary the field uses (capability jumps, misuse surface,
+  eval coverage gaps) is descriptive, not numerically proven. Treat every forecast with
+  error bars and say what evidence would move yours.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## The guardrails people actually deploy
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+- Behavioral constraints: system-prompt rules, refusal-pattern filters, output classifiers,
+  jailbreak evasion tests — detection-style defenses, no absolute guarantee claimed.
+- Process constraints: human review gates for sensitive actions, allowlists of permitted
+  tool verbs, separation between proposal and execution.
+- Monitoring: logging rates by category, incident triage, red-team cycles. Codified
+  review cadences (who signs off, when re-run happens) are the operative artifact.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Assumptions this lab makes explicit
 
-## 4. Examples
+Methods cited in the standard sequence (behavioral cloning of demonstrations, then reward
+training, then policy optimization) describe a training-process skeleton, not a claim
+about any particular model's internals. The guard snippets simulate small, static cases:
+they demonstrate the LOGIC of selective deployment and proxy gaps, nothing about large
+scale systems. Every claim about deployment (e.g., evaluation coverage, escalation
+latency) is scoped to an invented workspace.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## What you should build in this folder
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential THEORY knowledge for AI Safety and Alignment. Mastery of these concepts is crucial for successful implementation and application.
+- The selective-prediction trade: a sweep showing coverage-accuracy coupling, done as
+  runnable code with printed rows.
+- A proxy-gap scenario built argmax-by-argmax, so the mechanism is transparent instead of
+  folklore — your write-up gets graded on naming what was and wasn't assumed.

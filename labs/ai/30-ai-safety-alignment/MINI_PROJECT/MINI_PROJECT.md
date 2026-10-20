@@ -1,52 +1,40 @@
-﻿# AI Safety and Alignment - MINI_PROJECT
+# AI Safety & Alignment — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for AI Safety and Alignment. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: a single-file "guard bench" that runs three safety-relevant checks over a
+ratings sim: selective thresholds, proxy-gap tracking, and an escalation ledger. All
+truths are typed into the source; no claim exists beyond the printed rows.
 
-## 2. Core Concepts
+## The three modules
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the AI Safety and Alignment approach to MINI_PROJECT.
+1. `SelectivePolicy` — reusable threshold sweep (given `score[]`, `correct[]`): emits
+   coverage/accuracy rows plus one lowest-coverage row with answered accuracy at or above
+   a configurable target (default 0.9). If no threshold satisfies the target, prints
+   `TARGET-UNREACHABLE` and the best row instead (state this fallback in print).
+2. `ProxyGapWatch` — two-column accuracy ledger per policy family (truth-first vs
+   score-first) over N cases; prints per-case deltas AND total gap; flags any case where
+   the two policy families disagree in their pick.
+3. `EscalationLedger` — a log format of one line per incident bucket, e.g.
+   `escalated | threshold=0.7 | cases=2 | reviewer-action=triage-only`; entries must
+   reference the exact threshold row that put them there (traceability).
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Scenarios to run (hard-wired fixtures; clearly labeled synthetic)
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+- Scenario A: the snippet's five-case set as-is.
+- Scenario B: 8-case set where 2 borderline rows score `0.85` but are wrong —
+  deliberately placing a high-confidence falsehood; the flagged case count must grow.
+- Scenario C: 8-case set of a truth-score INVERSE pairing: proxy prefers every wrong
+  answer; total gap prints exactly `-8/8` and the flag list covers all cases.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Acceptance
 
-## 4. Examples
+- `javac --release 21`, deterministic single run (no RNG at all — fixtures only).
+- Ledger lines parse back through a `LedgerReader` you include (assert count of
+  `escalated` lines equals the threshold-row coverage minus auto-answered).
+- A five-bullet README: what each check catches, what each one misses (a systematic
+  scale-miscalibration shows the SAME threshold table as honest confidence — name that),
+  and an explicit note that nothing here touches a deployed model.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Deliverable style
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for AI Safety and Alignment. Mastery of these concepts is crucial for successful implementation and application.
+Output only ASCII; round to 4 dp when a fraction appears; a reviewer must be able to re-
+run and match your committed stdout exactly.

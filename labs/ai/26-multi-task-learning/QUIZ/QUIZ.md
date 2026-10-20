@@ -1,52 +1,46 @@
-﻿# Multi-Task Learning - QUIZ
+# Multi-Task Learning — Quiz
 
-## 1. Introduction
-This is the comprehensive QUIZ section for Multi-Task Learning. This section provides in-depth coverage of all aspects related to QUIZ.
+Answers stated directly; standard formulations only.
 
-## 2. Core Concepts
+**Q1. What is the MTL objective's canonical form?**
+A: A weighted sum `L = sum_t w_t * L_t` of per-task losses over shared parameters.
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Multi-Task Learning approach to QUIZ.
+**Q2. Why does naive equal weighting misbehave?**
+A: Loss scales differ between task families (MSE vs cross-entropy); the memo conventional
+pitfall is that the biggest-magnitude term dominates the shared update.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+**Q3. What does uncertainty weighting trade?**
+A: It treats per-task noise sigma as learned and multiplies each loss by `1/(2 sigma^2)`
+(plus the `log sigma` carelessness guard) — noisy tasks are down-weighted automatically.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+**Q4. What does gradient surgery (the projection rule) do that balancing cannot?**
+A: Reweighting only rescales directions; projection removes a conflicting gradient's
+component along another task's gradient, aiming orthogonal after surgery.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+**Q5. When do we say negative transfer is happening?**
+A: One task's performance degrades while others improve under shared training — observed
+by per-task loss trajectories separating in the wrong direction.
 
-## 4. Examples
+**Q6. In our two-head example, which number demonstrates domination?**
+A: `|gA|/|gB| = 21.0611` at `(0.5, 0.5)` initial weights: the regression gradient norm is
+21x the classifier's.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+**Q7. State one per-task speed signal used by GradNorm-style methods.**
+A: Ratio of a task's current loss to its own initial value (relative slope), used to push
+weights toward tasks lagging their own trajectory.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+**Q8. What does the learner share in the snippet architecture?**
+A: One set of parameters `(w1, w2)`: the "shared trunk" is the whole model here; heads
+differ only by which of the two losses' gradients they contribute.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+**Q9. Write the per-task gradient norm under weighting.**
+A: `||w_t * g_t|| = w_t * ||g_t||` — weights rescale magnitudes, never directions, which is
+exactly the observation of Exercise runs.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+**Q10. Name two symptoms of negative transfer.**
+A: A head's loss flattening while the others improve, or a head's loss rising under the
+joint step; both visible in per-task loss trajectories.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential QUIZ knowledge for Multi-Task Learning. Mastery of these concepts is crucial for successful implementation and application.
+**Q11. When can the projection rule be the wrong tool?**
+A: With mild conflicts, surgery removes too much of a task's push; balancing first and
+surgery only for hard conflicts is the practical escalation order.

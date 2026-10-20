@@ -1,52 +1,34 @@
-﻿# Graph Neural Networks - REAL_WORLD_PROJECT
+# Graph Neural Networks — Real-World Project
 
-## 1. Introduction
-This is the comprehensive REAL_WORLD_PROJECT section for Graph Neural Networks. This section provides in-depth coverage of all aspects related to REAL_WORLD_PROJECT.
+**Goal**: a relational mail-routing scorer — a Java design exercise where graph features
+feed a screening decision, deliberately kept to a small, fully synthetic dataset.
 
-## 2. Core Concepts
+## Scenario
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Graph Neural Networks approach to REAL_WORLD_PROJECT.
+Route requests (nodes) to data centers (a few hub nodes); each request carries a small
+feature vector (priority tier, payload size class — invented enums, clearly fake data).
+Model the routing table as a bipartite-like graph and score with message passing so a
+node's own attributes and its peers' congestion shape the decision.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Components
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `Topology`: 8 request nodes + 3 hubs; edges with weights in `[0..1]` for affinity.
+2. `FeatureTable`: per-node 3-dim vectors; hub nodes include a synthetic load value.
+3. `RelationalScorer`: two rounds of symmetric-normalized message passing, `W = I`;
+   then a linear score per request node.
+4. `PolicySimulator`: pick argmax hub per request; report per-hub load totals pre/post
+   scoring and the count of ties broken deterministically.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Analysis deliverables (write these, not just code)
 
-## 4. Examples
+- A before/after table of hub loads: does relational smoothing actually disperse load vs
+  the greedy argmax on raw features? Quote the numbers from your run.
+- Discussion of two deployment realities: (a) a hub's own state changes between rounds —
+  a stale-refresh hazard for any real scheduler; (b) feedback loops (routing shapes the
+  state the router learns from), with one mitigating idea each.
+- Explicit statement of the toy-data caveat: no benchmark claim is made.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Constraints
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential REAL_WORLD_PROJECT knowledge for Graph Neural Networks. Mastery of these concepts is crucial for successful implementation and application.
+No external graph libraries; `javac --release 21`; seed everything; keep the full source
+under ~300 lines so a reviewer can audit by reading it.

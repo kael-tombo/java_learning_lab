@@ -1,52 +1,36 @@
-﻿# Generative Adversarial Networks - MINI_PROJECT
+# Generative Adversarial Networks — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for Generative Adversarial Networks. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: a single-file "two-player stationary" simulator: adversarial learning between a
+generator net and discriminator net over a 2D point cloud, all math moved from scalars to
+tensors-by-loops.
 
-## 2. Core Concepts
+## Model
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Generative Adversarial Networks approach to MINI_PROJECT.
+- Data: 200 points on the unit ring plus a tight cluster at the origin (two distinct
+  shapes, i.e., two modes).
+- Generator: latent `z ~` LCG uniform in `[0, 1)^2` mapped through a 2-8-2 stack of
+  hand-rolled dense layers with tanh activation (output scaled to `[-1.5, 1.5]`).
+- Discriminator: 2-8-1 dense stack with logistic output; batch = 16 real + 16 fake.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Training rules
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+- 2,000 alternating steps, rates `1e-2` discriminate / `1e-2` generate, manual
+  backpropagation is NOT required: implement forward-mode gradients explicitly for the
+  chosen tiny sizes, or drop to a simplified per-coordinate version you can verify.
+- Every 250 steps print: mean real score, mean fake score, and the variance of the
+  generator's outputs coordinates (a crude mode-coverage proxy: collapsed outputs show a
+  coordinate variance near zero).
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Deliverable & acceptance
 
-## 4. Examples
+1. Code compiles with `javac --release 21`; deterministic run given a fixed seed.
+2. A stdout table of checkpoints where both score columns are reported.
+3. A two-paragraph written analysis: which mode is the generator favoring, and whether the
+   output-variance proxy agrees with your read of the score columns.
+4. Explicit statement that this is a synthetic playground; do not claim image generation.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Stretch (optional)
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for Generative Adversarial Networks. Mastery of these concepts is crucial for successful implementation and application.
+Swap the ring data for three modes and watch coverage degrade; add a diversity nudge by
+giving each latent a region prior... document whatever you observe without inventing
+claims.

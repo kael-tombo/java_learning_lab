@@ -1,52 +1,37 @@
-﻿# Reinforcement Learning - MINI_PROJECT
+# Reinforcement Learning — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for Reinforcement Learning. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: a tiny deterministic grid-world solver with assertions, built entirely on the
+JDK, no third-party libraries.
 
-## 2. Core Concepts
+## World spec
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Reinforcement Learning approach to MINI_PROJECT.
+- 3x3 grid; start `(0,0)`; two terminal cells: goal `(2,2)` with entry reward `+1`, and a
+  penalty cell `(1,2)` with entry reward `-1`.
+- Actions: up, down, left, right; bumping a wall leaves the agent in place.
+- `gamma` configurable, default `0.9`.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Required components
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `record Transition(int s2, int reward)` — deterministic dynamics, encoded as a 9x4
+   table built at startup.
+2. `ValueIteration.solve(...)` running the optimality sweeps until the max change is
+   under `1e-9`; also print how many sweeps that took.
+3. `Policy.extract(...)` — greedy extraction with ties broken by action order
+   (up, down, left, right).
+4. A `main` that prints the value table rows, the extracted policy arrows (`^ v < >`),
+   and then **asserts** three hand-derived facts: `V(goal)=0`, the two-step start value
+   equals `gamma^2 * 1.0` under a reward-on-entry convention, and no non-terminal state
+   has value above 1.0.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Deliverables
 
-## 4. Examples
+- One source file, compiles with `javac --release 21`.
+- A captured stdout log committed next to the source in your notes (not into git).
+- A short README paragraph stating the reward convention (reward on entering a cell) so
+  the numbers are interpretable.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Stretch
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for Reinforcement Learning. Mastery of these concepts is crucial for successful implementation and application.
+Add slippery transitions: with probability 0.1 each action moves perpendicular to the
+intended direction. The solver needs the full `sum_{s'}` expectation form of the Bellman
+sweep; verify that the goal-adjacent state values drop accordingly.

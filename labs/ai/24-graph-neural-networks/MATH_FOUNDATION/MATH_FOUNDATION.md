@@ -1,52 +1,55 @@
-﻿# Graph Neural Networks - MATH_FOUNDATION
+# Graph Neural Networks — Mathematical Foundation
 
-## 1. Introduction
-This is the comprehensive MATH_FOUNDATION section for Graph Neural Networks. This section provides in-depth coverage of all aspects related to MATH_FOUNDATION.
+## Propagation rule formula (GCN, propagation form)
 
-## 2. Core Concepts
+Given adjacency `A` with `A_ii = 0`, feature matrix `H`, layer weights `W`:
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Graph Neural Networks approach to MATH_FOUNDATION.
+```
+H_next = sigma( D_hat^{-1/2} * A_hat * D_hat^{-1/2} * H * W ),   A_hat = A + I
+```
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+`D_hat` stores the self-inclusive degree of each node; `sigma` is elementwise. Row-by-row
+for node `i` (using W = I for readability):
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+```
+h_i_next = sigma( sum_{j in {i} u N(i)} A_ij * h_j / sqrt( d_i * d_j ) )
+```
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+where `d_i` counts `{i} u N(i)`. On a cycle every `d_i = 3`, so the rule degenerates
+gracefully: `h_i_next = (h_i + h_left + h_right) / 3` — exactly what the Java code does.
 
-## 4. Examples
+## Why the symmetric form beats naive row-normalization
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+Row normalization `D_hat^{-1} A_hat H` rescales each node's gathered message by its own
+degree alone. Two problems: asymmetric (a hub influences a leaf strongly, but the reverse
+dampens differently) and scale-sensitive (hub features inflate). The symmetric form's
+entries `A_ij / sqrt(d_i d_j)` are symmetric by construction; the formal statement behind
+it is that this preserves the spectral scaling property of the normalized Laplacian
+(`D^{-1/2} A D^{-1/2}`-type operators underlie spectral graph filtering arguments).
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+## Message passing as set function learning
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+For invariance under node relabeling, aggregation must be a permutation-invariant set
+operator (sum, mean, max all qualify). Message-passing nets generalize GCN as:
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+```
+m_i = AGG({ h_j : j in N(i) }),   h_i_next = UPDATE(h_i, m_i)
+```
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+Formal result often cited: sum-style families are, under counting assumptions, the most
+expressive of the mean/max/max-set variants (up to injective-set reasoning); mean and max
+lose multiplicity information — worth knowing before choosing an aggregate.
 
-## 8. Summary
-This section has covered the essential MATH_FOUNDATION knowledge for Graph Neural Networks. Mastery of these concepts is crucial for successful implementation and application.
+## Over-smoothing (the deep-stack failure)
+
+Repeated averaging makes node vectors converge to each other; formally each layer acts
+like a low-pass operator shrunk toward the dominant eigenvector of the normalized
+adjacency. Practical consequence: 2-3 layers with residual/skip tricks is the usual
+recipe rather than 10 plain layers.
+
+## Quantities to be able to derive quickly
+
+- Degrees with self-loops for a cycle (3 per node) and a 4-leaf star (hub 4, leaves 2).
+- The two normalization modes' hand results for one round (verified numbers live in
+  CODE_DEEP_DIVE).
+- Two rounds on the cycle: `h1 = [4/3, 1, 5/3, 2]` and `h2 = [13/9, 4/3, 14/9, 5/3]`.

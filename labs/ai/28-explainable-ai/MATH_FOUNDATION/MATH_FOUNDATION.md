@@ -1,52 +1,60 @@
-﻿# Explainable AI - MATH_FOUNDATION
+# Explainable AI — Mathematical Foundation
 
-## 1. Introduction
-This is the comprehensive MATH_FOUNDATION section for Explainable AI. This section provides in-depth coverage of all aspects related to MATH_FOUNDATION.
+## SHAP: the cooperative-game formulation
 
-## 2. Core Concepts
+Model `f`, baseline vector `x_bar` (implicit "absence"), instance vector `x`. The
+Shapley value of feature `i` averages the marginal contributions over all `n!` orderings:
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Explainable AI approach to MATH_FOUNDATION.
+```
+phi_i(f) = sum_{S subseteq N - {i}} ( |S|! * (n - |S| - 1)! / n! ) * ( f(x_S, x_bar_rest) - f(x_bar_all) )
+```
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+with `x_S =` features in `S` at their instance values, the rest at baseline. The values
+satisfy the classical desiderata in a statement worth knowing:
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+```
+additivity/efficiency:  f(x) - f(x_bar) = sum_i phi_i
+dummy:                  if f is constant when only feature i varies, phi_i = 0
+symmetry:               equal contributions across any two features sharing subset-equal
+                        interchanges get the same phi
+```
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Additive models: closed form by hand
 
-## 4. Examples
+If `f(x) = b + sum_j w_j x_j`, per-feature attribution reduces canonically to
+`phi_j = w_j * (x_j - x_bar_j)`, and the efficiency check telescopes exactly. For the
+two-feature case on the snippet's concrete instance `(2, 3)`:
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+```
+f(bar) = 0.5, f({x0}) = 3.5, f({x1}) = 6.5, f({x0, x1}) = 9.5
+phi_0 = (3.5 - 0.5 + 9.5 - 6.5) / 2 = 3.0 = w0 * x0
+phi_1 = (6.5 - 0.5 + 9.5 - 3.5) / 2 = 6.0 = w1 * x1
+base + phi_0 + phi_1 = 9.5 = f(x)   (efficiency check passes)
+```
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+The subset-fraction `(|S|! (n-|S|-1)!)/n!` for `n = 2` is exactly `1/2` each — this is why
+the snippet just averages two margins per feature.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## LIME: the local weighted least-squares fit
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+Given pigeons a sampling neighborhood distribution `pi_x` around `x` (standard practice:
+supersets of uniform jitter):
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+```
+surrogate = argmin_g sum_{z ~ pi_x} pi_x(z) * ( f(z) - g(z) )^2 + lambda * g_complexity
+```
 
-## 8. Summary
-This section has covered the essential MATH_FOUNDATION knowledge for Explainable AI. Mastery of these concepts is crucial for successful implementation and application.
+with `g` linear/sparse. Weights `pi_x(z)` decay with distance (default kernel is an
+inverse-exponential on euclidean distance); the `(z, f(z))` pairs come from calling the
+black box on the sampled neighborhood. When the teacher is EXACTLY linear on the sampled
+grid (our snippet), the weighted least-squares solution recovers the true parameters, so
+the surrogate exhibit shows coefficients `1.5` and `2.0` exactly. On real neural models
+expect nonlinearity: coefficients then describe local slopes at the point sampled, and
+sample-noise propagates into every reported number.
+
+## Caveats to write into any report
+
+- Baseline choice shifts Shapley splits; report what baseline you chose and why.
+- Correlated features violate the unconditional-superset-intervention reading of SHAP
+  marginals (interventional vs observational distinction, Sturmfels-esque pedantic account
+  in the literature); mention it rather than hand-wave it.

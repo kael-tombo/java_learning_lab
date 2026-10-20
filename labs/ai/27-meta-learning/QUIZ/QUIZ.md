@@ -1,52 +1,33 @@
-﻿# Meta-Learning - QUIZ
+# Meta-Learning — Quiz
 
-## 1. Introduction
-This is the comprehensive QUIZ section for Meta-Learning. This section provides in-depth coverage of all aspects related to QUIZ.
+Keys after each item, standard statements only.
 
-## 2. Core Concepts
+**Q1. What are the inner and outer loops in the model-based meta family?**
+A: Inner = adapting parameters on a task's support set; outer = updating the shared
+initialization using query-set performance after adaptation.
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Meta-Learning approach to QUIZ.
+**Q2. What does the first-order approximation drop?**
+A: The second-order chain through the inner gradient step; the outer gradient is read
+directly at the adapted parameters (pseudo-gradient form).
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+**Q3. Write the inner update rule.**
+A: `theta1 = theta0 - alpha * dL_support(theta0)/d theta0`.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+**Q4. Reptile's update in one line?**
+A: `theta_next = theta + epsilon * ( mean of inner solutions - theta )`.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+**Q5. Why did task B's outer gradient flip sign in our run?**
+A: A single large-curvature inner step overshot the query optimum
+(`theta1 = -1.6`, fixed point `-0.5`), so the query loss pulled the opposite way.
 
-## 4. Examples
+**Q6. What does a good meta-initialization achieve, informally?**
+A: Starting points from which each task from the distribution is a SHORT downhill walk,
+i.e., low post-adaptation loss across tasks.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+**Q7. Name the standard evaluation for meta-learners.**
+A: Adaptation-time comparison on held-out tasks: few inner steps at test time versus the
+from-scratch baseline on the same support size.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential QUIZ knowledge for Meta-Learning. Mastery of these concepts is crucial for successful implementation and application.
+**Q8. What is the stability bound for a scalar inner step?**
+A: For quadratic curvature `c`, convergence needs `lr < 2/c`; with task B at `c = 32`,
+`lr = 0.1` violates the bound and diverges, while `lr = 0.05` sits inside it.

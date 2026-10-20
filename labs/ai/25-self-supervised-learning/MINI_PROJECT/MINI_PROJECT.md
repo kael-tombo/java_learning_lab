@@ -1,52 +1,38 @@
-﻿# Self-Supervised Learning - MINI_PROJECT
+# Self-Supervised Learning — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for Self-Supervised Learning. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: a self-contained "embedding auditor" — build a molecular set of synthetic 2D
+"instances", augment them with fixed transforms, train cosine-ranked vectors by hand
+gradient steps, and watch a representation learn to cluster.
 
-## 2. Core Concepts
+## Data
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Self-Supervised Learning approach to MINI_PROJECT.
+- 10 synthetic vectors placed on 3 clusters (corner, center band, diagonal stripe), all
+  coordinates fixed by hand in the source.
+- Augmentations (deterministic, no RNG): scale-shear by a small matrix per view-index.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Model pipeline (all loops, no libs)
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `Encoder`: 2-4-2 dense net with tanh; implement per-layer forward and analytic
+   backward for the e2-mean-square surrogate (document the chain rule per operation, this
+   is where bugs live).
+2. `Augmentor`: fixed transform stack producing exactly two views per instance.
+3. `LossNce`: InfoNCE in batch form (10 instances = 20 views; positives per instance
+   pair; one-sided negatives = other instances' first views), `tau = 0.2`.
+4. Update rule: vanilla gradient descent, `lr = 0.05` manual; print loss at iterations
+   1, 100, 500, 1000.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Expected behavior to verify (acceptance criteria)
 
-## 4. Examples
+- The initial mean loss is near `log(10) = 2.303` (uniform ranking over one-sided
+  candidates) within network-init slop; quote the actual first value in your log.
+- After training, the mean pairwise cosine within clusters must exceed the cross-cluster
+  median; quote both aggregates.
+- A seedy claim to test and kill: rising loss with lr = 0.5 means your backward pass has
+  a sign bug; fix backprop instead of lowering the rate blindly.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Reporting
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for Self-Supervised Learning. Mastery of these concepts is crucial for successful implementation and application.
+- Print the embedding matrix after training (4-dp rounding).
+- One-paragraph write-up: which augmentation pair was easiest to align, relating to
+  transform strength? What did you do to keep the run deterministic? Where could the
+  "clustering" conclusion overreach? (synthetic data caveat goes here verbatim).

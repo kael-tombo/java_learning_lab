@@ -1,52 +1,38 @@
-﻿# Meta-Learning - MINI_PROJECT
+# Meta-Learning — Mini Project
 
-## 1. Introduction
-This is the comprehensive MINI_PROJECT section for Meta-Learning. This section provides in-depth coverage of all aspects related to MINI_PROJECT.
+**Goal**: a 2D regression meta-bench: hand-rolled model-based meta-training over
+`y = m*x + n` tasks, then adaptation jailbreaks (deliberately harder held-out tasks).
 
-## 2. Core Concepts
+## Task distribution (all fixtures hand-written in the source)
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Meta-Learning approach to MINI_PROJECT.
+- Training set of 12 tasks; slopes drawn from a fixed list of halves-and-opposites;
+  one support point each, one query point each.
+- Two held-out twist tasks: same family BUT with query shifted off the line
+  (3% +, then 10% +) to probe robustness of the pseudo-gradient.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Structure
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `Task` (slope, support, query), `MetaRunner` with two loops per epoch:
+   inner forward (support), inner step with `alpha`, outer loss on query, outer
+   accumulation of pseudo-gradients (first-order only, documented as such), `beta` step.
+2. Controls: `alpha in {0.02, 0.05, 0.1}`, `beta = 0.1`, epochs = 20; theta0 starts 0.
+3. Per-epoch output lines: accumulated outer loss vs omega; per-task adapted loss list
+   rounded 3dp.
+4. Eval: report the outer objective trajectory (max 3dp) and how many of the 12 tasks
+   had an adapted loss below 0.02 at epoch 20.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Twist analysis (mandatory deliverable)
 
-## 4. Examples
+- Compare twist tasks' adapted loss at epochs {1, 5, 20} against the training tasks' best;
+  describe the transition from task-family learning to memorizing the 12 fixtures — what
+  evidence in the trajectory supports either explanation?
+- State one intervention you would try (bigger task set / regularization on theta0 /
+  lower beta) and the trajectory signature you would look for. Say explicitly whether you
+  ran it, and if so what happened.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Acceptance
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential MINI_PROJECT knowledge for Meta-Learning. Mastery of these concepts is crucial for successful implementation and application.
+- `javac --release 21`, single file, fully seeded and deterministic; stdout ASCII only.
+- Under 250 lines; backprop formulas commented inline at first use.
+- The reproducibility header: exact command lines for compiling and running, placed as
+  the first comment.

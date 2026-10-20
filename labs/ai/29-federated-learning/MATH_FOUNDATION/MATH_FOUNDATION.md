@@ -1,52 +1,57 @@
-﻿# Federated Learning - MATH_FOUNDATION
+# Federated Learning — Mathematical Foundation
 
-## 1. Introduction
-This is the comprehensive MATH_FOUNDATION section for Federated Learning. This section provides in-depth coverage of all aspects related to MATH_FOUNDATION.
+## FedAvg, the canonical aggregation (weighted-mean steps)
 
-## 2. Core Concepts
+With clients `C_1..C_N` holding `n_i` examples each and (optionally) local training
+before aggregation, the classical round is:
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Federated Learning approach to MATH_FOUNDATION.
+```
+1. server sends w_t to a subset S_t of clients
+2. each client i runs local SGD on its own data, producing w_{t+1}^i
+3. server sets  w_{t+1} = sum_{i in S_t} (n_i / sum_j n_j) * w_{t+1}^i
+```
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+Weights proportional to data size are the canonical choice; uniform
+`(1/|S_t|)` weighting is the naive alternative. In our toy snippets, the "local
+training" step is replaced by a single fixed gradient vector per client
+(no local steps), so the update rule reduces to weighted-update mathematics only — a
+statement about aggregation, not about local optimization.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+## One worked round, hand numbers
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+Clients with gradients `g_1 = [0.2, -0.1]`, `g_2 = [0.4, 0.2]`, `g_3 = [-0.3, 0.5]`
+and sizes `n = (1, 2, 3)`:
 
-## 4. Examples
+```
+uniform:   mean = [0.1, 0.2]              (each client weight 1/3)
+weighted:  (g_1 + 2*g_2 + 3*g_3) / 6 = [ (0.2+0.8-0.9)/6, (-0.1+0.4+1.5)/6 ] = [1/60, 0.3]
+```
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+With `lr = 0.1` from `theta_0 = [0, 0]`, three rounds move the shared model to
+`[-0.03, -0.06]` under uniform averaging and to `[-0.005, -0.09]` under size-weighted
+averaging — two genuinely different trajectories from identical inputs (both printed and
+independently re-verified).
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+## Client drift statement
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+Let each client take `k` local steps of size `eta` on its own gradient. Its local endpoint
+after `k` steps is `theta_0 - k*eta*g_i`; straight-line drift grows linearly in `k*eta`
+while the server-side average only linearly in `eta` per round. Our drift snippet shows
+three clients' endpoints after `k = 3` steps versus ONE server-aggregated step, and the
+gap between client-average and server-step is the textbook drift argument reduced to
+vectors.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+## Convergence claims kept honest
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+Even the classical analyses state round-robin/mood assumptions: identical local rates,
+participating fraction fixed, bounded gradient norms, and convexity (or restricted
+nonconvex stand-in conditions). Numbers above are the arithmetic facts of this toy; any
+generalized statement ("FedAvg converges") must carry its assumptions or it is rhetoric.
 
-## 8. Summary
-This section has covered the essential MATH_FOUNDATION knowledge for Federated Learning. Mastery of these concepts is crucial for successful implementation and application.
+## Vectors to be able to reproduce fast
+
+- Round-1 weighted step from zero: `[-0.001667, -0.03]` (observed, verified).
+- After 3 rounds uniform: `[-0.03, -0.06]`; weighted: `[-0.005, -0.09]` (observed,
+  verified).
+- Drift endpoints per client at `theta_0 = [2, 0], lr = 0.1, 3 local steps`:
+  `[1.94, 0.03]`, `[1.88, -0.06]`, `[2.09, -0.15]` (observed, verified).

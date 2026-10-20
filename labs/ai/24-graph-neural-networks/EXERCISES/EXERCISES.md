@@ -1,52 +1,41 @@
-﻿# Graph Neural Networks - EXERCISES
+# Graph Neural Networks — Exercises
 
-## 1. Introduction
-This is the comprehensive EXERCISES section for Graph Neural Networks. This section provides in-depth coverage of all aspects related to EXERCISES.
+Working from the two snippets in CODE_DEEP_DIVE; `javac --release 21` throughout.
 
-## 2. Core Concepts
+## 1. Re-derive before running
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Graph Neural Networks approach to EXERCISES.
+On paper, for the star graph with `h = [3, 1, 2, 0]`, compute row-norm and symmetric values
+for leaf 3 only. Compare with the printed `1.5` and `1.0607`; if yours disagree, check the
+degree arithmetic (leaf degree counts the self-loop).
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## 2. Two-hop receptive field
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Modify the cycle snippet to print three rounds (`h3`) and confirm every component is now
+the average over the 3x3 self-inclusive two-hop neighborhood sums ÷ 9. State the exact
+`h3` row for node 0; the printed sequence should settle toward equal values — name the
+phenomenon using the term from THEORY.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## 3. Weighted edges
 
-## 4. Examples
+Change the cycle to a weighted ring: half the edge weights are `0.5`. Adjust aggregation
+so each message is scaled by its edge weight and self-loop weight stays 1. Report the new
+`h1[2]` and reconcile it with the unmodified value `5/3` — write the algebra in a comment.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## 4. Aggregation expressiveness
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Swap the mean aggregator for `max` on the star graph. Which information is lost compared
+with the mean/sum variant when the two leaves that carry equal values have different
+identities? One written paragraph, no code needed beyond the swap.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## 5. Mini pipeline
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+Attach a tiny graph task: node labels `[A, B] = [0, 1, 0, 1]` on the cycle; treat node 0
+as test, others as train. Build a one-parameter linear classifier on top of `h1` by
+brute-force scanning weight `w in {-1, -0.5, 0, 0.5, 1}` with bias 0, choosing the value
+that classifies training rows; report whether it correctly classifies node 0 and what that
+says about message-smoothed features.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Rules
 
-## 8. Summary
-This section has covered the essential EXERCISES knowledge for Graph Neural Networks. Mastery of these concepts is crucial for successful implementation and application.
+Report only numbers that appear in your own captured output; any hand-derived claim gets
+justified in a comment block inside the source.

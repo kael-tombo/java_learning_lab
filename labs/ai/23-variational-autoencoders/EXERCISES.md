@@ -12,10 +12,10 @@ This document contains practice problems organized by difficulty. Attempt each p
 **Question**: Derive the gradient update rule for gradient descent. Show all steps.
 
 **Solution**: 
-Given loss L(Î¸) and learning rate Î·:
-1. Compute gradient: g = âˆ‡L(Î¸)
-2. Update: Î¸_new = Î¸_old - Î·Â·g
-This follows from the first-order Taylor approximation: L(Î¸+Î”) â‰ˆ L(Î¸) + âˆ‡L(Î¸)Â·Î”. To decrease L, choose Î” = -Î·Â·âˆ‡L(Î¸).
+Given loss L(θ) and learning rate η:
+1. Compute gradient: g = ∇L(θ)
+2. Update: θ_new = θ_old - η·g
+This follows from the first-order Taylor approximation: L(θ+Î”) â‰ˆ L(θ) + ∇L(θ)·Î”. To decrease L, choose Î” = -η·∇L(θ).
 
 ## Exercise 3: Implementation (â˜…â˜…â˜†)
 **Question**: Implement the forward pass of a basic Variational Autoencoders algorithm in Java. Include input validation.

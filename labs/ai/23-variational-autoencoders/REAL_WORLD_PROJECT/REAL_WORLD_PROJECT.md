@@ -1,52 +1,39 @@
-﻿# Variational Autoencoders - REAL_WORLD_PROJECT
+# Variational Autoencoders — Real-World Project
 
-## 1. Introduction
-This is the comprehensive REAL_WORLD_PROJECT section for Variational Autoencoders. This section provides in-depth coverage of all aspects related to REAL_WORLD_PROJECT.
+**Goal**: a monitoring toolkit for anomaly detection pipelines that report a bound-based
+score, Java-side only, with honesty as a first-class deliverable.
 
-## 2. Core Concepts
+## Scenario
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Variational Autoencoders approach to REAL_WORLD_PROJECT.
+Many production anomaly detectors score inputs by a reconstruction error or by a
+variational bound. Your job: build the harness that (a) reproduces the scoring math for an
+interpretable Gaussian case and (b) makes the limitations visible to the team.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Build these components
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `ScoreService`: given a feature vector of two Gaussian-ish scalars (use any self-made
+   schema), compute per-feature KL or reconstruction-style terms and a combined score;
+   expose thresholds as configuration.
+2. `CalibrationRunner`: on labelled synthetic data (class 0 = clean, class 1 = shifted),
+   sweep the thresholds and emit a precision/recall table per threshold — reuse the
+   score-coverage pattern from the safety lab but with two features.
+3. `GapReport`: for each score, state one sentence on bound versus truth: reconstruction
+   error is NOT a log-likelihood, and KL-only scores conflate prior-mismatch with novelty.
+4. Optional density trick worth knowing conceptually: score by the exact mixture density
+   when the decoder variance is known — what the closed-form marginal does for scalar
+   Gaussians.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Write-up checklist (required, graded on candor)
 
-## 4. Examples
+- Where the score can be fooled: shifting a feature the model never uses raises no term;
+  give one concrete example with numbers from your own table.
+- Distribution shift over time: describe a retraining trigger and what you would watch
+  (score drift histograms, per-week summaries).
+- Alert fatigue: pick two thresholds from your sweep and justify one for paging versus one
+  for a dashboard.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Deliverables
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential REAL_WORLD_PROJECT knowledge for Variational Autoencoders. Mastery of these concepts is crucial for successful implementation and application.
+- Compiling classes, `javac --release 21`, seeded runs, the threshold table.
+- A two-page memo with the limitations section first, explicitly labeled as unverified
+  beyond the synthetic setting.

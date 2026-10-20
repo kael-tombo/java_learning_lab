@@ -32,7 +32,7 @@ A vector vâˆˆâ„â¿ is an ordered n-tuple. Operations include addition
 A matrix Aâˆˆâ„^(m×n) maps vectors from â„â¿ to â„áµ. Matrix multiplication (AB)ᵢⱼ=ΣₖAᵢₖBₖⱼ is associative but not commutative. The transpose Aᵀ has entries (Aᵀ)ᵢⱼ=Aⱼᵢ.
 
 ### 3.3 Eigenvalues and Eigenvectors
-For square A, if Av=λv with v≠0, then v is an eigenvector with eigenvalue λ. The characteristic equation det(A-λI)=0 yields eigenvalues. Eigendecomposition A=QΛQâ»Â¹ diagonalizes A when eigenvectors are linearly independent.
+For square A, if Av=λv with v≠0, then v is an eigenvector with eigenvalue λ. The characteristic equation det(A-λI)=0 yields eigenvalues. Eigendecomposition A=QΛQâ»¹ diagonalizes A when eigenvectors are linearly independent.
 
 ### 3.4 Matrix Decompositions
 - **SVD**: A=UΣVᵀ for any matrix, with orthogonal U,V and diagonal Σ of singular values
@@ -45,7 +45,7 @@ For square A, if Av=λv with v≠0, then v is an eigenvector with eigenvalue λ.
 The derivative f'(x)=lim_(h→0)(f(x+h)-f(x))/h measures instantaneous rate of change. Key rules include the power rule, product rule, quotient rule, and chain rule.
 
 ### 4.2 Multivariable Calculus
-For f:â„â¿â†’â„, the gradient ∇f=(∂f/∂xâ‚,...,∂f/∂xₙ)ᵀ points in the direction of steepest increase. The Hessian Hᵢⱼ=∂²f/∂xᵢ∂xⱼ contains second derivatives.
+For f:â„â¿→â„, the gradient ∇f=(∂f/∂xâ‚,...,∂f/∂xₙ)ᵀ points in the direction of steepest increase. The Hessian Hᵢⱼ=∂²f/∂xᵢ∂xⱼ contains second derivatives.
 
 ### 4.3 Gradient Descent
 θ(t+1)=θ(t)-η·∇L(θ(t)) iteratively minimizes loss L. The learning rate η controls step size. Convergence is guaranteed for convex functions with appropriate η.

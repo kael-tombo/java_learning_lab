@@ -1,52 +1,40 @@
-﻿# Self-Supervised Learning - REAL_WORLD_PROJECT
+# Self-Supervised Learning — Real-World Project
 
-## 1. Introduction
-This is the comprehensive REAL_WORLD_PROJECT section for Self-Supervised Learning. This section provides in-depth coverage of all aspects related to REAL_WORLD_PROJECT.
+**Goal**: prototype the evaluation plumbing for a pre-trained-code-similarity feature in
+a dev-tools setting: agreement of retrieval top-k with reviewer-approved groupings. All
+data is bounded, self-fabricated samples.
 
-## 2. Core Concepts
+## Scenario
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Self-Supervised Learning approach to REAL_WORLD_PROJECT.
+Take a set of 50 self-written utility-method records (name, small AST-ish feature vector
+you define as 8 hand-chosen numbers). Pretend an embedding service gives you vectors; here
+you will build the eval harness only, and a trivial deterministic "embedding" so you own
+end-to-end reproducibility.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Build components
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `CorpusFixture`: 50 records across 5 semantic groups (string utils, math utils, ...)
+   with hand-composed vectors; store as constants in code, not external files.
+2. `EmbedderStub`: deterministic map — vector = group prototype + small record-specific
+   offset you choose; document it as obviously lossy (named "stub" in code and text).
+3. `RetrievalEvaluator`: for each record, retrieve top-3 by cosine; measure
+   `hitRate@3` = fraction of retrieved whose true group equals the anchor's group; report
+   also mean similarity of retrieved groups vs wrong-group baseline.
+4. `ThresholdTuner`: choose a similarity cutoff for "probably same group"; sweep cutoffs
+   to trade pair-recall vs pair-precision and emit the trade table (structure identical
+   to the coverage/accuracy sheet in the safety lab).
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Ethics & limits section (mandatory, bulleted)
 
-## 4. Examples
+- False sense of relatedness: naming-similar but semantically-different records can rank
+  high; give one fixture example violating it and show its actual similarity score.
+- No benchmark claim: this stub cannot tell you whether a real model would be better;
+  describe (2 sentences) what a swapping experiment would look like instead.
+- Human-in-the-loop advice: top-3 lists go to a reviewer for dedupe triage, with abstain
+  rules mirroring the selective-prediction pattern from dir 30.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Deliverables
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential REAL_WORLD_PROJECT knowledge for Self-Supervised Learning. Mastery of these concepts is crucial for successful implementation and application.
+- `javac --release 21` compile of `EvaluatorMain`, deterministic top-3 tables.
+- Trade table from `ThresholdTuner` at 6 cutoffs (pair precision vs recall quotes).
+- Two-paragraph memo stating which limitation surprised you, with code-line references.

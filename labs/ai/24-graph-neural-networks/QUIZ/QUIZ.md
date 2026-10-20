@@ -1,52 +1,45 @@
-﻿# Graph Neural Networks - QUIZ
+# Graph Neural Networks — Quiz
 
-## 1. Introduction
-This is the comprehensive QUIZ section for Graph Neural Networks. This section provides in-depth coverage of all aspects related to QUIZ.
+Answer keys stated directly under each item.
 
-## 2. Core Concepts
+**Q1. Write the GCN propagation rule formula.**
+A: `H_next = sigma( D_hat^{-1/2} (A + I) D_hat^{-1/2} H W )`.
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Graph Neural Networks approach to QUIZ.
+**Q2. Why add the identity into the adjacency?**
+A: It creates self-relations so a node keeps its own features between layers; without it,
+the update for isolated-style nodes becomes zero vectors.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+**Q3. What does `D_hat` hold?**
+A: The self-inclusive degrees — number of neighbors plus one per node.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+**Q4. Message passing: name the two functions per layer.**
+A: An aggregation over neighbor messages and an update combining them with the node's own
+state; both must treat neighbors as a set (permutation-invariant).
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+**Q5. Why does the symmetric normalization matter on a star graph?**
+A: It damps hub influence symmetrically (`A_ij / sqrt(d_i d_j)`), so hubs cannot dominate
+every neighbor's embedding merely by being large.
 
-## 4. Examples
+**Q6. In our cycle run, why did values even out over rounds?**
+A: Repeated averaging is a low-pass operation pushing connected nodes toward a shared
+value — over-smoothing in miniature.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+**Q7. Which two-hop information appears in a two-layer GCN?**
+A: Node `i` now sees aggregates of its two-hop neighborhood (with self included), but not,
+say, three hops — receptive field grows one layer at a time.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+**Q8. When would you choose mean over sum aggregation?**
+A: When node degree varies wildly and you want scale-stable outputs; sum preserves
+multiplicity (counting) information that mean washes out.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+**Q9. Why are sum, mean, and max all legitimate message aggregators?**
+A: Each treats the neighbor set as a set (permutation invariance), which keeps the layer's
+output stable under relabeling of nodes.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+**Q10. In the star run, why printed the hub's row-norm value lower than a leaf's?**
+A: Row-norm divides the hub's gathered vector by its own self-inclusive degree 4, while a
+leaf averages only 2 entries — big fan-in shrinks a hub's message.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential QUIZ knowledge for Graph Neural Networks. Mastery of these concepts is crucial for successful implementation and application.
+**Q11. Which aggregate loses multiplicity information?**
+A: Mean and max; identical repeated neighbor values collapse differently than under a
+plain sum — the counting remark from MATH_FOUNDATION.

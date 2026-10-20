@@ -1,52 +1,55 @@
-﻿# Generative Adversarial Networks - MATH_FOUNDATION
+# Generative Adversarial Networks — Mathematical Foundation
 
-## 1. Introduction
-This is the comprehensive MATH_FOUNDATION section for Generative Adversarial Networks. This section provides in-depth coverage of all aspects related to MATH_FOUNDATION.
+## The minimax objective (standard formulation)
 
-## 2. Core Concepts
+With generator $G(z; theta_g)$ and discriminator $D(x; theta_d)$, uniform noise prior
+$p_z$, and data distribution $p_{data}$, the original objective is the saddle-point
+problem:
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Generative Adversarial Networks approach to MATH_FOUNDATION.
+```
+min_G max_D  V(D, G)
+V(D, G) = E_{x ~ p_data}[ log D(x) ] + E_{z ~ p_z}[ log(1 - D(G(z))) ]
+```
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+- `D` maximizes: assigns log-probability 1 to real, 0 to fake.
+- `G` minimizes the same expression; in the widely used non-saturating variant, `G`
+  instead ascends `E_z[ log D(G(z)) ]`, which keeps gradients alive when `D` is confident.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+## The two standard closed-form results
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+For a fixed generator, the family of functions `D` that maximize `V` complete the
+discriminator's optimal form as an integral over the real-line/finite support domain:
 
-## 4. Examples
+```
+D*(x) = p_data(x) / ( p_data(x) + p_model(x) )
+```
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+Substituting `D*` back converts the value into the Jensen-Shannon divergence between
+`p_data` and `p_model` (up to a factor of 2 and constants). It follows that the game is
+minimized exactly when the two distributions coincide — the generator set at equilibrium
+satisfies the "distributions match" condition, and `D*(x) = 1/2` for every `x` in the
+support. These claims hold under the idealized assumptions of an infinitely capable
+discriminator evaluated pointwise; real networks violate them, which is why the search is
+delicate.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+## Gradients implemented in our toy
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+For the scalar setup with a linear-logistic discriminator `D(x) = sigmoid(w * x + b)`,
+one real point `x_data` and one generated point `g`:
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+```
+dV/dw = (1 - D(x_data)) * x_data - D(g) * g
+dV/db = (1 - D(x_data)) - D(g)
+non-saturating G ascent on g:  dg = (1 - D(g)) * w
+```
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+The last expression is the derivative of the surrogate `-log D(g)` with respect to the
+generated point: `d(-log D)/dz = -(1 - D)` composed with `dz/dg = w` and a sign flip for
+ascent. Each factor is a plain chain-rule identity about the logistic curve, which is what
+makes the toy fully auditable by hand.
 
-## 8. Summary
-This section has covered the essential MATH_FOUNDATION knowledge for Generative Adversarial Networks. Mastery of these concepts is crucial for successful implementation and application.
+## Caveats worth memorizing
+
+- The JSD interpretation requires evaluating `V` at `D*`, unreachable in finite training.
+- The generator's objective is non-monotone over `g` when `w` keeps growing; explainable
+  drift past the data point is observed in Snippet 1's log of this folder.

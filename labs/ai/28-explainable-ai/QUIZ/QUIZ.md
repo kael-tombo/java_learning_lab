@@ -1,52 +1,35 @@
-﻿# Explainable AI - QUIZ
+# Explainable AI — Quiz
 
-## 1. Introduction
-This is the comprehensive QUIZ section for Explainable AI. This section provides in-depth coverage of all aspects related to QUIZ.
+Keys follow each item; classical statements only.
 
-## 2. Core Concepts
+**Q1. What does LIME fit?**
+A: A weighted, sparse surrogate (usually linear) to the black box on samples drawn near
+one instance; it is a neighborhood claim, not a global model statement.
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Explainable AI approach to QUIZ.
+**Q2. State the SHAP value definition informally and its efficiency property.**
+A: Average marginal contribution of a feature over subset orderings; formally
+`phi_i = sum_S weight_S * ( f(S u {i}) - f(S) )`, and efficiency says
+`f(x) - f(x_bar) = sum_i phi_i`.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+**Q3. For a purely additive model, what are the Shapley values?**
+A: Exactly the per-feature linear contributions: `phi_j = w_j * (x_j - x_bar_j)`.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+**Q4. How many samples does exact Shapley need in general?**
+A: `2^n` subsets (or `n!` orderings); tractable only for small `n` or model families with
+structure such as additivity/specific tree formulas.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+**Q5. Why is a LIME coefficient NOT a causal effect size?**
+A: It summarizes local predictive behavior of a fixed model, not a counterfactual
+world where the feature is changed; causal claims need interventional data.
 
-## 4. Examples
+**Q6. What changes when correlated features enter Shapley computation?**
+A: Subset intervention pushes implausible feature combinations; one must choose between
+observational (condition-based) and interventional account — and disclose the choice.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+**Q7. In our run, why did LIME's surrogate recover the model exactly?**
+A: The toy teacher is linear and the sampled neighborhood is non-degenerate, so OLS
+identifies the true coefficients with zero residual.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential QUIZ knowledge for Explainable AI. Mastery of these concepts is crucial for successful implementation and application.
+**Q8. Give one governance-grade reporting habit.**
+A: Pin your explaining setup in the artifact: baseline, kernel/weights, sample count,
+random seeds, and a residual table — so a reviewer can rerun or challenge it.

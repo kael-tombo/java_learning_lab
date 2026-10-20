@@ -1,52 +1,50 @@
-﻿# Self-Supervised Learning - MATH_FOUNDATION
+# Self-Supervised Learning — Mathematical Foundation
 
-## 1. Introduction
-This is the comprehensive MATH_FOUNDATION section for Self-Supervised Learning. This section provides in-depth coverage of all aspects related to MATH_FOUNDATION.
+## InfoNCE, the contrastive log loss (exact statement)
 
-## 2. Core Concepts
+Given an anchor embedding `q`, a positive key `k+`, and negatives `k-1..k-M`, and cosine
+similarities `s_i = cos(q, k_i)`:
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Self-Supervised Learning approach to MATH_FOUNDATION.
+```
+InfoNCE(q, k+, {k_i}) = -log [ exp(s+ / tau) / sum_i exp(s_i / tau) ]
+```
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+with `tau` the temperature, usually a small positive constant. The quantity inside the log
+is exactly the softmax probability of the positive; hence `0 < loss < log(M + 1)`, and
+loss #0 is a from-scratch ceiling while a perfectly aligned anchor reaches toward zero.
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+## Softmax limits to be able to quote
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+- As `tau -> 0+`: the argmax candidate takes probability -> 1, so the loss tends to
+  `0` if the positive has the largest similarity, and blows toward `M+1... = log(M+1)`
+  style ceiling magnitudes when it does not.
+- As `tau -> infinity`: all `s_i / tau -> 0`, probabilities equalize to `1/(M+1)`, and the
+  loss ceiling approaches `log(M + 1)` — no discrimination at all.
 
-## 4. Examples
+## NT-Xent, the two-view softmax variant (SimCLR-style form)
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+For a batch of two samples and their two views {a1, a2, b1, b2} with positives
+`(a1, a2)`, `(b1, b2)`:
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+```
+l(i, j) = -log exp(s_ij / tau) / sum_{k != i} exp(s_ik / tau)
+L = ( l(1->2) + l(2->1) + l(3->4) + l(4->3) ) / 4
+```
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+i.e., each ordered anchored term excludes the self-similarity (masked diagonal) and
+averages both directions per positive pair — the standard SimCLR statement retained here
+in its 4-sample form.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+## Why cosine and temperature, not raw dot products
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+Cosine bounds `s in [-1, 1]`, which keeps exponent arguments modest for moderate `tau`;
+dot products scale with embedding norm and would force per-model learning-rate games.
+`tau` inside the exponent acts like a gain knob: `exp(s / tau)` magnifies small
+similarity differences quadratically-ish in effect (compare the observed rows for
+`tau = 0.1` vs `1.0` in CODE_DEEP_DIVE).
 
-## 8. Summary
-This section has covered the essential MATH_FOUNDATION knowledge for Self-Supervised Learning. Mastery of these concepts is crucial for successful implementation and application.
+## Aggregation intuition worth deriving once
+
+Derivative of the loss wrt the anchor pulls `q` toward the positive only in proportion to
+`spot error = 1 - p(+)`; with a dominant positive (tau small, p near 1) gradients are tiny,
+with hard negatives they are large. Standard analysis, no exotic assumptions needed.

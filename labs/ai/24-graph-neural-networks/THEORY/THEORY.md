@@ -1,52 +1,50 @@
-﻿# Graph Neural Networks - THEORY
+# Graph Neural Networks — Theory
 
-## 1. Introduction
-This is the comprehensive THEORY section for Graph Neural Networks. This section provides in-depth coverage of all aspects related to THEORY.
+A **graph neural network** operates on data organized as nodes and edges rather than fixed
+grids or sequences: think dependency graphs, road networks, social graphs, molecules. The
+common trick is *message passing*: every layer lets each node hear from its neighbors and
+replaces its own vector with a transformed combination of the gathered messages.
 
-## 2. Core Concepts
+## What a network layer actually computes
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Graph Neural Networks approach to THEORY.
+Per graph convolution step, typically:
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+1. Gather: take the neighbor set `N(i)` of node `i`.
+2. Aggregate: combine `h_j` for `j in N(i)` with sum, mean, or max (we use sum-style
+   weighting in this lab, with constant normalization).
+3. Combine: apply a weight matrix and a non-linearity to the aggregate (with or without
+   the node's own previous state — famous as the "self-loop" question).
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Stacking two layers widens each node's receptive field to two hops; note the trade-off
+of pushing too many layers (classic semi-supervised studies report deep plain-GCN stacks
+underperforming, so width/depth tuning matters — treat report numbers as method-specific).
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Standard variant: the GCN layer
 
-## 4. Examples
+The widely used graph-convolution form keeps self-relations explicitly by adding the
+identity:
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+```
+A_hat = A + I
+H^(l+1) = sigma( D_hat^{-1/2} * A_hat * D_hat^{-1/2} * H^(l) * W^(l) )
+```
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+where `D_hat` holds the self-inclusive degrees. The symmetric normalization prevents hub
+nodes from dominating purely because they appear in many adjacency rows. When every node
+has equal self-inclusive degree (our cycle graph does: exactly three), the symmetric
+normalization reduces to plain mean aggregation — that reduction is the key to making the
+lesson hand-checkable.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## Tasks these networks handle
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+- Node classification: label each node (semi-supervised when labels cover few nodes).
+- Graph classification: pool node vectors into one graph-level vector.
+- Link prediction and sampling-based variants (GraphSAGE-style neighborhood sampling) for
+  large graphs — concept-level only in this lab.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Java angle
 
-## 8. Summary
-This section has covered the essential THEORY knowledge for Graph Neural Networks. Mastery of these concepts is crucial for successful implementation and application.
+Adjacency is just a square array; message passing is two nested loops. Everything in
+CODE_DEEP_DIVE runs on `int[][]` and `double[]`, so you can test the algebra itself
+before adding any framework. Deterministic small-graph checks (a 4-cycle and a star) are
+the fastest way to make the normalization rules stick.

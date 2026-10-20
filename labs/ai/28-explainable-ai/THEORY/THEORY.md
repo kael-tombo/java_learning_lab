@@ -1,52 +1,45 @@
-﻿# Explainable AI - THEORY
+# Explainable AI — Theory
 
-## 1. Introduction
-This is the comprehensive THEORY section for Explainable AI. This section provides in-depth coverage of all aspects related to THEORY.
+**Explainable AI (XAI)** covers methods that make a model's behavior relatable to humans.
+XAI and explainability at large come in three families, the taxonomy that keeps confusing
+papers straight: (a) intrinsically interpretable models (sparse linear models, small
+trees, scorecards); (b) post-hoc local attributions of a black box (Shapley-style
+allocation, local linear surrogates, gradient maps); (c) global summaries (surrogate
+trees, ICE/curves, feature-importance rankings).
 
-## 2. Core Concepts
+## The two standard report tools
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Explainable AI approach to THEORY.
+- **LIME**: probe the black box around the instance being explained with a handful of
+  perturbed samples; fit an interpretable (usually sparse-linear) surrogate weighted by
+  proximity, and read its coefficients locally. Core claim: the surrogate describes the
+  model NEAR THE INSTANTIATION — only the explored corner, not the model overall.
+- **SHAP**: borrow the cooperative-game contribution split: treat each feature as a
+  "player", average the effect on the prediction over feature subsets. Under the
+  classical formulation, game-shapley values are the unique additive allocation with
+  (i) an efficiency/axiom property, (ii) a symmetry property for equal players, and (iii)
+  a dummy property; for 2 features these reduce to an average of two subset margins —
+  the enumeration our snippet runs.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## What explanations can and cannot tell you
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+The efficiency property gives an exact additive decomposition: base value plus
+contributions equals the prediction. What you cannot collect: causal claims (Shapley
+describes a predictive association, NOT a counterfactual "if we change X..."), importance
+guarantees for correlated features, or certainty for global behavior. Writing "feature X
+caused a 3-point change" for linear data happens ONLY when the model is additive, so a
+causal phrasing is careless elsewhere.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Better vs bad practice in reviews
 
-## 4. Examples
+Good: pairwise consistency checks on obvious features, a stated baseline choice, and
+demonstrating that the local surrogate actually fits the black box on the neighborhood
+that was sampled. Bad: mixing up local and global rankings, or trusting a LIME
+coefficient after only a handful of samples with no proximity weighting.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Java angle
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential THEORY knowledge for Explainable AI. Mastery of these concepts is crucial for successful implementation and application.
+For additive and small linear families, attribution arithmetic is a few loops of double
+math; the snippets recompute both tools exactly. What matters for teaching is the
+sampling-free setting: the perturbation-on-a-grid trick in Snippet 2 recovers the linear
+model's parameters exactly, so every surrogate discipline (weighting, sparsity, baseline
+choice) can be inspected without RNG noise.

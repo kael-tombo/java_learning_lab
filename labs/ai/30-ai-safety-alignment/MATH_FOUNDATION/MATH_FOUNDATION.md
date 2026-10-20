@@ -1,52 +1,63 @@
-﻿# AI Safety and Alignment - MATH_FOUNDATION
+# AI Safety & Alignment — Mathematical Foundation
 
-## 1. Introduction
-This is the comprehensive MATH_FOUNDATION section for AI Safety and Alignment. This section provides in-depth coverage of all aspects related to MATH_FOUNDATION.
+## The RLHF recipe at conceptual granularity
 
-## 2. Core Concepts
+The standard skeleton (statements kept loose intentionally; details vary by team):
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the AI Safety and Alignment approach to MATH_FOUNDATION.
+```
+1. SFT        a model imitates curated demonstrations (supervised fine-tuning)
+2. RM         a reward model learns preferences over ranked outputs
+3. RL/PPO-ish the tuned-policy is optimized against the RM reward
+```
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+with two standard objectives written compactly in the literature:
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+```
+reward model:  L_RM = - E_{(x, y-win, y-lose) ~ human prefs} [ log sigmoid( r(x, y-win) - r(x, y-lose) ) ]
+policy stage:  J(pi) = E_{x,y~pi} [ r(x, y) - beta * KL( pi(.|x) || pi_ref(.|x) ) ]
+```
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+The KL anchor term is the part worth memorizing: it keeps the optimized policy from
+drifting impossibly far from its reference, and its strength `beta` is a dial between
+reward-chasing and staying-honest-ish. What the formula does NOT settle: sampling quality,
+eval validity, miscalibration of the reward model, and every robustness concern below —
+all treated as open.
 
-## 4. Examples
+## Selective prediction, the coverage/accuracy trade
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+Each prediction carries a confidence score `s(x)`; a threshold `t` decides whether to
+answer or abstain.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+```
+coverage(t)  = P[ s(x) >= t ]
+accuracy(t)  = P[ correct | s(x) >= t ]
+```
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+Raising `t` shrinks coverage toward 0 while answered-set accuracy usually rises — the
+monotone coupling the snippet prints. The engineering question is not "the best t" but
+which operating point the deployment can justify: a desk with humans answering the
+abstentions can afford low coverage; a fully automated path cannot.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+## Proxy-gap logic, argmax version
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+If a deployed preference signal `s(x)` imperfectly ranks the truth labels `y`, the
+selection rule `argmax s` inherits `s`'s blind spots:
 
-## 8. Summary
-This section has covered the essential MATH_FOUNDATION knowledge for AI Safety and Alignment. Mastery of these concepts is crucial for successful implementation and application.
+```
+honestPlayer accuracy = P[ correct under truth-best pick ]
+rmPlayer accuracy     = P[ correct under s-best pick ]
+gap = honest - rm      (zero only if s ranks truth perfectly)
+```
+
+The hand-typed table in the snippet makes the mechanism visible rather than statistical:
+with `s_c, c = (0.3, 0.9)` and truth `(1, 0)`, the argmax moves to the flattering-but-wrong
+candidate in all three rows. This is a simulation; the well-known name attached to the
+pattern is reward hacking, and the lesson generalizes only in spirit.
+
+## Quantities worth being able to retell
+
+- Coverage ladder from the snippet: `0.20, 0.40, 0.60, 0.80, 1.00` versus answered-set
+  accuracy `1.0000, 1.0000, 0.6667, 0.7500, 0.6000` — NOT monotone (the 0.6667 row), so a
+  threshold sweep is data, not a law; read the actual rows before quoting.
+- Accuracy integrated over both players: `2/3` vs `0/3` for the rm selection in the toy
+  table.

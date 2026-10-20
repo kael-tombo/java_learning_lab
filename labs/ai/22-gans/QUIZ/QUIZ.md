@@ -1,52 +1,45 @@
-﻿# Generative Adversarial Networks - QUIZ
+# Generative Adversarial Networks — Quiz
 
-## 1. Introduction
-This is the comprehensive QUIZ section for Generative Adversarial Networks. This section provides in-depth coverage of all aspects related to QUIZ.
+Answers follow each item; they are the accepted standard statements.
 
-## 2. Core Concepts
+**Q1. Write the original GAN minimax objective.**
+A: `min_G max_D E_{x~p_data}[log D(x)] + E_{z~p_z}[log(1 - D(G(z)))]`.
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Generative Adversarial Networks approach to QUIZ.
+**Q2. What is the optimal discriminator for a fixed generator?**
+A: `D*(x) = p_data(x) / (p_data(x) + p_model(x))` — the ratio turn of the two densities.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+**Q3. Which divergence does the game equal under the optimal discriminator?**
+A: Twice the Jensen-Shannon divergence between `p_data` and `p_model` (up to log 2
+constants).
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+**Q4. Why is the non-saturating generator loss preferred?**
+A: The saturating form `-log(1 - D(G(z)))` loses gradient when `D` confidently rejects
+fakes; ascending `log D(G(z))` avoids that early dead zone.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+**Q5. What is mode dropping?**
+A: A generator that matches only some of the true distribution's modes, producing samples
+with real-looking local quality but poor coverage.
 
-## 4. Examples
+**Q6. Why do we call GANs an "implicit" model?**
+A: They define the distribution only through sampling; no tractable density is exposed,
+so likelihood-based scores do not directly exist.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+**Q7. In our scalar toy, why did the generator drift past the data point?**
+A: Its surrogate is a monotone function of the discriminator's logit; nothing in the local
+objective penalizes overshoot, so with positive `w` the point keeps sliding.
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+**Q8. Name one evaluation practice for GANs and its limitation.**
+A: Sample-quality heuristics or a trained classifier's behavior on fakes; both are proxies
+tied to the classifier's own biases and never a likelihood.
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+**Q9. What should the discriminator output at the theoretical equilibrium?**
+A: One half for every input, since the two densities coincide — the classic parity
+argument leaves no signal to exploit.
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+**Q10. Why is no GAN score directly comparable across papers?**
+A: Sample-side proxies inherit the architecture, augmentation stack, and classifier
+choices; without a shared density there is no common denominator.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential QUIZ knowledge for Generative Adversarial Networks. Mastery of these concepts is crucial for successful implementation and application.
+**Q11. Why does deep GAN training lean on schedule and rate tuning?**
+A: Alternating updates chase a saddle rather than a plain minimum; our stability run
+showed three rates landing in three visibly different places.

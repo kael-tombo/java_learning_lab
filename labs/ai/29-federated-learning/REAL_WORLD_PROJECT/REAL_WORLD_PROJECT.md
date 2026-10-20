@@ -1,52 +1,42 @@
-﻿# Federated Learning - REAL_WORLD_PROJECT
+# Federated Learning — Real-World Project
 
-## 1. Introduction
-This is the comprehensive REAL_WORLD_PROJECT section for Federated Learning. This section provides in-depth coverage of all aspects related to REAL_WORLD_PROJECT.
+**Goal**: a realistic-but-bounded coordination sketch for privacy-preserving analytics
+across teams: what would a distributed model-tuning service look like in Java, and where
+do the promises actually need footnotes?
 
-## 2. Core Concepts
+## Scenario (self-contained, no real data ingested)
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Federated Learning approach to REAL_WORLD_PROJECT.
+Four business units hold customer-behavior summary tables. A central "tuning" service
+would like a jointly useful predictive model without tables leaving the units. Your
+deliverable is (a) the orchestration skeleton and (b) a findings document about what this
+cannot achieve by itself.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Components
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `ParticipantStub` interface: `submit(Weights w, RoundContext c)` and `capabilities()`;
+   four stub implementations with fixed, hand-written update vectors (sizes differ).
+2. `Coordinator`: round loop, participant selection by round-robin with 1 dropout per
+   round, weighted aggregation, versioned theta, and a retry window.
+3. `CompliancePanel`: ledger printing per round — vectors submitted (norm only, not
+   contents), counts, and round version; the design rule: no raw table keys ever appear
+   in the log (enforce by type: ledger sees only norms).
+4. `ThreatNotes` (static utility): documentation-mode class describing where the naive
+   protocol fails privacy expectations (inference from submitted update vectors, repeated
+   queries reconstructing data patterns) — textual, examined by graders.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Write-up (the main artifact, ~2 pages)
 
-## 4. Examples
+- What the aggregation arithmetic does and does not protect against (quote the norms
+  table from one run; explain why visibility of *norms alone* still leaks rate-of-change
+  signals across rounds).
+- Which guarantees you would need before suggesting deployment to a real compliance
+  review (differential-privacy-style noise privacy claims, secure aggregation for vector
+  contents, contract law side) — described as open requirements with pointers in general
+  terms, not implementations.
+- A roll-out plan: two-week prototype cadence with what would be measured (per-unit
+  contribution skew, round dropout rate, end-to-end round latency).
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Constraints
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential REAL_WORLD_PROJECT knowledge for Federated Learning. Mastery of these concepts is crucial for successful implementation and application.
+`javac --release 21`, one-file compile, seeded determinism; ASCII prints only; no git
+commits, no real credentials, no network sockets — the stub pattern is deliberate.

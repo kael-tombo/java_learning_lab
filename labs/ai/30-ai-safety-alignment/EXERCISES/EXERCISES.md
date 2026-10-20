@@ -1,52 +1,47 @@
-﻿# AI Safety and Alignment - EXERCISES
+# AI Safety & Alignment — Exercises
 
-## 1. Introduction
-This is the comprehensive EXERCISES section for AI Safety and Alignment. This section provides in-depth coverage of all aspects related to EXERCISES.
+Run on JDK 21+, `javac --release 21 -encoding UTF-8`. Treat all toy truths as
+simulations; write-ups are graded on scoping, not conviction.
 
-## 2. Core Concepts
+## 1. Reproduce both sweeps
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the AI Safety and Alignment approach to EXERCISES.
+Get Snippet 1 (threshold table) and Snippet 2 (proxy-gap rows) to match the documented
+observed outputs character-for-character, recompile, and record the exact commands. Any
+row that fails, explain which constant you mis-typed.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## 2. Threshold economics
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+Insert scores `0.55, 0.45` with correctness `1, 1` (seven rows total) and rerun the
+sweep. Where does answered-accuracy stop improving as coverage falls? Report the new
+table and a one-sentence policy claim: which threshold would you pick for a desk with
+human triage, and which for a headless pipeline? Justify each from the printed rows.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## 3. Proxy-gap variants
 
-## 4. Examples
+Edit Snippet 2's constants to three new cases: (a) score ties `(0.5, 0.5, truth 1/0)`,
+(b) a candidate pair where the model score and truth AGREE `(0.2, 0.9, truth 0/1)`,
+(c) truth ties. Report the two accuracy columns for each scenario and write which of the
+three settings most resembles a real preference modelling failure pattern — citing your
+table, not intuition.
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## 4. Abstention with escalation
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
+Extend Snippet 1 with a band between `0.6 <= t < 0.9` labeled "route to human": print a
+three-way table (`auto-answer / escalate / refuse`) per threshold value. The route bucket
+must account rows whose scores fall just below the current threshold. Report routing
+volume at each setting; state assumptions in comments (score meaning, upstream
+classifier).
 
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
+## 5. Reward report card
 
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
+Write `SituationCards` printing three rows: the object being optimized in each scenario
+(reward model score, answered-set accuracy, human-triage throughput), the 2nd-order
+signal you would watch to catch divergence (sycophancy counts, coverage drop, triage
+backlog), and one escalation clause per row. Nothing numeric is required beyond snippet
+outputs; the point is the discipline of naming watchers before shipping.
 
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
+## Writing requirements for the folder
 
-## 8. Summary
-This section has covered the essential EXERCISES knowledge for AI Safety and Alignment. Mastery of these concepts is crucial for successful implementation and application.
+Every claim about AI behavior must carry one of three tags in your notes:
+`simulated` (from your sandbox), `operational` (about your guard code only), or
+`uncertain-literature` (concept-level, no numbers). Untagged claims get cut in review.

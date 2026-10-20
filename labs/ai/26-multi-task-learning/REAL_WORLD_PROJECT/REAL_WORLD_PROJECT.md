@@ -1,52 +1,39 @@
-﻿# Multi-Task Learning - REAL_WORLD_PROJECT
+# Multi-Task Learning — Real-World Project
 
-## 1. Introduction
-This is the comprehensive REAL_WORLD_PROJECT section for Multi-Task Learning. This section provides in-depth coverage of all aspects related to REAL_WORLD_PROJECT.
+**Goal**: a Java design-and-probe of a shared-feature fraud & churn service: one trunk
+serving two heads (a risk scorer and a retention predictor) — prototype math and the
+monitoring needed to detect interference.
 
-## 2. Core Concepts
+## Why this pairing is realistic
 
-### 2.1 Concept 1
-Detailed explanation of the first core concept. This covers the fundamental principles that underlie the Multi-Task Learning approach to REAL_WORLD_PROJECT.
+Fraud risk and churn propensity naturally share signals (spending patterns, tenure,
+complaint volume), making the joined-training assumption plausible but unproven. This
+project forces you to instrument the claim instead of asserting it.
 
-### 2.2 Concept 2
-Detailed explanation of the second core concept. Building on the first, this explores more advanced aspects of the methodology.
+## Build components
 
-### 2.3 Concept 3
-Detailed explanation of the third core concept. This connects the theoretical foundation to practical implementation.
+1. `FeatureStore` (self-made 8-dim synthetic customers, 200 rows, seeded).
+2. `DualHead` model: one 8-8 tanh trunk, two linear heads; analytic backprop, hand
+   verified against finite differences on 5 random parameter taps (print max abs error,
+   must be below `1e-5`).
+3. `WeightScheduler` with three modes (uniform, loss-EMA inverse, gradient-magnitude
+   balancing) selectable by flag; publish per-mode AUC-proxy style metric per head
+   (rank-agreement with the hand-written truth mask is fine).
+4. `InterferenceMonitor`: per-head loss + gradient cosine each 200 steps; raises a
+   sentinel line `DOMAIN-CONFLICT` when cosine < -0.4.
 
-## 3. Key Topics
-- Topic 1: In-depth coverage with examples
-- Topic 2: Practical implementation guidance
-- Topic 3: Best practices and common pitfalls
-- Topic 4: Advanced techniques and extensions
+## Deliverables and honesty requirements
 
-## 4. Examples
+- Table comparing the three modes at steps {200, 1000, 3000}: both losses; annotate the
+  step/mode pair where each head hit its own best.
+- A caveat paragraph: with synthetic truths the numbers are illustrative only; the thing
+  being tested in production is whether the interference monitor ever fires, and what
+  the escalation path would be (pause shared tuning, re-run single-head, compare).
+- A decision rule you would actually apply: define one numeric threshold on relative head
+  loss growth over 7 pseudo-days that triggers split-training, and justify it from your
+  observed trajectories (not from intuition).
 
-### Example 1: Basic Use Case
-`java
-// Simple example demonstrating the concept
-`
+## Constraints
 
-### Example 2: Advanced Application
-`java
-// More complex example showing best practices
-`
-
-## 5. Best Practices
-1. Start with understanding the fundamentals
-2. Implement incrementally, testing each component
-3. Document decisions and trade-offs
-4. Profile and optimize based on data, not assumptions
-
-## 6. Common Pitfalls
-- Pitfall 1: How to identify and avoid it
-- Pitfall 2: How to identify and avoid it
-- Pitfall 3: How to identify and avoid it
-
-## 7. Further Reading
-- Related papers and articles
-- Online tutorials and documentation
-- Community resources and forums
-
-## 8. Summary
-This section has covered the essential REAL_WORLD_PROJECT knowledge for Multi-Task Learning. Mastery of these concepts is crucial for successful implementation and application.
+`javac --release 21`, no third-party jars, runtime printed rows in ASCII only; keep the
+whole prototype single-file under ~400 lines so the review is mechanical.
