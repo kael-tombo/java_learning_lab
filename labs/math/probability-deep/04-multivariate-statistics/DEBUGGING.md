@@ -1,4 +1,4 @@
-﻿# Debugging: Multivariate Statistics
+# Debugging: Multivariate Statistics
 
 ### Symptom: SingularMatrixException when inverting Σ
 n ≤ p, or two columns are perfectly collinear (duplicate feature, or one = 2× another). Print the eigenvalues: zero eigenvalues are exact linear dependencies. Fixes: increase n, drop collinear columns, or add ridge shrinkage (Σ + λI with λ > 0 guarantees positive definiteness).

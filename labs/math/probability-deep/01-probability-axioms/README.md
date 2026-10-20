@@ -1,76 +1,44 @@
-﻿# Probability Axioms
+# Lab 01 — Probability Axioms
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Probability Axioms**, a cornerstone topic in Probability and Statistics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Builds exact probability reasoning on a finite sample space and shows
+the axioms at work with rational numbers rather than gestures.
 
-## Topics Covered
-- sample space, events, Kolmogorov axioms, conditional probability, Bayes theorem, law of total probability
+## What This Lab Actually Teaches
+- The probability-space triple (Ω, F, P) and the three Kolmogorov
+  axioms in their exact statements (THEORY.md).
+- The theorem inventory that falls out for free: complement rule,
+  monotonicity, inclusion–exclusion, union bound.
+- Conditional probability as rescaling a surviving set of outcomes.
+- Law of total probability over a partition, and Bayes' inversion of
+  conditioning.
+- Independence as a failed product equality, P(A ∩ B) =? P(A) P(B).
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+## The Worked Material
+MATH_FOUNDATION.md runs one die model exhaustively in exact fractions:
+P(A ∪ B) = 5/6 by two routes, the conditional rescaling that turns
+{1,2,3} into weights (1/3, 1/3, 1/3), a live-total reassembly
+(1/2 · 1/3 + 1/2 · 2/3 = 1/2), and the medical-test block where
+P(D | +) = 99/297 = 1/3 against the naive 99/101. CODE_DEEP_DIVE.md
+provides runnable Python (stdlib fractions, math, random) whose printed
+outputs were captured and pasted — no hand-derived figures anywhere.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Probability Axioms
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Files (core six)
+| File | Contents |
+|------|----------|
+| THEORY.md | Exact statements: axioms, conditioning, Bayes, independence |
+| MATH_FOUNDATION.md | Executed Venn, partition, and test arithmetic |
+| CODE_DEEP_DIVE.md | Three snippets with real captured output |
+| EXERCISES.md | Five problems, each with a computed solution |
+| FLASHCARDS.md | 12 cards including axiom- and Bayes-statement cards |
+| README.md | This overview |
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Other files in this directory (QUIZ, HISTORY, ARCHITECTURE, source and
+tests, etc.) are companion material and were not part of this rewrite.
 
-## Project Structure
-`
-probaaxioms/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/probaaxioms/ProbabilityAxioms.java
-    â””â”€â”€ test/java/com/mathlab/probaaxioms/ProbabilityAxiomsTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Suggested Sequence
+1. THEORY.md end to end — statements first, mechanics second.
+2. MATH_FOUNDATION.md with a fractions-enabled REPL alongside.
+3. Run the three CODE_DEEP_DIVE.md programs yourself; confirm the
+   printed fractions and the seeded simulation numbers.
+4. Solve EXERCISES.md before reading its solutions, then check.
+5. Drill FLASHCARDS.md until the statement cards are verbatim.

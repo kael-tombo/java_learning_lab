@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Law of Large Numbers and CLT
+# Common Mistakes: Law of Large Numbers and CLT
 
 ### 1. Confusing convergence of the average with convergence of the draw
 X̄ₙ → μ but Xₙ does not converge to anything — each new observation is still drawn from the full distribution. "The coin owes me heads" (gambler's fallacy) confuses the two: after 600 flips the *average* is near 0.5, while flip 601 is still 50/50.

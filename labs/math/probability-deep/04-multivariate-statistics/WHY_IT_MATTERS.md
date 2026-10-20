@@ -1,4 +1,4 @@
-﻿# Why It Matters: Multivariate Statistics
+# Why It Matters: Multivariate Statistics
 
 ## Every "controlling for" is a multivariate claim
 A regression with k covariates, an ANOVA with interactions, a matched case-control study — all are partial-regression computations from a joint covariance structure. Reporting a marginal association (smoking vs. disease, unadjusted) alongside the adjusted one is standard practice precisely because Yule/Simpson effects are common: the marginal and partial coefficients can differ in *sign*.

@@ -1,4 +1,4 @@
-﻿# Architecture: Estimation Theory Implementation
+# Architecture: Estimation Theory Implementation
 
 ## Package layout
 ```

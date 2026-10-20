@@ -1,4 +1,4 @@
-﻿# Interview: Bayesian Statistics
+# Interview: Bayesian Statistics
 
 ### Q1. Medical test: 1% prevalence, 99% sensitivity, 95% specificity. P(disease | +)?
 **A.** 16.7%. P(+) = 0.01·0.99 + 0.99·0.05 = 0.0594; P(D | +) = 0.0099/0.0594 = 1/6. In odds: prior 1:99 × LR 19.8 = posterior odds 0.2:1 → 1/6. The follow-up to expect: "so should everyone test positive?" — no: the positive predictive value is governed by the base rate, which is why screening programs target high-risk populations (raising the prior) rather than relying on test accuracy alone.

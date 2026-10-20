@@ -1,4 +1,4 @@
-﻿# Debugging: Estimation Theory
+# Debugging: Estimation Theory
 
 ### Symptom: optimizer reports "converged" at a nonsense parameter
 Check the gradient norm, not the status flag: a flat likelihood (over-parameterized model, or θ on the boundary) gives a tiny gradient at a meaningless point. Assert ‖score‖ < tol *and* that the observed information is positive definite; a negative eigenvalue means you found a saddle or the log-likelihood is being maximized as a minimization.

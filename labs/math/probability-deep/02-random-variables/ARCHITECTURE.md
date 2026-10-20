@@ -1,4 +1,4 @@
-﻿# Architecture: Random Variables Implementation
+# Architecture: Random Variables Implementation
 
 ## Package layout
 ```

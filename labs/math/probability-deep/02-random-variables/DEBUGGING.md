@@ -1,4 +1,4 @@
-﻿# Debugging: Random Variables Implementation
+# Debugging: Random Variables Implementation
 
 ### Symptom: variance comes back negative (or exactly 0)
 Computed as E[X²] − μ² with catastrophic cancellation on large-mean data. Fix: Welford's single pass (`m2 += (x - mean) * (x - nMean)`), or the two-pass sum of squared deviations. A negative variance is always a numerical artifact — clamp and log, never take sqrt of it.

@@ -1,4 +1,4 @@
-﻿# Visual Guide: Estimation Theory
+# Visual Guide: Estimation Theory
 
 ## Log-likelihood curvature = Fisher information = 1/SE²
 ```

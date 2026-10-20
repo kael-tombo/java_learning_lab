@@ -1,4 +1,4 @@
-﻿# References: Probability Distributions
+# References: Probability Distributions
 
 ## Primary sources
 - **J. Bernoulli**, *Ars Conjectandi*, Basel, 1713 — binomial calculus.

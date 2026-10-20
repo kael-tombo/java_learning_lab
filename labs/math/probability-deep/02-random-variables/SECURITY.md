@@ -1,4 +1,4 @@
-﻿# Security: Random Variables Implementation
+# Security: Random Variables Implementation
 
 ## A PRNG is a random variable, and its distribution is the contract
 `java.util.Random` is a 48-bit LCG: output must be uniform on [0, 2³²), but the *next* value is a deterministic affine function of the last. An attacker who sees 2 or 3 outputs recovers the internal state (Zi+1 = (a·zi + c) mod 2⁴⁸) and predicts every future token. Session IDs, password-reset links and CSRF tokens must come from `SecureRandom` (SHA1PRNG/DRBG), where each output is modeled as an independent uniform draw.

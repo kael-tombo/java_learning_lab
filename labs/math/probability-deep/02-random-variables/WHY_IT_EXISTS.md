@@ -1,4 +1,4 @@
-﻿# Why It Exists: Random Variables
+# Why It Exists: Random Variables
 
 ## The problem: probability had no "output"
 Early probability (Cardano 1564, Pascal–Fermat 1654) computed odds of *events* — win, lose, draw. But applied questions were about numbers: how long until the first success, how many defectives in a batch, how far a planet deviates from its predicted position. Without a formal way to attach a real-valued function to the chance setup, every new question required a bespoke combinatorial argument.

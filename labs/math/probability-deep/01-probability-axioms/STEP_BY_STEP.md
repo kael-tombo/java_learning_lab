@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Probability Axioms
+# Step-by-Step Guide: Probability Axioms
 
 ## Worked example: Bayes' rule on a medical test
 

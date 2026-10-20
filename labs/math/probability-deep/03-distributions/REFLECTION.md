@@ -1,4 +1,4 @@
-﻿# Reflection: Probability Distributions
+# Reflection: Probability Distributions
 
 ## Describe each family by its mechanism, not its formula
 Close the book and fill this in: Binomial ← ?; Poisson ← ?; Normal ← ?; Exponential ← ?; Lognormal ← ?; Weibull ← ?. If you can only produce formulas, you have memorized shapes without knowing when to *choose* them — and family choice is where applied work goes wrong.

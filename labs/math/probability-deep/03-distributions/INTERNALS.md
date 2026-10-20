@@ -1,4 +1,4 @@
-﻿# Internals: Probability Distributions
+# Internals: Probability Distributions
 
 ## Three shapes of distribution object
 1. **Index family** (Poisson, Binomial): support is integers in a computed range; pmf from a recurrence; cdf = prefix sums, built lazily on first query.

@@ -1,4 +1,4 @@
-﻿# Interview: Probability Axioms
+# Interview: Probability Axioms
 
 ### Q1. Monty Hall — should you switch?
 **A.** Yes; switching wins 2/3. Your initial pick is wrong with probability 2/3, and when it is wrong the host's constrained reveal leaves the car behind the other door. Formally: P(car behind initial) = 1/3, P(car behind other | host opened a goat door) = 2/3, because the host's action is uninformative only in the branch where you had already won (he must open a goat door either way).

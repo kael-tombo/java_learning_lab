@@ -1,70 +1,56 @@
-﻿# Random Variables -- Theory
+# Random Variables — Theory
 
-## 1. Introduction
+## 1. What a Random Variable Is
+A random variable X on a probability space (Ω, F, P) is a function
+X: Ω → R that is measurable — for every set of reals one cares about,
+the outcomes that map into it form an event of F. Nothing mysterious: X
+is a bookkeeping device that attaches a number to each outcome, and all
+its "randomness" is inherited from P on Ω.
 
-Random Variables is a fundamental concept in Probability and Statistics Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+## 2. The Induced Distribution
+X drags the measure along: P_X(B) = P({ω : X(ω) ∈ B}). Everything about
+X is contained in this pushed-forward measure; the original Ω can be
+forgotten. For X taking values in a countable set {x1, x2, ...}:
+- PMF: p(k) = P(X = k), with Σ_k p(k) = 1 and each p(k) >= 0.
+- CDF: F(x) = P(X <= x), a step function absorbing mass as x grows.
 
-## 2. Core Definitions
+## 3. CDF — Exact Statement of Properties
+- Nondecreasing: x <= y implies F(x) <= F(y) (events nest).
+- Right-continuous, with limits F(x) → 0 as x → −∞ and → 1 as x → +∞.
+- For a discrete X the inverse relation is the sum:
+  F(x) = Σ_{k <= x} p(k), and p(k) = F(k) − F(k−1) — the jump sizes.
+- Any function F with the three properties above is the CDF of some X
+  (Lebesgue's inversion theorem); the two roles are reversible.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Random Variables rests on several key definitions and axioms that form the foundation of the theory.
+## 4. Expectation
+For a discrete X with finite mean-summable support:
+  E[X] = Σ_k k · p(k),
+the PMF-weighted center of mass. Expectation of a function — the
+"LOTUS" principle — needs no new machinery:
+  E[g(X)] = Σ_k g(k) p(k).
+Care point: E[g(X)] ≠ g(E[X]) in general for nonlinear g (see
+MATH_FOUNDATION.md for an executed counterexample).
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 5. Linearity of Expectation — Statement and Mechanism
+For random variables X, Y (jointly defined on Ω) and constants a, b:
+  E[aX + bY] = a E[X] + b E[Y].
+No independence assumption appears in the hypothesis — the result holds
+for arbitrarily dependent variables. The discrete proof is a swap of
+finite (or absolutely convergent) double sums:
+Σ_x Σ_y (ax + by) p(x, y) = a Σ_x x Σ_y p(x, y) + b Σ_y y Σ_x p(x, y).
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 6. Variance
+Definition: Var(X) = E[(X − E[X])^2], always >= 0. The computational
+identity, expanded straight from the definition and linearly:
+  Var(X) = E[X^2] − (E[X])^2.
+Scaling rules — Var(aX + b) = a^2 Var(X) (the shift b drops out because
+variance is E of a squared deviation), and Var(X + Y) = Var(X) + Var(Y)
+only under zero covariance, which independence guarantees (Lab 04
+revisits the general formula). Standard deviation is sqrt(Var(X)), the
+natural scale on which deviations live.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Random Variables:
-
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Random Variables is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Random Variables is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Random Variables extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Random Variables requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Random Variables connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Random Variables provide the rigorous basis needed for correct computational implementation and real-world application.
+## 7. Joint Distributions of Two Variables
+Two discrete variables have a joint PMF p(x, y) = P(X = x, Y = y);
+marginals recover p(x) = Σ_y p(x, y). Independence of variables means
+p(x, y) = p(x) p(y) for every pair — a stronger condition than merely
+uncorrelated behavior (counterexample executed in Lab 04).

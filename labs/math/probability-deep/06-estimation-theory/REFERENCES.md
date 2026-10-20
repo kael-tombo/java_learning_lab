@@ -1,4 +1,4 @@
-﻿# References: Estimation Theory
+# References: Estimation Theory
 
 ## Primary sources
 - **C. F. Gauss**, *Theoria Motus Corporum Coelestium*, Hamburg, 1809 — least squares derived from the normal error model (method announced 1795, published by Legendre 1805).

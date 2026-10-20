@@ -1,70 +1,56 @@
-﻿# Law of Large Numbers and CLT -- Theory
+# Law of Large Numbers — Theory
 
-## 1. Introduction
+## 1. Convergence in Probability — The Right Notion
+X_n → X in probability means: for every ε > 0,
+P(|X_n − X| >= ε) → 0 as n → ∞. Nothing says X_n = X for large n;
+single samples remain wild. The laws of large numbers are theorems of
+this kind for the sample mean X_n = (X1 + ... + Xn)/n of an i.i.d.
+sample, and they are why averages are trustworthy instruments at all.
 
-Law of Large Numbers and CLT is a fundamental concept in Probability and Statistics Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+## 2. The Two Inequalities Everything Runs On
+- Markov: for a NONNEGATIVE X and a > 0,
+  P(X >= a) <= E[X]/a. Truncation algebra: E[X] >= a P(X >= a),
+  since the expectation out-scales the tail indicator.
+- Chebyshev: for any X with finite variance and t > 0,
+  P(|X − E[X]| >= t) <= Var(X)/t^2. Apply Markov to the nonnegative
+  variable (X − E[X])^2 with a = t^2 — a two-line proof, no extra
+  hypotheses.
 
-## 2. Core Definitions
+## 3. Weak Law of Large Numbers — Exact Statement
+Let X1, X2, ... be i.i.d. with E[Xi] = μ and Var(Xi) = σ^2 < ∞. Set
+X_n = (X1 + ... + Xn)/n. Then for every ε > 0:
+  P(|X_n − μ| >= ε) → 0 as n → ∞.
+Proof pattern in one breath: E[X_n] = μ exactly, Var(X_n) = σ^2/n by
+the variance-algebra of independent summands, and Chebyshev with
+t = ε gives P <= σ^2/(n ε^2) → 0. No independence relaxation is needed
+for the variance step beyond pairwise uncorrelated sums.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Law of Large Numbers and CLT rests on several key definitions and axioms that form the foundation of the theory.
+## 4. Borel–Cantelli — The Statement Behind Almost Sure Claims
+For events A1, A2, ...: if Σ_n P(A_n) < ∞, then P(A_n occurs
+infinitely often) = 0. The lemma converts summable tail-probability
+budgets into finitely-many-violations statements, which is exactly the
+currency a strong law pays in.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 5. Strong Law — Exact Statement
+Kolmogorov's strong law: let X1, X2, ... be i.i.d. with
+E|X1| < ∞ (integrability only, no variance assumed). Then
+  X_n → μ = E[X1] with probability 1, i.e.,
+  P(lim_n X_n = μ) = 1.
+Probability 1 means: outside an exceptional event of total probability
+zero, every realization settles — not just that violations become
+unlikely, but that only finitely many occur along each sample path.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 6. Weak vs Strong — Precisely What Differs
+The weak law controls P(|X_n − μ| >= ε) AT each fixed n; the strong law
+controls the total number of violations ALONG the realized sequence.
+Strong implies weak, but the converse fails: sequences can violate at
+densely spaced but sparse times while still failing to converge. The
+strong law's hypothesis E|X| < ∞ is also the sharp one — means of
+heavy-tailed variables (Cauchy-style) demonstrably refuse to settle.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Law of Large Numbers and CLT:
-
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Law of Large Numbers and CLT is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Law of Large Numbers and CLT is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Law of Large Numbers and CLT extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Law of Large Numbers and CLT requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Law of Large Numbers and CLT connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Law of Large Numbers and CLT provide the rigorous basis needed for correct computational implementation and real-world application.
+## 7. Rate Note — What the CLT Adds
+The central limit theorem, for i.i.d. summands with finite σ^2:
+(a sum, centered and scaled) (S_n − nμ)/(σ√n) → Normal(0, 1) in
+distribution. Numerically the typical fluctuation scale of X_n is
+σ/√n — the 1/√n clock of the weak law upgraded from a bound to a
+limit shape. Lab 06 reuses both facts for consistency of estimators.

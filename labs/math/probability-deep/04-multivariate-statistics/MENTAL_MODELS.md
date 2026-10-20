@@ -1,4 +1,4 @@
-﻿# Mental Models: Multivariate Statistics
+# Mental Models: Multivariate Statistics
 
 ## 1. Data as a Cloud, Statistics as Projections
 Each variable is an axis; each observation a point. Correlation measures how stretched the cloud is along a diagonal; regression fits the shadow of the cloud on the x-axis; PCA finds the directions along which the cloud is longest. Every multivariate method is a question about the cloud's *shape, orientation and thickness*.

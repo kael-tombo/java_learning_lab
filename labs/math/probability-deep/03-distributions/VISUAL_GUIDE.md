@@ -1,4 +1,4 @@
-﻿# Visual Guide: Probability Distributions
+# Visual Guide: Probability Distributions
 
 ## Discrete: Binomial(n=10, p=0.5) pmf and its staircase CDF
 ```

@@ -1,4 +1,4 @@
-﻿# History: Probability Distributions
+# History: Probability Distributions
 
 ## The first named laws
 **Jacob Bernoulli (1655–1705)** analyzed the binomial in *Ars Conjectandi* (1713) as a combinatorial counting problem. **Abraham de Moivre (1667–1754)** obtained the normal approximation to the binomial in *The Doctrine of Chances* (1718, definitive 3rd ed. 1756): C(n,k)2⁻ⁿ ≈ φ((k − n/2)/√(n/2))/√(n/2).

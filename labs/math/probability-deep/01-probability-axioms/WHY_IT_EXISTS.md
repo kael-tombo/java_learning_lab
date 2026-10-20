@@ -1,4 +1,4 @@
-﻿# Why It Exists: Probability Axioms
+# Why It Exists: Probability Axioms
 
 ## The problem it replaced
 Before 1933 "the probability of X" meant three incompatible things:

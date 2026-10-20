@@ -1,4 +1,4 @@
-﻿# Mental Models: Probability Axioms
+# Mental Models: Probability Axioms
 
 ## 1. Probability as Area on the Sample Space
 Draw Ω as a rectangle of area 1 and paint each event with its probability. Disjoint events are non-overlapping patches; A ∩ B is where patches overlap; P(A|B) is the picture *re-cropped to B and re-scaled so B again has area 1*. The axioms are exactly the rules that make this cropping and rescaling legal.

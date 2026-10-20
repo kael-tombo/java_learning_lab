@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Hypothesis Testing
+# Step-by-Step Guide: Hypothesis Testing
 
 ## Worked example: one-sample t test
 

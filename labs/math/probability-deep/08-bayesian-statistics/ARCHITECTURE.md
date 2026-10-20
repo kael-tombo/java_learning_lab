@@ -1,4 +1,4 @@
-﻿# Architecture: Bayesian Statistics Implementation
+# Architecture: Bayesian Statistics Implementation
 
 ## Package layout
 ```

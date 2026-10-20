@@ -1,4 +1,4 @@
-﻿# Performance: Estimation Theory
+# Performance: Estimation Theory
 
 ## Costs by method — exact, not benchmarked
 - **Closed-form MLEs** (normal μ, σ²; binomial p; exponential λ = n/Σxᵢ): **O(n)**, one pass. Always check whether a closed form exists before deploying an optimizer.

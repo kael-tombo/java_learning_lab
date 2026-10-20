@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Hypothesis Testing
+# Common Mistakes: Hypothesis Testing
 
 ### 1. Reading p as P(H₀ | data)
 P(D | H₀) ≠ P(H₀ | D). p = 0.03 means: *if* the null were true, data this extreme occur 3% of the time. It says nothing about the probability the null is true — that requires priors (lab 08). Reporting "97% confident the effect exists" inverts the conditional.

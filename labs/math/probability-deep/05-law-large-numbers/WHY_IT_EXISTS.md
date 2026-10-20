@@ -1,4 +1,4 @@
-﻿# Why It Exists: Law of Large Numbers and CLT
+# Why It Exists: Law of Large Numbers and CLT
 
 ## The problem it replaced
 Before the limit theorems, "the average of many observations" had no guarantee at all. Three separate traditions needed the same missing piece:

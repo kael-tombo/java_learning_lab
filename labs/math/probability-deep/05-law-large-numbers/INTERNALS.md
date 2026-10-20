@@ -1,4 +1,4 @@
-﻿# Internals: Law of Large Numbers and CLT
+# Internals: Law of Large Numbers and CLT
 
 ## Streaming estimators (the LLN made operational)
 `RunningMoments` holds (n, mean, M2) and updates per observation:

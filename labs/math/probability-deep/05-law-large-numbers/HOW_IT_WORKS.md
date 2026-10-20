@@ -1,4 +1,4 @@
-﻿# How It Works: Law of Large Numbers and CLT
+# How It Works: Law of Large Numbers and CLT
 
 ## 1. Where Var(X̄) = σ²/n comes from
 Independence kills the cross terms: Var(X₁ + … + Xₙ) = ΣVar(Xᵢ) + 2Σᵢ<ⱼCov = nσ² (covariances are 0). Divide by n²: Var(X̄) = nσ²/n² = σ²/n. Every standard error in labs 06–07 is this one line; drop independence and the 2ΣCov terms survive, inflating the SE.

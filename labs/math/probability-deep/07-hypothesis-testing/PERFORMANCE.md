@@ -1,4 +1,4 @@
-﻿# Performance: Hypothesis Testing
+# Performance: Hypothesis Testing
 
 ## Cost of a test — exact statements
 - **One-sample t/z**: O(n) to accumulate mean and variance (streaming, O(1) memory), then O(1) per test. The reference distribution is a table/erf lookup — constant time.

@@ -1,70 +1,60 @@
-﻿# Hypothesis Testing -- Theory
+# Hypothesis Testing — Theory
 
-## 1. Introduction
+## 1. The Architecture of a Test
+A statistical test pairs a null hypothesis H0 with an alternative H1,
+computes a test statistic T from the data, and pre-declares a rejection
+region R: if T lands in R, reject H0. Everything quantitative follows
+from the two conditional error probabilities the pair (H0, R) creates.
 
-Hypothesis Testing is a fundamental concept in Probability and Statistics Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+## 2. The Two Errors — Exact Definitions
+- Type I error: rejecting H0 when H0 is true. The size (significance
+  level) of a test is alpha = P(T ∈ R | H0) — a probability computed
+  under H0 only.
+- Type II error: failing to reject H0 when H1 is true. Its probability
+  is beta = P(T ∉ R | H1); power is 1 − beta, a function of the true
+  parameter, not a single number.
+The asymmetry is constitutional: alpha is engineered by DESIGN once
+and for all; beta depends on the unknown truth and the sample size.
 
-## 2. Core Definitions
+## 3. Exact Binomial Tests — A Complete Tiny Example
+Data: n = 10 coin flips; H0: p = 1/2. Statistic T = number of heads.
+The two-sided rejection region {k <= 1} ∪ {k >= 9} has size
+alpha = [C(10,0) + C(10,1) + C(10,9) + C(10,10)] / 2^10 = 22/1024 =
+11/512 ≈ 0.0215 (executed). Shrink or grow the region and the arithmetic
+moves: the one-sided region {k >= 8} has size 56/1024 = 7/128 ≈ 0.0547,
+which is why "at least one head-tail extreme on either side" is cheaper
+to guarantee than "this side only". Every figure is a coefficient sum
+over 2^10, machine-exact.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Hypothesis Testing rests on several key definitions and axioms that form the foundation of the theory.
+## 4. Power and Its Shape
+Power(k region | true p) = P(T ∈ R | p). For the region above at
+p = 3/10 the run measured beta = 4252739841/5000000000 = 0.8505479682,
+power ≈ 0.1494520318 — at 10 flips the test discovers a 30% coin only
+15% of the time. Symmetry: the beta at p = 7/10 equals that at 3/10
+(executed equality), the reflection about p = 1/2. Power curves rise
+toward the rejected tails — a table, not a slogan.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 5. The p-Value, Stated Correctly
+The p-value is the probability, computed UNDER H0, of a result at
+least as extreme as the one observed (extremeness measured by the test
+statistic's ordering, one- or two-sided by design). It is NOT the
+probability that H0 is true, and objections to interpreting it as such
+require a Bayesian prior for H0 (Lab 08's machinery). Small p signals
+surprise under H0, not guilt.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 6. Permutation Tests — Exactness by Construction
+Under H0 of exchangeability (the group labels carry no information),
+every reassignment of the observed values across the two groups is
+equally likely. The exact permutation p-value is the fraction of the
+(enumerable) relabelings whose statistic meets or beats the observed
+one — no distribution family assumed at all. For 3-vs-3 samples the
+space has exactly C(6,3) = 20 labelings, so any p-value is a multiple
+of 1/20; executed: one-sided 1/20, two-sided 1/10 — the run printed
+both counts.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Hypothesis Testing:
-
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Hypothesis Testing is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Hypothesis Testing is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Hypothesis Testing extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Hypothesis Testing requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Hypothesis Testing connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Hypothesis Testing provide the rigorous basis needed for correct computational implementation and real-world application.
+## 7. Testing Discipline
+alpha is fixed BEFORE data arrive; regions are two-sided unless a
+one-sided alternative was pre-registered; p-values are compared to
+alpha, never to thresholds like 0.05 as if legislated; and reporting
+an exact permutation p-value alongside a parametric one is the sanity
+check that costs nothing on tiny samples.

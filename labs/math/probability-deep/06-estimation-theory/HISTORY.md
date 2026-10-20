@@ -1,4 +1,4 @@
-﻿# History: Estimation Theory
+# History: Estimation Theory
 
 ## Least squares before statistics
 **Carl Friedrich Gauss (1777–1855)** claimed he used the method of least squares from 1795 and published it in *Theoria Motus Corporum Coelestium* (1809); **Adrien-Marie Legendre (1752–1833)** published it independently in 1805. Gauss argued the estimator is optimal *if* errors are normal — the first time an estimator was derived from an explicit distributional assumption. **Pierre-Simon Laplace** supplied the method of least deviations as a robust alternative (1810s).

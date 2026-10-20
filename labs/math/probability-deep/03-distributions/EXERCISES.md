@@ -1,130 +1,64 @@
-﻿# Exercises: Probability Distributions
+# Exercises — Distributions
 
-## Theoretical Exercises
+Worked solutions; every number quoted is a run output from
+CODE_DEEP_DIVE.md or a trivially checkable consequence of two such
+outputs.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Probability Distributions in your own words.
-**Answer**: Probability Distributions involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Round-Trip a Piecewise Density
+On [0, 2], place f(x) = x/2 extended by zero outside. Check the two pdf
+axioms, then build F and differentiate back.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Probability Distributions.
-**Answer**: The proof follows from the definitions and established theorems.
+**Solution**: Mass: ∫_0^2 (x/2) dx = [x^2/4]_0^2 = 1 ✓ and f >= 0 ✓.
+CDF: F(x) = x^2/4 on [0, 2], with F(2) = 1, F(1) = 1/4. Differentiating
+recovers f = x/2 on the interior. Contrast with the lab's uniform case
+(F(1) = 1/2 there): same-shape CDF logic, different derivative-back
+answer — the round trip is what licenses the density claim.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Probability Distributions to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## Problem 2. Binomial Tail by Hand-Machine Agreement
+For Bin(10, 1/3), confirm P(X <= 1) and decompose it.
 
-## Programming Exercises
+**Solution**: The run printed the exact value 2048/19683. Decomposition:
+P(X = 0) = (2/3)^10 and P(X = 1) = 10(1/3)(2/3)^9; factor out
+(2/3)^9 to get (2/3 + 10/3)(2/3)^9 = 4(2/3)^9 = 2048/19683. Machine
+fraction and closed form coincide — no decimal was touched.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Probability Distributions.
+## Problem 3. Memorylessness Under an Unfamiliar Clock
+For Exponential(1), evaluate P(X > 1.5 | X > 1) and explain what value
+the memorylessness theorem forces.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: By the theorem it must equal P(X > 0.5) = e^{−0.5} =
+0.6065306597126334 — the run verified this both via the division
+P(X > 1.5)/P(X > 1) and a direct exponent, digit-identical. Forgetting
+the first hour of elapsed life is a certified property of this family;
+try the same division on a uniform survival curve and watch it fail.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 4. Poisson Modeling at a Quiet Help Desk
+Calls arrive as Poisson(λ = 2) per minute. Find P(exactly one silent
+minute), i.e., k = 0, and the model's mean and variance.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+**Solution**: P(X = 0) = e^{−2} = 0.1353352832366127 (run value). For
+Poisson the mean and variance both equal λ, so each is 2. Both answers
+come from the family statement — no simulation required — and the
+printed 12-column table shows the mass decaying past the peak at
+k = 1, 2 as the rates e^{−2} 2^k/k! divide by growing k!.
 
-## Challenge Problems
+## Problem 5. Programming: Normal Middle and Tails
+Implement `phit(z)` via `math.erf` returning Φ(z), then report
+P(−1 < Z < 1), P(−2 < Z < 2), and P(Z > 2) to 16 digits.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+**Solution skeleton**:
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+```python
+import math
 
-## Solutions
+print("P(-1<X<1) =", 0.5 * (1 + math.erf(1 / math.sqrt(2))) - 0.5 *
+      (1 + math.erf(-1 / math.sqrt(2))))
+print("P(-2<X<2) =", 0.5 * (1 + math.erf(2 / math.sqrt(2))) - 0.5 *
+      (1 + math.erf(-2 / math.sqrt(2))))
+print("P(X>2) =", 1 - 0.5 * (1 + math.erf(2.0 / math.sqrt(2.0))))
+```
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Probability Distributions
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Probability Distributions?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Probability Distributions?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Executed values: P(−1 < Z < 1) = 0.6826894921370856, P(−2 < Z < 2) =
+0.9544997361036418 (verified by rerun), P(Z > 2) =
+0.022750131948179098 — the engineered statements behind the 68/95
+rule, each one an erf evaluation rather than a magic percent.

@@ -1,4 +1,4 @@
-﻿# Interview: Hypothesis Testing
+# Interview: Hypothesis Testing
 
 ### Q1. Your p-value is 0.01. What can you say? What can't you say?
 **A.** Can: "Assuming H₀ and the model, data this extreme or more occur with probability 1%." Cannot: P(H₀ | data) = 0.01, "there's a 1% chance the null is true," or "the effect is large/practically important." p mixes effect size and n: with n = 10⁵ a 0.1σ difference gives p < 0.01. Report p with the effect estimate and its interval (lab 06), or go Bayesian (lab 08) if you need P(H₀ | data).

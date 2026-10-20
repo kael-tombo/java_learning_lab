@@ -1,4 +1,4 @@
-﻿# Performance: Multivariate Statistics
+# Performance: Multivariate Statistics
 
 ## Costs that are cubic in the dimension p
 - **Cholesky of Σ**: (1/3)p³ flops — required for every Mahalanobis distance batch, every multivariate-normal density evaluation and every Σ⁻¹ (never invert explicitly; solve ΣX = I, or better, solve per right-hand side).

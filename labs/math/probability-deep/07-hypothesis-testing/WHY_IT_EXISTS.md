@@ -1,4 +1,4 @@
-﻿# Why It Exists: Hypothesis Testing
+# Why It Exists: Hypothesis Testing
 
 ## The problem it solved
 By 1900, experiments produced numbers and no principled way to decide whether a deviation was "real." Three partial answers competed:

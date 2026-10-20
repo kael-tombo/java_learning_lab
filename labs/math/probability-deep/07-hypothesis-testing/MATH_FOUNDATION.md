@@ -1,81 +1,51 @@
-﻿# Math Foundation for Hypothesis Testing
+# Hypothesis Testing — Math Foundation
 
-## Prerequisite Mathematics
+All numbers are run outputs from the exact-arithmetic programs in
+CODE_DEEP_DIVE.md (fractions module; enumeration where feasible).
 
-This document reviews the mathematical prerequisites needed to study Hypothesis Testing effectively.
+## 1. Price the Rejection Region Exactly
+Model: n = 10 fair-coin flips, two-sided region
+R = {k <= 1} ∪ {k >= 9}. Observed exact size:
+alpha = 11/512 (the run printed both shapes: 11/512 = 22/1024).
+Coefficient book: the extremes contribute (1 + 10) + (10 + 1) = 22 of
+the 1024 equiprobable sequences. A hypothesis test with alpha ≈ 0.0215
+is a machine-engineered false-alarm rate, not a convention imported
+from outside the data.
 
-## 1. Algebra Review
+## 2. What the Test Misses — Type II Exactly
+True p = 3/10: beta = P(2 <= k <= 8 | p = 3/10) = 1 − P(k <= 1) −
+P(k >= 9), executed as the exact fraction 4252739841/5000000000 =
+0.8505479682; power = 1 − beta = 0.1494520318. Read that number as a
+design budget: a 30% coin survives a 10-flip audit about 85% of the
+time. The mirror value at p = 7/10 printed identically — the
+reflection symmetry about the null coin is exact, not approximate.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 3. One-Sided Region Cheaper Tail by Tail
+Region {k >= 8} at p = 1/2: observed exact alpha = 7/128
+(= 56/1024; coefficients 45 + 10 + 1 at the top three heads-counts).
+Comparing with the two-sided 11/512: the one-sided test costs under
+three times the false-alarm budget (0.0547 vs 0.0215) while guarding
+only one direction.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## 4. Permutation Reality Check, 3 vs 3
+Groups A = (1, 2, 3), B = (4, 5, 6); observed difference of means 3.
+Enumeration over all C(6,3) = 20 labelings: exactly one achieves a
+difference >= 3 (identity), so the one-sided p-value is 1/20 =
+0.05; two-sided |d| >= 3 occurs twice → p = 2/20 = 1/10 (both
+printed). No normality was assumed anywhere in this paragraph — only
+counting.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 5. Permutation at 4 vs 4 — Money Changes
+Separation grows with balanced sizes: for A = (1, 2, 3, 4) vs
+B = (5, 6, 7, 8), observed mean difference 4 over C(8,4) = 70
+labelings, only the two extremes (identity and its full swap) reach
+|d| >= 4. Two-sided exact p = 2/70 = 1/35 ≈ 0.0286 (run line).
+Doubling group sizes multiplied the denominator 3.5× and left the
+extreme count at two: exact small-sample inference in one jump.
 
-## 2. Functions and Graphs
-
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
-
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
-
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
-
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+## 6. Cross-Check Between Sections
+The binomial region's arithmetic and the permutation counts
+independently produce p-values near 0.02–0.05 on different
+mechanisms; seeing 1/20, 1/10, 7/128, 11/512, 1/35 all reduce to
+coefficient counting keeps the whole lab auditable by hand when the
+power goes off — each figure has a term-by-term breakdown above.

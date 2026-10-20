@@ -1,4 +1,4 @@
-﻿# Visual Guide: Hypothesis Testing
+# Visual Guide: Hypothesis Testing
 
 ## Rejection region under H₀ (two-sided, α = 0.05)
 ```

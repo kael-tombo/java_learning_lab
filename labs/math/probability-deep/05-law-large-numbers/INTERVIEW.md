@@ -1,4 +1,4 @@
-﻿# Interview: Law of Large Numbers and CLT
+# Interview: Law of Large Numbers and CLT
 
 ### Q1. What is the difference between the LLN and the CLT?
 **A.** The LLN says *where* X̄ converges (to μ): consistency of the average. The CLT says *how* it fluctuates around μ: (X̄ − μ)/(σ/√n) → N(0,1), giving the rate 1/√n and the Gaussian shape that yields confidence intervals. LLN alone cannot produce a 95% interval — it has no speed; the CLT alone doesn't guarantee convergence to the right value. SLLN (Kolmogorov 1930) is stronger still: P(lim X̄ₙ = μ) = 1 for the entire sequence, requiring only E|X| < ∞.

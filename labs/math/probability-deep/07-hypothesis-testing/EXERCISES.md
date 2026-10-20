@@ -1,130 +1,69 @@
-﻿# Exercises: Hypothesis Testing
+# Exercises — Hypothesis Testing
 
-## Theoretical Exercises
+Worked solutions; each quoted value either appears in the captured
+outputs of CODE_DEEP_DIVE.md or follows from two such values by exact
+fraction arithmetic.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Hypothesis Testing in your own words.
-**Answer**: Hypothesis Testing involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Region Price Tag
+For n = 10 flips under H0: p = 1/2, price the region
+R = {k <= 1} ∪ {k >= 9} term by term and confirm the machine fraction.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Hypothesis Testing.
-**Answer**: The proof follows from the definitions and established theorems.
+**Solution**: Terms: head-counts 0 and 10 (1 sequence each), 1 and 9
+(10 each): total 22 of 1024 equiprobable sequences, so
+alpha = 22/1024 = 11/512 — matching the run's double-printed pair.
+Decimal: about 0.0215.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Hypothesis Testing to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## Problem 2. Mirror Symmetry of beta
+At true p = 3/10 the run reported beta = 4252739841/5000000000.
+Predict the beta at p = 7/10 before checking, then check.
 
-## Programming Exercises
+**Solution**: The region is symmetric under head-count flips (k →
+10 − k maps {k <= 1} ∪ {k >= 9} onto itself), and p → 1 − p mirrors
+the binomial pmf the same way. Prediction: identical. Run line:
+`beta at p=7/10 = 4252739841/5000000000  equal to 3/10 case: True`.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Hypothesis Testing.
+## Problem 3. One-Sided Arithmetic
+Price the one-sided region {k >= 8} at n = 10, p = 1/2 and compare to
+the two-sided region's 11/512.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: Coefficients at 8, 9, 10: 45 + 10 + 1 = 56; alpha =
+56/1024 = 7/128 ≈ 0.0547 (run value). Ratio to two-sided: (7/128) ÷
+(11/512) = (28/512) ÷ (11/512) = 28/11 ≈ 2.55. Guarding one tail costs
+about 2.5 false-alarm budgets; that is the honest cost line between
+sided designs.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 4. Permutation Exactness With Four-Point Groups
+For A = (1, 2, 3, 4), B = (5, 6, 7, 8), enumerate conceptually and
+give both one-sided and two-sided exact p-values for the observed mean
+difference of 4.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+**Solution**: Label space is C(8,4) = 70. The observed arrangement has
+meanA − meanB = 2.5 − 6.5 = −4; a labeling achieves a difference of
+magnitude >= 4 ONLY at the two fully separated labelings (identity and
+its complement at +4). Recorded from the run: two-sided count 2 →
+p = 2/70 = 1/35 ≈ 0.0286 (printed line); the same enumeration gives
+one-sided count 1 → p = 1/70.
 
-## Challenge Problems
+## Problem 5. Programming: Exact Tail Function
+Implement `btail(n, k, p)` returning the exact two-sided binomial
+p-value by summing pmf terms at distance >= |k − n/2| from the center,
+using fractions; run it for n = 10, k = 9, p = 1/2 and compare with
+the region-size fraction from Problem 1.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+**Solution skeleton**:
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+```python
+from fractions import Fraction as F
+from math import comb
 
-## Solutions
+def btail(n, k, p):
+    center = abs(k - n / 2)
+    terms = [F(comb(n, j)) * p**j * (1 - p)**(n - j)
+             for j in range(n + 1) if abs(j - n / 2) >= center]
+    return sum(terms)
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Hypothesis Testing
+print(btail(10, 9, F(1, 2)))
+```
 
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Hypothesis Testing?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Hypothesis Testing?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Executed: 11/512 — identical to Problem 1's region price, as it must
+be since the function is summing the same extreme sequences.

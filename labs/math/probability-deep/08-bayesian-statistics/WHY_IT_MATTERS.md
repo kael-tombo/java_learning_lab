@@ -1,4 +1,4 @@
-﻿# Why It Matters: Bayesian Statistics
+# Why It Matters: Bayesian Statistics
 
 ## It is the only framework that answers the question people ask
 "Is the treatment working?" "What is the probability this segment converts better?" "What happens if we ship?" Bayesian inference returns P(statement | data, model) directly: posterior means for decisions, credible intervals for reporting, posterior predictives for forecasting. Frequentist machinery returns P(data | null) and a procedure's coverage — powerful, but a translation the practitioner must perform themselves.

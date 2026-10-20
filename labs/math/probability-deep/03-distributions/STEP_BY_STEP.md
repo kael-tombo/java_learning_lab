@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Probability Distributions
+# Step-by-Step Guide: Probability Distributions
 
 ## Worked example: Poisson arrival in a call center
 

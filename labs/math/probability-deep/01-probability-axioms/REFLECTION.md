@@ -1,4 +1,4 @@
-﻿# Reflection: Probability Axioms
+# Reflection: Probability Axioms
 
 ## Explain it in one breath
 If someone asks "what is probability?", can you say: *a normalized, non-negative, countably additive measure on a sample space* — and then say what each of those three words forbids? Practice the forbidding: negative mass (impossible), total mass 2 (certainty plus extra), and a countable union whose probability exceeds the sum of its parts (a "measure" that leaks).

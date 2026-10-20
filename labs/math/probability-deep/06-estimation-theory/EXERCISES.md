@@ -1,130 +1,72 @@
-﻿# Exercises: Estimation Theory
+# Exercises — Estimation Theory
 
-## Theoretical Exercises
+Solutions reuse figures and programs from CODE_DEEP_DIVE.md; derived
+integers stay exact.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Estimation Theory in your own words.
-**Answer**: Estimation Theory involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Grid Proof of a Median's Territory
+For the sample (1, 2, 4) compute the absolute-loss risk at every
+half-integer candidate in {1, 3/2, 2, 5/2, 3} and locate the argmin.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Estimation Theory.
-**Answer**: The proof follows from the definitions and established theorems.
+**Solution**: Risks (mean absolute deviation, exact):
+at 1: (0 + 1 + 3)/3 = 4/3; at 3/2: (1/2 + 1/2 + 5/2)/3 = 7/6; at 2:
+(1 + 0 + 2)/3 = 1; at 5/2: (3/2 + 1/2 + 3/2)/3 = 7/6; at 3:
+(2 + 1 + 1)/3 = 4/3. Minimum at 2 — the median — with symmetric
+neighbors 7/6. The run had printed 1 at the median and 10/9 at the
+mean; the fuller grid shows the flanks rising to 7/6 and 4/3.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Estimation Theory to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## Problem 2. Decompose a Proportion's MSE
+For p_hat = 7/10 from n = 10 Bernoulli-flip data with truth p = 1/2,
+give Var, Bias, MSE exactly, then re-do at n = 40 scaled against a
+new sample of 28 heads.
 
-## Programming Exercises
+**Solution**: Run figures: Bias = 0 (E[p_hat] equals p for the fraction
+estimator, always), Var = pq/n = 1/40, MSE = 1/40. At n = 40 with
+p_hat = 28/40 = 7/10 the parts shrink fourfold: Var = 1/160, MSE = 1/160,
+Bias still 0. Unbiasedness persists; only variance decays, exactly as
+the MSE decomposition prescribes.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Estimation Theory.
+## Problem 3. Uniform Max, Bias Arithmetic
+With θ = 12 and n = 3 samples, compute E[max], Bias, and the unbiased
+rescaling; confirm each against the run.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: E[max] = (3/4)·12 = 9 (printed). Bias = 9 − 12 = −3
+(printed). Cure: (n+1)/n · max scales expectation to θ, since
+E[(4/3) max] = (4/3)·(3/4)·12 = 12 — the run's corrected-estimator
+line prints exactly 12 for the observed max of 9. One multiplier
+moves an estimator from negatively biased to zero-bias.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 4. Poisson Critical Point, Done Twice
+Data (1, 1, 3, 4, 1). Compute the log-likelihood derivative, solve for
+the MLE, and state the concavity argument.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+**Solution**: log L(λ) = −nλ + (Σ x_i) log λ − Σ log(x_i!). Derivative:
+−n + (Σ x_i)/λ; zero at λ = Σx_i/n = 10/5 = 2 (run printed both
+sum/n = 2 and the critical-point value 2). Concavity: (Σx_i) log λ
+has second derivative −Σx_i/λ^2 < 0, so the critical point is a
+maximum; the run's average matched every step of this read.
 
-## Challenge Problems
+## Problem 5. Programming: Exact Risk Curve Over a Grid
+Implement `sq_risk(data, a)` with fractions, scan a = 0..4 in steps of
+1/12, and print the argmin/minimum pair; then scan the absolute-risk
+version and print its minimum.
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+**Solution skeleton**:
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+```python
+from fractions import Fraction as F
 
-## Solutions
+def sq_risk(data, a):
+    return sum((x - a) ** 2 for x in data) / len(data)
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Estimation Theory
+def abs_risk(data, a):
+    return sum(abs(x - a) for x in data) / len(data)
 
-## Multiple Choice Questions
+data = [F(1), F(2), F(4)]
+print(min(((sq_risk(data, F(i, 12)), F(i, 12)) for i in range(49)),
+          key=lambda t: t[0]))
+print(min((abs_risk(data, F(i, 4)), F(i, 4)) for i in range(17)))
+```
 
-### Question 1
-What is the fundamental principle underlying Estimation Theory?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Estimation Theory?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+Executed pairs: (Fraction(14, 9), Fraction(7, 3)) for squared loss and
+(1, 2) for absolute loss — matching the analysis runs; the half-integers
+of Problem 1 sit on the same curve printed by the scanner.

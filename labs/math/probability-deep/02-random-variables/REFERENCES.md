@@ -1,4 +1,4 @@
-﻿# References: Random Variables
+# References: Random Variables
 
 ## Primary sources
 - **C. Huygens**, *De Ratiociniis in Ludo Aleae*, 1657 (English *The Value of All Chances in Games of Fortune*, 1714) — the first definition of mathematical expectation.

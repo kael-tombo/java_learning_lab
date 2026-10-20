@@ -1,4 +1,4 @@
-﻿# Mental Models: Bayesian Statistics
+# Mental Models: Bayesian Statistics
 
 ## 1. Bayes Is a Reweighting Machine
 You hold a distribution over hypotheses; data arrive with a likelihood per hypothesis; the posterior is the prior *reweighted* by those likelihoods. Nothing is created: hypotheses the data find implausible shrink, plausible ones grow, all relative to each other. Prior odds × likelihood ratio = posterior odds — three numbers, one line.

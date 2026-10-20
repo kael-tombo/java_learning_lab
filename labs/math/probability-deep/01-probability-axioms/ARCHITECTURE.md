@@ -1,4 +1,4 @@
-﻿# Architecture: Probability Axioms Implementation
+# Architecture: Probability Axioms Implementation
 
 ## Module layering
 ```

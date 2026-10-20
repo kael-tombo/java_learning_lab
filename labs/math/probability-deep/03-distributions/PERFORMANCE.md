@@ -1,4 +1,4 @@
-﻿# Performance: Probability Distributions
+# Performance: Probability Distributions
 
 ## Evaluating densities and CDFs
 - **Normal CDF** Φ(x) via erf: the Abramowitz–Stegun 7.1.26 rational approximation is accurate to 7.5×10⁻⁸ absolute; erfc for the far tail avoids computing 1 − tiny. Evaluating P(X < −40) as `1 - Φ(40)` returns exactly 0 in double — always use the complement directly (erfc), or work in logs.

@@ -1,4 +1,4 @@
-﻿# Performance: Law of Large Numbers and CLT
+# Performance: Law of Large Numbers and CLT
 
 ## Streaming costs, exactly
 - **Running mean/variance (Welford)**: 1 pass, **O(1) memory** (n, mean, M2) and 3 flops per observation — independent of n. The naive two-array approach (store everything, then average) is O(n) memory and is the difference between fitting 10⁹ observations in RAM and not.

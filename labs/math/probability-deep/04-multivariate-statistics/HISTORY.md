@@ -1,4 +1,4 @@
-﻿# History: Multivariate Statistics
+# History: Multivariate Statistics
 
 ## Correlation and the first scatter diagrams
 **Francis Galton (1822–1911)** discovered regression toward the mean while studying heights of fathers and sons (*Natural Inheritance*, 1885), introduced the regression line, and used the term "reversion." **Karl Pearson (1857–1936)** formalized the correlation coefficient r (1896, *Philosophical Transactions*), fitted bivariate surfaces, and founded *Biometrika* with Galton and Weldon in 1901. Pearson's χ² (1900) and the bivariate normal made two-dimensional data analysable for the first time.

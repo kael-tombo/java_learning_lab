@@ -1,4 +1,4 @@
-﻿# Internals: Random Variables Implementation
+# Internals: Random Variables Implementation
 
 ## Core representation
 A discrete random variable stores `double[] support` and `double[] pmf`, plus a `double[] cdf` built once as a running sum. The invariant checked at construction: `Σ pmf = 1` within 1e-12, every pmf ≥ 0, cdf monotone with last entry 1. Sampling uses `Arrays.binarySearch(cdf, u)` — O(log k) per draw.

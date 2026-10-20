@@ -1,76 +1,43 @@
-﻿# Hypothesis Testing
+# Lab 07 — Hypothesis Testing
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Hypothesis Testing**, a cornerstone topic in Probability and Statistics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Builds the two-error architecture of statistical tests and prices
+every decision with exact fractions on deliberately tiny samples.
 
-## Topics Covered
-- null/alternative, p-values, t-test, chi-squared, ANOVA, multiple testing, Bonferroni, FDR, power, A/B
+## What This Lab Actually Teaches
+- Null/alternative, test statistic, rejection region, and the exact
+  definitions of Type I and Type II errors (THEORY.md).
+- Size alpha as a designed constant; power 1 − beta as a curve over
+  the truth; the constitutional asymmetry between the two.
+- Exact binomial tests: region sizes as coefficient sums over 2^n.
+- The p-value defined rigorously — a tail probability under H0, never
+  a probability on hypotheses.
+- Permutation tests as exactness by construction, with exhaustive
+  label-space enumeration on 3v3 and 4v4 samples.
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+## The Worked Material
+MATH_FOUNDATION.md prices the two-sided region {k <= 1} ∪ {k >= 9} at
+exactly 22/1024 = 11/512, computes Type II at true p = 3/10 as
+4252739841/5000000000 = 0.8505479682 (power 0.1494520318, mirror-equal
+at 7/10 — run certified), prices the one-sided region at 7/128, and
+executes exhaustive permutation tests: 1/20 one-sided and 1/10
+two-sided at 3v3, 1/35 two-sided at 4v4. CODE_DEEP_DIVE.md carries
+three programs with captured outputs, all exact.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Hypothesis Testing
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Files (core six)
+| File | Contents |
+|------|----------|
+| THEORY.md | Errors, size, power, p-values, permutation exactness |
+| MATH_FOUNDATION.md | Exact region pricing and permutation counts |
+| CODE_DEEP_DIVE.md | Three runnable programs, outputs as captured |
+| EXERCISES.md | Five problems with computed solutions |
+| FLASHCARDS.md | 12 cards, definition- and number-grounded |
+| README.md | This overview |
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Companion files in this directory were untouched by this pass.
 
-## Project Structure
-`
-hypothesistesting/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/hypothesistesting/HypothesisTesting.java
-    â””â”€â”€ test/java/com/mathlab/hypothesistesting/HypothesisTestingTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Suggested Sequence
+1. THEORY.md, pausing on the p-value paragraph twice.
+2. MATH_FOUNDATION.md with fractions and itertools open.
+3. Run the three programs; confirm each printed fraction and count.
+4. EXERCISES.md, solutions after attempts.
+5. FLASHCARDS.md until Type I/II and p-value definitions are verbatim.

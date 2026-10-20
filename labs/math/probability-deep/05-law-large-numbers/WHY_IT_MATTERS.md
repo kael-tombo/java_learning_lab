@@ -1,4 +1,4 @@
-﻿# Why It Matters: Law of Large Numbers and CLT
+# Why It Matters: Law of Large Numbers and CLT
 
 ## What would break without it
 - **Every confidence interval** in lab 06 assumes X̄ − μ is approximately N(0, σ²/n). Without the CLT there is no 1.96, no Student t, no "±2 percentage points."

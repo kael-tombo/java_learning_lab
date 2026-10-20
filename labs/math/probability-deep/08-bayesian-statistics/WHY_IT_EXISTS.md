@@ -1,4 +1,4 @@
-﻿# Why It Exists: Bayesian Statistics
+# Why It Exists: Bayesian Statistics
 
 ## The gap the rule fills
 Frequentist probability is P(event | model): it can say how often data like yours occur if μ = 100, but never P(μ = 100 | data) — the quantity every practitioner actually wants. Three arguments forced the question:

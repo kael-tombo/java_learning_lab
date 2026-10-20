@@ -1,4 +1,4 @@
-﻿# Debugging: Bayesian Statistics
+# Debugging: Bayesian Statistics
 
 ### Symptom: posterior density integrates to 1.7 (or 0.003)
 The normalizing constant was dropped or computed wrong. If you evaluated on a grid, integrate the *unnormalized* density and divide by the total: `w[i] /= Σw[i]·dθ`. If you are sampling, the draws are from the shape regardless of the constant — but any *marginal likelihood* or Bayes factor you compute from unnormalized values is garbage.

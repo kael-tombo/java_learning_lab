@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Law of Large Numbers and CLT
+# Step-by-Step Guide: Law of Large Numbers and CLT
 
 ## Worked example: how likely is |X̄ − μ| ≥ 1 for n = 36 fair dice?
 

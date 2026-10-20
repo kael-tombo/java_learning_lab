@@ -1,4 +1,4 @@
-﻿# History: Bayesian Statistics
+# History: Bayesian Statistics
 
 ## An essay, a price, and a formula
 **Thomas Bayes (1701–1761)** wrote "An Essay towards solving a Problem in the Doctrine of Chances" between ~1746 and 1763; his friend **Richard Price (1723–1791)** read it to the Royal Society on 29 December 1763 and prepared the second of its two rules for publication (*Phil. Trans. R. Soc. London* 53:370–418, 1763). Bayes's rule inverts P(data | θ) into P(θ | data) — for a uniform prior over a binomial success probability.

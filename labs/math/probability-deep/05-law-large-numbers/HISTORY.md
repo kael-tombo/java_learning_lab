@@ -1,4 +1,4 @@
-﻿# History: Law of Large Numbers and CLT
+# History: Law of Large Numbers and CLT
 
 ## The first limit theorem and its flaw
 **Jacob Bernoulli (1655–1705)** proved the weak law of large numbers in *Ars Conjectandi* (posthumously, 1713): for i.i.d. trials the relative frequency converges to p. His proof bounded the deviation by sums of binomial terms evaluated at the worst point — valid but so slow that the figure usually quoted from his hand computation is 25 550 throws to guarantee staying within 1/1000 of p with probability 1000/1001. **Abraham de Moivre (1667–1754)** found the limiting shape first: the normal approximation to the binomial (*The Doctrine of Chances*, 1718), a special case of the CLT 130 years early.

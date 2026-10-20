@@ -1,4 +1,4 @@
-﻿# Security: Probability Axioms Implementation
+# Security: Probability Axioms Implementation
 
 ## Base rates decide whether alerts mean anything
 An intrusion detector with 99% true-positive rate and 1% false-positive rate watching traffic where 0.01% of flows are attacks:

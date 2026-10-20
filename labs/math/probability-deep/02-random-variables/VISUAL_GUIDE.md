@@ -1,4 +1,4 @@
-﻿# Visual Guide: Random Variables
+# Visual Guide: Random Variables
 
 ## PMF (discrete) and CDF (staircase) of heads in 3 flips
 ```

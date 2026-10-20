@@ -1,4 +1,4 @@
-﻿# Architecture: Probability Distributions Implementation
+# Architecture: Probability Distributions Implementation
 
 ## Package layout
 ```

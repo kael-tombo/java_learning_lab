@@ -1,4 +1,4 @@
-﻿# Why It Exists: Estimation Theory
+# Why It Exists: Estimation Theory
 
 ## The problem: "guess the parameter" had no rules
 Gauss's least squares (1809) worked, but *why* it worked depended on an assumed normal error model, and nothing said what to do with a different model. Pearson's method of moments (1894) fit any parameter by equating sample and population moments — convenient, but with no optimality claim, so two people could produce two estimates with no principled way to choose.

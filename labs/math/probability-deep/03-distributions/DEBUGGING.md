@@ -1,4 +1,4 @@
-﻿# Debugging: Probability Distributions
+# Debugging: Probability Distributions
 
 ### Symptom: density evaluates to 0.0 (or Infinity) at valid x
 For x deep in a normal tail, exp(−x²/2) underflows (x = 40 → e^{−800} = 0). Compute log-density directly (−0.5x² − log(σ√(2π))) and exponentiate only when the result is within range. Symptom of the same bug: log-likelihood is NaN because one term was already 0 before taking log(0).

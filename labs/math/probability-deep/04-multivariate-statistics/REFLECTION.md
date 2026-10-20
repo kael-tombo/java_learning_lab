@@ -1,4 +1,4 @@
-﻿# Reflection: Multivariate Statistics
+# Reflection: Multivariate Statistics
 
 ## Draw before computing
 Given 20 students with (hours studied, sleep, exam score), sketch: the scatter with an estimated regression line; an ellipse suggesting ρ ≈ 0.6; and the *partial* correlation of sleep and score given hours. If the sketch doesn't change when you condition, name what's missing — usually a confounder you didn't draw.

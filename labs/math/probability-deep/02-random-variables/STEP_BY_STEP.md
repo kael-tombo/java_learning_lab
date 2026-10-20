@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Random Variables
+# Step-by-Step Guide: Random Variables
 
 ## Part A — Discrete: heads in 3 fair flips
 

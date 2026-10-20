@@ -1,4 +1,4 @@
-﻿# Architecture: Multivariate Statistics Implementation
+# Architecture: Multivariate Statistics Implementation
 
 ## Package layout
 ```

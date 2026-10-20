@@ -1,4 +1,4 @@
-﻿# Visual Guide: Probability Axioms
+# Visual Guide: Probability Axioms
 
 ## Probability tree (medical test, P(D)=0.01)
 ```

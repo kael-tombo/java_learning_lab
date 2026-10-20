@@ -1,4 +1,4 @@
-﻿# References: Multivariate Statistics
+# References: Multivariate Statistics
 
 ## Primary sources
 - **K. Pearson**, "Notes on regression and inheritance in the case of two variables", *Proc. R. Soc. London* 58:240–242, 1895 — the correlation coefficient; and "On the criterion... χ²", *Phil. Mag.* 50:157–175, 1900.

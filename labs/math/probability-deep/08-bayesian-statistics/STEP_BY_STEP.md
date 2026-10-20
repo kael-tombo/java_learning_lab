@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Bayesian Statistics
+# Step-by-Step Guide: Bayesian Statistics
 
 ## Worked example: Beta–Binomial updating (conjugate)
 

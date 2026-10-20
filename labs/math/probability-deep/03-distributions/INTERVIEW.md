@@ -1,4 +1,4 @@
-﻿# Interview: Probability Distributions
+# Interview: Probability Distributions
 
 ### Q1. Which distribution for "number of events in an interval"? When does Poisson fail?
 **A.** Poisson(λ) when events are rare, independent, and at a constant rate. It fails on three counts: (a) overdispersion — real counts often have Var > mean (negative binomial is the first fallback); (b) clustering/autocorrelation (Hawkes processes); (c) a finite-capacity denominator — with n trials and small p it's Binomial(n, p) with λ = np, and the Poisson approximation's P(X = 0) error at n = 10, p = 0.4 is e^{−4} = 0.0183 vs 0.6¹⁰ = 0.0060, a 3× miss in the tail.

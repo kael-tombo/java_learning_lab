@@ -1,4 +1,4 @@
-﻿# How It Works: Probability Axioms
+# How It Works: Probability Axioms
 
 ## 1. Building the joint from marginals and conditionals
 Start with P(D) = 0.01 and the two conditionals. Each of the four partition cells is one multiplication. The constraint that the four cells sum to 1 is not an extra assumption — it follows from total probability:

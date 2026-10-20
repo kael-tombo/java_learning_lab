@@ -1,4 +1,4 @@
-﻿# How It Works: Estimation Theory
+# How It Works: Estimation Theory
 
 ## 1. From likelihood to estimate
 Write L(θ) = ∏ f(xᵢ; θ), maximize its log. For the normal, ∂ℓ/∂μ = Σ(xᵢ − μ)/σ² = 0 ⇒ μ̂ = x̄; for the exponential, ∂ℓ/∂λ = n/λ − Σxᵢ = 0 ⇒ λ̂ = n/Σxᵢ = 1/x̄. The score equation "balances the data against the model" — for exponential families the MLE is a function of the sufficient statistics, always.

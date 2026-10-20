@@ -1,4 +1,4 @@
-﻿# Mental Models: Hypothesis Testing
+# Mental Models: Hypothesis Testing
 
 ## 1. A Test Is a Rule Bent Twice
 Define a statistic T and a rejection region R chosen so that P(T ∈ R | H₀) = α. Nothing else matters: the null supplies the reference distribution, the alternative supplies where to look. Everything controversial about p-values is really about how R was chosen — before the data (legitimate) or after (α inflation).

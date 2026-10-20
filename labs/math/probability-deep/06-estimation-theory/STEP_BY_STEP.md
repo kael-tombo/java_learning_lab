@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Estimation Theory
+# Step-by-Step Guide: Estimation Theory
 
 ## Worked example: MLE, SE and CI for five observations
 

@@ -1,4 +1,4 @@
-﻿# Mental Models: Estimation Theory
+# Mental Models: Estimation Theory
 
 ## 1. An Estimator Is a Machine, an Estimate Is One Output
 θ̂ = g(X₁, …, Xₙ) is a function of random inputs — it has a sampling distribution *before* you see data. The number you report is one draw from that distribution. Everything (bias, variance, CI) is a property of the machine; your single output cannot show you its spread.

@@ -1,4 +1,4 @@
-﻿# Why It Matters: Random Variables
+# Why It Matters: Random Variables
 
 ## Everything downstream is a function of them
 - **Distributions (lab 03)** are the named laws of specific random variables: Binomial counts successes, Exponential times the wait, Normal summarizes averages.

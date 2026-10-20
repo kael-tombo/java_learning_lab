@@ -1,4 +1,4 @@
-﻿# Mental Models: Probability Distributions
+# Mental Models: Probability Distributions
 
 ## 1. A Distribution Is a Shape Contract
 Choosing Binomial, Poisson, Normal or Pareto is a claim about mechanism: n independent yes/no trials, rare independent events in a fixed interval, sums of many small effects, or multiplicative growth with no characteristic scale. The parameters are then the *only* free content — Binomial is fully pinned down by (n, p). Ask "what process generates this?" before "which distribution fits best?"

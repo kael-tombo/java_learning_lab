@@ -1,130 +1,77 @@
-﻿# Exercises: Multivariate Statistics
+# Exercises — Multivariate Statistics
 
-## Theoretical Exercises
+Solutions quote run outputs from CODE_DEEP_DIVE.md; derived steps stay
+in exact rational arithmetic.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Multivariate Statistics in your own words.
-**Answer**: Multivariate Statistics involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Correlation With a Square root Avoided
+Using the four-cell table (Var = 1/4 each, Cov = −1/8), prove ρ = −1/2
+without floating point.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Multivariate Statistics.
-**Answer**: The proof follows from the definitions and established theorems.
+**Solution**: ρ = Cov / sqrt(VarX VarY); here sqrt(1/16) = 1/4 is exact,
+so ρ = (−1/8)/(1/4) = −1/2. The machine check — cov^2 == (1/4)·VarX·VarY
+printed True — certifies the square of ρ; the sign (cov negative True)
+fixes the minus. Both halves together pin ρ = −1/2 exactly.
 
-### Exercise 3: Application
-**Question**: Apply the theory of Multivariate Statistics to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## Problem 2. Conditional Rows Reversed
+From the same table, give the conditional distribution of Y given X = x
+for both x ∈ {0, 1}, and connect it to the correlation sign.
 
-## Programming Exercises
+**Solution**: Row x = 1: cells 3/8 and 1/8, rescaled by 1/2 →
+(3/4, 1/4). Row x = 0: rescaled → (1/4, 3/4). Conditioning flips the
+likely answer back and forth, the table-face of negative association.
+Product rule audit: the independence candidate p_X(x) p_Y(y) equals
+1/4 at every cell, while the observed cells are 1/8, 3/8, 3/8, 1/8 —
+all four disagree, so dependence holds on the entire grid, not a
+single witness cell.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Multivariate Statistics.
+## Problem 3. General Linear Combination, Heavy Coefficients
+On the same table compute Var(4X − 5Y) via the formula and confirm it
+with the direct definition.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: Formula route: a²VarX + b²VarY + 2ab·Cov =
+16·(1/4) + 25·(1/4) + 2·4·(−5)·(−1/8) = 4 + 25/4 + 5 = 61/4.
+Direct route: W = 4X − 5Y takes values 0, −5, 4, −1 with masses
+1/8, 3/8, 3/8, 1/8. Then E[W] = (0 − 15 + 12 − 1)/8 = −1/2 and
+E[W²] = (75 + 48 + 1)/8 = 124/8 = 31/2, so
+Var(W) = 31/2 − 1/4 = 62/4 − 1/4 = 61/4. Both roads print 61/4 —
+the cross term +5 (scale product 20 times covariance −1/8, doubled)
+is exactly what the negative covariance buys back.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 4. Programming: Covariance Matrix From a Table
+Implement `cov_matrix(joint)` that maps a dict {(x, y): Fraction} to
+the 2x2 exact covariance matrix [[VarX, Cov], [Cov, VarY]] and run it
+on the four-cell table; verify the diagonal and the −1/8 off-diagonal.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+**Solution skeleton**:
 
-## Challenge Problems
+```python
+from fractions import Fraction as F
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+def cov_matrix(jp):
+    px = {x: sum(v for (a, b), v in jp.items() if a == x) for x, _ in jp}
+    py = {y: sum(v for (a, b), v in jp.items() if b == y) for _, y in jp}
+    mx = sum(F(x) * v for x, v in px.items())
+    my = sum(F(y) * v for y, v in py.items())
+    cov = sum(F(x * y) * v for (x, y), v in jp.items()) - mx * my
+    vx = sum(F(x * x) * v for x, v in px.items()) - mx * mx
+    vy = sum(F(y * y) * v for y, v in py.items()) - my * my
+    return [[vx, cov], [cov, vy]]
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+jp = {(0, 0): F(1, 8), (0, 1): F(3, 8), (1, 0): F(3, 8), (1, 1): F(1, 8)}
+print(cov_matrix(jp))
+```
 
-## Solutions
+Executed on the lab table it returned
+[[Fraction(1, 4), Fraction(-1, 8)], [Fraction(-1, 8), Fraction(1, 4)]]
+— the diagonal carries the variances from MATH_FOUNDATION.md, the
+off-diagonal repeats the −1/8, and symmetry holds by construction.
 
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Multivariate Statistics
+## Problem 5. A Cell That Convicts
+For the quadratic trap (X uniform on {−1,0,1}, Y = X^2), list one joint
+cell where independence fails and give both sides of the comparison.
 
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Multivariate Statistics?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Multivariate Statistics?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+**Solution**: Cell (−1, 1): the joint mass is 1/3 (X = −1 forces
+Y = X^2 = 1), while the independence product is
+P(X = −1) P(Y = 1) = 1/3 · 2/3 = 2/9. Run printed exactly this pair
+(1/3 vs 2/9) alongside Cov = 0 — one cell beats one second-moment
+number when it comes to detecting dependence.

@@ -1,4 +1,4 @@
-﻿# Interview: Multivariate Statistics
+# Interview: Multivariate Statistics
 
 ### Q1. PCA or correlation: what's the difference, and when does scaling change PCA?
 **A.** PCA decomposes Σ and finds directions of maximal *sample variance*; correlation analysis reads rᵢⱼ off the standardized matrix. PCA on raw data weights variables by their units — a variable measured in mm dominates PC1. Standardizing (using the correlation matrix) makes each variable contribute equally. Rule: same comparable units → covariance matrix; mixed units/scales → correlation matrix. Both preserve total variance (trace), but they rotate to different axes.

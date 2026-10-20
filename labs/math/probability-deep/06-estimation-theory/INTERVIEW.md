@@ -1,4 +1,4 @@
-﻿# Interview: Estimation Theory
+# Interview: Estimation Theory
 
 ### Q1. MLE or method of moments? When do they differ?
 **A.** MLE maximizes the likelihood (efficient asymptotically, attains Cramér–Rao in regular families); moments match sample to population moments (closed form, can be badly inefficient or even outside the parameter space). They coincide for binomial p (both = k/n) and normal μ, but for Lognormal(μ, σ²) the moment estimator on raw data has far larger variance than the MLE on log data, and for some models the moment estimate can violate constraints. Default to MLE; fall back to moments when the likelihood has no closed form or as an optimizer starting value.

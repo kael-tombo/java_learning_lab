@@ -1,4 +1,4 @@
-﻿# References: Law of Large Numbers and CLT
+# References: Law of Large Numbers and CLT
 
 ## Primary sources
 - **J. Bernoulli**, *Ars Conjectandi*, Basel, 1713, part IV — first weak law of large numbers (and his hand-computed trial counts).

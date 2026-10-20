@@ -1,4 +1,4 @@
-﻿# Security: Bayesian Statistics
+# Security: Bayesian Statistics
 
 ## Spam filtering is the canonical deployed Bayes filter
 **Paul Graham's "A Plan for Spam" (2002)** and the SpamAssassin implementation score a message by the odds form: log-score = log(prior odds) + Σ log P(word | spam)/P(word | ham), which is naive Bayes — conditional independence of words, violated in practice but rank-consistent. The filter's whole design is lab 01's base-rate lesson: with a prior of ~0.15 spam arriving, a handful of strong likelihood ratios decide, and weak words barely move the posterior.

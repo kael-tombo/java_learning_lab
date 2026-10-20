@@ -1,4 +1,4 @@
-﻿# Internals: Bayesian Statistics
+# Internals: Bayesian Statistics
 
 ## Log-posterior as the single objective
 Everything downstream — MH acceptance, HMC gradients, VI optimization — consumes one function:

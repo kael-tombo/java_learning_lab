@@ -1,4 +1,4 @@
-﻿# Debugging: Probability Axioms Implementation
+# Debugging: Probability Axioms Implementation
 
 ### Symptom: probabilities sum to 1.0000000002 after normalization
 Cells were rounded individually before dividing. Normalize *after* summation: sum once, divide every cell by that one sum, and assert `|Σp − 1| < 1e-12`.

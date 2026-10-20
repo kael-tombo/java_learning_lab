@@ -1,4 +1,4 @@
-﻿# Security: Probability Distributions
+# Security: Probability Distributions
 
 ## Attack arrivals are Poisson — until they aren't
 The classic intrusion model is a homogeneous Poisson process: λ attempts/hour ⇒ P(N = k in an hour) = e^{−λ}λᵏ/k!, independent increments, exponential inter-arrival times (memoryless). With λ = 0.1/hour: P(N ≥ 3) = 1 − e^{−0.1}(1 + 0.1 + 0.005) = 1 − 0.999845 = 0.000155 — about 1 chance in 6 400 hours under background noise.

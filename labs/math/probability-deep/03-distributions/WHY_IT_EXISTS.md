@@ -1,4 +1,4 @@
-﻿# Why It Exists: Probability Distributions
+# Why It Exists: Probability Distributions
 
 ## The problem: chance has shapes, and shapes repeat
 Before named families, every new random phenomenon demanded a fresh combinatorial derivation. What emerged historically was that *the same shapes keep recurring* because the same mechanisms do:

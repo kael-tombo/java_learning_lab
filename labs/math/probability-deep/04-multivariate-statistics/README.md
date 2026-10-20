@@ -1,76 +1,46 @@
-﻿# Multivariate Statistics
+# Lab 04 — Multivariate Statistics
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Multivariate Statistics**, a cornerstone topic in Probability and Statistics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Extends single-variable probability to joint structure: two-way tables,
+covariance algebra, correlation, and the honest limits of each.
 
-## Topics Covered
-- joint/marginal/conditional distributions, covariance, correlation, multivariate normal, Wishart
+## What This Lab Actually Teaches
+- Joint PMFs, marginalization as axis collapse, conditional rows as
+  rescaled table slices (THEORY.md).
+- Independence as a per-cell product condition, and why it fails on
+  whole grids rather than in one spot.
+- Covariance: computational identity, bilinearity, Cov(X, X) = Var(X),
+  and the general variance law of sums.
+- Correlation's scale-freeness and the exact range −1 <= ρ <= 1.
+- The covariance matrix as a positive-semidefinite object.
+- Zero covariance without independence, embodied by a quadratic trap
+  that a single violated cell convicts.
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+## The Worked Material
+MATH_FOUNDATION.md reads one four-cell table exhaustively: mass 1,
+marginals (1/2, 1/2), E[XY] = 1/8, Cov = −1/8, ρ = −1/2 certified via
+its normalization identity, conditional rows (3/4, 1/4) vs (1/4, 3/4),
+and a direct/formula double on Var(2X + 3Y) = 7/4. The quadratic trap
+(X uniform on {−1,0,1}, Y = X^2) shows Cov = 0 executed exactly, cell
+(−1, 1) at 1/3 vs product 2/9, and Var(X + X^2) = 8/9 by both routes.
+CODE_DEEP_DIVE.md holds the three programs with captured output.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Multivariate Statistics
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Files (core six)
+| File | Contents |
+|------|----------|
+| THEORY.md | Joint laws, covariance algebra, correlation, PSD matrix |
+| MATH_FOUNDATION.md | The four-cell table worked to the last fraction |
+| CODE_DEEP_DIVE.md | Three runnable programs, outputs pasted |
+| EXERCISES.md | Five problems with computed solutions |
+| FLASHCARDS.md | 11 cards including theorem statement cards |
+| README.md | This overview |
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Companion files in this directory (QUIZ, HISTORY, the Java sources,
+projects, and the rest) were not modified.
 
-## Project Structure
-`
-multivariatestats/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/multivariatestats/MultivariateStatistics.java
-    â””â”€â”€ test/java/com/mathlab/multivariatestats/MultivariateStatisticsTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Suggested Sequence
+1. THEORY.md, then the table section of MATH_FOUNDATION.md with a
+   fractions session open.
+2. Run all three CODE_DEEP_DIVE.md programs; watches: `joint sums to: 1`,
+   `match: True`, `Cov = 0` with the dependence conviction.
+3. EXERCISES.md with attempts before solutions.
+4. FLASHCARDS.md until the sums law and the trap are automatic.

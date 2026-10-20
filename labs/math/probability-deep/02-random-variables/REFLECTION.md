@@ -1,4 +1,4 @@
-﻿# Reflection: Random Variables
+# Reflection: Random Variables
 
 ## Write your own definitions first
 Without looking: define random variable, PMF, PDF, CDF, expectation, variance. Then check which definitions secretly assumed a uniform measure or a specific family (e.g. defining variance only for normals). The right definitions must apply to a die, a waiting time and a measurement error simultaneously.

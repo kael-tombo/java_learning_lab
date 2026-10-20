@@ -1,76 +1,48 @@
-﻿# Probability Distributions
+# Lab 03 — Distributions
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Probability Distributions**, a cornerstone topic in Probability and Statistics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Catalogs the named probability families and makes every parameter a
+computable object, exact where discrete and machine-precision where
+smooth.
 
-## Topics Covered
-- Bernoulli, Binomial, Poisson, Geometric, Uniform, Normal, Exponential, Gamma, Beta, Chi-squared, t, F
+## What This Lab Actually Teaches
+- PDF axioms (nonnegativity, unit mass) and the CDF relations
+  F(x) = ∫ f, F'(x) = f at continuity points (THEORY.md).
+- Why P(X = x) = 0 for continuous variables, and why density values
+  themselves are not probabilities.
+- Exact definitions and moments of Uniform(a, b), Exponential(λ),
+  Binomial(n, p), Poisson(λ), Normal(μ, σ²).
+- The uniqueness of exponential memorylessness, stated and then
+  exhibited numerically.
+- Φ via erf, and the engineered numbers behind the 68/95 folklore.
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+## The Worked Material
+MATH_FOUNDATION.md runs the uniform cylinder round trip (F(1) = 1/2 and
+derivative-back gives 1/2), exponential decimals to 17 digits
+(e^{−1} = 0.36787944117144233 with the survival ratio e^{−0.5} =
+0.6065306597126334 digit-matched), exact binomial tables —
+Bin(4, 1/2) as [1/16, 1/4, 3/8, 1/4, 1/16] with E = np = 2,
+Var = npq = 1, and Bin(10, 1/3) with P(X <= 1) = 2048/19683 — a full
+Poisson(2) decimal table with truncation error 1.4e−06 disclosed, and
+the erf-based normals (Φ(1) = 0.8413447460685428 etc.). CODE_DEEP_DIVE.md
+pastes real captured output for all three programs.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Probability Distributions
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Files (core six)
+| File | Contents |
+|------|----------|
+| THEORY.md | PDF laws, CDF relations, family definitions, memorylessness |
+| MATH_FOUNDATION.md | Executed tables: uniform, exponential, binomial, Poisson, normal |
+| CODE_DEEP_DIVE.md | Three runnable programs, real outputs pasted |
+| EXERCISES.md | Five problems with worked, computed solutions |
+| FLASHCARDS.md | 12 cards, one statement card per core theorem |
+| README.md | This overview |
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+The directory's remaining companion files (QUIZ, HISTORY, sources,
+tests, projects, and so on) were left as-is.
 
-## Project Structure
-`
-distributions/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/distributions/ProbabilityDistributions.java
-    â””â”€â”€ test/java/com/mathlab/distributions/ProbabilityDistributionsTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Suggested Sequence
+1. THEORY.md definitions, with the pdf-axiom subtleties read twice.
+2. MATH_FOUNDATION.md tables side-by-side with a Python session.
+3. Run the three CODE_DEEP_DIVE.md programs; recompute the normal
+   percent rules from your own erf calls.
+4. EXERCISES.md, solutions after attempts.
+5. FLASHCARDS.md until family parameters and moments are instant.

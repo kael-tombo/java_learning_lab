@@ -1,4 +1,4 @@
-﻿# Why It Matters: Hypothesis Testing
+# Why It Matters: Hypothesis Testing
 
 ## Every gate you have ever passed through used one
 Clinical trials (phase III decisions at α = 0.05 with pre-specified interim looks), drug safety signals, quality-control lot acceptance, A/B tests behind every product feature, fraud-model launches, scientific replication — all are formal tests with error budgets. If the budget is not declared in advance, it is being overspent silently.

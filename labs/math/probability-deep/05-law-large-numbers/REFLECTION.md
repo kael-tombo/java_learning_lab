@@ -1,4 +1,4 @@
-﻿# Reflection: Law of Large Numbers and CLT
+# Reflection: Law of Large Numbers and CLT
 
 ## State each theorem precisely before using it
 Fill in the blanks: WLLN — X̄ₙ converges to μ *in what sense, under what assumptions*? SLLN — same question, plus: how does it differ from WLLN? CLT — what exactly converges to N(0,1), and what does it say about X itself? If any answer includes "the data become normal," stop and reread COMMON_MISTAKES #4.

@@ -1,76 +1,47 @@
-﻿# Estimation Theory
+# Lab 06 — Estimation Theory
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Estimation Theory**, a cornerstone topic in Probability and Statistics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Turns samples into science: how estimators are defined, judged
+(bias, variance, MSE), pushed to consistency, and optimized
+(likelihood, sufficiency).
 
-## Topics Covered
-- MLE derivation, method of moments, bias/variance tradeoff, sufficient statistics, Rao-Blackwell, Cramer-Rao
+## What This Lab Actually Teaches
+- Bias, variance, and the exact identity MSE = Var + Bias²
+  (THEORY.md).
+- Consistency of estimator sequences and the MSE-to-zero proof path.
+- MVUE and efficiency through the Cramer–Rao bound statement.
+- Likelihood, maximum likelihood estimation, the invariance property,
+  and asymptotic behavior at concept level.
+- Sufficiency via the Neyman–Fisher factorization, with the Bernoulli
+  count statistic as the worked case.
+- Loss-driven location: squared loss vs absolute loss as executed
+  minimizers.
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+## The Worked Material
+MATH_FOUNDATION.md excavates one three-point sample (1, 2, 4): mean
+7/3 anchored as exact squared-loss argmin (14/9 minimum, symmetric
+25/16 flanks), median 2 as absolute-loss winner (risk 1 vs 10/9),
+Bernoulli proportion bookkeeping (Bias 0, Var 1/40), the Uniform(0, 12)
+max with bias −3 and the 4/3 cure, plus the seeded 200000-replication
+simulation returning 8.997715881500072 against theory 9. Poisson MLE
+= sample mean = 2 gets a derivative argument from first principles.
+CODE_DEEP_DIVE.md pastes all captured outputs.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Estimation Theory
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Files (core six)
+| File | Contents |
+|------|----------|
+| THEORY.md | Bias/MSE, consistency, MVUE, likelihood, factorization |
+| MATH_FOUNDATION.md | Executed loss curves, MLE moments, uniform bias |
+| CODE_DEEP_DIVE.md | Three runnable programs with real output |
+| EXERCISES.md | Five problems with computed solutions |
+| FLASHCARDS.md | 12 cards, statement cards for each core theorem |
+| README.md | This overview |
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+Directory companions beyond the core six were left untouched.
 
-## Project Structure
-`
-estimation/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/estimation/EstimationTheory.java
-    â””â”€â”€ test/java/com/mathlab/estimation/EstimationTheoryTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Suggested Sequence
+1. THEORY.md definitions with the MSE identity read as the hub.
+2. MATH_FOUNDATION.md with fractions session following along.
+3. Run the three programs; watch the loss grid find 7/3 and the
+   simulation agree with 9.
+4. EXERCISES.md before its solutions.
+5. FLASHCARDS.md until bias/factorization/invariance are word-perfect.

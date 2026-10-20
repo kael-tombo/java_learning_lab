@@ -1,4 +1,4 @@
-﻿# Visual Guide: Bayesian Statistics
+# Visual Guide: Bayesian Statistics
 
 ## Prior → likelihood → posterior (Beta–Binomial, 9H/1T)
 ```

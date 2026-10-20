@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Probability Axioms
+# Common Mistakes: Probability Axioms
 
 ### 1. Assuming outcomes are equally likely
 P(A) = |A|/|Ω| holds only when the measure on Ω is uniform. A loaded die still has sample space {1,…,6} but P({6}) = 1/2. "There are 6 options, so 1/6" is a modeling assumption, not an axiom.

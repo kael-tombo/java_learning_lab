@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Bayesian Statistics
+# Common Mistakes: Bayesian Statistics
 
 ### 1. Confusing P(A|B) with P(B|A) — and forgetting the base rate
 The medical test again: 1% prevalence, 99% sensitivity, 95% specificity → P(D | +) = 0.0099/0.0594 = **16.7%**, not 99%. Bayesian updating makes the prior do real work; skipping P(+) in the denominator is the same error as lab 01, now wearing Bayesian clothes.

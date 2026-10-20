@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Random Variables
+# Common Mistakes: Random Variables
 
 ### 1. Reading a PDF as a probability
 If f(x) = 1.8 on [0, 0.56] then f(0.3) = 1.8 is a *density*; the probability is the integral over an interval: P(X ∈ [0.3, 0.31]) = 0.018. Densities may exceed 1 (Uniform(0, 0.4) has f = 2.5); only intervals carry probability.

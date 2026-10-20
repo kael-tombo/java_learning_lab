@@ -1,4 +1,4 @@
-﻿# How It Works: Hypothesis Testing
+# How It Works: Hypothesis Testing
 
 ## 1. The null supplies a reference distribution
 Assume H₀ (μ = 100, σ = 8) plus a sampling model: under H₀, x̄ ~ N(100, 8²/25) = N(100, 2.56), so SE = 1.6 and (x̄ − 100)/1.6 ~ N(0,1) *if H₀ is true*. The test statistic is this standardized distance; everything else is reading its tail.

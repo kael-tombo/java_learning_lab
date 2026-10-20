@@ -1,4 +1,4 @@
-﻿# Debugging: Hypothesis Testing
+# Debugging: Hypothesis Testing
 
 ### Symptom: p-value is exactly 0.0 (or 1.0)
 Underflow of a far-tail probability (z = 40 → e^{−800}) or complement cancellation (`1 - cdf`). Report p < smallest representable (e.g. p < 1e-300) and compute the tail with the survival function/log-scale. A p of exactly 0 is a numerics artifact, never a fact about the data.

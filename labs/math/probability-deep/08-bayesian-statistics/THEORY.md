@@ -1,70 +1,62 @@
-﻿# Bayesian Statistics -- Theory
+# Bayesian Statistics — Theory
 
-## 1. Introduction
+## 1. The Engine, Rebuilt From Lab 01
+Bayes' theorem prices hypotheses by their data likelihoods weighted by
+priors. In this lab's register:
+  posterior ∝ likelihood × prior,
+with the proportionality constant exact-known as the evidence — the
+probability of the observed data under the prior-marginalized model.
+Every Bayesian computation is a bookkeeping triple: prior (what you
+knew), likelihood (what the data endorse), posterior (what remains).
 
-Bayesian Statistics is a fundamental concept in Probability and Statistics Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+## 2. Beta–Binomial Conjugacy — Exact Statement
+Let p ~ Beta(a, b) as prior and observe s successes, f failures in n
+Bernoulli trials (f = n − s). Then the posterior is EXACTLY
+  Beta(a + s, b + f).
+No integration ever confronts the analyst; the updating law simply
+adds successes to the first parameter, failures to the second. This
+is why the pair is called conjugate: prior and posterior stay inside
+the same family.
 
-## 2. Core Definitions
+## 3. Posterior Summaries — Closed Forms
+For Beta(a + s, b + f) (write A = a + s, B = b + f):
+- Posterior mean: A/(A + B) — the parameter-weighted lawful average.
+- Posterior mode (the MAP for this family): (A − 1)/(A + B − 2),
+  valid when A, B > 1.
+- Normalization: ∫ x^{A−1}(1−x)^{B−1} dx = B(A,B) =
+  Γ(A)Γ(B)/Γ(A+B); on integer parameters this is factorial
+  arithmetic — the lab checks B(9,5) = 1/6435 from 8!·4!/13!.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Bayesian Statistics rests on several key definitions and axioms that form the foundation of the theory.
+## 4. The Posterior Predictive — Statement
+Probability of the NEXT trial being a success, integrating over the
+posterior rather than plugging in a point estimate:
+  P(next head) = E[p | data] = (a + s)/(a + b + n).
+This adds the prior mass back into the denominator, which is why the
+predictive differs from the plug-in ratio s/n — with exact tracking in
+MATH_FOUNDATION.md (9/14 vs 7/10 for the worked dataset).
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 5. Sequential Equals Batch
+Updating with evidence one observation at a time produces the same
+posterior as absorbing the whole batch at once — the two parameters
+just add in either order. The lab verifies this as a machine equality
+(Beta(9, 5) both ways), which is the Bayesian version of sufficient
+statistics doing their job (Lab 06's factorization, repurposed).
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 6. Normal–Normal Conjugacy — Statement
+With known variance σ^2 and prior μ ~ Normal(μ0, τ^2), observations
+x1..xn give a Normal posterior with
+  precision: 1/τ^2 + n/σ^2 (precisions ADD),
+  mean: posterior mean = (μ0/τ^2 + Σx_i/σ^2)/(1/τ^2 + n/σ^2).
+Data shrinkage toward data grows linearly in n; the framework is the
+continuous twin of Beta–Binomial counting (statement level here; the
+executed lab is the Bayesian coin).
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Bayesian Statistics:
-
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Bayesian Statistics is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Bayesian Statistics is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Bayesian Statistics extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Bayesian Statistics requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Bayesian Statistics connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Bayesian Statistics provide the rigorous basis needed for correct computational implementation and real-world application.
+## 7. MAP vs Posterior Mean vs Credible Intervals
+Three different Bayesian points/intervals: the MAP maximizes the
+posterior density (mode), the posterior mean integrates it, and a
+central credible interval brackets a stated posterior probability
+(e.g., 95%). None of these is a frequentist confidence interval: a
+credible interval makes a direct probability claim about the given
+interval under the posterior law, no long-run replication semantics
+attached. Priors are choices — the lab shows their fingerprints
+(1/5 vs 7/10 on nearly the same data).

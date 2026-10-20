@@ -1,4 +1,4 @@
-﻿# History: Hypothesis Testing
+# History: Hypothesis Testing
 
 ## The origins of a test
 **Karl Pearson (1857–1936)** introduced the χ² goodness-of-fit test in 1900 (*Philosophical Magazine* 50:157–175): compare observed counts to expected ones via Σ(O − E)²/E, with df = categories − 1. **W. S. Gosset ("Student", 1876–1937)** derived the t distribution and the first small-sample test in *Biometrika* (1908), working at Guinness with n = 5 brewery samples.

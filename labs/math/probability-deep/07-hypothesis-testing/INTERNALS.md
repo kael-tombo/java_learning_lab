@@ -1,4 +1,4 @@
-﻿# Internals: Hypothesis Testing
+# Internals: Hypothesis Testing
 
 ## A test is a value object
 ```

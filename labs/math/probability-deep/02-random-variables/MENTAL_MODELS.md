@@ -1,4 +1,4 @@
-﻿# Mental Models: Random Variables
+# Mental Models: Random Variables
 
 ## 1. A Random Variable Is a Measuring Tape Laid on Ω
 The sample space is abstract (coin sequences, particle positions); the random variable is the function that reads off a number. Two different variables can sit on the same Ω — X = first head position, Y = number of heads — with different distributions. The model lives in the measure on Ω; the *usable* answer lives in the push-forward to ℝ.

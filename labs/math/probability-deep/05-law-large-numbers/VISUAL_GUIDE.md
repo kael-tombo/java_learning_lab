@@ -1,4 +1,4 @@
-﻿# Visual Guide: Law of Large Numbers and CLT
+# Visual Guide: Law of Large Numbers and CLT
 
 ## One path of the sample mean (n = 500 fair dice, μ = 3.5)
 ```

@@ -1,70 +1,60 @@
-﻿# Estimation Theory -- Theory
+# Estimation Theory — Theory
 
-## 1. Introduction
+## 1. Estimators Are Statistics With a Job
+An estimator θ_hat = g(X1, ..., Xn) is any function of the sample
+proposing a value for a population parameter θ. Evaluation is
+statistical: the same formula applied across hypothetical data
+replications should land close to θ, and closer as n grows.
 
-Estimation Theory is a fundamental concept in Probability and Statistics Deep Dive. This section provides a rigorous theoretical foundation for understanding the core principles and their applications.
+## 2. Bias and Variance — Exact Definitions
+- Bias: Bias(θ_hat) = E[θ_hat] − θ. Zero means the estimator's
+  averaging center sits exactly on the target; no statement yet about
+  spread.
+- Variance: Var(θ_hat) — the replication spread.
+- MSE: E[(θ_hat − θ)^2]. The fundamental decomposition, exact:
+  MSE = Var(θ_hat) + (Bias(θ_hat))^2,
+  obtained by inserting (θ_hat − E[θ_hat]) + (E[θ_hat] − θ) and
+  expanding — the cross term vanishes because deviations from their
+  own mean average to zero.
 
-## 2. Core Definitions
+## 3. Consistency — Exact Statement
+θ_hat_n is consistent for θ if θ_hat_n → θ in probability as
+n → ∞, i.e., P(|θ_hat_n − θ| >= ε) → 0 for all ε > 0. A sufficient
+route (used constantly): show MSE_n → 0, then Markov/Chebyshev
+delivers the convergence. Consistency is an asymptotic property of
+the SEQUENCE, not of any single estimator drawing.
 
-### 2.1 Fundamental Concepts
-The mathematical framework for Estimation Theory rests on several key definitions and axioms that form the foundation of the theory.
+## 4. Unbiasedness Is Not Efficiency — The Hierarchy
+- MVUE: among unbiased estimators, the one with minimum variance.
+- Efficiency: an estimator achieves the Cramer–Rao lower bound
+  Var(θ_hat) >= 1 / (n I(θ)), with I(θ) the Fisher information
+  I(θ) = E[(∂/∂θ log f(X | θ))^2]. Unbiased and bound-attaining
+  halves the story; asymptotically efficient estimators reach the
+  bound as n → ∞.
 
-**Definition 1 (Core Concept):** The fundamental mathematical object is defined with precision to enable rigorous analysis.
+## 5. Likelihood and Maximum Likelihood Estimation
+Given iid data x1, ..., xn from a family f(· | θ), the likelihood is
+L(θ) = Π_i f(x_i | θ) — a function of θ with the data fixed. The MLE
+is θ_higher = argmax_θ L(θ), usually located by setting
+d/dθ log L(θ) = 0. Properties (statements, conceptually): MLEs are
+consistent, asymptotically normal with variance approaching the
+Cramer–Rao bound, and invariant: if θ_higher = t then g(θ_higher) is
+the MLE of g(θ) for any function g.
 
-**Definition 2 (Secondary Structure):** Building on the core definition, we introduce additional structure that enables deeper results.
+## 6. Sufficiency — Factorization, Exact Statement
+A statistic T(X1, ..., Xn) is sufficient for θ when the conditional
+law of the data given T does not depend on θ. The
+Neyman–Fisher factorization theorem: T is sufficient iff the joint
+likelihood factors as
+  L(θ) = h(x) · g(T(x); θ),
+a data-only piece times a T-only piece. Exploitation checklist: for
+Bernoulli data, Σ x_i is the sufficient statistic (counts of successes
+freeze what θ can hear the sample say); for normal (θ, σ^2) pairs,
+(Σx_i, Σx_i^2) jointly suffice.
 
-### 2.2 Key Properties
-The following properties characterize the behavior of systems governed by Estimation Theory:
-
-1. **Property 1**: Invariance under specific transformations
-2. **Property 2**: Conservation of key quantities
-3. **Property 3**: Convergence to limiting behavior
-4. **Property 4**: Approximation bounds and error estimates
-
-### 2.3 Formal Framework
-The mathematical framework for Estimation Theory is built axiomatically. Starting from first principles, we derive the essential relationships that define the theory.
-
-## 3. Mathematical Formulation
-
-### 3.1 Formal Definition
-Let us consider the precise mathematical formulation that underpins this topic.
-
-### 3.2 Derivation from First Principles
-Starting from the most basic assumptions, we derive the key relationships:
-
-1. **Step 1**: Establish the base case and define the fundamental objects
-2. **Step 2**: Apply the transformation rules that govern the system
-3. **Step 3**: Simplify using algebraic and analytic manipulation
-4. **Step 4**: Arrive at the final formulation ready for computation
-
-### 3.3 Existence and Uniqueness
-A critical question in Estimation Theory is whether solutions exist and whether they are unique.
-
-## 4. Important Theorems
-
-### 4.1 Fundamental Theorem
-*Statement*: The fundamental theorem establishes the core relationship.
-*Proof*: The proof proceeds by establishing the base case and applying induction.
-*Implications*: This theorem has far-reaching consequences for both theory and practice.
-
-### 4.2 Convergence Theorem
-*Statement*: Under appropriate conditions, the iterative process converges.
-*Proof*: The proof uses contraction mapping or monotone convergence arguments.
-
-### 4.3 Error Bound Theorem
-*Statement*: The error in approximation is bounded by a function of the input.
-*Proof*: Taylor expansion with remainder provides the bound.
-
-## 5. Advanced Topics
-
-### 5.1 Extensions to Higher Dimensions
-The concepts of Estimation Theory extend naturally to higher-dimensional settings.
-
-### 5.2 Computational Considerations
-Numerical computation of Estimation Theory requires careful attention to floating-point arithmetic, error propagation, and algorithm selection.
-
-### 5.3 Connections to Other Fields
-Estimation Theory connects deeply with differential equations, optimization, probability theory, and numerical analysis.
-
-## 6. Summary
-The theoretical foundations of Estimation Theory provide the rigorous basis needed for correct computational implementation and real-world application.
+## 7. Loss Governs the Central Value
+Squared loss E[(θ − a)^2] is minimized by a = mean of the distribution;
+absolute loss E[|θ − a|] by a median. These are distributional facts;
+their sample versions (sample mean, sample median) are the plug-in
+estimators, and the two loss functions force different robustness
+behavior — executed side by side in MATH_FOUNDATION.md.

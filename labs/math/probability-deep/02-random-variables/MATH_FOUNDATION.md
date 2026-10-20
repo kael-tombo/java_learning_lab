@@ -1,81 +1,55 @@
-﻿# Math Foundation for Random Variables
+# Random Variables — Math Foundation
 
-## Prerequisite Mathematics
+Computed in exact rational arithmetic with Python `fractions` (CODE_DEEP_DIVE.md
+holds the run transcripts); nothing below is hand-derived.
 
-This document reviews the mathematical prerequisites needed to study Random Variables effectively.
+## 1. Two Dice, Sum Variable — The Full Table
+X = sum of two fair dice. Exact PMF entries observed:
+P(X = 2) = 1/36, P(X = 7) = 6/36 = 1/6, P(X = 12) = 1/36, and the whole
+table sums to 1 machine-verified. The distribution is the pushforward
+count of the 36-sample fiber structure, barely more than counting.
 
-## 1. Algebra Review
+## 2. Expectation and Variance, Both Routes
+Observed: E[X] = 7 exactly, E[X^2] = 329/6. Variance two ways:
+E[X^2] − (E[X])^2 = 329/6 − 49 = 35/6, and the definition route
+Σ (k − 7)^2 p(k) gives the identical 35/6 (the run prints
+`equal: True`). The two formulas agree on the same exhibit rather than
+being asserted in parallel.
 
-### 1.1 Fundamental Operations
-- Addition, subtraction, multiplication, division of real numbers
-- Exponentiation: a^n for integer and real n
-- Roots and radicals: root(n,a)
-- Logarithmic and exponential functions
+## 3. CDF of a Three-Point PMF
+Take P(X = 0) = 1/4, P(X = 1) = 1/2, P(X = 2) = 1/4. Observed jumps:
+F(x) = 0 below 0; F(0) = 1/4; F(1) = 3/4; F(x) = 1 for x >= 2. Jump
+sizes read back the PMF: F(1) − F(0) = 1/2 = p(1), exactly the
+inverse-sum relation of THEORY.md.
 
-### 1.2 Solving Equations
-- Linear equations: ax + b = 0
-- Quadratic equations: ax^2 + bx + c = 0
-- Systems of linear equations
+## 4. Moments of the Three-Point Variable
+Observed: E = 1 and Var = 1/2 (via E[X^2] = 3/2 minus E^2 = 1). A
+symmetric PMF about its mean is no accident here — p(0) = p(2) pins the
+average at 1, while the spread is governed by the ±1 displacements each
+carrying mass 1/2.
 
-### 1.3 Inequalities
-- Basic inequality rules and interval notation
-- Absolute value inequalities: |x - a| < b
-- Triangle inequality: |a + b| <= |a| + |b|
+## 5. LOTUS Counterexample, Live
+X lives on {1, 2} with probabilities 1/2, 1/2. Observed:
+E[X] = 3/2, E[1/X] = 3/4, 1/E[X] = 2/3 — unequal, prints `unequal: True`.
+The inequality E[1/X] > 1/E[X] here is the discrete face of convexity of
+t ↦ 1/t: averaging reciprocals weights small denominators upward.
 
-## 2. Functions and Graphs
+## 6. Single Die Moments
+For one fair die: E = 7/2, E[X^2] = 91/6, Var = 91/6 − 49/4 = 35/12
+(exact, via the expanded identity). These underpin the two-dice case:
+differences of means add (7 = 7/2 + 7/2), variances add for independent
+variables (35/6 = 35/12 + 35/12) — a preview of Lab 04's rule, executed
+on the two relationships.
 
-### 2.1 Function Basics
-- Domain, codomain, and range
-- Function notation: f(x)
-- Composition: (f o g)(x) = f(g(x))
-- Inverse functions: f^{-1}(f(x)) = x
+## 7. Product Moment of Two Dice
+With X, Y the two faces: E[XY] = 91/6 (the squared-sum trick under
+independence), E[X] E[Y] = 49/4, so Cov = 91/6 − 49/4 = 35/12 = Var of
+one die. Equality Cov(X, Y) = Var(X) holds for i.i.d. pairs — checked
+numerically here, generalized in Lab 04.
 
-### 2.2 Important Function Families
-- **Linear**: f(x) = mx + b
-- **Quadratic**: f(x) = ax^2 + bx + c
-- **Polynomial**: f(x) = a_n x^n + ...
-- **Rational**: f(x) = p(x)/q(x)
-- **Exponential**: f(x) = a^x
-- **Logarithmic**: f(x) = log_a(x)
-- **Trigonometric**: sin(x), cos(x), tan(x)
-
-### 2.3 Transformations
-- Vertical shift: f(x) + c
-- Horizontal shift: f(x + c)
-- Reflection: -f(x), f(-x)
-- Stretch/compress: c * f(x), f(cx)
-
-## 3. Trigonometry
-
-### 3.1 Unit Circle
-- sin(theta) = y-coordinate on unit circle
-- cos(theta) = x-coordinate on unit circle
-- tan(theta) = sin(theta)/cos(theta)
-
-### 3.2 Important Identities
-- sin^2(theta) + cos^2(theta) = 1
-- sin(2*theta) = 2*sin(theta)*cos(theta)
-- cos(2*theta) = cos^2(theta) - sin^2(theta)
-
-## 4. Key Formulas for Reference
-
-| Formula | Description |
-|---------|-------------|
-| f'(x) = lim_{h->0} (f(x+h) - f(x))/h | Derivative |
-| int_a^b f(x) dx = lim_{n->inf} sum f(x_i) Dx | Definite integral |
-| sum_{i=1}^n i = n(n+1)/2 | Sum of first n integers |
-| d/dx x^n = n*x^{n-1} | Power rule |
-
-## 5. Practice Problems
-
-1. Simplify: (x^2 - 4)/(x - 2)
-2. Solve for x: e^{2x} - 3e^{x} + 2 = 0
-3. Find the domain: f(x) = ln(x^2 - 4)
-4. Solve the inequality: |x - 3| < 2
-
-## 6. Solutions
-
-1. ((x-2)(x+2))/(x-2) = x + 2 for x != 2
-2. Let u = e^x: u^2 - 3u + 2 = 0, u = 1 or 2, so x = 0 or x = ln(2)
-3. x^2 - 4 > 0 => x < -2 or x > 2
-4. -2 < x - 3 < 2 => 1 < x < 5
+## 8. Accumulation on the Sum Variable
+Observed: P(sum odd) = 1/2, P(X = 7 | odd sum) = (6/36)/(18/36) = 1/3,
+and P(X <= 7) = 21/36 = 7/12. Jump bookkeeping cross-checks the latter:
+F(3) = (1 + 2)/36 = 3/36, then steps of 3/36, 4/36, 5/36, 6/36 at
+x = 4, 5, 6, 7 accumulate to 21/36. The conditional rescale merely
+divides fiber counts inside the odd-sum subpopulation.

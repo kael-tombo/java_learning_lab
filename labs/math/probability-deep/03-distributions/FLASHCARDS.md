@@ -1,52 +1,70 @@
-﻿# Flashcards: Probability Distributions
+# Flashcards — Distributions
 
-## Front-Back Cards
+## Definition Cards
 
 ### Card 1
-**Front**: What is the definition of Probability Distributions?
-**Back**: Mathematical operations transforming inputs according to established rules.
+**Front**: The two PDF axioms?
+**Back**: f(x) >= 0 everywhere, and the integral of f over the whole
+line equals 1; probabilities are integrals over intervals only.
 
 ### Card 2
-**Front**: Key properties of Probability Distributions?
-**Back**: Continuity, convergence, stability, error bounds.
+**Front**: State the three CDF-factor properties that make an F a valid
+CDF.
+**Back**: Nondecreasing, right-continuous, connecting limits 0 and 1 at
+−∞ and +∞; conversely any such F is some variable's distribution.
 
 ### Card 3
-**Front**: Time complexity of standard algorithm?
-**Back**: O(n) time, O(1) space.
+**Front**: Density from CDF and back?
+**Back**: F(x) = ∫_{−∞}^x f(t) dt, and F'(x) = f(x) wherever f is
+continuous; the pair round-trips at continuity points.
 
 ### Card 4
-**Front**: Common numerical issues?
-**Back**: Rounding errors, catastrophic cancellation, ill-conditioned inputs.
+**Front**: P(X = x) for a continuous variable?
+**Back**: Exactly 0 — points carry no mass under a density, so strict
+and weak interval bounds coincide.
+
+## Theorem Cards
 
 ### Card 5
-**Front**: Three real-world applications?
-**Back**: Scientific computing, engineering, machine learning.
+**Front**: State memorylessness for the exponential family.
+**Back**: P(X > s + t | X > s) = P(X > t) for all s, t >= 0; the
+exponential is the ONLY continuous family with this survival
+self-similarity.
 
 ### Card 6
-**Front**: How to verify correctness?
-**Back**: Unit tests, property-based testing, comparison with known results.
+**Front**: Binomial(n, p): pmf, mean, variance?
+**Back**: P(k) = C(n,k) p^k (1−p)^{n−k}, mean np, variance np(1−p);
+binomial coefficients over a symmetric p give a symmetric pmf.
 
 ### Card 7
-**Front**: Fundamental trade-off?
-**Back**: Speed vs. accuracy vs. stability.
+**Front**: Poisson(λ): pmf and its moment pair?
+**Back**: P(k) = e^{−λ} λ^k / k!; mean = variance = λ; the binomial
+limit when n is large, p small, and np stays at λ.
 
 ### Card 8
-**Front**: Common design patterns?
-**Back**: Strategy, Template Method, Factory.
+**Front**: Standardization of Normal(μ, σ²)?
+**Back**: Z = (X − μ)/σ is Normal(0, 1), and Φ(z) =
+(1 + erf(z/√2))/2 gives every normal probability through a single
+function.
 
-## Fill-in-the-Blank
 ### Card 9
-Time complexity of Probability Distributions algorithm: ________. **Answer**: O(n)
+**Front**: Symmetry identity for Φ?
+**Back**: Φ(−z) = 1 − Φ(z); two-sided interval reads reduce to positives:
+P(|Z| < c) = 2Φ(c) − 1.
+
+## Judge-the-Number Cards
 
 ### Card 10
-Use ________ comparison for floating-point equality. **Answer**: tolerance-based (epsilon)
+**Front**: Φ(1) and Φ(2) to machine precision?
+**Back**: 0.8413447460685428 and 0.9772498680518209 (erf-evaluated, not
+recalled).
 
-## True/False
 ### Card 11
-Higher precision always means more accurate results. **Answer**: False
+**Front**: Truncated Poisson(2) through k = 11 — how close to 1?
+**Back**: 0.9999986353848405; the deficit 1.4e−06 is truncation mass
+beyond k = 11.
 
-## Key Terms
-- **Algorithm**: Step-by-step procedure
-- **Convergence**: Approaching a limit
-- **Stability**: Insensitivity to input perturbations
-- **Conditioning**: Output sensitivity to input changes
+### Card 12
+**Front**: Uniform[0,2]: F(1) and total density mass?
+**Back**: F(1) = 1/2 exactly (rational), total mass 1 exactly — the
+straight-ramp CDF closes its integral.

@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Estimation Theory
+# Common Mistakes: Estimation Theory
 
 ### 1. Reporting the MLE variance with 1/n
 σ̂²_MLE = (1/n)Σ(xᵢ − x̄)² estimates (n−1)/n·σ² — biased low. At n = 10 the estimate is 90% of the truth (10% bias in variance, 5% in sd). The unbiased s² = Σ(xᵢ − x̄)²/(n−1) is what standard errors and t-tests expect. Both are consistent; the mistake is quoting the MLE while *labeling* it σ̂² without noting the divisor.

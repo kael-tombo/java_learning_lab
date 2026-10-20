@@ -1,4 +1,4 @@
-﻿# Security: Multivariate Statistics
+# Security: Multivariate Statistics
 
 ## Anomaly detection is a Mahalanobis question
 Per-user behavior (login hour, request rate, session length, bytes) forms a correlated cloud. Euclidean "3σ per field" alarms fire on whichever field has the largest variance and miss anomalies that are *jointly* unusual. d² = (x−μ)ᵀΣ⁻¹(x−μ) scales by the correlation structure; for two fields with ρ = 0.6 (Σ = [[1, 0.6], [0.6, 1]]):

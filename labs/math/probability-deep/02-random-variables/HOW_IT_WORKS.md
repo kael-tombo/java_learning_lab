@@ -1,4 +1,4 @@
-﻿# How It Works: Random Variables
+# How It Works: Random Variables
 
 ## 1. From outcomes to numbers
 A random variable is a function X on Ω. Probability on Ω induces a *push-forward* measure on ℝ: P(X ∈ B) = P({ω : X(ω) ∈ B}). For the 3-flip example the eight sequences map to {0,1,2,3}; the three sequences with exactly one head (HTT, THT, TTH) all land on 1, so P(X = 1) = 3/8. The mapping collapses outcomes, and the PMF is just counting how many land on each number.

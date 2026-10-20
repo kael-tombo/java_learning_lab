@@ -1,4 +1,4 @@
-﻿# Mental Models: Law of Large Numbers and CLT
+# Mental Models: Law of Large Numbers and CLT
 
 ## 1. Two Different Random Variables
 X̄ₙ is not "the data" — it is a *new* random variable with its own distribution, centered at μ and squeezed by √n. The LLN says its center is honest; the CLT says its shape is Gaussian. Almost every misunderstanding of the LLN comes from conflating X̄ₙ with Xₙ.

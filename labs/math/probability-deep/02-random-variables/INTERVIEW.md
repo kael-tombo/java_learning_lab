@@ -1,4 +1,4 @@
-﻿# Interview: Random Variables
+# Interview: Random Variables
 
 ### Q1. Does Var(X + Y) = Var(X) + Var(Y)?
 **A.** Only if Cov(X, Y) = 0 (independence is sufficient but stronger than needed). Expectation is linear without any condition because it is a sum of sums; variance squares the sum and produces the cross term 2Cov(X, Y). For n i.i.d. variables it collapses to nσ², which is why Var(X̄) = σ²/n — the result behind every standard error.

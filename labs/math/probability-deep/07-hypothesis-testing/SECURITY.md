@@ -1,4 +1,4 @@
-﻿# Security: Hypothesis Testing
+# Security: Hypothesis Testing
 
 ## A/B testing security controls is a testing problem
 Rolling out MFA, a new login heuristic or a rate limiter and measuring it on k metrics at α = 0.05 gives FWER = 1 − 0.95ᵏ: k = 5 → 22.6%, k = 10 → 40.1%. A "significant" win on the third metric is more likely noise than signal. **Fix:** pre-register one primary endpoint (logins blocked) and treat the rest as secondary with Holm correction; report effect sizes and intervals, not stars.

@@ -1,4 +1,4 @@
-﻿# How It Works: Bayesian Statistics
+# How It Works: Bayesian Statistics
 
 ## 1. The rule, mechanically
 posterior ∝ likelihood × prior. Concretely for the coin: prior Beta(2,2) has kernel θ¹(1−θ)¹; data (9,1) contributes θ⁹(1−θ)¹; multiply → θ¹⁰(1−θ)² → normalize → Beta(11,3). The "normalization" step is where the marginal likelihood P(D) = 1/B(2,2)·B(11,3)·[...] hides; you may drop it for *sampling* (shape is enough) but not for model comparison.

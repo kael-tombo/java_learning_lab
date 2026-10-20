@@ -1,4 +1,4 @@
-﻿# Performance: Bayesian Statistics
+# Performance: Bayesian Statistics
 
 ## Exact/conjugate updating — the fast path
 Beta–Binomial, Gamma–Poisson, Normal–Normal updates are **O(1) per observation** (add counts to α, β / λ, r / update precision and mean) and **O(1) memory**. Streaming posterior tracking for 10⁶ users with Beta models is 10⁶ × O(1) — no optimization, no sampling, exact. Always check conjugacy before reaching for MCMC.

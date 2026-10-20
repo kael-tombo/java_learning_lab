@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Multivariate Statistics
+# Step-by-Step Guide: Multivariate Statistics
 
 ## Worked example: correlation, regression, and PCA on 5 points
 

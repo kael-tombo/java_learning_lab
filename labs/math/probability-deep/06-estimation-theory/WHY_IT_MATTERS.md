@@ -1,4 +1,4 @@
-﻿# Why It Matters: Estimation Theory
+# Why It Matters: Estimation Theory
 
 ## Everything reported is an estimate
 A poll's "52% ± 3", a service's p99 latency, a model's learned weights, a sensor's calibration offset — all are point estimates plus a claim about uncertainty. Estimation theory is what makes "± 3" mean something: SE from information, intervals from Wald or likelihood ratio, coverage verified over repeated samples. Without it, error bars are decoration.

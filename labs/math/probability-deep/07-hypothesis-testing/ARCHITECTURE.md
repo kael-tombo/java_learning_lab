@@ -1,4 +1,4 @@
-﻿# Architecture: Hypothesis Testing Implementation
+# Architecture: Hypothesis Testing Implementation
 
 ## Package layout
 ```

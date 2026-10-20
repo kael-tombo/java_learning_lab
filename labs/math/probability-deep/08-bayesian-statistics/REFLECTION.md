@@ -1,4 +1,4 @@
-﻿# Reflection: Bayesian Statistics
+# Reflection: Bayesian Statistics
 
 ## Do the update on paper
 Prior Beta(2,2), data 9H/1T: write the three kernels (prior, likelihood, posterior), identify Beta(11,3), compute the posterior mean (0.7857), variance (0.01122) and P(p > 0.5) = 0.9888 via the binomial identity. If you can reproduce all four numbers unaided, the algebra of updating is yours.

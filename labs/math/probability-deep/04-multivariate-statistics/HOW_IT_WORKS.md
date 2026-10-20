@@ -1,4 +1,4 @@
-﻿# How It Works: Multivariate Statistics
+# How It Works: Multivariate Statistics
 
 ## 1. Everything starts from centered cross-products
 Collect Sxx, Syy, Sxy (two variables) or the full S = (1/(n−1))XcᵀXc (p variables). Centering makes S depend only on *co-variation*; without it, means leak into the matrix and r stops being bounded by 1.

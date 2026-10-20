@@ -1,4 +1,4 @@
-﻿# References: Hypothesis Testing
+# References: Hypothesis Testing
 
 ## Primary sources
 - **K. Pearson**, "On the criterion... for goodness of fit", *Philosophical Magazine* 50:157–175, 1900 — the χ² test; and "On the probability... correlation tables", *Biometrika* 1900s for contingency tests.

@@ -1,4 +1,4 @@
-﻿# History: Probability Axioms
+# History: Probability Axioms
 
 ## Games of Chance Before the Axioms
 

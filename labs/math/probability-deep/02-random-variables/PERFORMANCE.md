@@ -1,4 +1,4 @@
-﻿# Performance: Random Variables Implementation
+# Performance: Random Variables Implementation
 
 ## Evaluating and sampling
 - **PMF/CDF evaluation**: a PMF stored on k support points needs O(1) array access for indexed support (binomial, Poisson) and O(log k) binary search for arbitrary sorted support. The CDF is precomputed as prefix sums once — O(k) — so each query is one binary search, no rescanning.

@@ -1,4 +1,4 @@
-﻿# Reflection: Estimation Theory
+# Reflection: Estimation Theory
 
 ## Rebuild the pipeline from scratch
 Given five numbers (2, 5, 1, 3, 4): write the likelihood for N(μ, σ²), take the two derivatives, solve, and get μ̂ = 3 and σ̂²_MLE = 2.0. Then answer: why did the σ² equation give 2.0 and not 2.5, and which one feeds a t-interval? If you can't say which downstream formula needs which divisor, you've found your gap.

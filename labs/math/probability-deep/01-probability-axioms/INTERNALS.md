@@ -1,4 +1,4 @@
-﻿# Internals: Probability Axioms Implementation
+# Internals: Probability Axioms Implementation
 
 ## Finite sample spaces as bitsets
 For |Ω| ≤ 64, an event is a `long`: union = `a | b`, intersection = `a & b`, complement = `~a & universeMask`. Probability of an event is the sum of the cell weights at the set bits — popcount-style accumulation, no allocation. Ω itself is stored as a mask so complement never leaks bits outside the sample space.

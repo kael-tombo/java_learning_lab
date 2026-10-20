@@ -1,4 +1,4 @@
-﻿# Performance: Probability Axioms Implementation
+# Performance: Probability Axioms Implementation
 
 ## Exact vs. enumerated computation
 

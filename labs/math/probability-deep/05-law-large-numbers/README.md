@@ -1,76 +1,46 @@
-﻿# Law of Large Numbers and CLT
+# Lab 05 — Law of Large Numbers
 
-## Overview
-This micro-lab provides a deep-dive exploration of **Law of Large Numbers and CLT**, a cornerstone topic in Probability and Statistics Deep Dive. Understanding this topic is essential for advanced mathematics, physics, engineering, and machine learning.
+Explains why averaged data earn trust, with the exact statement clams
+(WLLN, SLLN, Borel–Cantelli) and executed demonstrations of bounds,
+clocks, and hypothesis failure.
 
-## Topics Covered
-- LLN Weak/Strong, Central Limit Theorem, convergence in probability/distribution, Berry-Esseen
+## What This Lab Actually Teaches
+- Convergence in probability and why it is the honest notion for
+  sample-path averages (THEORY.md).
+- Markov and Chebyshev inequalities with exact statements.
+- The weak law with its variance hypothesis and the
+  P( deviation >= ε ) <= σ²/(nε²) proof skeleton.
+- Borel–Cantelli as the summability-to-finite-violations converter.
+- Kolmogorov's strong law with only the integrability hypothesis —
+  and why that hypothesis is sharp.
+- The CLT's σ/√n rate as the fluctuation scale of the mean.
 
-## Prerequisites
-- Basic algebra and functions
-- Java 21+ development environment
-- Familiarity with mathematical notation
+## The Worked Material
+MATH_FOUNDATION.md executes the 1/(4n) variance clock (1/16 at n = 4
+down to 1/1024 at n = 256), the exact-vs-bound pair (1/8 truth under a
+1/4 envelope), the vacuous-case check (bound 1/9 over event size 0),
+a seeded four-row simulation to 10^6 draws with |dev| = 0.000447, the
+heavy-tail crawl on weights (45, 30, 20, 5)% with 10^6 magnitudes, and
+Tail-bound truths: e^{−3} = 0.049787068367863944 under 1/3 and 1/4
+envelopes. CODE_DEEP_DIVE.md pastes the captured outputs.
 
-## Learning Objectives
-By completing this micro-lab, you will:
-1. Understand the theoretical foundations of Law of Large Numbers and CLT
-2. Implement core algorithms in Java 21+
-3. Solve practical problems using these techniques
-4. Analyze performance and numerical stability
-5. Apply concepts to real-world scenarios
+## Files (core six)
+| File | Contents |
+|------|----------|
+| THEORY.md | Statements: inequalities, WLLN, Borel–Cantelli, SLLN, CLT |
+| MATH_FOUNDATION.md | Executed clock, bounds, simulation, heavy tails |
+| CODE_DEEP_DIVE.md | Three seeded programs, outputs as printed |
+| EXERCISES.md | Five problems, computed solutions |
+| FLASHCARDS.md | 11 cards, six of them theorem-statement cards |
+| README.md | This overview |
 
-## Files
-| File | Description |
-|------|-------------|
-| THEORY.md | Comprehensive theoretical treatment |
-| MATH_FOUNDATION.md | Prerequisite mathematics review |
-| CODE_DEEP_DIVE.md | Java implementation walkthrough |
-| EXERCISES.md | Practice problems and solutions |
-| QUIZ.md | Knowledge assessment questions |
-| ARCHITECTURE.md | Software design documentation |
-| SECURITY.md | Security considerations |
-| PERFORMANCE.md | Performance analysis |
-| REFACTORING.md | Code improvement strategies |
-| DEBUGGING.md | Debugging techniques |
-| COMMON_MISTAKES.md | Frequent pitfalls |
-| STEP_BY_STEP.md | Implementation guide |
-| VISUAL_GUIDE.md | Visual explanations |
-| INTERNALS.md | Deep internal mechanisms |
-| HOW_IT_WORKS.md | High-level explanations |
-| MENTAL_MODELS.md | Conceptual frameworks |
-| HISTORY.md | Historical development |
-| WHY_IT_MATTERS.md | Real-world importance |
-| WHY_IT_EXISTS.md | Problem context |
-| REFERENCES.md | Academic references |
-| REFLECTION.md | Self-reflection questions |
-| INTERVIEW.md | Interview preparation |
-| FLASHCARDS.md | Spaced-repetition cards |
+The other files in the directory (QUIZ code sources, projects,
+HISTORY, and companions) remain untouched.
 
-## Project Structure
-`
-llnclt/
-â”œâ”€â”€ 24 .md documentation files
-â”œâ”€â”€ MINI_PROJECT/
-â”œâ”€â”€ REAL_WORLD_PROJECT/
-â”œâ”€â”€ CHALLENGE/
-â”œâ”€â”€ TESTS/
-â”œâ”€â”€ BENCHMARK/
-â”œâ”€â”€ DIAGRAMS/
-â”œâ”€â”€ SOLUTION/
-â””â”€â”€ src/
-    â”œâ”€â”€ main/java/com/mathlab/llnclt/LawLargeNumbers.java
-    â””â”€â”€ test/java/com/mathlab/llnclt/LawLargeNumbersTest.java
-`
-
-## Getting Started
-1. Read THEORY.md and MATH_FOUNDATION.md for conceptual understanding
-2. Study CODE_DEEP_DIVE.md for implementation details
-3. Complete EXERCISES.md problems
-4. Run the JUnit tests to verify your implementation
-5. Work through MINI_PROJECT and REAL_WORLD_PROJECT exercises
-
-## Time Estimate
-- Theory study: 1.5 hours
-- Code implementation: 1.5 hours
-- Exercises and projects: 2 hours
-- Total: ~5 hours
+## Suggested Sequence
+1. THEORY.md statements first — hypothesis lists matter more than
+   conclusions here.
+2. MATH_FOUNDATION.md against a fractions-enabled session.
+3. Run the three programs; confirm digits reproduce.
+4. EXERCISES.md attempts, then solutions.
+5. FLASHCARDS.md — recite the two law statements and the two inequalities.

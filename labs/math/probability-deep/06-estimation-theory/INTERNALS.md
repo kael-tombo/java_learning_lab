@@ -1,4 +1,4 @@
-﻿# Internals: Estimation Theory
+# Internals: Estimation Theory
 
 ## Estimator as a value type
 ```

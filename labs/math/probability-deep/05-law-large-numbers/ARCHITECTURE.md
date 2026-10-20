@@ -1,4 +1,4 @@
-﻿# Architecture: Law of Large Numbers and CLT Implementation
+# Architecture: Law of Large Numbers and CLT Implementation
 
 ## Package layout
 ```

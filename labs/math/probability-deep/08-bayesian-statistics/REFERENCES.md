@@ -1,4 +1,4 @@
-﻿# References: Bayesian Statistics
+# References: Bayesian Statistics
 
 ## Primary sources
 - **T. Bayes**, "An Essay towards solving a Problem in the Doctrine of Chances", communicated by **R. Price**, *Phil. Trans. R. Soc. London* 53:370–418, 1763 — the rule.

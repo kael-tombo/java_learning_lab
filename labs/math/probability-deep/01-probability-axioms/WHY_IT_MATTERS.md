@@ -1,4 +1,4 @@
-﻿# Why It Matters: Probability Axioms
+# Why It Matters: Probability Axioms
 
 ## Every downstream result rests on these three lines
 Non-negativity, normalization and countable additivity are the only assumptions behind:

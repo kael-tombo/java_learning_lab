@@ -1,4 +1,4 @@
-﻿# Debugging: Law of Large Numbers and CLT
+# Debugging: Law of Large Numbers and CLT
 
 ### Symptom: sample mean never settles as n grows
 Check the assumptions in order: (1) does E|X| exist? (sample of a Pareto with α ≤ 1 wanders forever); (2) is the variance finite (α ≤ 2 → mean's SE isn't σ/√n); (3) are draws independent (autocorrelated series drift together); (4) is there an accumulating bug — e.g. summing in float32 over 10⁸ values loses precision (pairwise/Kahan summation fixes it). Diagnose with a QQ-plot of block means: normal ⇒ CLT active, heavy tail ⇒ stable law.

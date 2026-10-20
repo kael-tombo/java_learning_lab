@@ -1,4 +1,4 @@
-﻿# How It Works: Probability Distributions
+# How It Works: Probability Distributions
 
 ## 1. A family is a functional form plus parameters
 Binomial(n, p): the *shape* is C(n,k)pᵏ(1−p)^{n−k}, fixed by the mechanism of n independent trials; (n, p) carry all the freedom. Data enters only through the parameters — fitting a distribution is the problem of choosing them (method of moments, MLE: labs 06 and 08).

@@ -1,4 +1,4 @@
-﻿# Visual Guide: Multivariate Statistics
+# Visual Guide: Multivariate Statistics
 
 ## Scatter cloud with regression line and correlation
 ```

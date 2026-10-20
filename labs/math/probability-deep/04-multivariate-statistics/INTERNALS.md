@@ -1,4 +1,4 @@
-﻿# Internals: Multivariate Statistics
+# Internals: Multivariate Statistics
 
 ## Data layout
 Observations are stored row-major as `double[n][p]` for access by observation (regression, kNN) with a column-major cache (or BLAS `syrk`) for covariance. Centering is done once: Xc = X − 1μᵀ, then every statistic reads from Xc. One centering pass, no repeated mean recomputation inside Sxx loops.

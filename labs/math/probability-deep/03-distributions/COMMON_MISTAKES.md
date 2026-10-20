@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Probability Distributions
+# Common Mistakes: Probability Distributions
 
 ### 1. Using the wrong support
 Exponential and Poisson are on [0, ∞) and the integers ≥ 0 — placing an exponential density on (−∞, ∞) integrates to 2. A Poisson pmf evaluated at k = 2.5 must return 0, not Γ(3.5)/2.5!… — support checks belong in the implementation, not in the caller's head.

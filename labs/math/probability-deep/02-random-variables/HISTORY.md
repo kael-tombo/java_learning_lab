@@ -1,4 +1,4 @@
-﻿# History: Random Variables
+# History: Random Variables
 
 ## Expectation enters through gambling
 **Christiaan Huygens (1629–1695)** published *De Ratiociniis in Ludo Aleae* (1657), the first definition of mathematical expectation: the value a fair game should have. **Jacob Bernoulli (1655–1705)** extended it in *Ars Conjectandi* (1713), computing expectations of compound bets. **Abraham de Moivre (1667–1754)**, in *The Doctrine of Chances* (1st ed. 1718, 3rd ed. 1756), showed the binomial approaches the bell curve — the first normal approximation and the first appearance of a *continuous* sampling distribution.

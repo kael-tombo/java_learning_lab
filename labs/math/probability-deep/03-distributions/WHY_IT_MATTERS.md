@@ -1,4 +1,4 @@
-﻿# Why It Matters: Probability Distributions
+# Why It Matters: Probability Distributions
 
 ## They are the vocabulary of everything downstream
 - **Lab 05 (LLN/CLT)**: "X̄ ≈ N(μ, σ²/n)" only means something once Normal(μ, σ²) is a defined object with a known shape.

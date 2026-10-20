@@ -1,4 +1,4 @@
-﻿# References: Probability Axioms
+# References: Probability Axioms
 
 ## Primary sources
 - **A. N. Kolmogorov**, *Grundbegriffe der Wahrscheinlichkeitsrechnung*, Springer, 1933. English transl. *Foundations of the Theory of Probability*, Chelsea, 1950 — the original axiomatic treatment; short (60+ pages) and still readable.

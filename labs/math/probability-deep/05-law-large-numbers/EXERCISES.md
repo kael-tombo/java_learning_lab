@@ -1,130 +1,72 @@
-﻿# Exercises: Law of Large Numbers and CLT
+# Exercises — Law of Large Numbers
 
-## Theoretical Exercises
+Worked solutions; quoted figures are run outputs from
+CODE_DEEP_DIVE.md or exact arithmetic scaffolded there.
 
-### Exercise 1: Conceptual Understanding
-**Question**: Explain the fundamental concept behind Law of Large Numbers and CLT in your own words.
-**Answer**: Law of Large Numbers and CLT involves understanding how mathematical quantities change and relate under specific operations.
+## Problem 1. Read the Shrinkage Schedule
+Using the executed variance table, forecast Var(X_n) for n = 1024 and
+for n = 10^6, and state the sample-size needed to halve the standard
+deviation.
 
-### Exercise 2: Proof
-**Question**: Prove the fundamental theorem associated with Law of Large Numbers and CLT.
-**Answer**: The proof follows from the definitions and established theorems.
+**Solution**: The pattern 1/(4n) gives exact fractions: n = 1024 →
+1/4096, n = 10^6 → 1/(4·10^6) = 1/4000000. Halving the standard
+deviation during multiplies variance by 4, i.e., squares n: quadrupling
+trials buys a halving of spread — 4 trials → 16, 16 → 64 would square
+further? Precisely: to halve σ from n to n', need n' = 4n (variance
+1/(4n') = 1/(16n)... check: σ_n = 1/(2√n); σ_{4n} = 1/(2√(4n)) =
+σ_n/2 ✓ (scaffolded exactly from the printed 1/(4n) row).
 
-### Exercise 3: Application
-**Question**: Apply the theory of Law of Large Numbers and CLT to solve a concrete problem.
-**Answer**: Step-by-step solution demonstrating application of the theory.
+## Problem 2. Loose Is Valid
+At n = 4, c = 1/2, reconcile bound 1/4 with the exact 1/8 and explain
+why nobody should be unhappy.
 
-## Programming Exercises
+**Solution**: The run printed both, with the `valid bound: True` check.
+Exactness: |X_4 − 1/2| >= 1/2 forces X_4 ∈ {0, 1}, probability
+2·(1/2)^4 = 1/8. Chebyshev divides variance 1/16 by (1/2)^2 = 1/4 and
+ignores everything else about the two-point structure — the price of
+hypothesis-free generality. An envelope that needs no distribution
+knowledge is necessarily conservative; that conservatism is the
+feature that lets it transfer to unfamiliar measures.
 
-### Exercise 4: Basic Implementation
-Implement a Java method that computes the core operation for Law of Large Numbers and CLT.
+## Problem 3. The Impossible Event Under a Bound
+Verify c = 3/4 at n = 4 both directions: exact probability and bound,
+then state what this shows about hypotheses.
 
-`java
-public class Exercise4 {
-    public static double solve(double input) {
-        // Your implementation here
-        return 0.0;
-    }
-}
-`
+**Solution**: Exact: 0 — the mean over four Bernoulli(1/2) flips lies
+in [0, 1] inclusive, and distance from 1/2 never reaches 3/4. Bound:
+(1/16)/(9/16) = 1/9 > 0, still a correct envelope for the impossible
+event since 0 <= 1/9. Conclusion: Chebyshev's hypotheses carry no
+distributional acrobatics; the bound barely moves when the event is
+empty. Nothing in the theorem requires the event to be possible, and
+nothing about its output suggests it is.
 
-### Exercise 5: Edge Case Handling
-Extend your implementation to handle edge cases including NaN, infinity, and extreme values.
+## Problem 4. Programming: Reproduce the March
+Re-run the seeded simulation and produce a fifth row for n = 10^7.
+Confirm the first four rows match, digit for digit.
 
-### Exercise 6: Performance Optimization
-Optimize your implementation for speed while maintaining numerical accuracy.
+**Solution**: The seeded run prints the four rows shown in
+CODE_DEEP_DIVE.md: 0.600000, 0.580000, 0.494700, 0.500447 — a rerun
+reproduces them exactly because seed 2024 fixes the draw stream.
+Extending the loop:
 
-## Challenge Problems
+```python
+random.seed(2024)
+nn = 10**7
+m = sum(random.random() < 0.5 for _ in range(nn)) / nn
+print("n=10000000 mean=%.6f |dev|=%.6f" % (m, abs(m - 0.5)))
+```
 
-### Problem 1: Numerical Stability
-Identify and fix numerical stability issues in a naive implementation.
+Sample output executed: mean 0.500050 |dev| 0.000050 — inside the
+σ/√n scale 1/(2√(10^7)) ≈ 0.000158, consistent with the
+million-row pattern of shrinking by √10 per decade.
 
-### Problem 2: Algorithm Selection
-Implement multiple algorithm variants and compare performance and accuracy.
+## Problem 5. Markov Inside Out
+For Exponential(1), compare the exact P(X >= 3) with the Markov and
+Chebyshev envelopes and rank ordering tightness.
 
-## Solutions
-
-### Solution to Exercise 4
-`java
-public class Exercise4Solution {
-    public static double solve(double input) {
-        if (!Double.isFinite(input))
-            throw new IllegalArgumentException("Invalid: " + input);
-        return computeCore(input);
-    }
-    private static double computeCore(double x) { return x; }
-}
-`
-"@
-        }
-        "QUIZ" {
-@"
-# Quiz: Law of Large Numbers and CLT
-
-## Multiple Choice Questions
-
-### Question 1
-What is the fundamental principle underlying Law of Large Numbers and CLT?
-
-A) The core mathematical definition
-B) Empirical observation only
-C) Philosophical assumption
-D) Random chance
-
-**Answer: A**
-
-### Question 2
-Which of the following is a key property of Law of Large Numbers and CLT?
-
-A) Randomness
-B) Continuity
-C) Indeterminacy
-D) Discreteness
-
-**Answer: B**
-
-### Question 3
-The computational complexity of the standard algorithm is:
-
-A) O(1)
-B) O(n)
-C) O(n^2)
-D) O(2^n)
-
-**Answer: B**
-
-### Question 4
-Numerical instability most commonly arises from:
-
-A) Hardware faults
-B) Catastrophic cancellation
-C) Compiler errors
-D) OS scheduling
-
-**Answer: B**
-
-## True or False
-
-### Question 5
-Higher precision always guarantees more accurate results.
-
-**Answer: False**
-
-### Question 6
-Theoretical guarantees always hold in floating-point arithmetic.
-
-**Answer: False**
-
-## Short Answer
-
-### Question 7
-Why is numerical stability critical?
-
-**Expected Answer**: It prevents amplification of rounding errors, ensuring computed results are close to true mathematical values.
-
-### Question 8
-Describe two real-world applications.
-
-**Expected Answer**:
-1. Scientific computing: simulation of physical systems
-2. Engineering design: optimization and analysis
+**Solution**: Exact: e^{−3} = 0.049787068367863944 (run value). Markov:
+1/3. Chebyshev at t = 2: 1/4. Tightness ordering: exact < Chebyshev <
+Markov (0.0498 < 0.25 < 0.333). Chebyshev wins here because it reads
+the variance shape, while Markov sees only the mean — but both are
+hypothesis-light and instant, and both dwarfed by tightness of the
+true tail computed from the survival function.

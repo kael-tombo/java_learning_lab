@@ -1,4 +1,4 @@
-﻿# Why It Exists: Multivariate Statistics
+# Why It Exists: Multivariate Statistics
 
 ## The problem: one variable at a time lies
 Galton and Pearson's bivariate tools (1889–1896) answered questions about *two* measurements, but real data arrive with many at once, and univariate analysis fails systematically:

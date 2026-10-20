@@ -1,4 +1,4 @@
-﻿# Security: Estimation Theory
+# Security: Estimation Theory
 
 ## Adversaries estimate, too — and poison your estimators
 A mean-based detector estimates μ and σ from recent traffic and alarms beyond kσ. An attacker who injects a few extreme "normal-looking" values inflates the estimated σ (variance poisoning): add m decoys with z = 10 and the sample variance jumps enough that their real traffic sits inside the new band. **Fix:** robust estimators — median + MAD (median absolute deviation, consistent for normal with scale 1.4826), or Minimum Covariance Determinant — which ignore up to a contamination fraction α < 50% by construction. Never let the baseline include the attack window.

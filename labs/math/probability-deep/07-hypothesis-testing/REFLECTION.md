@@ -1,4 +1,4 @@
-﻿# Reflection: Hypothesis Testing
+# Reflection: Hypothesis Testing
 
 ## Reconstruct a test in five lines
 For n = 25, x̄ = 102, s = 8, H₀: μ = 100: statistic? reference distribution and df? p? decision at α = 0.05? interval? If any line is missing (the df, the tail direction, the interval), you're not testing — you're computing a number.

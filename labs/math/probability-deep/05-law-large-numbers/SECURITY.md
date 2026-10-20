@@ -1,4 +1,4 @@
-﻿# Security: Law of Large Numbers and CLT
+# Security: Law of Large Numbers and CLT
 
 ## Rate limiting is an LLN statement
 A rate limiter asserting "≤ 5 login attempts/minute per account" assumes the background rate concentrates. Background users follow Poisson with λ ≈ 0.5/min: P(N ≤ 4) = 0.606531 + 0.303265 + 0.075816 + 0.012636 + 0.001580 = 0.999828, so P(N ≥ 5) = **0.000172** — about 1 in 5 800 account-minutes of false lockout. The false-positive rate follows the *tail* of the background distribution, not its mean, so the threshold must come from the Poisson quantile of λ rather than from "average users try twice."

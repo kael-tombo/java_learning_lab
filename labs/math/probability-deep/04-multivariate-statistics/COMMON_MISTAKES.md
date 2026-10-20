@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Multivariate Statistics
+# Common Mistakes: Multivariate Statistics
 
 ### 1. Covariance instead of correlation when comparing pairs
 Cov(X, Y) scales with units: heights in cm vs m change the covariance by 100×, correlation unchanged. r = Cov/(σₓσᵧ) ∈ [−1, 1] is the comparable quantity; report covariance only for the same-scale joint quantities (it feeds Σ).
