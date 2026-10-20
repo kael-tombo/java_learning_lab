@@ -1,64 +1,53 @@
-﻿# Information Theory
+# Information Theory — Lab 14 of the Legacy Math Track
 
-The mathematics of information, entropy, and communication — foundational for compression and machine learning.
+The lab measures surprise in exact fractions — a dyadic distribution
+whose entropy is exactly 7/4 bits — then compresses it with Huffman,
+approximates the same event's codes on a non-dyadic alphabet, prices
+disagreement between two distributions with KL (exact 1/2 versus
+5/8 in opposite directions), and reads a genuine 0.311278-bit
+correlation out of a 2x2 table. All numbers came from captured runs.
 
-## Scope
+## The six files at a glance
 
-- Entropy: Shannon entropy, joint entropy, conditional entropy
-- Mutual information and its properties
-- KL divergence and cross entropy
-- Channel capacity via Blahut-Arimoto algorithm
-- Source coding: Huffman and Shannon-Fano encoding
-- Data compression principles
-- Rate-distortion theory
-- Applications in machine learning and communications
+- MATH_FOUNDATION.md: entropy of (1/2, 1/4, 1/8, 1/8) computed
+  exactly (contributions 1/2, 1/2, 3/8, 3/8 → 7/4), the uniform and
+  two-symbol comparison bounds (log2 4 = 2 caps it; (2/3, 1/3)
+  yields the irrational log2 3 − 2/3 ≈ 0.9183), Huffman on both
+  alphabets with exact code lengths [1, 2, 3, 3] and [2, 2, 2, 3, 3],
+  average lengths 7/4 (gap 0) and 11/5 (gap 0.0781) with Kraft sum 1
+  both times, the exact KL bookkeeping 1/2 ≠ 5/8 for a swapped dyadic
+  pair, positivity and asymmetry statements, and a mutual information
+  verified two ways (H(X)+H(Y)−H(X,Y) and the direct double sum) with
+  H(Y|X) = 1/2 exactly.
+- CODE_DEEP_DIVE.md: three runnable stdlib-only programs — the
+  dyadic entropy with float cross-check, the Huffman builder with
+  Kraft audit on two alphabets, and the KL/MI program pairing exact
+  dyadic KL against float KL and double-checked MI.
+- EXERCISES.md: five worked problems — contribution bookkeeping,
+  H(3/4, 1/4) = 0.811278 bits, a fresh Huffman run on
+  (3/8, 3/8, 1/4) with average 13/8 and gap 0.0637, the exact-strength
+  KL pair, and an XOR independence exhibit where MI(X, Y) and
+  MI(X, Z) both compute to exactly 0.
+- FLASHCARDS.md: cards carrying run numbers — the 7/4 entropy, both
+  code-length tables, gap 0.0781, the 1/2-vs-5/8 KL pair, MI's
+  0.311278 and its chain rule decomposition H(Y) − H(Y|X).
+- COMMON_MISTAKES.md: log-base confusion (bits vs nats, and why
+  mixing them poisons Kraft's sum), double-counting joint mass in
+  marginalization, treating Huffman's gap as "suboptimal" rather
+  than as the dyadic-existence gap, assuming KL symmetry from
+  coincidentally-close floats, and reading MI=0 as "no relationship"
+  when it means no linear-in-count dependence.
 
-## Java Implementation
+## Prerequisites and where they are taught
 
-```java
-package com.math14;
+Logarithms from 01-arithmetic, probability mass functions from
+03-probability/08-probability, disjoint-event counting from
+06-combinatorics. The exact-fraction summation discipline recurs in
+15-numerical-methods as a measurement-accuracy exhibit; the Huffman heap walk
+pairs with 07-graph-theory's tree views.
 
-public class InformationTheory {
-    public static double entropy(double[] probabilities) { /* ... */ }
-    public static double entropy(String text) { /* ... */ }
-    public static double mutualInformation(double[][] jointProbs) { /* ... */ }
-    public static double klDivergence(double[] p, double[] q) { /* ... */ }
-    public static double channelCapacity(double[][] channelMatrix, int iterations) { /* ... */ }
-    public static Map<String, String> huffmanEncoding(Map<String, Double> symbols) { /* ... */ }
-}
-```
+## One possible route
 
-## Key Topics
-
-- Shannon entropy as a measure of uncertainty
-- Information content of random variables
-- Mutual information for measuring dependence
-- KL divergence for comparing distributions
-- Channel capacity and the Shannon limit
-- Optimal source coding with Huffman codes
-- Cross entropy as a loss function
-- Applications: compression, communication, ML
-
-## Prerequisites
-
-- Probability theory (random variables, distributions)
-- Basic calculus and logarithms
-
-## How to Use This Lab
-
-1. Read THEORY.md for comprehensive mathematical treatment
-2. Review MATH_FOUNDATION.md for prerequisite review
-3. Study CODE_DEEP_DIVE.md for implementation patterns
-4. Complete EXERCISES.md problem sets
-5. Build the MINI_PROJECT for hands-on application
-6. Challenge yourself with the REAL_WORLD_PROJECT
-
-## Time Estimate
-
-- Theory study: 2.5 hours
-- Code implementation: 2.5 hours
-- Exercises: 2 hours
-- Projects: 3 hours
-- **Total: ~10 hours**
-
-## Difficulty: ★★★★☆ (Advanced)
+THEORY.md, MATH_FOUNDATION.md with pencil, deep-dive programs at
+PYTHONHASHSEED=0, EXERCISES.md, then the flashcard/mistake pair while
+working MINI_PROJECT.

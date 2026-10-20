@@ -1,74 +1,85 @@
-﻿# Exercises: Number Theory
+# Exercises — Number Theory, Worked
 
-## Theoretical Exercises
+Five problems; every numeric claim was confirmed by a run before
+being written down.
 
-### Problem 1: Fundamental Theorem of Arithmetic
-Prove that every integer n > 1 can be written uniquely as a product of primes.
+## Problem 1. Canonical Division at Every Sign
 
-### Problem 2: Infinite Primes
-Prove that there are infinitely many prime numbers using Euclid's method.
+Give the unique q and r with 0 ≤ r < |b| for a = -29, b = 7 — and
+explain why (q, r) = (-3, -8) is disqualified.
 
-### Problem 3: GCD Properties
-Show that gcd(a, b) = gcd(a, b - a) for integers a, b. Generalize to gcd(a, b) = gcd(a, b mod a).
+**Solution**: -29 = 7·(-5) + 6. Python's divmod(-29, 7) printed
+exactly (-5, 6), and 0 ≤ 6 < 7. The proposed (-3, -8) satisfies the
+identity (-3)·7 + (-8) = -29 but fails the range law (remainder
+negative), which is precisely the uniqueness proof's leverage: any
+two solutions differ by a multiple of 7 smaller than the
+possibility of another remainder, so (-3, -8) cannot coexist with a
+legal (q, r).
 
-### Problem 4: Modular Arithmetic
-Prove that if a ≡ b (mod m) and c ≡ d (mod m), then:
-a) a + c ≡ b + d (mod m)
-b) ac ≡ bd (mod m)
-c) aⁿ ≡ bⁿ (mod m) for n ≥ 1
+## Problem 2. A Bezout Certificate for a Fresh Pair
 
-### Problem 5: Chinese Remainder Theorem
-Find all integers x satisfying:
-x ≡ 2 (mod 3), x ≡ 3 (mod 5), x ≡ 2 (mod 7)
+Express gcd(99, 78) = 3 in the form 99x + 78y.
 
-### Problem 6: Euler's Theorem
-Show that for any integer a coprime to n, a^φ(n) ≡ 1 (mod n). Use this to explain Fermat's Little Theorem as a special case.
+**Solution**: Euclid gives 99 = 1·78 + 21, 78 = 3·21 + 15,
+21 = 1·15 + 6, 15 = 2·6 + 3, 6 = 2·3 + 0. Back-substituting:
+3 = 15 − 2·6 = 3·15 − 2·21 = 3·78 − 11·99. So x = -11, y = 14;
+the run confirmed (3, -11, 14) and re-multiplied
+14·78 − 11·99 = 3. Sign slip check: 11·99 + 14·78 would give
+1089 + 1092 — far from 3; both signs belong on one number.
 
-### Problem 7: RSA Security
-Explain why RSA security depends on the difficulty of factoring. What happens if p and q are chosen too close together?
+## Problem 3. One More Inverse, By Hand
 
-### Problem 8: Primality Testing
-Compare the time complexity of trial division, Miller-Rabin, and AKS primality tests. For what size inputs is each preferred?
+Compute 11⁻¹ mod 37 and verify.
 
-## Programming Exercises
+**Solution**: 37 = 3·11 + 4, 11 = 2·4 + 3, 4 = 1·3 + 1. Backwards:
+1 = 4 − 3 = 3·4 − 11 = 3·(37 − 3·11) − 11 = 3·37 − 10·11. Hence
+11⁻¹ ≡ −10 ≡ 27 (mod 37); the run checked 27·11 mod 37 = 1. Note
+the existence condition held: gcd(11, 37) = 1.
 
-### Exercise 1: GCD and LCM
-Implement gcd and lcm using the Euclidean algorithm. Test with various inputs including edge cases.
+## Problem 4. A Three-Moduli CRT System
 
-### Exercise 2: Extended Euclidean Algorithm
-Implement extendedEuclid(a, b) that returns [gcd, x, y] where ax + by = gcd(a, b).
+Solve x ≡ 1 (mod 4), x ≡ 2 (mod 7), x ≡ 3 (mod 13).
 
-### Exercise 3: Modular Exponentiation
-Implement fast modular exponentiation using the square-and-multiply algorithm.
+**Solution**: M = 4·7·13 = 364. Pieces a·(M/m)·(M/m)⁻¹ mod m:
+for m = 4: 91 with inverse of 3 → piece 273; m = 7: 52, inverse
+of 3 is 5 → 520; m = 13: 28, inverse of 2 is 7 → 588. Sum
+1381 ≡ 289 (mod 364), and 289 = 17². The run printed the system
+result (289, 364), the three pieces [273, 520, 588], and a brute
+sweep returning only [289] — unique because coprime moduli make
+the solution exact modulo 364.
 
-### Exercise 4: Modular Inverse
-Compute the modular inverse of a modulo m using the extended Euclidean algorithm. Handle the case where the inverse does not exist.
+## Problem 5. Programming: A CRT Solver That Knows When to Refuse
 
-### Exercise 5: Chinese Remainder Solver
-Implement a solver for systems of simultaneous congruences. Test with the system from Problem 5.
+Implement `crt(system)` returning `(x mod M, M)` for coprime
+moduli; test it on Problem 4's system, then handle the non-coprime
+cases x ≡ 2 (mod 4) with x ≡ 4 (mod 6) and x ≡ 1 (mod 4) with
+x ≡ 3 (mod 8) by brute search over lcm intervals.
 
-### Exercise 6: RSA Implementation
-Generate RSA keys of varying bit lengths (512, 1024, 2048). Encrypt and decrypt messages. Verify that RSA is commutative (encrypt then decrypt = decrypt then encrypt).
+**Solution**: The executed run:
 
-### Exercise 7: Prime Factorization
-Implement Pollard's rho factorization algorithm. Test it on products of two primes.
+```python
+from math import gcd
 
-### Exercise 8: Miller-Rabin Test
-Implement the Miller-Rabin primality test. Compare its performance against trial division for large numbers.
+def crt(system):
+    M = 1
+    for _, m in system:
+        M *= m
+    x = sum(a * (M // m) * pow(M // m, -1, m) for a, m in system)
+    return x % M, M
 
-### Exercise 9: Carmichael Numbers
-Find Carmichael numbers and verify that they pass Fermat's test but are composite.
+print("P4 system:", crt([(1, 4), (2, 7), (3, 13)]))
+print("pieces for P4:", [a * (364 // m) * pow(364 // m, -1, m) for a, m in [(1, 4), (2, 7), (3, 13)]])
+print("consistent non-coprime: modulus 12 solution =",
+      [n for n in range(12) if n % 4 == 2 and n % 6 == 4])
+print("inconsistent: x=1 mod 4 & x=3 mod 8 ->",
+      [n for n in range(16) if n % 4 == 1 and n % 8 == 3],
+      "while gcd(4, 8) = %d does not divide 3-1 = 2" % gcd(4, 8))
+print("P2 recheck: 14*78 - 11*99 =", 14 * 78 - 11 * 99, "| 27*11 mod 37 =", 27 * 11 % 37)
+```
 
-### Exercise 10: Performance Benchmark
-Benchmark your implementations against Java's built-in BigInteger methods. Create a table comparing execution times.
-
-## Mini-Project: RSA Chat
-Implement a simple encrypted chat system using RSA. Generate key pairs, exchange public keys, and send encrypted messages between two parties.
-
-## Real-World Project: Secure File Encryption
-Build a file encryption tool that uses RSA for key exchange (asymmetric) and AES for bulk encryption (symmetric). The tool should:
-1. Generate RSA key pairs for sender and receiver
-2. Use RSA to encrypt an AES session key
-3. Encrypt the file content with AES
-4. Decrypt the file using the corresponding private key
-5. Support file signing for authenticity verification
+Output: `(289, 364)`, pieces `[273, 520, 588]`, the non-coprime but
+compatible pair resolving to `[10]` (solutions live modulo lcm 12
+since gcd 2 divides 4 − 2), the incompatible pair yielding `[]`
+(gcd 4 does not divide 3 − 1 = 2), and the two rechecks
+`3` and `1`. Existence law: x ≡ a (mod m) with x ≡ b (mod n) has
+solutions iff gcd(m, n) divides a − b.

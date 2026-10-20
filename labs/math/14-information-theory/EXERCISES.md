@@ -1,79 +1,60 @@
-﻿# Exercises: Information Theory
+# Exercises — Information Theory, Worked
 
-## Theoretical Exercises
+Five problems; numbers were produced by runs before the prose.
 
-### Problem 1: Entropy Bounds
-Prove that for any discrete random variable X, 0 ≤ H(X) ≤ log₂|X|. When does each bound hold?
+## Problem 1. Entropy Contributions, Cell by Cell
 
-### Problem 2: Chain Rule
-Prove the chain rule for entropy: H(X, Y) = H(X) + H(Y|X).
+For p = (1/2, 1/4, 1/8, 1/8) list each pᵢ·(−log2 pᵢ) and sum them.
 
-### Problem 3: Mutual Information
-Show that I(X; Y) = 0 if and only if X and Y are independent.
+**Solution**: The run printed the contribution pairs
+('1/2', '1/2'), ('1/4', '1/2'), ('1/8', '3/8'), ('1/8', '3/8');
+the sum is 1/2 + 1/2 + 3/8 + 3/8 = 7/4 = 1.75 bits, exact in
+fractions because every mass is a power of two.
 
-### Problem 4: KL Divergence
-Prove that KL divergence is non-negative (Gibbs' inequality). Show that D_KL(P||Q) = 0 iff P = Q.
+## Problem 2. One Coin Tilted Off Dyadic Ground
 
-### Problem 5: Data Processing Inequality
-Prove the data processing inequality: if X → Y → Z form a Markov chain, then I(X; Y) ≥ I(X; Z).
+Compute H(3/4, 1/4) and describe why it is no longer a clean fraction.
 
-### Problem 6: Fano's Inequality
-State and prove Fano's inequality, which relates the probability of error to conditional entropy.
+**Solution**: The float loop printed 0.8112781244591328 bits
+(displayed as 0.811278 in convenience contexts). The exact value is
+−(3/4)·log2(3/4) − (1/4)·log2(1/4): the mass 3/4 forces a term with
+log2 3, which is irrational — H is irrational precisely when some
+mass sits off the dyadic lattice. Contrast: 1.75 was exact.
 
-### Problem 7: Shannon's Source Coding Theorem
-Prove that for any uniquely decodable code, the expected code length L satisfies L ≥ H(X).
+## Problem 3. Huffman on a Fresh Alphabet, With a Gap
 
-### Problem 8: Channel Capacity
-Compute the capacity of a binary erasure channel (BEC) with erasure probability ε.
+Build the Huffman code for weights (3/8, 3/8, 1/4) and compare the
+average length against entropy.
 
-## Programming Exercises
+**Solution**: The heap run merged 1/4 with a 3/8 (→ 5/8), then 5/8
+with the other 3/8. Printed lengths [2, 1, 2] — one of the equally
+heavy symbols got the short slot, a legitimate tie outcome — giving
+average 3/8·2 + 3/8·1 + 1/4·2 = 13/8 = 1.625 bits against
+H ≈ 1.561278; the printed gap was 0.06372187554086706. Huffman
+cannot reach H here because no mass profile is fully binary-fitting.
 
-### Exercise 1: Entropy Calculator
-Write a program that reads a text file and computes its empirical character entropy.
+## Problem 4. Direction-Dependent Prices in KL
 
-### Exercise 2: Joint and Conditional Entropy
-Implement functions for joint entropy H(X,Y) and conditional entropy H(Y|X). Verify that H(X,Y) = H(X) + H(Y|X).
+For P = (1/2, 1/4, 1/8, 1/8) and Q = (1/4, 1/8, 1/2, 1/8), compute
+KL(P||Q) and KL(Q||P) and prove asymmetry with exact values.
 
-### Exercise 3: Mutual Information
-Implement mutual information for discrete distributions. Show that I(X;Y) ≥ 0 and equals 0 for independence.
+**Solution**: Ratios pᵢ/qᵢ are all powers of two, so the run
+computed KL(P||Q) = 1/2·1 + 1/4·1 + 1/8·(−2) + 1/8·0 = 1/2 and
+KL(Q||P) = 1/4·(−1) + 1/8·(−1) + 1/2·2 + 1/8·0 = 5/8, with the
+asymmetry line `1/2 != 5/8 -> True`. Both are positive (KL is never
+negative), and KL(P||P) printed 0.0 — zero exactly on equality, not
+"approximately" zero.
 
-### Exercise 4: KL Divergence
-Implement KL divergence. Verify that it is non-negative and equals 0 for identical distributions.
+## Problem 5. Programming: The XOR Independence Exhibit
 
-### Exercise 5: Channel Capacity
-Implement the Blahut-Arimoto algorithm to compute the capacity of an arbitrary discrete memoryless channel.
+Let X and Y be independent fair bits and Z = X ⊕ Y. Compute
+MI(X, Y) and MI(X, Z) from the joint tables and report both.
 
-### Exercise 6: Huffman Coding
-Implement Huffman encoding and decoding. Compute the average code length and compare to the entropy.
-
-### Exercise 7: Shannon-Fano Coding
-Implement Shannon-Fano encoding. Compare its average code length to Huffman coding.
-
-### Exercise 8: Data Compression
-Write a program that compresses a text file using Huffman coding. Calculate the compression ratio.
-
-### Exercise 9: Cross Entropy Loss
-Implement cross entropy and use it as a loss function for a simple binary classifier.
-
-### Exercise 10: Redundancy Analysis
-Analyze the redundancy of natural language by computing n-gram entropies of English text.
-
-## Mini-Project: File Compressor
-Build a file compression tool using Huffman coding. The tool should:
-1. Read any file (text or binary)
-2. Build Huffman tree from symbol frequencies
-3. Encode the file
-4. Save the compressed output with a header for decoding
-5. Decode the compressed file back to original
-6. Calculate and display compression ratio
-
-## Real-World Project: Communication System Simulator
-Simulate a complete communication system:
-1. Generate a random binary message
-2. Apply Huffman source coding
-3. Add channel coding (e.g., repetition code or Hamming code)
-4. Transmit through a noisy channel (BSC or AWGN)
-5. Decode and error-correct
-6. Decode the source
-7. Compute bit error rate and compare to channel capacity limits
-8. Plot the trade-off between code rate and error probability
+**Solution**: The run built the (X, Y) table as four cells of 1/4
+each and the (X, Z) table — Z = X ⊕ Y hits each pair once — also as
+four cells of 1/4. Printed verdicts: H(X) = H(Y) = H(Z) = 1.0,
+H(X,Y) = H(X,Z) = 2.0, hence MI(X, Y) = 1 + 1 − 2 = 0.0 EXACT and
+MI(X, Z) = 1 + 1 − 2 = 0.0 EXACT. The lesson: Z is a function of X
+and Y and carries a full bit of novelty about neither — XOR
+correlation-annihilation is exact, not approximate, and any nonzero
+"MI" from a buggy summation would be an artifact.

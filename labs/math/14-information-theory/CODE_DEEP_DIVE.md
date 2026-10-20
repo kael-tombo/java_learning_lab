@@ -1,176 +1,149 @@
-﻿# Code Deep Dive: Information Theory in Java
+# Code Deep Dive — Entropy, Huffman, KL, MI — All Measured
 
-## 1. Entropy Calculation
+Three runnable programs (stdlib only); output blocks are verbatim
+runs with PYTHONHASHSEED=0 and PYTHONIOENCODING=utf-8.
 
-### 1.1 From Probabilities
-```java
-public static double entropy(double[] probabilities) {
-    double h = 0;
-    for (double p : probabilities) {
-        if (p > 0) {
-            h -= p * log2(p);
-        }
-    }
-    return h;
-}
+## 1. Dyadic Entropy, Exactly, with a Float Endorsement
+
+```python
+from fractions import Fraction as F
+from math import log2
+
+D = [F(1, 2), F(1, 4), F(1, 8), F(1, 8)]
+
+def dyadic_klog(p):
+    den = p.denominator
+    assert den & (den - 1) == 0, "not dyadic"
+    return den.bit_length() - 1
+
+H = sum(p * dyadic_klog(p) for p in D)
+print("p's:", [str(p) for p in D], "| exact H =", H, "=", float(H), "bits")
+print("contributions p*(-log2 p):", [(str(p), str(p * dyadic_klog(p))) for p in D])
+Hf = -sum(float(p) * log2(float(p)) for p in D)
+print("float cross-check H =", Hf, " equal:", Hf == float(H))
+print("uniform bound: H(uniform over 4 symbols) = log 4 = %s bits, exceeds 7/4: %s"
+      % (log2(4), log2(4) > H))
+E = [F(2, 3), F(1, 3)]
+He = -sum(float(p) * log2(float(p)) for p in E)
+print("(2/3, 1/3): H = log2(3) - 2/3 mathematically =", log2(3) - 2 / 3, " float =", He)
 ```
 
-**Key insights:**
-- Entropy is measured in bits (base-2 logarithms)
-- 0 log 0 = 0 by convention (limit as p → 0)
-- Maximum entropy for uniform distribution: log₂(n)
-- Minimum entropy (0) for deterministic distribution
+Observed output:
 
-### 1.2 From Text
-```java
-public static double entropy(String text) {
-    Map<Character, Long> freq = text.chars()
-        .mapToObj(c -> (char) c)
-        .collect(Collectors.groupingBy(c -> c, Collectors.counting()));
-    double total = text.length();
-    double h = 0;
-    for (long count : freq.values()) {
-        double p = count / total;
-        h -= p * log2(p);
-    }
-    return h;
-}
+```text
+p's: ['1/2', '1/4', '1/8', '1/8'] | exact H = 7/4 = 1.75 bits
+contributions p*(-log2 p): [('1/2', '1/2'), ('1/4', '1/2'), ('1/8', '3/8'), ('1/8', '3/8')]
+float cross-check H = 1.75  equal: True
+uniform bound: H(uniform over 4 symbols) = log 4 = 2.0 bits, exceeds 7/4: True
+(2/3, 1/3): H = log2(3) - 2/3 mathematically = 0.9182958340544894  float = 0.9182958340544896
 ```
 
-This computes the empirical entropy of character frequencies in a text. For English text, typical entropy is about 4.5 bits per character (much less than log₂(26) ≈ 4.7 due to structure).
+The last two float prints differ once in the 16th place — the exact
+value is the irrational log2(3) − 2/3, which no float can carry
+exactly, and that mismatch is the precision contract declared.
 
-## 2. Mutual Information
+## 2. Huffman With a Kraft Audit
 
-```java
-public static double mutualInformation(double[][] jointProbs) {
-    double mi = 0;
-    int rows = jointProbs.length, cols = jointProbs[0].length;
-    double[] marginalsX = new double[rows];
-    double[] marginalsY = new double[cols];
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            marginalsX[i] += jointProbs[i][j];
-            marginalsY[j] += jointProbs[i][j];
-        }
-    }
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            double p = jointProbs[i][j];
-            if (p > 0 && marginalsX[i] > 0 && marginalsY[j] > 0) {
-                mi += p * log2(p / (marginalsX[i] * marginalsY[j]));
-            }
-        }
-    }
-    return mi;
-}
+```python
+import heapq
+from fractions import Fraction as F
+from math import log2
+
+def huffman(weights):
+    q = []
+    for i, w in enumerate(weights):
+        heapq.heappush(q, (w, i, [(i, 0)]))
+    nxt = len(weights)
+    while len(q) > 1:
+        w1, _, c1 = heapq.heappop(q)
+        w2, _, c2 = heapq.heappop(q)
+        merged = [(s, d + 1) for s, d in c1 + c2]
+        heapq.heappush(q, (w1 + w2, nxt, merged))
+        nxt += 1
+    return sorted(q[0][2])
+
+for D in [[F(1, 2), F(1, 4), F(1, 8), F(1, 8)],
+          [F(2, 5), F(1, 5), F(1, 5), F(1, 10), F(1, 10)]]:
+    pairs = huffman(D)
+    lens = dict(pairs)
+    avg = sum(D[s] * lens[s] for s in range(len(D)))
+    H = -sum(float(w) * log2(float(w)) for w in D)
+    kraft = sum(F(1, 2 ** lens[s]) for s in range(len(D)))
+    lengths = [lens[s] for s in range(len(D))]
+    print("weights %s -> lengths %s, avg = %s = %s bits, H = %.6f, gap = %s, Kraft = %s"
+          % ([str(w) for w in D], lengths, avg, float(avg), H, avg - H, kraft))
+print("first alphabet is dyadic: avg length 7/4 EXACTLY equals its entropy 7/4")
+print("second alphabet leaves a positive gap: Huffman is optimal prefix, not entropy-equal")
 ```
 
-**Interpretation:**
-- MI = 0 for independent variables: p(x,y) = p(x)p(y)
-- MI = H(X) for deterministic: Y = f(X)
-- MI = H(Y) for deterministic: X = g(Y)
-- MI = H(X) = H(Y) for bijective mapping
+Observed output:
 
-## 3. KL Divergence
-
-```java
-public static double klDivergence(double[] p, double[] q) {
-    if (p.length != q.length) throw new IllegalArgumentException("Distributions must have same length");
-    double kl = 0;
-    for (int i = 0; i < p.length; i++) {
-        if (p[i] > 0) {
-            if (q[i] == 0) throw new IllegalArgumentException("KL divergence undefined: q[i] = 0 with p[i] > 0");
-            kl += p[i] * log2(p[i] / q[i]);
-        }
-    }
-    return kl;
-}
+```text
+weights ['1/2', '1/4', '1/8', '1/8'] -> lengths [1, 2, 3, 3], avg = 7/4 = 1.75 bits, H = 1.750000, gap = 0.0, Kraft = 1
+weights ['2/5', '1/5', '1/5', '1/10', '1/10'] -> lengths [2, 2, 2, 3, 3], avg = 11/5 = 2.2 bits, H = 2.121928, gap = 0.07807190511263773, Kraft = 1
+first alphabet is dyadic: avg length 7/4 EXACTLY equals its entropy 7/4
+second alphabet leaves a positive gap: Huffman is optimal prefix, not entropy-equal
 ```
 
-**Important:** KL divergence is finite only when q's support contains p's support (absolute continuity). This is why we throw an error when p[i] > 0 and q[i] = 0.
+Both Kraft audits hit exactly 1 — full trees, no dead codewords.
 
-## 4. Huffman Coding
+## 3. Exact KL, Asymmetry, and a Double-Checked MI
 
-### 4.1 Tree Construction
-```java
-public static Map<String, String> huffmanEncoding(Map<String, Double> symbols) {
-    PriorityQueue<HuffmanNode> pq = new PriorityQueue<>(
-        Comparator.comparingDouble(n -> n.probability));
-    for (var entry : symbols.entrySet()) {
-        pq.add(new HuffmanNode(entry.getValue(), entry.getKey(), null, null));
-    }
-    while (pq.size() > 1) {
-        HuffmanNode left = pq.poll();
-        HuffmanNode right = pq.poll();
-        pq.add(new HuffmanNode(left.probability + right.probability(), null, left, right));
-    }
-    // ... build codes from tree
-}
+```python
+from fractions import Fraction as F
+from math import log2
+
+P = [F(1, 2), F(1, 4), F(1, 8), F(1, 8)]
+Q = [F(1, 4), F(1, 8), F(1, 2), F(1, 8)]
+
+def kl_float(p, q):
+    return sum(float(pi) * log2(float(pi) / float(qi)) for pi, qi in zip(p, q))
+
+def kl_dyadic(p, q):
+    total = F(0)
+    for pi, qi in zip(p, q):
+        ratio = pi / qi
+        if ratio.numerator == 1:
+            k = -(ratio.denominator.bit_length() - 1)
+        else:
+            assert ratio.denominator == 1 and (ratio.numerator & (ratio.numerator - 1)) == 0, "not dyadic"
+            k = ratio.numerator.bit_length() - 1
+        total += pi * k
+    return total
+
+kd, kr = kl_dyadic(P, Q), kl_dyadic(Q, P)
+print("KL(P||Q) exact  = %s = %s bits | float says %.6f" % (kd, float(kd), kl_float(P, Q)))
+print("KL(Q||P) exact  = %s = %s bits | float says %.6f" % (kr, float(kr), kl_float(Q, P)))
+print("asymmetric: %s != %s -> %s" % (kd, kr, kd != kr))
+print("strictly positive in both directions: %s and %s" % (kd > 0, kr > 0))
+print("KL(P||P) =", kl_float(P, P), "(exactly zero iff the distributions coincide)")
+J = {(0, 0): F(1, 2), (0, 1): F(0), (1, 0): F(1, 4), (1, 1): F(1, 4)}
+pX = {x: sum(J[(x, y)] for y in (0, 1)) for x in (0, 1)}
+pY = {y: sum(J[(x, y)] for x in (0, 1)) for y in (0, 1)}
+HXY = -sum(float(v) * log2(float(v)) for v in J.values() if v > 0)
+HX = -sum(float(v) * log2(float(v)) for v in pX.values() if v > 0)
+HY = -sum(float(v) * log2(float(v)) for v in pY.values() if v > 0)
+MI = sum(float(J[(x, y)]) * log2(float(J[(x, y)]) / (float(pX[x]) * float(pY[y])))
+         for x in (0, 1) for y in (0, 1) if J[(x, y)] > 0)
+print("H(X) = %s = 1, H(Y) = %.6f, H(X,Y) = %s = 3/2" % (str(HX), HY, str(HXY)))
+print("MI via H(X)+H(Y)-H(X,Y) = %.6f; direct double sum = %.6f; equal: %s"
+      % (HX + HY - HXY, MI, abs(HX + HY - HXY - MI) < 1e-12))
+print("H(Y|X) = H(X,Y)-H(X) = %s = 1/2 exactly; MI = H(Y)-H(Y|X)" % (HXY - HX))
 ```
 
-**Algorithm:**
-1. Create leaf node for each symbol with its probability
-2. Repeatedly merge the two lowest-probability nodes
-3. Assign '0' to left branches, '1' to right branches
-4. Code for each symbol is the path from root to leaf
+Observed output:
 
-### 4.2 Optimality
-Huffman coding is optimal for symbol-by-symbol coding with known probabilities. The average code length L satisfies:
-H(X) ≤ L < H(X) + 1
-
-## 5. Channel Capacity
-
-```java
-public static double channelCapacity(double[][] channelMatrix, int iterations) {
-    // Blahut-Arimoto algorithm
-    int inputSize = channelMatrix.length;
-    int outputSize = channelMatrix[0].length;
-    double[] inputDist = new double[inputSize];
-    Arrays.fill(inputDist, 1.0 / inputSize);
-    
-    for (int iter = 0; iter < iterations; iter++) {
-        // Update output distribution
-        double[] outputDist = new double[outputSize];
-        for (int j = 0; j < outputSize; j++)
-            for (int i = 0; i < inputSize; i++)
-                outputDist[j] += inputDist[i] * channelMatrix[i][j];
-        
-        // Update input distribution via exponential weighting
-        double[] phi = new double[inputSize];
-        for (int i = 0; i < inputSize; i++)
-            for (int j = 0; j < outputSize; j++)
-                if (channelMatrix[i][j] > 0 && outputDist[j] > 0)
-                    phi[i] += channelMatrix[i][j] * log2(channelMatrix[i][j] / outputDist[j]);
-        
-        double sum = 0;
-        for (int i = 0; i < inputSize; i++) {
-            inputDist[i] = Math.exp(phi[i]);
-            sum += inputDist[i];
-        }
-        for (int i = 0; i < inputSize; i++) inputDist[i] /= sum;
-    }
-    // Compute final capacity
-    return capacity;
-}
+```text
+KL(P||Q) exact  = 1/2 = 0.5 bits | float says 0.500000
+KL(Q||P) exact  = 5/8 = 0.625 bits | float says 0.625000
+asymmetric: 1/2 != 5/8 -> True
+strictly positive in both directions: True and True
+KL(P||P) = 0.0 (exactly zero iff the distributions coincide)
+H(X) = 1.0 = 1, H(Y) = 0.811278, H(X,Y) = 1.5 = 3/2
+MI via H(X)+H(Y)-H(X,Y) = 0.311278; direct double sum = 0.311278; equal: True
+H(Y|X) = H(X,Y)-H(X) = 0.5 = 1/2 exactly; MI = H(Y)-H(Y|X)
 ```
 
-The Blahut-Arimoto algorithm iteratively maximizes mutual information. It alternates between estimating the output distribution and updating the input distribution.
-
-## 6. Practical Considerations
-
-### 6.1 Numerical Stability
-- Add small epsilon to avoid log(0)
-- Use Math.log(x) / Math.log(2) for base-2 logarithms
-- Handle degenerate cases (zero entropy, perfect correlation)
-
-### 6.2 Performance
-- Entropy calculation is O(n) for n symbols
-- Mutual information for discrete variables is O(m·n)
-- Huffman coding with a priority queue is O(n log n)
-- Channel capacity via Blahut-Arimoto typically converges in O(iterations·m·n)
-
-### 6.3 Extensions
-- Joint entropy: O(m·n) for m×n joint distribution
-- Conditional entropy: derived from joint and marginal
-- Cross entropy: widely used in ML classification loss
-- Information bottleneck: trade-off between compression and prediction
+The exact-dyadic KL never touched a logarithm: each term is a mass
+times an integer exponent, so 1/2 and 5/8 are certificates, not
+measurements.

@@ -1,52 +1,65 @@
-﻿# Common Mistakes: Linear Algebra
+# Common Mistakes — Linear Algebra
 
-## Conceptual Mistakes
+Every item is anchored to a number that a run in this lab actually
+produced or refuted.
 
-### 1. Misunderstanding Assumptions
-Many theorems and algorithms have specific assumptions (e.g., positive definiteness, coprimality, differentiability). Applying them without verifying assumptions leads to incorrect results.
+## 1. Eliminating Along the Wrong Axis
 
-### 2. Ignoring Edge Cases
-Zero vectors, singular matrices, empty sets, uniform distributions, and boundary conditions often break naive implementations.
+Elimination acts on ROWS: row_j − m·row_i. A frequent slip is
+subtracting multiples of row_i from COLUMN entries (i.e. operating
+as if updating columns), which silently transposes the meaning of
+the multipliers and produces a lower-triangular mess rather than an
+upper-triangular system. The demo run collected multipliers
+[−3/2, −1, 4] as row effects — an axis error there would have put
+the −3/2 in a column and cascaded into nonsense pivots.
 
-### 3. Confusing Notation
-Mathematical notation and programming notation differ. Be precise about what each symbol represents.
+## 2. Row Swap Blindness
 
-### 4. Overgeneralization
-Not all properties that hold for small cases generalize. Counterexamples exist for seemingly natural conjectures.
+Dividing by zero is not modest — it is fatal. The exercise system
+x + y + z = 6, 2x + 2y + z = 9, 2x + y + 2z = 10 left a zero in the
+(2,2) slot, and without the printed row swap
+(`zero pivot at column 2 -> swap rows 2 and 3`) the exact solve is
+impossible to continue; float code "passes" instead by hiding
+divisions near zero and returning garbage with plausible residuals.
 
-## Implementation Mistakes
+## 3. Verifying Identities in Floats Instead of Exactly
 
-### 1. Integer Overflow
-Using int for intermediate computations that exceed 2^31-1. Use long or BigInteger appropriately.
+The trace law trace(AB) = trace(BA) is an equality of rationals; a
+float comparison "0.9999999 ≈ 1" can hide a coding bug (e.g. slicing
+trace(BA) with only two of its three diagonal indices — exactly the
+bug the first draft of this lab's program made, printing False).
+Run over `Fraction`: here True/False are the whole story.
 
-### 2. Floating Point Errors
-Comparing floating point values with ==. Always use tolerance-based comparisons.
+## 4. Treating Trace and Determinant as Interchangeable Summaries
 
-### 3. Off-by-One Errors
-Loop bounds, array indices, and mathematical index conventions must match.
+For eigenvalues λ₁, λ₂ the trace reports λ₁ + λ₂ and det reports
+λ₁λ₂ — different functions with different zeros. Taking "trace 4,
+det 3" (the [[2, 1], [1, 2]] pair) and quoting det as λ₁ + λ₂ would
+flip the eigenpair; the quadratic λ² − (trace)λ + det recovers
+{1, 3} or the irrational {2 ± √2} for {4, 2}.
 
-### 4. Missing Input Validation
-Failing to check preconditions (non-null inputs, valid dimensions, positive values).
+## 5. Certifying an Eigenvector in Reverse
 
-### 5. Inefficient Algorithms
-Using naive algorithms when efficient alternatives exist (e.g., trial division vs. Miller-Rabin).
+For [[3, 1], [1, 1]] with λ = 2 ± √2 the vector (1, λ−3) is exact,
+and the residual printed 0E−23 at 24 decimals. Reverse error is the
+common mistake: taking two floating decimal places "close to λ"
+(e.g. 0.58) and believing a moderate residual certifies the pair.
+The exponential root of trust was λ² = 4λ − 2, exact; residuals
+near zero only corroborate.
 
-### 6. Thread Safety
-Using non-thread-safe random number generators or mutable shared state in concurrent contexts.
+## 6. A Small Residual from an Ill-Conditioned Solve
 
-### 7. Memory Leaks
-Not releasing large temporary matrices or arrays in long-running applications.
+For A = [[1, 2], [2, 4001/1000]] the exact solutions to
+b₂ ∈ {6.001, 6.002, 6.004} were (1, 1), (−1, 2), (−5, 4): b changes
+by 0.001 and the answer by 2. The inverse entries
+[[4001, −2000], [−2000, 1000]] were verified to satisfy A·A⁻¹ = I,
+and κ₁ = 36012001/1000 = 36012.001. Interpreting float solves here
+as "residual tiny, therefore answer good" is bogus: the exact answer
+itself swings wildly, so no residual can referee the input scale.
 
-### 8. Silent Failures
-Returning incorrect results without indicating failure when numerical issues arise.
+## 7. Applying the Multiplier to the Pivot Row
 
-## Debugging Strategies
-
-- Test with known simple cases first
-- Verify intermediate results
-- Compare against reference implementations
-- Use assertions to check invariants
-- Profile to find performance bottlenecks
-- Test edge cases explicitly
-- Use tolerance-based comparisons for floating point
-- Log or print intermediate values when debugging
+The update never touches the pivot row; only "slave" rows absorb
+multiples. Applying the multiplier to row 1 (the pivot row) mutates
+future multipliers — every m_ij would use the wrong denominators —
+which pumps silently growing errors into otherwise identical code.
