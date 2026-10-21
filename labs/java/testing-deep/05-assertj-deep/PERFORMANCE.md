@@ -1,4 +1,4 @@
-﻿# AssertJ Deep Dive -- Test Performance
+# AssertJ Deep Dive -- Test Performance
 ## Performance Considerations
 ### Fast Tests
 Unit tests should run in milliseconds.

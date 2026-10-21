@@ -1,4 +1,4 @@
-﻿# Internals: Server-Sent Events
+# Internals: Server-Sent Events
 
 ## Netty Event Loop
 WebFlux SSE runs on Netty event loop threads. Each connection gets:

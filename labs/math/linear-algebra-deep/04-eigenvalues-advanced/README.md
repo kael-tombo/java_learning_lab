@@ -1,4 +1,4 @@
-﻿# Eigenvalues Advanced
+# Eigenvalues Advanced
 
 Micro-lab on characteristic polynomials, diagonalization, the symmetric
 spectral theorem, and one defective matrix showing the limits.

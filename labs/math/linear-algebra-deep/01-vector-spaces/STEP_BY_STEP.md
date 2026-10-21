@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Vector Spaces
+# Step-by-Step Guide: Vector Spaces
 
 ## Implementation Walkthrough
 

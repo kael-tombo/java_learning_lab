@@ -1,4 +1,4 @@
-﻿# Step by Step: Database Replication
+# Step by Step: Database Replication
 
 ## Implementation Guide
 

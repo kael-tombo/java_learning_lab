@@ -1,4 +1,4 @@
-﻿# References: Generating Functions
+# References: Generating Functions
 
 ## Primary Sources
 

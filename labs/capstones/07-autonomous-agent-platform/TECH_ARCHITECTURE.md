@@ -1,4 +1,4 @@
-﻿# Technical Architecture: Autonomous Agent System
+# Technical Architecture: Autonomous Agent System
 
 ## Architecture Overview
 

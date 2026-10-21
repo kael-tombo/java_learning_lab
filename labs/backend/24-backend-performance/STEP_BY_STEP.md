@@ -1,4 +1,4 @@
-﻿# Step by Step: Performance Tuning
+# Step by Step: Performance Tuning
 
 ## JMH Benchmark
 `java

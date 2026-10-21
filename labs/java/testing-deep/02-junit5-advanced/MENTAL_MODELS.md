@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Mental Models
+# JUnit 5 Advanced -- Mental Models
 ## Key Mental Models
 ### The Safety Net
 Tests are a safety net that catch regressions when you make changes.

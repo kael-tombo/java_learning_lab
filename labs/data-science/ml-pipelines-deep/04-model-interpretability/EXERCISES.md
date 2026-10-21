@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Exercises
+# Model Interpretability — Exercises
 
 ## 1. Hand-score the permutation
 Cover the output. With rule x1+0.2x2>0.5, labels {0,1,1,0,1,0}, and

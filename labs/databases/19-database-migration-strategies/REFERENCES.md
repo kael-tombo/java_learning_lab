@@ -1,4 +1,4 @@
-﻿# References: Database Migration Strategies
+# References: Database Migration Strategies
 
 ## Academic Papers
 

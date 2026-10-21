@@ -1,4 +1,4 @@
-﻿# Debugging: Explainable AI
+# Debugging: Explainable AI
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

@@ -1,4 +1,4 @@
-﻿# References: Mathematical Optimization
+# References: Mathematical Optimization
 
 ## Textbooks
 

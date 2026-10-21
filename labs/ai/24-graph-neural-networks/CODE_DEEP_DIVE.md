@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: Graph Neural Networks Implementation
+# Code Deep Dive: Graph Neural Networks Implementation
 
 ## 1. Architecture Overview
 The Graph Neural Networks implementation follows modular design principles with clear separation between data handling, model computation, training logic, and evaluation. This architecture ensures testability, extensibility, and performance.

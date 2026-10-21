@@ -1,4 +1,4 @@
-﻿# Logging — Mental Models
+# Logging — Mental Models
 
 ## Model 1: The Blueprint
 

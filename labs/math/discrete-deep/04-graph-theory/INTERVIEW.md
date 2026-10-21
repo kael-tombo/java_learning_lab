@@ -1,4 +1,4 @@
-﻿# Interview: Graph Theory
+# Interview: Graph Theory
 
 ## Conceptual Questions
 

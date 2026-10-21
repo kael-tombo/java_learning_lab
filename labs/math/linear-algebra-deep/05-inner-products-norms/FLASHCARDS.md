@@ -1,4 +1,4 @@
-﻿# Inner Products and Norms — Flashcards
+# Inner Products and Norms — Flashcards
 
 ## Q/A
 

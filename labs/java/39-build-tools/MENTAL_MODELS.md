@@ -1,4 +1,4 @@
-﻿# Build Tools — Mental Models
+# Build Tools — Mental Models
 
 ## Model 1: The Blueprint
 

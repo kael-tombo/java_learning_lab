@@ -1,4 +1,4 @@
-﻿# Visual Guide: Database Replication
+# Visual Guide: Database Replication
 
 ## Architecture Diagrams
 

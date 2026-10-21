@@ -1,4 +1,4 @@
-﻿# References: AI Safety and Alignment
+# References: AI Safety and Alignment
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

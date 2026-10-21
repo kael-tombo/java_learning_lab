@@ -1,4 +1,4 @@
-﻿# Apache Spark
+# Apache Spark
 
 ## Overview
 Apache Spark is a unified, distributed data processing engine for large-scale data analytics, supporting batch processing, streaming, SQL, machine learning, and graph processing.

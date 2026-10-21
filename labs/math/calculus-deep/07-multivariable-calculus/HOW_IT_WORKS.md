@@ -1,4 +1,4 @@
-﻿# How It Works: Multivariable Calculus
+# How It Works: Multivariable Calculus
 
 ## High-Level Explanation
 

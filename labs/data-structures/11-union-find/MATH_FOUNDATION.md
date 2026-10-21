@@ -1,4 +1,4 @@
-﻿# Math Foundation of Union-Find
+# Math Foundation of Union-Find
 
 ## The Inverse Ackermann Function
 

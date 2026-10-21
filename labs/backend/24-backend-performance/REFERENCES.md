@@ -1,4 +1,4 @@
-﻿# References: Performance
+# References: Performance
 
 - JMH Samples: https://github.com/openjdk/jmh/tree/master/jmh-samples
 - HikariCP: https://github.com/brettwooldridge/HikariCP

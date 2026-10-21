@@ -1,4 +1,4 @@
-﻿# Debugging: Meta-Learning
+# Debugging: Meta-Learning
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

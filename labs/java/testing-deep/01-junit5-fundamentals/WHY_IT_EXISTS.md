@@ -1,4 +1,4 @@
-﻿# JUnit 5 Fundamentals -- Why It Exists
+# JUnit 5 Fundamentals -- Why It Exists
 ## Motivation
 ### The Problem
 Manual testing is slow, error-prone, and not repeatable.

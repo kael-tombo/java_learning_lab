@@ -1,4 +1,4 @@
-﻿# Step-by-Step — Distributed ID Generation
+# Step-by-Step — Distributed ID Generation
 
 ## Step 1: Snowflake Generator
 1. Define bit layout (timestamp, worker, sequence)

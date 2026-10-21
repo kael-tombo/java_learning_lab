@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: API Versioning
+# Mathematical Foundation: API Versioning
 
 ## 1. Semantic Versioning for APIs
 

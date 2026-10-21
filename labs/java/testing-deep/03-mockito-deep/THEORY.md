@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Theoretical Foundation
+# Mockito Deep Dive -- Theoretical Foundation
 ## Core Concepts
 ### 1. Testing Fundamentals
 Software testing verifies that code behaves as expected. The Mockito Deep Dive provides a framework for writing and running tests.

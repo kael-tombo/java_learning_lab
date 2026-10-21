@@ -1,4 +1,4 @@
-﻿# Internal Implementation: Federated Learning
+# Internal Implementation: Federated Learning
 
 ## 1. Core Engine
 The computational engine manages a directed acyclic graph of operations. Each node is an operation, edges represent data dependencies. The engine schedules operations for efficient execution considering dependencies and available resources.

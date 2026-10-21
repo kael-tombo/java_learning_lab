@@ -1,4 +1,4 @@
-﻿# Debugging: Matrix Decompositions Implementation
+# Debugging: Matrix Decompositions Implementation
 
 ## Common Bugs
 

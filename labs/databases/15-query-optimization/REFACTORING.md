@@ -1,4 +1,4 @@
-﻿# Refactoring: Query Optimization
+# Refactoring: Query Optimization
 
 ## Common Refactoring Patterns
 

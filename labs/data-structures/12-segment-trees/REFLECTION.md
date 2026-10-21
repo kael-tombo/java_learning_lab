@@ -1,4 +1,4 @@
-﻿# Reflection: Segment Trees
+# Reflection: Segment Trees
 
 ## Key Insights
 

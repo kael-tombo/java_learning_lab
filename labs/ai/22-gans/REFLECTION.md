@@ -1,4 +1,4 @@
-﻿# Reflection: Generative Adversarial Networks
+# Reflection: Generative Adversarial Networks
 
 ## Self-Assessment
 - Can I explain Generative Adversarial Networks to a non-technical person?

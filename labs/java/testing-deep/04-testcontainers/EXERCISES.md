@@ -1,4 +1,4 @@
-﻿# Testcontainers -- Exercises
+# Testcontainers -- Exercises
 ## Beginner Exercises
 ### Exercise 1: Write your first test
 Write a test that verifies basic arithmetic operations.

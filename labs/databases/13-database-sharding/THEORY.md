@@ -1,4 +1,4 @@
-﻿# Theory: Database Sharding
+# Theory: Database Sharding
 
 ## 1. Fundamental Concepts
 

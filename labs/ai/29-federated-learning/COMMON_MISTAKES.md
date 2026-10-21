@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Federated Learning
+# Common Mistakes in Federated Learning
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

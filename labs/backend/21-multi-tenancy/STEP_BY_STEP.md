@@ -1,4 +1,4 @@
-﻿# Step by Step: Multi-Tenancy
+# Step by Step: Multi-Tenancy
 
 ## Step 1: Tenant Context
 `java

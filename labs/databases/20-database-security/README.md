@@ -1,4 +1,4 @@
-﻿# Lab 20: Database Security
+# Lab 20: Database Security
 
 ## Focus
 Comprehensive deep-dive into database security with Java 21+ implementations, real-world patterns, distributed systems theory, and JUnit 5 integration tests.

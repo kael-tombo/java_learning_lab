@@ -1,4 +1,4 @@
-﻿# Step by Step: Database Testing
+# Step by Step: Database Testing
 
 ## Implementation Guide
 

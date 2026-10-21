@@ -1,4 +1,4 @@
-﻿# NIO Selectors
+# NIO Selectors
 
 One thread, thousands of connections: `Selector` multiplexes
 non-blocking channels by readiness (`OP_ACCEPT`/`OP_READ`/`OP_WRITE`),

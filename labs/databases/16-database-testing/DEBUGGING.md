@@ -1,4 +1,4 @@
-﻿# Debugging: Database Testing
+# Debugging: Database Testing
 
 ## Common Issues and Solutions
 

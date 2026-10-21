@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Refactoring
+# Java Serialization -- Refactoring
 
 ## Refactoring Strategies
 

@@ -1,4 +1,4 @@
-﻿# Debugging Concurrent Data Structures
+# Debugging Concurrent Data Structures
 
 ## Common Symptoms
 

@@ -1,4 +1,4 @@
-﻿# GitOps & ArgoCD Flashcards
+# GitOps & ArgoCD Flashcards
 
 ## Card 1
 Q: What are the five principles of GitOps?

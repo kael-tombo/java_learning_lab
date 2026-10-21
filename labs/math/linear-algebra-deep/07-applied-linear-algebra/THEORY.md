@@ -1,4 +1,4 @@
-﻿# Applied Linear Algebra — Theory
+# Applied Linear Algebra — Theory
 
 ## 1. Least squares and normal equations
 

@@ -1,4 +1,4 @@
-﻿# Mental Models for Fenwick Tree
+# Mental Models for Fenwick Tree
 
 ## 1. The Binary Ladder Model
 

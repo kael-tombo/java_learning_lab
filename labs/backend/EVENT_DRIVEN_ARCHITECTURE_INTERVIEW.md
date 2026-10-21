@@ -1,4 +1,4 @@
-﻿# Event-Driven Architecture Deep Interview Guide — Wave 6
+# Event-Driven Architecture Deep Interview Guide — Wave 6
 
 > Target: 350+ lines covering concepts, technologies (Kafka, RabbitMQ, Cloud Stream, Axon), patterns (Event Sourcing, CQRS, Saga, Outbox), interview questions
 

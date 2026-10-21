@@ -1,4 +1,4 @@
-﻿# References: Applied Linear Algebra
+# References: Applied Linear Algebra
 
 ## Textbooks
 1. Standard Textbook on Calculus

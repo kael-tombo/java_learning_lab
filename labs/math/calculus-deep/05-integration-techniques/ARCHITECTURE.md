@@ -1,4 +1,4 @@
-﻿# Architecture: Integration Techniques Implementation
+# Architecture: Integration Techniques Implementation
 
 ## System Design
 

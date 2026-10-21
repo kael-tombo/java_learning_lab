@@ -1,4 +1,4 @@
-﻿# Visual Guide: Spring Batch
+# Visual Guide: Spring Batch
 
 `
 Input â”€â”€â–¶ [Reader] â”€â”€â–¶ [Processor] â”€â”€â–¶ [Writer] â”€â”€â–¶ Output

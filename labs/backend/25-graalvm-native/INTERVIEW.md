@@ -1,4 +1,4 @@
-﻿# Interview: GraalVM Native
+# Interview: GraalVM Native
 
 Q: What are the main benefits of native images? A: Instant startup, lower memory, smaller size.
 

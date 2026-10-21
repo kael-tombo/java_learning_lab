@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Why It Matters
+# JUnit 5 Advanced -- Why It Matters
 ## Practical Importance
 ### Quality Assurance
 Tests verify code correctness and prevent regressions.

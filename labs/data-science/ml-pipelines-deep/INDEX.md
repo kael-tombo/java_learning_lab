@@ -1,4 +1,4 @@
-﻿# ML Pipelines Deep Dive
+# ML Pipelines Deep Dive
 
 ## Micro-Labs
 

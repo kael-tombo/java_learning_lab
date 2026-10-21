@@ -1,4 +1,4 @@
-﻿# Math Foundation: Database Security
+# Math Foundation: Database Security
 
 ## Mathematical Models and Formulas
 

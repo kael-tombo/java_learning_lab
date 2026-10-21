@@ -1,4 +1,4 @@
-﻿# Flashcards: Database Security
+# Flashcards: Database Security
 
 ## Q: What is database security?
 **A:** Strategy that distributes data across multiple independent database instances for scalability.

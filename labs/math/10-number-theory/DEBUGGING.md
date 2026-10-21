@@ -1,4 +1,4 @@
-﻿# Debugging Guide: Number Theory
+# Debugging Guide: Number Theory
 
 ## Common Issues and Solutions
 

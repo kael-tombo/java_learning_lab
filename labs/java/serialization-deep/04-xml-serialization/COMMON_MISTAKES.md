@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Common Mistakes
+# XML Serialization -- Common Mistakes
 
 ## Top 20 Common Mistakes
 

@@ -1,4 +1,4 @@
-﻿# Math Foundation: Cassandra NoSQL
+# Math Foundation: Cassandra NoSQL
 
 ## Mathematical Models and Formulas
 

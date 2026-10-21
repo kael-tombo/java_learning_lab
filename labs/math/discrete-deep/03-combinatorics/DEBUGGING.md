@@ -1,4 +1,4 @@
-﻿# Debugging: Combinatorics Code
+# Debugging: Combinatorics Code
 
 ## Off-by-One in Recurrence Seeds
 

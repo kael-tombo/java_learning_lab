@@ -1,4 +1,4 @@
-﻿# JUnit 5 Fundamentals -- Theoretical Foundation
+# JUnit 5 Fundamentals -- Theoretical Foundation
 ## Core Concepts
 ### 1. Testing Fundamentals
 Software testing verifies that code behaves as expected. The JUnit 5 Fundamentals provides a framework for writing and running tests.

@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Exercises
+# Java Serialization -- Exercises
 
 ## Beginner Exercises
 

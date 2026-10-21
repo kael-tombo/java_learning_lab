@@ -1,4 +1,4 @@
-﻿# Interview Questions: Optimization Algorithms
+# Interview Questions: Optimization Algorithms
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

@@ -1,4 +1,4 @@
-﻿# Quiz: Database Security
+# Quiz: Database Security
 
 ## Section 1: Fundamentals
 

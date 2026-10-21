@@ -1,4 +1,4 @@
-﻿# Exercises
+# Exercises
 
 ## Beginner
 1. Implement sparse table for range minimum

@@ -1,4 +1,4 @@
-﻿# Testcontainers
+# Testcontainers
 ## Overview
 @Testcontainers, GenericContainer, module containers (PostgreSQL, Kafka, Redis), startup timeout, container reuse, network
 ## Learning Objectives

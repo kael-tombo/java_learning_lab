@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced
+# JUnit 5 Advanced
 ## Overview
 @ParameterizedTest, @ValueSource/@CsvSource/@MethodSource/@EnumSource, @RepeatedTest, @TestFactory, dynamic tests, extensions
 ## Learning Objectives

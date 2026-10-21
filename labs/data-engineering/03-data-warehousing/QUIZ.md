@@ -1,4 +1,4 @@
-﻿# Data Warehousing Quiz
+# Data Warehousing Quiz
 
 ## Question 1
 What is the central table in a star schema called?

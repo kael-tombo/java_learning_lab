@@ -1,4 +1,4 @@
-﻿# References: Numerical Methods
+# References: Numerical Methods
 
 ## Textbooks
 

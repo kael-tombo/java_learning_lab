@@ -1,4 +1,4 @@
-﻿# Lab 17: Spatial Data Structures
+# Lab 17: Spatial Data Structures
 
 <div align="center">
 

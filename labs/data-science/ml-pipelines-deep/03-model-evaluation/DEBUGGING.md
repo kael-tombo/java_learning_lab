@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Debugging
+# Model Evaluation — Debugging
 
 ## Symptom: accuracy 0.99 but users report misses
 Likely class imbalance: a 1%-positive problem gives 0.99 to a constant

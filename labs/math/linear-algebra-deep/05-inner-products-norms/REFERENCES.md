@@ -1,4 +1,4 @@
-﻿# References: Inner Products and Norms
+# References: Inner Products and Norms
 
 ## Textbooks
 1. Standard Textbook on Calculus

@@ -1,4 +1,4 @@
-﻿# Architecture: Database Migration Strategies
+# Architecture: Database Migration Strategies
 
 ## System Architecture
 

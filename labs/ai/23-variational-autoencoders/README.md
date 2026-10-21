@@ -1,4 +1,4 @@
-﻿# 23-23-variational-autoencoders - Variational Autoencoders
+# 23-23-variational-autoencoders - Variational Autoencoders
 
 VAE, CVAE, beta-VAE, reparameterization trick
 

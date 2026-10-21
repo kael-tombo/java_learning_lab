@@ -1,4 +1,4 @@
-﻿# Linear Transformations — Flashcards
+# Linear Transformations — Flashcards
 
 ## Q/A
 

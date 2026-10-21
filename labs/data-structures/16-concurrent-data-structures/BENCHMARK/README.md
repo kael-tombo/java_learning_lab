@@ -1,4 +1,4 @@
-﻿# Benchmark: Concurrent Data Structures
+# Benchmark: Concurrent Data Structures
 
 ## Scenarios
 1. Lock-free vs lock-based throughput scaling

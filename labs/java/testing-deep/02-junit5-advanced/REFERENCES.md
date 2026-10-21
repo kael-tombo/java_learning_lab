@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- References
+# JUnit 5 Advanced -- References
 ## Resources
 - JUnit 5 User Guide: junit.org/junit5
 - Mockito Documentation: site.mockito.org

@@ -1,4 +1,4 @@
-﻿# Architecture: Security
+# Architecture: Security
 
 `
 Request â”€â”€â–¶ [Rate Limiter] â”€â”€â–¶ [CORS Filter] â”€â”€â–¶ [CSRF Filter]

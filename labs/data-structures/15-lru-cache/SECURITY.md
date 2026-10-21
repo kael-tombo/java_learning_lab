@@ -1,4 +1,4 @@
-﻿# Security Considerations for LRU Cache
+# Security Considerations for LRU Cache
 
 1. **Cache poisoning**: Validate all cached data
 2. **Sensitive data**: Don't cache passwords, tokens

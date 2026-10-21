@@ -1,4 +1,4 @@
-﻿# Why It Matters: API Versioning & Documentation
+# Why It Matters: API Versioning & Documentation
 
 API versioning and documentation matter because APIs are contracts between providers and consumers. Without versioning, you break client applications. Without documentation, developers can't use your API effectively.
 

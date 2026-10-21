@@ -1,4 +1,4 @@
-﻿# Architecture: Database Sharding
+# Architecture: Database Sharding
 
 ## System Architecture
 

@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Architecture
+# Java Serialization -- Architecture
 
 ## System Architecture
 

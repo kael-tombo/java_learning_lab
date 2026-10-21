@@ -1,4 +1,4 @@
-﻿# Variational Autoencoders - Mathematical Foundations
+# Variational Autoencoders - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Variational Autoencoders.

@@ -1,4 +1,4 @@
-﻿# REAL_WORLD_PROJECT — Testing a REST API Service
+# REAL_WORLD_PROJECT — Testing a REST API Service
 
 ## Goal
 Create a complete test suite for an e-commerce REST API (OrderService, PaymentService, InventoryService).

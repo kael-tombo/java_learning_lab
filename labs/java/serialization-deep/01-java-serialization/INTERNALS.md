@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Internal Implementation
+# Java Serialization -- Internal Implementation
 
 ## Internal Architecture
 

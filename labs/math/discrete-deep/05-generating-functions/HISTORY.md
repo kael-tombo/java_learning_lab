@@ -1,4 +1,4 @@
-﻿# History: Generating Functions
+# History: Generating Functions
 
 ## Euler and Infinite Products
 

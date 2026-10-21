@@ -1,4 +1,4 @@
-﻿# Lab 25: GraalVM Native Images
+# Lab 25: GraalVM Native Images
 
 ## Overview
 GraalVM Native Images compile Java applications ahead-of-time (AOT) into native executables. Learn reflection configuration, resource bundles, GraalVM reachability, and building native images with Spring Boot.

@@ -1,4 +1,4 @@
-﻿# Refactoring — Distributed Caching
+# Refactoring — Distributed Caching
 
 1. Extract interface for pluggable implementations
 2. Separate concerns: configuration, runtime, monitoring

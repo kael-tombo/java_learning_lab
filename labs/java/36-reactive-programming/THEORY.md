@@ -1,4 +1,4 @@
-﻿# Reactive Programming — Theoretical Foundation
+# Reactive Programming — Theoretical Foundation
 
 ## Core Concepts
 

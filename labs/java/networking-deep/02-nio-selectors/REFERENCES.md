@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- References
+# NIO Selectors -- References
 ## Further Reading
 
 ### Books

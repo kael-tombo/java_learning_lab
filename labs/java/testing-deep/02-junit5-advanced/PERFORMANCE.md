@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Test Performance
+# JUnit 5 Advanced -- Test Performance
 ## Performance Considerations
 ### Fast Tests
 Unit tests should run in milliseconds.

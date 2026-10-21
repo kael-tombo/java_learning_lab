@@ -1,4 +1,4 @@
-﻿# Exercises: Database Migration Strategies
+# Exercises: Database Migration Strategies
 
 ## Beginner Level
 

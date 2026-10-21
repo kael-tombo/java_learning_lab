@@ -1,4 +1,4 @@
-﻿# Architecture: Matrix Decompositions Implementation
+# Architecture: Matrix Decompositions Implementation
 
 ## System Design
 

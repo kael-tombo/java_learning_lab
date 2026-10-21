@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning - Mini Project
+# Multi-Task Learning - Mini Project
 
 ## Overview
 Build a working Multi-Task Learning implementation from scratch.

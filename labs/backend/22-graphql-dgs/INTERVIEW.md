@@ -1,4 +1,4 @@
-﻿# Interview: GraphQL DGS
+# Interview: GraphQL DGS
 
 Q: What is the N+1 problem in GraphQL? A: When querying a list and each item triggers a separate query for related data.
 

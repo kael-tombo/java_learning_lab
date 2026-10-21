@@ -1,4 +1,4 @@
-﻿# Mental Models for LRU Cache
+# Mental Models for LRU Cache
 
 ## 1. The Pile of Papers Model
 

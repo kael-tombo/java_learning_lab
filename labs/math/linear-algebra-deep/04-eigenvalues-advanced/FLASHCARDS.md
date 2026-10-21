@@ -1,4 +1,4 @@
-﻿# Eigenvalues Advanced — Flashcards
+# Eigenvalues Advanced — Flashcards
 
 ## Q/A
 

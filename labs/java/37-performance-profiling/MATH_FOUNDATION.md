@@ -1,4 +1,4 @@
-﻿# Performance Profiling — Math Foundation
+# Performance Profiling — Math Foundation
 
 ## Mathematical Concepts
 

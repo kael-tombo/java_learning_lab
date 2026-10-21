@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Testing
+# Common Mistakes in Testing
 
 ## 1. Testing Implementation Details
 

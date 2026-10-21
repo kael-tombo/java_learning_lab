@@ -1,4 +1,4 @@
-﻿# Security: Eigenvalues Advanced Implementation
+# Security: Eigenvalues Advanced Implementation
 
 ## Security Considerations
 

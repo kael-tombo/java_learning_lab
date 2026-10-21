@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Architecture
+# NIO Selectors -- Architecture
 ## System Architecture
 
 ### High-Level Design

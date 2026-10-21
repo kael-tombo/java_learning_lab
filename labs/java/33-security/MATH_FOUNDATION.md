@@ -1,4 +1,4 @@
-﻿# Security — Math Foundation
+# Security — Math Foundation
 
 ## Mathematical Concepts
 

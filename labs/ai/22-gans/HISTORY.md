@@ -1,4 +1,4 @@
-﻿# History of Generative Adversarial Networks
+# History of Generative Adversarial Networks
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

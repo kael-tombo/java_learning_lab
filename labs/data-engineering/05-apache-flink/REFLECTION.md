@@ -1,4 +1,4 @@
-﻿# Apache Flink Reflection
+# Apache Flink Reflection
 
 ## Key Learnings
 - True streaming outperforms micro-batching for real-time use cases

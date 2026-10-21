@@ -1,4 +1,4 @@
-﻿# 28-28-explainable-ai - Explainable AI
+# 28-28-explainable-ai - Explainable AI
 
 SHAP, LIME, integrated gradients, attention visualization
 

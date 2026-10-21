@@ -1,4 +1,4 @@
-﻿# History of Federated Learning
+# History of Federated Learning
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

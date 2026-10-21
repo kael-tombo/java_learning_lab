@@ -1,4 +1,4 @@
-﻿# Federated Learning - Quiz
+# Federated Learning - Quiz
 
 ## Overview
 Assessment covering all Federated Learning topics.

@@ -1,4 +1,4 @@
-﻿# Theory: Query Optimization
+# Theory: Query Optimization
 
 ## 1. Fundamental Concepts
 

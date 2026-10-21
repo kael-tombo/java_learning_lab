@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Reflection
+# Mockito Deep Dive -- Reflection
 ## Self-Reflection
 1. How confident are you writing tests?
 2. What testing challenges have you faced?

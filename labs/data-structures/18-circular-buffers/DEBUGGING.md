@@ -1,4 +1,4 @@
-﻿# Debugging
+# Debugging
 
 ## Common Issues
 | Symptom | Cause |

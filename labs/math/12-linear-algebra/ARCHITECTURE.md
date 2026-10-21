@@ -1,4 +1,4 @@
-﻿# Architecture: Linear Algebra Implementation
+# Architecture: Linear Algebra Implementation
 
 ## Package Structure
 

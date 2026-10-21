@@ -1,4 +1,4 @@
-﻿# Architecture: Inner Products and Norms Implementation
+# Architecture: Inner Products and Norms Implementation
 
 ## System Design
 

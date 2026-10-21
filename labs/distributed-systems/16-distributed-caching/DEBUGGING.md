@@ -1,4 +1,4 @@
-﻿# Debugging — Distributed Caching
+# Debugging — Distributed Caching
 
 ## Common Issues
 1. **Race conditions**: Ensure thread-safe access to shared state

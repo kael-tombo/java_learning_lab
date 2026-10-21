@@ -1,4 +1,4 @@
-﻿# Quiz: Meta-Learning
+# Quiz: Meta-Learning
 
 ## Instructions
 30 questions covering Meta-Learning concepts. Passing score: 70%.

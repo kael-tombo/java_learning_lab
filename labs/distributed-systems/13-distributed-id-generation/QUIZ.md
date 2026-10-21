@@ -1,4 +1,4 @@
-﻿# Quiz — Distributed ID Generation
+# Quiz — Distributed ID Generation
 
 10 questions. Answers with explanations at the end of each question.
 

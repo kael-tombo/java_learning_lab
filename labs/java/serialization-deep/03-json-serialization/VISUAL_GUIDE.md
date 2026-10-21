@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Visual Guide
+# JSON Serialization -- Visual Guide
 
 ## Architecture Diagram
 

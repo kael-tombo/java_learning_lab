@@ -1,4 +1,4 @@
-﻿# 25-25-self-supervised-learning - Self-Supervised Learning
+# 25-25-self-supervised-learning - Self-Supervised Learning
 
 Contrastive learning, SimCLR, BYOL, MAE
 

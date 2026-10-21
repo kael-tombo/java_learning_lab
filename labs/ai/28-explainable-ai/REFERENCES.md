@@ -1,4 +1,4 @@
-﻿# References: Explainable AI
+# References: Explainable AI
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

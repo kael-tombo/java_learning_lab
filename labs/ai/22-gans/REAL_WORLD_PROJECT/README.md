@@ -1,4 +1,4 @@
-﻿# Generative Adversarial Networks - Real-World Project
+# Generative Adversarial Networks - Real-World Project
 
 ## Overview
 Build a production-ready Generative Adversarial Networks system.

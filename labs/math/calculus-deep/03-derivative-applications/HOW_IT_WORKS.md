@@ -1,4 +1,4 @@
-﻿# How It Works: Derivative Applications
+# How It Works: Derivative Applications
 
 ## High-Level Explanation
 

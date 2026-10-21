@@ -1,4 +1,4 @@
-﻿# Debugging — Distributed ID Generation
+# Debugging — Distributed ID Generation
 
 ## Common Issues
 1. Duplicate IDs: Check clock rollback handling

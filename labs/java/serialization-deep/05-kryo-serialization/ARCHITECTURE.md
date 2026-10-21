@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Architecture
+# Kryo Serialization -- Architecture
 
 ## System Architecture
 

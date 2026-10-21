@@ -1,4 +1,4 @@
-﻿# Quiz: Spring Batch
+# Quiz: Spring Batch
 
 ## Question 1
 What is a chunk in Spring Batch?

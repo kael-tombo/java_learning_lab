@@ -1,4 +1,4 @@
-﻿# Common Mistakes with Union-Find
+# Common Mistakes with Union-Find
 
 ## 1. Forgetting Path Compression
 

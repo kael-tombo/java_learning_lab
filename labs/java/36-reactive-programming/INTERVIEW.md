@@ -1,4 +1,4 @@
-﻿# Interview Questions: Reactive Programming
+# Interview Questions: Reactive Programming
 
 ## Company-Specific Focus
 

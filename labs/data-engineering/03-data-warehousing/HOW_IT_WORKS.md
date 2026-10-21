@@ -1,4 +1,4 @@
-﻿# How Data Warehousing Works
+# How Data Warehousing Works
 
 ## ETL into Warehouse
 `java

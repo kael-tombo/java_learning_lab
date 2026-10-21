@@ -1,4 +1,4 @@
-﻿# Matrix Calculus — Math Foundation
+# Matrix Calculus — Math Foundation
 
 All values computed in exact rational arithmetic (Python `fractions`).
 

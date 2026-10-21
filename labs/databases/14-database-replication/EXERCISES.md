@@ -1,4 +1,4 @@
-﻿# Exercises: Database Replication
+# Exercises: Database Replication
 
 ## Beginner Level
 

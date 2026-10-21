@@ -1,4 +1,4 @@
-﻿# Linear Transformations — Theory
+# Linear Transformations — Theory
 
 ## 1. Definition
 

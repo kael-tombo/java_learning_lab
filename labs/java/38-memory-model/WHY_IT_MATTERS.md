@@ -1,4 +1,4 @@
-﻿# Why Memory Model Matters
+# Why Memory Model Matters
 
 ## Real-World Impact
 

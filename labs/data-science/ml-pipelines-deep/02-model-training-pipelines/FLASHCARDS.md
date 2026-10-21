@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Flashcards
+# Model Training Pipelines — Flashcards
 
 Q: Name the six standard DAG stages in order.
 A: Ingest, validate, transform, train, evaluate, register. Demo prints

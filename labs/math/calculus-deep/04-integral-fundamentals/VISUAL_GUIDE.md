@@ -1,4 +1,4 @@
-﻿# Visual Guide: Integral Fundamentals
+# Visual Guide: Integral Fundamentals
 
 ## Conceptual Diagrams
 

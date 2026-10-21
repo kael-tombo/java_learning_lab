@@ -1,4 +1,4 @@
-﻿# Reflection: Inner Products and Norms
+# Reflection: Inner Products and Norms
 
 ## Self-Assessment Questions
 

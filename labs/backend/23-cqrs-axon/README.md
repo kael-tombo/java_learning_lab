@@ -1,4 +1,4 @@
-﻿# Lab 23: CQRS with Axon Framework
+# Lab 23: CQRS with Axon Framework
 
 ## Overview
 Axon Framework implements CQRS (Command Query Responsibility Segregation) and Event Sourcing patterns. Learn command/query buses, event sourcing, sagas, and aggregate design.

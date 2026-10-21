@@ -1,4 +1,4 @@
-﻿# Socket Programming -- How It Works
+# Socket Programming -- How It Works
 ## Detailed Mechanical Explanation
 
 ### 1. Socket Creation and Binding

@@ -1,4 +1,4 @@
-﻿# Architecture: Multi-Tenancy
+# Architecture: Multi-Tenancy
 
 `
 Request â”€â”€â–¶ [Tenant Filter] â”€â”€â–¶ [TenantContext.setTenantId()]

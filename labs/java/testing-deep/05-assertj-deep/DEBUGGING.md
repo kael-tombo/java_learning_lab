@@ -1,4 +1,4 @@
-﻿# AssertJ Deep Dive -- Debugging Tests
+# AssertJ Deep Dive -- Debugging Tests
 ## Debugging Strategies
 ### Test Failures
 Read the assertion message carefully - it shows expected vs actual.

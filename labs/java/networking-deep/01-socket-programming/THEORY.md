@@ -1,4 +1,4 @@
-﻿# Socket Programming — Theoretical Foundation
+# Socket Programming — Theoretical Foundation
 
 ## Core Concept
 

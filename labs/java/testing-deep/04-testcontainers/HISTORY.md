@@ -1,4 +1,4 @@
-﻿# Testcontainers -- History
+# Testcontainers -- History
 ## Testing Framework Evolution
 ### JUnit 4 (2006)
 Annotations introduced (@Test, @Before, @After).

@@ -1,4 +1,4 @@
-﻿# Lab 04 — Model Interpretability
+# Lab 04 — Model Interpretability
 
 ## Goal
 Explain model behavior honestly: separate global from local questions,

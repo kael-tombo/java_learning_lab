@@ -1,4 +1,4 @@
-﻿# Performance: GraalVM Native
+# Performance: GraalVM Native
 
 | Metric | JVM (HotSpot) | Native Image | Improvement |
 |--------|---------------|--------------|-------------|

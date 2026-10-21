@@ -1,4 +1,4 @@
-﻿# Why Security Matters
+# Why Security Matters
 
 ## Real-World Impact
 

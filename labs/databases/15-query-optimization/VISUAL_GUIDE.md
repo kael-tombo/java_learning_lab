@@ -1,4 +1,4 @@
-﻿# Visual Guide: Query Optimization
+# Visual Guide: Query Optimization
 
 ## Architecture Diagrams
 

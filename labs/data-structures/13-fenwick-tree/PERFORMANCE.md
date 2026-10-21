@@ -1,4 +1,4 @@
-﻿# Performance of Fenwick Tree
+# Performance of Fenwick Tree
 
 ## Theoretical Performance
 

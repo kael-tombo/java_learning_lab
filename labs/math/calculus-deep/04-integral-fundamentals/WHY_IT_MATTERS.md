@@ -1,4 +1,4 @@
-﻿# Why It Matters: Integral Fundamentals
+# Why It Matters: Integral Fundamentals
 
 ## Real-World Importance
 

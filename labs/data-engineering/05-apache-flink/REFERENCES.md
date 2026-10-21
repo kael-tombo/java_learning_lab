@@ -1,4 +1,4 @@
-﻿# Apache Flink References
+# Apache Flink References
 
 ## Books
 - "Stream Processing with Apache Flink" by Fabian Hueske and Vasiliki Kalavri

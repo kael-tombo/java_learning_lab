@@ -1,4 +1,4 @@
-﻿# Internals: Matrix Decompositions Implementation
+# Internals: Matrix Decompositions Implementation
 
 ## Deep Dive into Implementation Details
 

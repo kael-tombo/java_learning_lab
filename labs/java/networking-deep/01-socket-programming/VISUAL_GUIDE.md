@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Visual Guide
+# Socket Programming -- Visual Guide
 ## Network Architecture Diagram
 `
     +-----------+     +-----------+     +-----------+

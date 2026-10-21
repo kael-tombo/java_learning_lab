@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Math Foundation
+# Model Interpretability — Math Foundation
 
 ## 1. Permutation importance arithmetic
 Baseline 6/6 = 1.0; permuted 4/6 = 0.6666666666666666:

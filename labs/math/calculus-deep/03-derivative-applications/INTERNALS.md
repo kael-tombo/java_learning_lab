@@ -1,4 +1,4 @@
-﻿# Internals: Derivative Applications Implementation
+# Internals: Derivative Applications Implementation
 
 ## Deep Dive into Implementation Details
 

@@ -1,4 +1,4 @@
-﻿# Reflection: Derivatives and Differentiation Rules
+# Reflection: Derivatives and Differentiation Rules
 
 ## Self-Assessment Questions
 

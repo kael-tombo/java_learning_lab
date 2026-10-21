@@ -1,4 +1,4 @@
-﻿# How LRU Cache Works
+# How LRU Cache Works
 
 ## Data Structure
 

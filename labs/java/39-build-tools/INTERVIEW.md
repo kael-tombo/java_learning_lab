@@ -1,4 +1,4 @@
-﻿# Interview Questions: Build Tools
+# Interview Questions: Build Tools
 
 ## Company-Specific Focus
 

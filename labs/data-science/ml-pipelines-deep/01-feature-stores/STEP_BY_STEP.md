@@ -1,4 +1,4 @@
-﻿# Feature Stores — Step by Step
+# Feature Stores — Step by Step
 
 ## Step 1. Define one feature with a version
 Name it `login_7d_count:v1`. Record owner, SQL/logic pointer, TTL,

@@ -1,4 +1,4 @@
-﻿# Why LRU Cache Exists
+# Why LRU Cache Exists
 
 ## The Caching Problem
 

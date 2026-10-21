@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks - Mini Project
+# Graph Neural Networks - Mini Project
 
 ## Overview
 Build a working Graph Neural Networks implementation from scratch.

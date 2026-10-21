@@ -1,4 +1,4 @@
-﻿# Reflection — Gossip Protocols
+# Reflection — Gossip Protocols
 
 ## Key Questions
 1. How does this pattern handle edge cases?

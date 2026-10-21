@@ -1,4 +1,4 @@
-﻿# Lab 02 — Model Training Pipelines
+# Lab 02 — Model Training Pipelines
 
 ## Goal
 Learn how training is organized as a repeatable staged pipeline rather

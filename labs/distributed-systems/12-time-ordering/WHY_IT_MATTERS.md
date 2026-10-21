@@ -1,4 +1,4 @@
-﻿# Why Time Ordering Matters
+# Why Time Ordering Matters
 
 1. **Database Consistency**: Causal consistency without proper ordering
 2. **Conflict Resolution**: Smart merge strategies for concurrent edits

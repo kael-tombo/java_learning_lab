@@ -1,4 +1,4 @@
-﻿# Mental Models: Combinatorics
+# Mental Models: Combinatorics
 
 ## 1. Counting = Exhibiting a Bijection
 

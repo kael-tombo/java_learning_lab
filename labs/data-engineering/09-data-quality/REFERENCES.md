@@ -1,4 +1,4 @@
-﻿# Data Quality References
+# Data Quality References
 
 ## Books
 - "Data Quality: The Accuracy Dimension" by Jack Olson

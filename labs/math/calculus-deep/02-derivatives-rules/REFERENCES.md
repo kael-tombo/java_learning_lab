@@ -1,4 +1,4 @@
-﻿# References: Derivatives and Differentiation Rules
+# References: Derivatives and Differentiation Rules
 
 ## Textbooks
 

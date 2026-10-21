@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Implementing a Fenwick Tree
+# Step-by-Step: Implementing a Fenwick Tree
 
 ## Step 1: Understand the Index System
 

@@ -1,4 +1,4 @@
-﻿# Mental Models: API Versioning & Documentation
+# Mental Models: API Versioning & Documentation
 
 ## 1. The Building Renovation Model
 An API is like a building. V1 is the original structure. Adding rooms (endpoints) without changing structure is a MINOR update. Knocking down walls (breaking changes) requires V2. Tenants (clients) in the old wing need time to move before you demolish it. The sunset header is the eviction notice.

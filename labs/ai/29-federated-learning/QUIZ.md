@@ -1,4 +1,4 @@
-﻿# Quiz: Federated Learning
+# Quiz: Federated Learning
 
 ## Instructions
 30 questions covering Federated Learning concepts. Passing score: 70%.

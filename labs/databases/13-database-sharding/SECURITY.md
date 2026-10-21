@@ -1,4 +1,4 @@
-﻿# Security: Database Sharding
+# Security: Database Sharding
 
 ## Security Model
 

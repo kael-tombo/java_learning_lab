@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Refactoring
+# Protocol Buffers -- Refactoring
 
 ## Refactoring Strategies
 

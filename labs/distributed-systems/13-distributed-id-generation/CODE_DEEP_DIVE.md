@@ -1,4 +1,4 @@
-﻿# Code Deep Dive — ID Generation
+# Code Deep Dive — ID Generation
 
 ## 1. IdGenerator Interface
 

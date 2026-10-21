@@ -1,4 +1,4 @@
-﻿# Why It Exists: Dual Spaces and Tensors
+# Why It Exists: Dual Spaces and Tensors
 
 ## The Problem It Solves
 Before the formal development of Dual Spaces and Tensors, practitioners relied on approximate methods with unknown error bounds, intuitive reasoning without rigor, and ad-hoc techniques that did not generalize across problems.

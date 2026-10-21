@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Visual Guide
+# Java Serialization -- Visual Guide
 
 ## Architecture Diagram
 

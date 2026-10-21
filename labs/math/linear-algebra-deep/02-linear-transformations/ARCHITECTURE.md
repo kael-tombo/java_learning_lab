@@ -1,4 +1,4 @@
-﻿# Architecture: Linear Transformations Implementation
+# Architecture: Linear Transformations Implementation
 
 ## System Design
 

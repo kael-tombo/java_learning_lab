@@ -1,4 +1,4 @@
-﻿# Best Practices — Visual Guide
+# Best Practices — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

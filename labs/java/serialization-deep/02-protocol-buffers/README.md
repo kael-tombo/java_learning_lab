@@ -1,4 +1,4 @@
-﻿# Protocol Buffers
+# Protocol Buffers
 
 ## Overview
 Proto3 schema, protoc compilation, generated builders, JSON/bytes serialization, field types, oneof, maps

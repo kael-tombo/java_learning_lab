@@ -1,4 +1,4 @@
-﻿# Internals: Dual Spaces and Tensors Implementation
+# Internals: Dual Spaces and Tensors Implementation
 
 ## Deep Dive into Implementation Details
 

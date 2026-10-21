@@ -1,4 +1,4 @@
-﻿# Logging — Visual Guide
+# Logging — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

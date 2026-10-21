@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Architecture
+# Netty Framework -- Architecture
 ## System Architecture
 
 ### High-Level Design

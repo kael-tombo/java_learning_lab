@@ -1,4 +1,4 @@
-﻿# Exercises — Distributed Monitoring
+# Exercises — Distributed Monitoring
 
 1. **Metric Registry (Easy)**: Implement thread-safe counter and gauge
 2. **Prometheus Exporter (Medium)**: Export JVM metrics in Prometheus format

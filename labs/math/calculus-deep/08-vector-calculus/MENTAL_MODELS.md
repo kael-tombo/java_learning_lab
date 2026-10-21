@@ -1,4 +1,4 @@
-﻿# Mental Models: Vector Calculus
+# Mental Models: Vector Calculus
 
 ## Conceptual Frameworks
 

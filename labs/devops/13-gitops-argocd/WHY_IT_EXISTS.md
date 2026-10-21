@@ -1,4 +1,4 @@
-﻿# Why ArgoCD Exists
+# Why ArgoCD Exists
 
 ## The Problem
 Before GitOps, Kubernetes deployments were managed through CI/CD pipelines that pushed manifests directly to the cluster. This approach had fundamental problems:

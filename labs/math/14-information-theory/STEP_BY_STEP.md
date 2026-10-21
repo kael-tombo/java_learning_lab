@@ -1,4 +1,4 @@
-﻿# Step by Step: Information Theory Learning Path
+# Step by Step: Information Theory Learning Path
 
 ## Stage 1: Foundation (Week 1)
 

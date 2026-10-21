@@ -1,4 +1,4 @@
-﻿# Performance — Distributed Filesystems
+# Performance — Distributed Filesystems
 
 ## Throughput (sequential reads)
 | System | Single thread | Parallel (10 threads) |

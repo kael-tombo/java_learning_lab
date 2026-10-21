@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Why It Exists
+# Socket Programming -- Why It Exists
 ## Historical Context and Motivation
 
 ### The Problem

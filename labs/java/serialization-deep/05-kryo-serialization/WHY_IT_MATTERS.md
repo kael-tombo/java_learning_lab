@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Why It Matters
+# Kryo Serialization -- Why It Matters
 
 ## Practical Importance in Real-World Development
 

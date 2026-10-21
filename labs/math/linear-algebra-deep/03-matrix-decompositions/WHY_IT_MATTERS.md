@@ -1,4 +1,4 @@
-﻿# Why It Matters: Matrix Decompositions
+# Why It Matters: Matrix Decompositions
 
 ## Real-World Importance
 

@@ -1,4 +1,4 @@
-﻿# Visual Guide — Gossip Protocols
+# Visual Guide — Gossip Protocols
 
 ## System Architecture
 `

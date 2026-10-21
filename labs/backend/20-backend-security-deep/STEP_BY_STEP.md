@@ -1,4 +1,4 @@
-﻿# Step by Step: Security Configuration
+# Step by Step: Security Configuration
 
 ## CSRF Configuration
 `java

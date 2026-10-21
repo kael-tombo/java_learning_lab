@@ -1,4 +1,4 @@
-﻿# Security: Cassandra NoSQL
+# Security: Cassandra NoSQL
 
 ## Security Model
 

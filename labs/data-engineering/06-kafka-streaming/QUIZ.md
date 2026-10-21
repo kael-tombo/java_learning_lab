@@ -1,4 +1,4 @@
-﻿# Kafka Streams Quiz
+# Kafka Streams Quiz
 
 ## Question 1
 What is the difference between KStream and KTable?

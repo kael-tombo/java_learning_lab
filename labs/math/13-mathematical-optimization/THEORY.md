@@ -1,4 +1,4 @@
-﻿# Mathematical Optimization: A Comprehensive Treatment
+# Mathematical Optimization: A Comprehensive Treatment
 
 ## 1. Fundamentals of Optimization
 

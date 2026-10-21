@@ -1,4 +1,4 @@
-﻿# Theory of Distributed Caching
+# Theory of Distributed Caching
 
 ## 1. Why Distributed Caching?
 

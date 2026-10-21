@@ -1,4 +1,4 @@
-﻿# Debugging: AI Safety and Alignment
+# Debugging: AI Safety and Alignment
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

@@ -1,4 +1,4 @@
-﻿# Interview Questions: Information Theory
+# Interview Questions: Information Theory
 
 ## Conceptual Questions
 

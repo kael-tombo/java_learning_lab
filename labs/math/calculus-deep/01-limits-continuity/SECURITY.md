@@ -1,4 +1,4 @@
-﻿# Security: Limits and Continuity Implementation
+# Security: Limits and Continuity Implementation
 
 ## Security Considerations
 

@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Flashcards
+# Model Interpretability — Flashcards
 
 Q: Global vs local explanation?
 A: Global describes the model everywhere (importance ranks, PDP);

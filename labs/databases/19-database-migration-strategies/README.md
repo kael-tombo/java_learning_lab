@@ -1,4 +1,4 @@
-﻿# Lab 19: Database Migration Strategies
+# Lab 19: Database Migration Strategies
 
 ## Focus
 Comprehensive deep-dive into database migration strategies with Java 21+ implementations, real-world patterns, distributed systems theory, and JUnit 5 integration tests.

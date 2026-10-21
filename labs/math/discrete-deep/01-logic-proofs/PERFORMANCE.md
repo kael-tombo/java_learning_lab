@@ -1,4 +1,4 @@
-﻿# Performance: Logic and Proofs
+# Performance: Logic and Proofs
 
 ## Truth Table Complexity
 

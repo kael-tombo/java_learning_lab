@@ -1,4 +1,4 @@
-﻿# ArgoCD Setup: Step by Step
+# ArgoCD Setup: Step by Step
 
 ## Step 1: Install ArgoCD
 ```bash

@@ -1,4 +1,4 @@
-﻿# Interview Questions: Load Balancing
+# Interview Questions: Load Balancing
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

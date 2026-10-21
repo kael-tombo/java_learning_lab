@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Why It Matters
+# HTTP Clients (Java 11+) -- Why It Matters
 ## Practical Importance in Real-World Development
 
 ### 1. Distributed Systems Foundation

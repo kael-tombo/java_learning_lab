@@ -1,4 +1,4 @@
-﻿# Why It Exists: Eigenvalues Advanced
+# Why It Exists: Eigenvalues Advanced
 
 ## The Problem It Solves
 Before the formal development of Eigenvalues Advanced, practitioners relied on approximate methods with unknown error bounds, intuitive reasoning without rigor, and ad-hoc techniques that did not generalize across problems.

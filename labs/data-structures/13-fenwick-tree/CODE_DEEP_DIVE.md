@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: FenwickTree.java
+# Code Deep Dive: FenwickTree.java
 
 ## Class Overview
 

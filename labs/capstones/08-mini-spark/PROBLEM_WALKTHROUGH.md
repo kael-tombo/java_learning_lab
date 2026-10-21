@@ -1,4 +1,4 @@
-﻿# Problem Walkthrough: Distributed Compute Engine with DAG Scheduling
+# Problem Walkthrough: Distributed Compute Engine with DAG Scheduling
 
 ## Problem Statement
 

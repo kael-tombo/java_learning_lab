@@ -1,4 +1,4 @@
-﻿# Visual Guide: Database Security
+# Visual Guide: Database Security
 
 ## Architecture Diagrams
 

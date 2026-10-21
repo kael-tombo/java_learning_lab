@@ -1,4 +1,4 @@
-﻿# Security Considerations: Linear Algebra
+# Security Considerations: Linear Algebra
 
 ## Security Principles
 

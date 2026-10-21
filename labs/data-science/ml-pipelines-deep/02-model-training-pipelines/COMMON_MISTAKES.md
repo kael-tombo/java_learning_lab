@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Common Mistakes
+# Model Training Pipelines — Common Mistakes
 
 ## 1. Training on unvalidated data
 Skipping or softening the validate gate lets a 30%-null column like the

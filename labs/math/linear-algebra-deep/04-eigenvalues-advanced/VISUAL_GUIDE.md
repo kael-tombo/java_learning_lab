@@ -1,4 +1,4 @@
-﻿# Visual Guide: Eigenvalues Advanced
+# Visual Guide: Eigenvalues Advanced
 
 ## Conceptual Diagrams
 

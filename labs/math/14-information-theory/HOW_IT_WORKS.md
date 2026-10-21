@@ -1,4 +1,4 @@
-﻿# How It Works: Information Theory
+# How It Works: Information Theory
 
 ## Conceptual Overview
 

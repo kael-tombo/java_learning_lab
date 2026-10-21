@@ -1,4 +1,4 @@
-﻿# ML Pipelines Deep Dive - Code Deep Dive
+# ML Pipelines Deep Dive - Code Deep Dive
 
 ## Architecture Overview
 

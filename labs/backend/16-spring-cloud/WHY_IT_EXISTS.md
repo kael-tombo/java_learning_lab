@@ -1,4 +1,4 @@
-﻿# Why It Exists: Spring Cloud
+# Why It Exists: Spring Cloud
 
 Spring Cloud exists because building distributed systems is fundamentally harder than building monolithic applications.
 

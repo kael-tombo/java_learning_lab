@@ -1,4 +1,4 @@
-﻿# Feature Stores — Why It Exists
+# Feature Stores — Why It Exists
 
 Models kept failing for unglamorous reasons: a notebook computed
 features one way, the service another; a join peeked at the future;

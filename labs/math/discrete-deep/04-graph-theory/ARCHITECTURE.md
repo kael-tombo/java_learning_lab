@@ -1,4 +1,4 @@
-﻿# Architecture: Graph Code Design
+# Architecture: Graph Code Design
 
 ## Choose the Representation From the Query Pattern
 

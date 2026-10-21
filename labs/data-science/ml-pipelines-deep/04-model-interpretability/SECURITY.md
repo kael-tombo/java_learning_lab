@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Security
+# Model Interpretability — Security
 
 ## Threats specific to explanations
 - Explanation gaming: a model with discriminatory logic presents

@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Mental Models
+# Project Reactor -- Mental Models
 ## Key Mental Models
 ### The Assembly Line
 Reactive operators are like stations on an assembly line.

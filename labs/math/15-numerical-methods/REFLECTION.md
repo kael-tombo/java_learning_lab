@@ -1,4 +1,4 @@
-﻿# Reflection: Numerical Methods
+# Reflection: Numerical Methods
 
 ## Personal Learning Journey
 

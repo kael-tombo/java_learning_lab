@@ -1,4 +1,4 @@
-﻿# Step by Step: Spring Cloud
+# Step by Step: Spring Cloud
 
 ## Setting Up a Complete Microservices Stack
 

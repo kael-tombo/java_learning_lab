@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Visual Guide
+# HTTP Clients (Java 11+) -- Visual Guide
 ## Network Architecture Diagram
 `
     +-----------+     +-----------+     +-----------+

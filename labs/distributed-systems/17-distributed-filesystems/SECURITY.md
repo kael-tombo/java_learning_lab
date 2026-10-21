@@ -1,4 +1,4 @@
-﻿# SECURITY.md - Distributed Filesystems
+# SECURITY.md - Distributed Filesystems
 
 ## Overview
 This document covers Distributed Filesystems concepts related to SECURITY.

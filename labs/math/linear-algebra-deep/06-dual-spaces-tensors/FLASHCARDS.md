@@ -1,4 +1,4 @@
-﻿# Dual Spaces and Tensors — Flashcards
+# Dual Spaces and Tensors — Flashcards
 
 ## Q/A
 

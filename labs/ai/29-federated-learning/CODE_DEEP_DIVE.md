@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: Federated Learning Implementation
+# Code Deep Dive: Federated Learning Implementation
 
 ## 1. Architecture Overview
 The Federated Learning implementation follows modular design principles with clear separation between data handling, model computation, training logic, and evaluation. This architecture ensures testability, extensibility, and performance.

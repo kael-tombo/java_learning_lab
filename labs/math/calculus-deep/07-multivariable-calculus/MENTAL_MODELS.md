@@ -1,4 +1,4 @@
-﻿# Mental Models: Multivariable Calculus
+# Mental Models: Multivariable Calculus
 
 ## Conceptual Frameworks
 

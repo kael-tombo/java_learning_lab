@@ -1,4 +1,4 @@
-﻿# ML Pipelines Deep Dive - Theory & Intuition
+# ML Pipelines Deep Dive - Theory & Intuition
 
 ## The Big Picture
 

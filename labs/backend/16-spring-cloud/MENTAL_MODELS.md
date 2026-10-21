@@ -1,4 +1,4 @@
-﻿# Mental Models: Spring Cloud
+# Mental Models: Spring Cloud
 
 ## 1. The Phone Book Model (Service Discovery)
 Think of Eureka as a phone book. Services register their contact details (IP, port) like listing a phone number. When one service needs to call another, it looks up the phone book instead of memorizing numbers. If a service moves (new IP), it updates the phone book. This way, no one needs to remember specific addresses.

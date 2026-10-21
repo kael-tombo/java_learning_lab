@@ -1,4 +1,4 @@
-﻿# Reflection: Dual Spaces and Tensors
+# Reflection: Dual Spaces and Tensors
 
 ## Self-Assessment Questions
 

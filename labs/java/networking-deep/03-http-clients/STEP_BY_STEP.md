@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Step-by-Step Implementation
+# HTTP Clients (Java 11+) -- Step-by-Step Implementation
 
 ## Step 1: Create Project Structure
 Create a Maven or Gradle project with the standard directory layout.

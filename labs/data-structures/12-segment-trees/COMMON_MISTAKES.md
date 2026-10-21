@@ -1,4 +1,4 @@
-﻿# Common Mistakes with Segment Trees
+# Common Mistakes with Segment Trees
 
 ## 1. Insufficient Array Size
 

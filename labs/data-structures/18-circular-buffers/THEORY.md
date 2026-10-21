@@ -1,4 +1,4 @@
-﻿# Theory: Circular Buffers & Ring Buffers
+# Theory: Circular Buffers & Ring Buffers
 
 ## Fundamentals
 

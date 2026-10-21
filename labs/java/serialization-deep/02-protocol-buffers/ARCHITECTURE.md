@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Architecture
+# Protocol Buffers -- Architecture
 
 ## System Architecture
 

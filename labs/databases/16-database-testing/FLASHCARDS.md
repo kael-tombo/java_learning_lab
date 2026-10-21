@@ -1,4 +1,4 @@
-﻿# Flashcards: Database Testing
+# Flashcards: Database Testing
 
 ## Q: What is database testing?
 **A:** Strategy that distributes data across multiple independent database instances for scalability.

@@ -1,4 +1,4 @@
-﻿# Quiz: Database Migration Strategies
+# Quiz: Database Migration Strategies
 
 ## Section 1: Fundamentals
 

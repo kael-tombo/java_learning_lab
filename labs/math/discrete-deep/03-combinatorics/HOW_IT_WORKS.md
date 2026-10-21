@@ -1,4 +1,4 @@
-﻿# How It Works: Combinatorics Core Mechanics
+# How It Works: Combinatorics Core Mechanics
 
 ## 1. Why C(n,k) = C(n−1,k−1) + C(n−1,k)
 

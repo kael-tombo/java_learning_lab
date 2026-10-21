@@ -1,4 +1,4 @@
-﻿# Quiz: API Versioning & Documentation
+# Quiz: API Versioning & Documentation
 
 ## Question 1
 Which API versioning strategy uses the Accept header?

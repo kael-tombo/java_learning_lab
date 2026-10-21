@@ -1,4 +1,4 @@
-﻿# History of Feature Stores
+# History of Feature Stores
 
 ## Timeline
 - **2017**: Uber publishes "Michelangelo" ML platform paper

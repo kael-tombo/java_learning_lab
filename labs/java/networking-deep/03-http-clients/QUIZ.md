@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Quiz
+# HTTP Clients (Java 11+) -- Quiz
 ## Question 1: Protocol
 What transport layer protocol does TCP use? A) IP B) UDP C) ICMP D) ARP
 

@@ -1,4 +1,4 @@
-﻿# Security: Backend Security Deep Dive
+# Security: Backend Security Deep Dive
 
 This lab covers security comprehensively. Key practices:
 - Always validate and sanitize input

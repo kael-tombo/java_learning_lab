@@ -1,4 +1,4 @@
-﻿# Exercises: Database Testing
+# Exercises: Database Testing
 
 ## Beginner Level
 

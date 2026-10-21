@@ -1,4 +1,4 @@
-﻿# Architecture: Database Replication
+# Architecture: Database Replication
 
 ## System Architecture
 

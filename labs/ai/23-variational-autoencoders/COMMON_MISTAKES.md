@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Variational Autoencoders
+# Common Mistakes in Variational Autoencoders
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

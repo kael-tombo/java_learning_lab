@@ -1,4 +1,4 @@
-﻿# Reactive Programming — Internal Mechanics
+# Reactive Programming — Internal Mechanics
 
 ## How Project Reactor Works
 

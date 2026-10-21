@@ -1,4 +1,4 @@
-﻿# Exercises — Distributed Caching
+# Exercises — Distributed Caching
 
 1. **Cache-Aside (Easy)**: Implement cache-aside pattern
 2. **Redis Client (Medium)**: Build Redis Cluster client wrapper

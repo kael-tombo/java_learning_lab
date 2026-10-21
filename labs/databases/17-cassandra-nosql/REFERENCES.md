@@ -1,4 +1,4 @@
-﻿# References: Cassandra NoSQL
+# References: Cassandra NoSQL
 
 ## Academic Papers
 

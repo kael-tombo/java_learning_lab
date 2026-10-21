@@ -1,4 +1,4 @@
-﻿# Exercises: Spring Cloud
+# Exercises: Spring Cloud
 
 ## Exercise 1: Service Registry Setup
 **Objective**: Set up a Eureka server and register a client.

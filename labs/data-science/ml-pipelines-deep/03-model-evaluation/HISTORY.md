@@ -1,4 +1,4 @@
-﻿# Model Evaluation — History (confident facts only)
+# Model Evaluation — History (confident facts only)
 
 ## What can be said safely
 - Precision/recall language comes from information retrieval, where

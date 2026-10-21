@@ -1,4 +1,4 @@
-﻿# Common Mistakes
+# Common Mistakes
 
 1. Off-by-one in empty/full detection
 2. Not wrapping head/tail using modulo

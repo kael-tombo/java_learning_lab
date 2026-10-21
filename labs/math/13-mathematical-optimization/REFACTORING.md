@@ -1,4 +1,4 @@
-﻿# Refactoring Guide: Mathematical Optimization
+# Refactoring Guide: Mathematical Optimization
 
 ## Code Smells to Address
 

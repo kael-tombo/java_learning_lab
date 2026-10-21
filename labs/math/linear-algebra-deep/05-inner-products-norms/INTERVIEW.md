@@ -1,4 +1,4 @@
-﻿# Interview: Inner Products and Norms
+# Interview: Inner Products and Norms
 
 ## Common Interview Questions
 

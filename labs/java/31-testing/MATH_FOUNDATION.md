@@ -1,4 +1,4 @@
-﻿# Math Foundation for Testing
+# Math Foundation for Testing
 
 ## Combinatorics in Parameterized Tests
 

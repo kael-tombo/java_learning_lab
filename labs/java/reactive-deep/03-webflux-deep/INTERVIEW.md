@@ -1,4 +1,4 @@
-﻿# Interview Questions: WebFlux Deep Dive
+# Interview Questions: WebFlux Deep Dive
 
 ## Company-Specific Focus
 

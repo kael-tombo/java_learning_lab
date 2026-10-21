@@ -1,4 +1,4 @@
-﻿# ArgoCD Architecture
+# ArgoCD Architecture
 
 ## System Architecture Overview
 

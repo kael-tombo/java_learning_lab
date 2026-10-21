@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Applied Linear Algebra
+# Step-by-Step Guide: Applied Linear Algebra
 
 ## Implementation Walkthrough
 

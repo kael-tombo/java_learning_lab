@@ -1,4 +1,4 @@
-﻿# ML Pipelines Deep Dive - Quiz
+# ML Pipelines Deep Dive - Quiz
 
 ## Question 1
 What is the primary goal of 

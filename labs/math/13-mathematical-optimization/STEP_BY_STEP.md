@@ -1,4 +1,4 @@
-﻿# Step by Step: Mathematical Optimization Learning Path
+# Step by Step: Mathematical Optimization Learning Path
 
 ## Stage 1: Foundation (Week 1)
 

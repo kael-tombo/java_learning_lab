@@ -1,4 +1,4 @@
-﻿# Mental Models for Orchestration
+# Mental Models for Orchestration
 
 ## 1. The Construction Project
 - **Tasks** = Construction activities (pour foundation, frame walls)

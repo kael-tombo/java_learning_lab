@@ -1,4 +1,4 @@
-﻿# Performance: Server-Sent Events
+# Performance: Server-Sent Events
 
 - Each SSE connection consumes server resources (thread pool)
 - WebFlux SSE scales better than MVC SseEmitter

@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Security
+# XML Serialization -- Security
 
 ## Security Considerations
 

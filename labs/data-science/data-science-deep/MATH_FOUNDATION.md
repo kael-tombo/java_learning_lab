@@ -1,4 +1,4 @@
-﻿# Data Science Deep Dive - Mathematical Foundations
+# Data Science Deep Dive - Mathematical Foundations
 
 ## Probability Theory
 

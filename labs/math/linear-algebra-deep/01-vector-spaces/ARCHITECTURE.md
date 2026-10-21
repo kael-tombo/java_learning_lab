@@ -1,4 +1,4 @@
-﻿# Architecture: Vector Spaces Implementation
+# Architecture: Vector Spaces Implementation
 
 ## System Design
 

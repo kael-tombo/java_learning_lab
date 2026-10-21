@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Graph Neural Networks
+# Common Mistakes in Graph Neural Networks
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

@@ -1,4 +1,4 @@
-﻿# History of Segment Trees
+# History of Segment Trees
 
 ## Origins in Computational Geometry (1970s)
 

@@ -1,4 +1,4 @@
-﻿# 21-21-reinforcement-learning - Reinforcement Learning
+# 21-21-reinforcement-learning - Reinforcement Learning
 
 Q-Learning, SARSA, DQN, policy gradients, experience replay
 

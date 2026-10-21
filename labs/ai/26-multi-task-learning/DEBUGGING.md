@@ -1,4 +1,4 @@
-﻿# Debugging: Multi-Task Learning
+# Debugging: Multi-Task Learning
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

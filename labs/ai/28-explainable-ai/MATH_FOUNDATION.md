@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Explainable AI
+# Mathematical Foundations of Explainable AI
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying Explainable AI. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

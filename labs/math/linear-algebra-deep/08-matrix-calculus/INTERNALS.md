@@ -1,4 +1,4 @@
-﻿# Internals: Matrix Calculus Implementation
+# Internals: Matrix Calculus Implementation
 
 ## Deep Dive into Implementation Details
 

@@ -1,4 +1,4 @@
-﻿# Build Tools — Theoretical Foundation
+# Build Tools — Theoretical Foundation
 
 ## Core Concepts
 

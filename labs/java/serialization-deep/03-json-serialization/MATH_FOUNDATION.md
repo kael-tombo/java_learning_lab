@@ -1,4 +1,4 @@
-﻿# JSON Serialization — Mathematical Foundation
+# JSON Serialization — Mathematical Foundation
 
 ## 1. String Encoding and Escaping
 

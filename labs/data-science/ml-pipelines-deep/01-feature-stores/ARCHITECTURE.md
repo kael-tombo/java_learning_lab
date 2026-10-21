@@ -1,4 +1,4 @@
-﻿# Feature Stores — Architecture
+# Feature Stores — Architecture
 
 ## Components
 1. Transform registry: versioned feature definitions and code pointers.

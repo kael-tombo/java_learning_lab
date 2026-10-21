@@ -1,4 +1,4 @@
-﻿# Interview Questions: Generative Adversarial Networks
+# Interview Questions: Generative Adversarial Networks
 
 ## Conceptual Questions
 1. What is Generative Adversarial Networks and how does it differ from traditional programming?

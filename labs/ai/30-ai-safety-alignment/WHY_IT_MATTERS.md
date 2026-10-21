@@ -1,4 +1,4 @@
-﻿# Why AI Safety and Alignment Matters
+# Why AI Safety and Alignment Matters
 
 ## Economic Impact
 AI Safety and Alignment drives automation, personalization, and optimization across industries. It creates new products and services while improving efficiency in existing processes.

@@ -1,4 +1,4 @@
-﻿# Debugging Guide
+# Debugging Guide
 
 ## Common Debugging Scenarios
 

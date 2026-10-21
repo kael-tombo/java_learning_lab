@@ -1,4 +1,4 @@
-﻿# Exploratory Data Analysis - Exercises
+# Exploratory Data Analysis - Exercises
 
 ## Exercise 1: Basic Concepts
 Implement a Java class that demonstrates fundamental Exploratory Data Analysis operations. Create methods for data input, processing, and output validation.

@@ -1,4 +1,4 @@
-﻿# Apache Spark References
+# Apache Spark References
 
 ## Books
 - "Learning Spark" by Jules Damji, Brooke Wenig, Tathagata Das

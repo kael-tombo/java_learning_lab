@@ -1,4 +1,4 @@
-﻿# Reflection: Data Pipelines
+# Reflection: Data Pipelines
 
 ## Key Learnings
 - Data pipelines are the fundamental infrastructure for all data engineering

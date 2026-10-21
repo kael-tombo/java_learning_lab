@@ -1,4 +1,4 @@
-﻿# 18 - Distributed Queues
+# 18 - Distributed Queues
 
 ## Overview
 Distributed queues enable asynchronous communication between services with guarantees about message ordering, delivery, and processing semantics. This lab covers SQS, Pulsar, partitioned queues, and exactly-once semantics.

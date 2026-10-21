@@ -1,4 +1,4 @@
-﻿# Performance: Database Replication
+# Performance: Database Replication
 
 ## Performance Characteristics
 

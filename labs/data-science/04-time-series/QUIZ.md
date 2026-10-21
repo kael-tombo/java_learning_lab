@@ -1,4 +1,4 @@
-﻿# Time Series Analysis - Quiz
+# Time Series Analysis - Quiz
 
 ## Question 1
 What is the primary goal of 

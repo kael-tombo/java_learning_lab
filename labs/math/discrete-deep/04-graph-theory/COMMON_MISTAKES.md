@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Graph Theory
+# Common Mistakes: Graph Theory
 
 ## 1. Forgetting the `visited` Mark (or Marking It Too Late)
 

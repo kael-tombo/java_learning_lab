@@ -1,4 +1,4 @@
-﻿# Visual Guide to Sparse Table Construction
+# Visual Guide to Sparse Table Construction
 
 ## Array: [5, 2, 8, 1, 9, 3, 7, 4]
 

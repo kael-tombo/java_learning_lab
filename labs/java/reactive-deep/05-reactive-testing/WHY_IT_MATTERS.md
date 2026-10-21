@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- Why It Matters
+# Reactive Testing -- Why It Matters
 ## Why Reactive Matters
 ### Scalability
 Reactive systems handle more concurrent users with fewer resources.

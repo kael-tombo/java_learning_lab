@@ -1,4 +1,4 @@
-﻿# Internals: How Generating Functions Are Computed
+# Internals: How Generating Functions Are Computed
 
 ## Coefficient Arrays: Truncated Formal Series
 

@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: CQRS Axon
+# Mathematical Foundation: CQRS Axon
 
 ## Event Store Growth
 Event store size after N operations: S(N) = N * average_event_size

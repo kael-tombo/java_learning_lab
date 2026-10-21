@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Exercises
+# Netty Framework -- Exercises
 ## Beginner Exercises
 ### Exercise 1: Basic Server
 Implement a simple echo server that responds with the same message it receives.

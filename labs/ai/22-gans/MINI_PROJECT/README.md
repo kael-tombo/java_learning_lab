@@ -1,4 +1,4 @@
-﻿# Generative Adversarial Networks - Mini Project
+# Generative Adversarial Networks - Mini Project
 
 ## Overview
 Build a working Generative Adversarial Networks implementation from scratch.

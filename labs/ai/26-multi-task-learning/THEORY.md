@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning - Complete Theory
+# Multi-Task Learning - Complete Theory
 
 ## 1. Introduction
 

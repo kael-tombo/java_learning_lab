@@ -1,4 +1,4 @@
-﻿# Quiz: Backend Security Deep Dive
+# Quiz: Backend Security Deep Dive
 
 Q1: What is a CSRF token? A: A unique, secret value included in forms to verify request origin.
 

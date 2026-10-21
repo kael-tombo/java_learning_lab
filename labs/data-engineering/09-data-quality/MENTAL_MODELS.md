@@ -1,4 +1,4 @@
-﻿# Mental Models for Data Quality
+# Mental Models for Data Quality
 
 ## 1. The Quality Control Inspector
 - Every product (record) inspected before shipping

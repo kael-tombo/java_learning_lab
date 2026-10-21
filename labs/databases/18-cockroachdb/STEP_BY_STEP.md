@@ -1,4 +1,4 @@
-﻿# Step by Step: CockroachDB
+# Step by Step: CockroachDB
 
 ## Implementation Guide
 

@@ -1,4 +1,4 @@
-﻿# References: Set Theory
+# References: Set Theory
 
 ## Primary Sources
 

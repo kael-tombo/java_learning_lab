@@ -1,4 +1,4 @@
-﻿# Distributed Scheduling - Interview Preparation
+# Distributed Scheduling - Interview Preparation
 
 > Key interview questions about distributed job scheduling and resource management.
 

@@ -1,4 +1,4 @@
-﻿# History of Apache Spark
+# History of Apache Spark
 
 ## Timeline
 - **2009**: Started at UC Berkeley AMPLab by Matei Zaharia

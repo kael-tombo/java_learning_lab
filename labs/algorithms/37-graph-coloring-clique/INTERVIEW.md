@@ -1,4 +1,4 @@
-﻿# Interview Questions: Graph Coloring and Clique
+# Interview Questions: Graph Coloring and Clique
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

@@ -1,4 +1,4 @@
-﻿# Interview Questions: Immutable & Persistent Data Structures
+# Interview Questions: Immutable & Persistent Data Structures
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — History (confident facts only)
+# Model Training Pipelines — History (confident facts only)
 
 ## What can be said safely
 - Staged data pipelines predate ML: ETL practice and workflow

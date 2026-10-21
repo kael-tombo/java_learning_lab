@@ -1,4 +1,4 @@
-﻿# Debugging — Gossip Protocols
+# Debugging — Gossip Protocols
 
 ## Common Issues
 1. **Race conditions**: Ensure thread-safe access to shared state

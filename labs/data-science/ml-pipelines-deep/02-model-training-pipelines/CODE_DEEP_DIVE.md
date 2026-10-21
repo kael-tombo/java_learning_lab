@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Code Deep Dive
+# Model Training Pipelines — Code Deep Dive
 
 All snippets run on any JDK 9+ (verified on JDK 23), no dependencies.
 Each snippet models one pipeline mechanism on fixed data.

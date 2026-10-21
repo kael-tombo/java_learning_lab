@@ -1,4 +1,4 @@
-﻿# Interview Questions: Protocol Buffers
+# Interview Questions: Protocol Buffers
 
 ## Company-Specific Focus
 

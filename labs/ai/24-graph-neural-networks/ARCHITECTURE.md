@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks System Architecture
+# Graph Neural Networks System Architecture
 
 ## 1. High-Level Architecture
 The Graph Neural Networks system follows a layered architecture: Data Layer → Model Layer → Training Layer → Evaluation Layer. Each layer has well-defined responsibilities and communicates through interfaces.

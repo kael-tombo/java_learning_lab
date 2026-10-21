@@ -1,4 +1,4 @@
-﻿# History of Circular Buffers
+# History of Circular Buffers
 
 - **1960s**: Used in early operating systems for I/O buffering
 - **1970s**: DSP processors with hardware circular addressing modes

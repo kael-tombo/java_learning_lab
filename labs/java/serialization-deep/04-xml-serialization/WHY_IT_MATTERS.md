@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Why It Matters
+# XML Serialization -- Why It Matters
 
 ## Practical Importance in Real-World Development
 

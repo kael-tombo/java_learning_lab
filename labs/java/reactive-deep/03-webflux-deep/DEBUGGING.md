@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- Debugging
+# WebFlux Deep Dive -- Debugging
 ## Debugging Reactive Code
 ### Hooks.onOperatorDebug()
 Enables operator stack traces for debugging.

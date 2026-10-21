@@ -1,4 +1,4 @@
-﻿# Lab 14: Database Replication
+# Lab 14: Database Replication
 
 ## Focus
 Comprehensive deep-dive into database replication with Java 21+ implementations, real-world patterns, distributed systems theory, and JUnit 5 integration tests.

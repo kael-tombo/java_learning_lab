@@ -1,4 +1,4 @@
-﻿# Architecture: Database Testing
+# Architecture: Database Testing
 
 ## System Architecture
 

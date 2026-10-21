@@ -1,4 +1,4 @@
-﻿# Reinforcement Learning - Quiz
+# Reinforcement Learning - Quiz
 
 ## Overview
 Assessment covering all Reinforcement Learning topics.

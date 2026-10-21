@@ -1,4 +1,4 @@
-﻿# Matrix Calculus
+# Matrix Calculus
 
 Micro-lab on derivatives of Ax, quadratic forms, and trace identities,
 each with a hand-checkable numeric instance.

@@ -1,4 +1,4 @@
-﻿# Flashcards: GraalVM Native
+# Flashcards: GraalVM Native
 
 Card 1: AOT full name? A: Ahead-of-Time
 Card 2: GraalVM native runtime? A: SubstrateVM

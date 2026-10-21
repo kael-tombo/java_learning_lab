@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Common Mistakes
+# HTTP Clients (Java 11+) -- Common Mistakes
 
 ## Top 15 Common Mistakes
 

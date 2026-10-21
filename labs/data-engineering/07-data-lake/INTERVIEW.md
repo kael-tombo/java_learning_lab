@@ -1,4 +1,4 @@
-﻿# Data Lake Interview Questions
+# Data Lake Interview Questions
 
 ## Beginner
 **Q**: What is the difference between a data lake and a data warehouse?

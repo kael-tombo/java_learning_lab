@@ -1,4 +1,4 @@
-﻿# Security: Applied Linear Algebra Implementation
+# Security: Applied Linear Algebra Implementation
 
 ## Security Considerations
 

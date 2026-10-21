@@ -1,4 +1,4 @@
-﻿# Why It Exists: Derivative Applications
+# Why It Exists: Derivative Applications
 
 ## The Problem It Solves
 

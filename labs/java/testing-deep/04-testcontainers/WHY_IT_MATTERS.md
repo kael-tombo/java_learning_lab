@@ -1,4 +1,4 @@
-﻿# Testcontainers -- Why It Matters
+# Testcontainers -- Why It Matters
 ## Practical Importance
 ### Quality Assurance
 Tests verify code correctness and prevent regressions.

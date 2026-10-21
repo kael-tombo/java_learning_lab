@@ -1,4 +1,4 @@
-﻿# Architecture: Query Optimization
+# Architecture: Query Optimization
 
 ## System Architecture
 

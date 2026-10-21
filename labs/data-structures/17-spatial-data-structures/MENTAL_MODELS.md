@@ -1,4 +1,4 @@
-﻿# Mental Models
+# Mental Models
 
 ## 1. The Map Subdivision Model
 A quadtree is like dividing a map into quarters, then subdividing each quarter. Continue until each region has few points of interest.

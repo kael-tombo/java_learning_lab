@@ -1,4 +1,4 @@
-﻿# History: CockroachDB
+# History: CockroachDB
 
 ## Evolution
 

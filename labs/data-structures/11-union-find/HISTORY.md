@@ -1,4 +1,4 @@
-﻿# History of Union-Find
+# History of Union-Find
 
 ## Origins (1964)
 

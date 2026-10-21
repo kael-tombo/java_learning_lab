@@ -1,4 +1,4 @@
-﻿# Reflection
+# Reflection
 
 Spatial data structures demonstrate how organizing data by location dramatically improves query performance. The key insight is that spatial locality can be exploited for partitioning, just as sorted order enables binary search.
 

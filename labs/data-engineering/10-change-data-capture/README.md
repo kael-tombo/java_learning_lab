@@ -1,4 +1,4 @@
-﻿# Change Data Capture (CDC)
+# Change Data Capture (CDC)
 
 ## Overview
 Change Data Capture is a pattern for tracking and capturing changes (inserts, updates, deletes) in databases and streaming them to downstream systems in real-time.

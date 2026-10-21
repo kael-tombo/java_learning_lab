@@ -1,4 +1,4 @@
-﻿# Feature Stores — Visual Guide
+# Feature Stores — Visual Guide
 
 ## As-of join (read bottom to top by ts)
 Feature history for u1:

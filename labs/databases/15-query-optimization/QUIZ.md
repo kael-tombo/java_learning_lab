@@ -1,4 +1,4 @@
-﻿# Quiz: Query Optimization
+# Quiz: Query Optimization
 
 ## Section 1: Fundamentals
 

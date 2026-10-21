@@ -1,4 +1,4 @@
-﻿# Why Set Theory Exists
+# Why Set Theory Exists
 
 ## The Problem It Was Invented to Solve
 

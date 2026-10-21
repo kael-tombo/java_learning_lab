@@ -1,4 +1,4 @@
-﻿# Theory: Cassandra NoSQL
+# Theory: Cassandra NoSQL
 
 ## 1. Fundamental Concepts
 

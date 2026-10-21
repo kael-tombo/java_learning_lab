@@ -1,4 +1,4 @@
-﻿# Why ArgoCD & GitOps Matters
+# Why ArgoCD & GitOps Matters
 
 ## Operational Benefits
 GitOps transforms how organizations manage Kubernetes deployments. By using Git as the single source of truth, organizations gain:

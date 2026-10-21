@@ -1,4 +1,4 @@
-﻿# Mental Models for Data Lakes
+# Mental Models for Data Lakes
 
 ## 1. The Reservoir
 - **Bronze** = Raw reservoir water (untreated)

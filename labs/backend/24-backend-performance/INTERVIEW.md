@@ -1,4 +1,4 @@
-﻿# Interview: Performance
+# Interview: Performance
 
 Q: How to find performance bottlenecks? A: Profiling (async-profiler), APM tools, database query analysis, thread dumps, GC logs.
 

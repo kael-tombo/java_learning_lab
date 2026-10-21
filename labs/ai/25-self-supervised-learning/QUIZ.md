@@ -1,4 +1,4 @@
-﻿# Quiz: Self-Supervised Learning
+# Quiz: Self-Supervised Learning
 
 ## Instructions
 30 questions covering Self-Supervised Learning concepts. Passing score: 70%.

@@ -1,4 +1,4 @@
-﻿# Architecture
+# Architecture
 
 Persistent data structures are foundational for:
 - Functional programming languages

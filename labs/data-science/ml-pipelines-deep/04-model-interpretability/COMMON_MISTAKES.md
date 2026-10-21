@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Common Mistakes
+# Model Interpretability — Common Mistakes
 
 ## 1. Reading attribution as causation
 SHAP 5.5 for player 1 says the model credits it so — not that changing

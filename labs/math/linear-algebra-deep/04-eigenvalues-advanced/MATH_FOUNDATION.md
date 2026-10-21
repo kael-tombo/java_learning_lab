@@ -1,4 +1,4 @@
-﻿# Eigenvalues Advanced — Math Foundation
+# Eigenvalues Advanced — Math Foundation
 
 All values computed in exact rational arithmetic (Python `fractions`).
 

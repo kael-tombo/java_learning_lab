@@ -1,4 +1,4 @@
-﻿# Quiz: Union-Find
+# Quiz: Union-Find
 
 ## Multiple Choice
 

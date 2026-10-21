@@ -1,4 +1,4 @@
-﻿# Meta-Learning - Exercises
+# Meta-Learning - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

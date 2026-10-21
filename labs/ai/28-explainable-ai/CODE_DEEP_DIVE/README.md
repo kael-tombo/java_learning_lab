@@ -1,4 +1,4 @@
-﻿# Explainable AI - Code Deep Dive
+# Explainable AI - Code Deep Dive
 
 ## Overview
 Detailed examination of the Explainable AI Java implementation.

@@ -1,4 +1,4 @@
-﻿# Meta-Learning - Quiz
+# Meta-Learning - Quiz
 
 ## Overview
 Assessment covering all Meta-Learning topics.

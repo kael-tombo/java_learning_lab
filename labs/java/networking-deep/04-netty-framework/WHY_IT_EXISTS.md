@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Why It Exists
+# Netty Framework -- Why It Exists
 ## Historical Context and Motivation
 
 ### The Problem

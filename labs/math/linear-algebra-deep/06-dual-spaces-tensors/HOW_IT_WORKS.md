@@ -1,4 +1,4 @@
-﻿# How It Works: Dual Spaces and Tensors
+# How It Works: Dual Spaces and Tensors
 
 ## High-Level Explanation
 

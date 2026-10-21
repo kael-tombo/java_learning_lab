@@ -1,4 +1,4 @@
-﻿# Inner Products and Norms — Math Foundation
+# Inner Products and Norms — Math Foundation
 
 All values computed in exact rational arithmetic (Python `fractions`).
 

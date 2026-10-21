@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: Spring Batch
+# Mathematical Foundation: Spring Batch
 
 ## Chunk Size Optimization
 Processing time for a batch of N items with chunk size C:

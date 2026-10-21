@@ -1,4 +1,4 @@
-﻿# Meta-Learning - Complete Theory
+# Meta-Learning - Complete Theory
 
 ## 1. Introduction
 

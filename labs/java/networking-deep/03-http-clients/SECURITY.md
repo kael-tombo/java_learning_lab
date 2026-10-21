@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Security
+# HTTP Clients (Java 11+) -- Security
 
 ## Security Considerations
 

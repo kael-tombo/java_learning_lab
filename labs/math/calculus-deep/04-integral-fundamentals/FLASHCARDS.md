@@ -1,4 +1,4 @@
-﻿# Flashcards: Integral Fundamentals
+# Flashcards: Integral Fundamentals
 
 ## Front-Back Cards
 

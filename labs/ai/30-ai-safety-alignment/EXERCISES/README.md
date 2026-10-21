@@ -1,4 +1,4 @@
-﻿# AI Safety and Alignment - Exercises
+# AI Safety and Alignment - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

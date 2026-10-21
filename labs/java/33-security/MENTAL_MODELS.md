@@ -1,4 +1,4 @@
-﻿# Security — Mental Models
+# Security — Mental Models
 
 ## Model 1: The Blueprint
 

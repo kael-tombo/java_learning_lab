@@ -1,4 +1,4 @@
-﻿# Debugging: Linear Transformations Implementation
+# Debugging: Linear Transformations Implementation
 
 ## Common Bugs
 

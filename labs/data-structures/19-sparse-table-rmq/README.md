@@ -1,4 +1,4 @@
-﻿# Lab 19: Sparse Table & RMQ
+# Lab 19: Sparse Table & RMQ
 
 <div align="center">
 

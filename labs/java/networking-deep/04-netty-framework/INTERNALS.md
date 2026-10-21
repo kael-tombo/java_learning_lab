@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Internal Implementation
+# Netty Framework -- Internal Implementation
 
 ## Internal Architecture
 

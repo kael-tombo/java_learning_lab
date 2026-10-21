@@ -1,4 +1,4 @@
-﻿# Performance: Spring Batch
+# Performance: Spring Batch
 
 - Tune chunk size (50-1000 depending on data)
 - Use multi-threaded steps for CPU-bound processing

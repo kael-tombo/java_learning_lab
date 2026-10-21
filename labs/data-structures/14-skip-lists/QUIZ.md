@@ -1,4 +1,4 @@
-﻿# Quiz: Skip Lists
+# Quiz: Skip Lists
 
 1. What is the expected time complexity of search in a skip list? O(log n)
 2. What probability is typically used for level generation? 0.5

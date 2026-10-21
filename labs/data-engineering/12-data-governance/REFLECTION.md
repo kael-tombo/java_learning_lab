@@ -1,4 +1,4 @@
-﻿# Data Governance Reflection
+# Data Governance Reflection
 
 ## Key Learnings
 - Governance enables data trust and compliance

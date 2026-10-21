@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Mathematical Foundation
+# gRPC Networking -- Mathematical Foundation
 
 ## 1. HTTP/2 Frame Mathematics
 Frame header: 9 bytes

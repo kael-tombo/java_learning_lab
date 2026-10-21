@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning System Architecture
+# Multi-Task Learning System Architecture
 
 ## 1. High-Level Architecture
 The Multi-Task Learning system follows a layered architecture: Data Layer → Model Layer → Training Layer → Evaluation Layer. Each layer has well-defined responsibilities and communicates through interfaces.

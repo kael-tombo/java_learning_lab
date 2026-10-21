@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Reflection
+# XML Serialization -- Reflection
 
 ## Guided Self-Reflection Prompts
 

@@ -1,4 +1,4 @@
-﻿# How It Works: Database Sharding
+# How It Works: Database Sharding
 
 ## Core Mechanism
 Database Sharding works by distributing data and query load across multiple independent database instances. The fundamental insight is that splitting a large problem into smaller parallel pieces is more scalable than solving the entire problem on a single machine.

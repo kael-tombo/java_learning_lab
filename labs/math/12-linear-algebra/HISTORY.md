@@ -1,4 +1,4 @@
-﻿# History of Linear Algebra
+# History of Linear Algebra
 
 ## Origins
 

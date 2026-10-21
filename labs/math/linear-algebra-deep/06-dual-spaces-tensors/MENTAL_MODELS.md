@@ -1,4 +1,4 @@
-﻿# Mental Models: Dual Spaces and Tensors
+# Mental Models: Dual Spaces and Tensors
 
 ## Conceptual Frameworks
 

@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Interview
+# Model Interpretability — Interview
 
 ## Q: Global vs local — give me one method each.
 A: Global: permutation importance (demo drop 0.3333 for x1) or PDP

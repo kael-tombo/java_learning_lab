@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Logic and Proofs
+# Common Mistakes: Logic and Proofs
 
 ## 1. Confusing the Converse with the Inverse
 

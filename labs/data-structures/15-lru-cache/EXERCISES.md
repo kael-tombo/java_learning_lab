@@ -1,4 +1,4 @@
-﻿# Exercises: LRU Cache
+# Exercises: LRU Cache
 
 ## Beginner
 1. Implement LRU cache with HashMap + DLL

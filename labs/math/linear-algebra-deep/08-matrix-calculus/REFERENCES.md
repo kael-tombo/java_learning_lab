@@ -1,4 +1,4 @@
-﻿# References: Matrix Calculus
+# References: Matrix Calculus
 
 ## Textbooks
 1. Standard Textbook on Calculus

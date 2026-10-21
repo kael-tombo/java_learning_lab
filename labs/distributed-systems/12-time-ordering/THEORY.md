@@ -1,4 +1,4 @@
-﻿# Theory of Distributed Time Ordering
+# Theory of Distributed Time Ordering
 
 ## 1. The Problem of Time in Distributed Systems
 

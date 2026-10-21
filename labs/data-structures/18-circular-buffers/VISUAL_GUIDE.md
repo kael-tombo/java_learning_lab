@@ -1,4 +1,4 @@
-﻿# Visual Guide
+# Visual Guide
 
 ## Buffer States
 

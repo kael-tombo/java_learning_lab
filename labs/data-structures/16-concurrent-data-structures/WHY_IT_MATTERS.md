@@ -1,4 +1,4 @@
-﻿# Why Concurrent Data Structures Matter
+# Why Concurrent Data Structures Matter
 
 ## Real-World Impact
 

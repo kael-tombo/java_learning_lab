@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Mental Models
+# Model Evaluation — Mental Models
 
 ## 1. Matrix first, rates second
 The matrix is the receipt; rates are summaries of the receipt. Anyone

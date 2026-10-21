@@ -1,4 +1,4 @@
-﻿# Visual Guide: Cassandra NoSQL
+# Visual Guide: Cassandra NoSQL
 
 ## Architecture Diagrams
 

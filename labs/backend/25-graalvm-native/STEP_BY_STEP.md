@@ -1,4 +1,4 @@
-﻿# Step by Step: GraalVM Native
+# Step by Step: GraalVM Native
 
 ## Step 1: Add Plugin
 `xml

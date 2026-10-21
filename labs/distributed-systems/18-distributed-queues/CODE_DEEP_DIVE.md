@@ -1,4 +1,4 @@
-﻿# Code Deep Dive — Distributed Queues
+# Code Deep Dive — Distributed Queues
 
 ## 1. DistributedQueue Interface
 

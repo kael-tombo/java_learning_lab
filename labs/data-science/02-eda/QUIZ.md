@@ -1,4 +1,4 @@
-﻿# Exploratory Data Analysis - Quiz
+# Exploratory Data Analysis - Quiz
 
 ## Question 1
 What is the primary goal of 

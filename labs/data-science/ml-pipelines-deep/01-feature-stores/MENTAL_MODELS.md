@@ -1,4 +1,4 @@
-﻿# Feature Stores — Mental Models
+# Feature Stores — Mental Models
 
 ## 1. Time machine with a one-way lock
 You may look into the past (ts <= t) but never the future. Every

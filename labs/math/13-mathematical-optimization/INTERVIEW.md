@@ -1,4 +1,4 @@
-﻿# Interview Questions: Mathematical Optimization
+# Interview Questions: Mathematical Optimization
 
 ## Conceptual Questions
 

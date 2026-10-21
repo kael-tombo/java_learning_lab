@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Internal Implementation
+# HTTP Clients (Java 11+) -- Internal Implementation
 
 ## Internal Architecture
 

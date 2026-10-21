@@ -1,4 +1,4 @@
-﻿# Interview: Vector Spaces
+# Interview: Vector Spaces
 
 ## Common Interview Questions
 

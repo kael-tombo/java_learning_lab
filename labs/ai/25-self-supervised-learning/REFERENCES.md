@@ -1,4 +1,4 @@
-﻿# References: Self-Supervised Learning
+# References: Self-Supervised Learning
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

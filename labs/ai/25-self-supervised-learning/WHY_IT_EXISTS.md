@@ -1,4 +1,4 @@
-﻿# Why Self-Supervised Learning Exists
+# Why Self-Supervised Learning Exists
 
 ## Limitations of Traditional Programming
 Traditional programming requires explicit rules for every scenario. This is impossible for problems where rules are unknown, too complex, or constantly changing.

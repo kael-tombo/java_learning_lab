@@ -1,4 +1,4 @@
-﻿# Why Feature Stores Matter
+# Why Feature Stores Matter
 
 ## Business Impact
 - **Faster ML Development**: 5-10x faster feature development

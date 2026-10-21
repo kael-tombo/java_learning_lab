@@ -1,4 +1,4 @@
-﻿# How It Works: Inner Products and Norms
+# How It Works: Inner Products and Norms
 
 ## High-Level Explanation
 

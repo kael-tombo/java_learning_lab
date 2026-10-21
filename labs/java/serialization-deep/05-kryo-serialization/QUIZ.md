@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Quiz
+# Kryo Serialization -- Quiz
 
 ## Question 1: Fundamentals
 What is the primary purpose of serialization?

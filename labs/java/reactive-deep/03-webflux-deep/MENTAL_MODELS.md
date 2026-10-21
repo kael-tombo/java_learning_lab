@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- Mental Models
+# WebFlux Deep Dive -- Mental Models
 ## Key Mental Models
 ### The Assembly Line
 Reactive operators are like stations on an assembly line.

@@ -1,4 +1,4 @@
-﻿# Quiz — Time Ordering
+# Quiz — Time Ordering
 
 ## Section 1: Multiple Choice
 

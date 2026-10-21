@@ -1,4 +1,4 @@
-﻿# Model Interpretability — How It Works
+# Model Interpretability — How It Works
 
 ## 1. State the explanation question
 "Which features drive the model overall?" is global; "why did item 7

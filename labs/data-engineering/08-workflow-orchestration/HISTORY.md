@@ -1,4 +1,4 @@
-﻿# History of Workflow Orchestration
+# History of Workflow Orchestration
 
 ## Timeline
 - **2009**: Apache Oozie (Hadoop workflow scheduler)

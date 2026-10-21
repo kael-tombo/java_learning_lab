@@ -1,4 +1,4 @@
-﻿# Reflection: Reinforcement Learning
+# Reflection: Reinforcement Learning
 
 ## Self-Assessment
 - Can I explain Reinforcement Learning to a non-technical person?

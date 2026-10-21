@@ -1,4 +1,4 @@
-﻿# Quiz — Gossip Protocols
+# Quiz — Gossip Protocols
 
 1. Gossip per-node work complexity? Answer: O(log N) or O(1)
 2. Push-pull convergence vs push-only? Answer: Faster

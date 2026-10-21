@@ -1,4 +1,4 @@
-﻿# 26-26-multi-task-learning - Multi-Task Learning
+# 26-26-multi-task-learning - Multi-Task Learning
 
 Shared representations, task weighting, PCGrad
 

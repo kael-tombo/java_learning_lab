@@ -1,4 +1,4 @@
-﻿# Data Science Deep Dive - Exercises
+# Data Science Deep Dive - Exercises
 
 ## Exercise 1: Basic Concepts
 Implement a Java class that demonstrates fundamental Data Science Deep Dive operations. Create methods for data input, processing, and output validation.

@@ -1,4 +1,4 @@
-﻿# Exploratory Data Analysis - Theory & Intuition
+# Exploratory Data Analysis - Theory & Intuition
 
 ## The Big Picture
 

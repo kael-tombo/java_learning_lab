@@ -1,4 +1,4 @@
-﻿# Internals: Inner Products and Norms Implementation
+# Internals: Inner Products and Norms Implementation
 
 ## Deep Dive into Implementation Details
 

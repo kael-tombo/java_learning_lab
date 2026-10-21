@@ -1,4 +1,4 @@
-﻿# Flashcards: Self-Supervised Learning
+# Flashcards: Self-Supervised Learning
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

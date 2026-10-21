@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Mental Models
+# Model Interpretability — Mental Models
 
 ## 1. Autopsy vs biography
 Local explanations are autopsies (why this one died); global ones are

@@ -1,4 +1,4 @@
-﻿# Matrix Calculus — Exercises
+# Matrix Calculus — Exercises
 
 ## 1. Jacobian of Ax
 

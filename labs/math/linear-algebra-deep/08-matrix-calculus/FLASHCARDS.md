@@ -1,4 +1,4 @@
-﻿# Matrix Calculus — Flashcards
+# Matrix Calculus — Flashcards
 
 ## Q/A
 

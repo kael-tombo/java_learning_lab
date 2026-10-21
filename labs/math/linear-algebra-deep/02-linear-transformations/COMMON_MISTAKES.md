@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Linear Transformations
+# Common Mistakes: Linear Transformations
 
 ## Top 10 Common Mistakes
 

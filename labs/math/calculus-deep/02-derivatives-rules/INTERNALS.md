@@ -1,4 +1,4 @@
-﻿# Internals: Derivatives and Differentiation Rules Implementation
+# Internals: Derivatives and Differentiation Rules Implementation
 
 ## Deep Dive into Implementation Details
 

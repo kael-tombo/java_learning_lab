@@ -1,4 +1,4 @@
-﻿# Why Reactive Programming Matters
+# Why Reactive Programming Matters
 
 ## Real-World Impact
 

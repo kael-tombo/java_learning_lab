@@ -1,4 +1,4 @@
-﻿# Performance — Distributed Monitoring
+# Performance — Distributed Monitoring
 
 ## Storage Requirements
 | Resolution | Retention | Storage per metric |

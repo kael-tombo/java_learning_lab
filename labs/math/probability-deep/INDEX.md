@@ -1,4 +1,4 @@
-﻿# Probability and Statistics Deep Dive
+# Probability and Statistics Deep Dive
 
 ## Micro-Labs
 

@@ -1,4 +1,4 @@
-﻿# Time Series Analysis
+# Time Series Analysis
 
 Welcome to the atomic mastery lab for **Time Series Analysis**. This lab is part of the Data Science Academy.
 

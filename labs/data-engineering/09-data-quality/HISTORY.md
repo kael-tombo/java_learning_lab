@@ -1,4 +1,4 @@
-﻿# History of Data Quality
+# History of Data Quality
 
 ## Timeline
 - **1990s**: Manual data quality checks in ETL processes

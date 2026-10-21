@@ -1,4 +1,4 @@
-﻿# Refactoring: Database Sharding
+# Refactoring: Database Sharding
 
 ## Common Refactoring Patterns
 

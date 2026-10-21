@@ -1,4 +1,4 @@
-﻿# Code Deep Dive — Distributed Scheduling
+# Code Deep Dive — Distributed Scheduling
 
 ## 1. DistributedScheduler Interface
 

@@ -1,4 +1,4 @@
-﻿# Feature Engineering - Exercises
+# Feature Engineering - Exercises
 
 ## Exercise 1: Basic Concepts
 Implement a Java class that demonstrates fundamental Feature Engineering operations. Create methods for data input, processing, and output validation.

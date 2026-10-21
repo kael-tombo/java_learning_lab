@@ -1,4 +1,4 @@
-﻿# Debugging: Database Migration Strategies
+# Debugging: Database Migration Strategies
 
 ## Common Issues and Solutions
 

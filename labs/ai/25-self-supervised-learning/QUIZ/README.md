@@ -1,4 +1,4 @@
-﻿# Self-Supervised Learning - Quiz
+# Self-Supervised Learning - Quiz
 
 ## Overview
 Assessment covering all Self-Supervised Learning topics.

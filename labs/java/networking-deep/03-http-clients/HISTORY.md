@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- History
+# HTTP Clients (Java 11+) -- History
 ## Historical Evolution
 
 ### Early Networking (1980s)

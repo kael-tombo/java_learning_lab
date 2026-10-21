@@ -1,4 +1,4 @@
-﻿# Security: Linear Transformations Implementation
+# Security: Linear Transformations Implementation
 
 ## Security Considerations
 

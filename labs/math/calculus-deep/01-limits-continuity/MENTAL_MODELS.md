@@ -1,4 +1,4 @@
-﻿# Mental Models: Limits and Continuity
+# Mental Models: Limits and Continuity
 
 ## Conceptual Frameworks
 

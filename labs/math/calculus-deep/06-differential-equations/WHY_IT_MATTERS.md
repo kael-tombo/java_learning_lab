@@ -1,4 +1,4 @@
-﻿# Why It Matters: Differential Equations
+# Why It Matters: Differential Equations
 
 ## Real-World Importance
 

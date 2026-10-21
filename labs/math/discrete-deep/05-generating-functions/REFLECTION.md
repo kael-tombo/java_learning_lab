@@ -1,4 +1,4 @@
-﻿# Reflection: Generating Functions
+# Reflection: Generating Functions
 
 ## The One Move Worth Memorizing
 

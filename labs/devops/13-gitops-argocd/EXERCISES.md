@@ -1,4 +1,4 @@
-﻿# ArgoCD & GitOps Exercises
+# ArgoCD & GitOps Exercises
 
 ## Exercise 1: Install ArgoCD
 Install ArgoCD on a Kubernetes cluster using the official manifests or Helm chart. Access the web UI via port-forward and log in with the admin user.

@@ -1,4 +1,4 @@
-﻿# Mental Models for Feature Stores
+# Mental Models for Feature Stores
 
 ## 1. The Library
 - **Feature Registry** = Library catalog

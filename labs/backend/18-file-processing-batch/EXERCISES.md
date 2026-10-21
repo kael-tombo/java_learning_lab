@@ -1,4 +1,4 @@
-﻿# Exercises: Spring Batch
+# Exercises: Spring Batch
 
 ## Exercise 1: CSV to Database
 Create a job that reads a CSV file and writes to a database.

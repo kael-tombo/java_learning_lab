@@ -1,4 +1,4 @@
-﻿# Why Sparse Tables Exist
+# Why Sparse Tables Exist
 
 ## The Problem: Static Range Queries
 

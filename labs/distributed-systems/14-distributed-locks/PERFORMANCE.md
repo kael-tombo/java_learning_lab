@@ -1,4 +1,4 @@
-﻿# Performance — Distributed Locks
+# Performance — Distributed Locks
 
 ## Latency (p99, ms)
 | Provider | Lock | Unlock | Notes |

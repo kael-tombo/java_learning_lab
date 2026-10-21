@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: RecursiveSegmentTree.java
+# Code Deep Dive: RecursiveSegmentTree.java
 
 ## Class Overview
 

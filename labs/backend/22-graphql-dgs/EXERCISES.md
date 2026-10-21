@@ -1,4 +1,4 @@
-﻿# Exercises: GraphQL DGS
+# Exercises: GraphQL DGS
 
 ## Exercise 1: Basic Query
 Create a Query resolver that returns a list of shows.

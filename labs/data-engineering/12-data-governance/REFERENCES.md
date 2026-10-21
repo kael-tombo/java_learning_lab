@@ -1,4 +1,4 @@
-﻿# Data Governance References
+# Data Governance References
 
 ## Books
 - "Data Governance: How to Design, Deploy and Sustain an Effective Data Governance Program" by John Ladley

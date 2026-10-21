@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning - Theory
+# Multi-Task Learning - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Multi-Task Learning.

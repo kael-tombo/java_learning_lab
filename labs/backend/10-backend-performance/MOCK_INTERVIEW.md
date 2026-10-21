@@ -1,4 +1,4 @@
-﻿# Mock Interview: Rate Limiter (Token Bucket + Sliding Window) (Lab 10)
+# Mock Interview: Rate Limiter (Token Bucket + Sliding Window) (Lab 10)
 
 **Role:** Senior Backend Engineer
 **Duration:** 55 minutes

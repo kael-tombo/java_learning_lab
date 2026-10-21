@@ -1,4 +1,4 @@
-﻿# Security: Generating Functions in Practice
+# Security: Generating Functions in Practice
 
 ## Finite Fields Are Not Generating Functions (But They Share the Acronym)
 

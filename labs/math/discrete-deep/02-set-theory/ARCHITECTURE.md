@@ -1,4 +1,4 @@
-﻿# Architecture: Set Abstractions in Code
+# Architecture: Set Abstractions in Code
 
 ## The Collection Hierarchy (Java)
 

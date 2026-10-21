@@ -1,4 +1,4 @@
-﻿# Generative Adversarial Networks - Code Deep Dive
+# Generative Adversarial Networks - Code Deep Dive
 
 ## Overview
 Detailed examination of the Generative Adversarial Networks Java implementation.

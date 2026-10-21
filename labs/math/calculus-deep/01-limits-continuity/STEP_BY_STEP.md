@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Limits and Continuity
+# Step-by-Step Guide: Limits and Continuity
 
 ## Implementation Walkthrough
 

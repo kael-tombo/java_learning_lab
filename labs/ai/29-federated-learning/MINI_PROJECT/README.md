@@ -1,4 +1,4 @@
-﻿# Federated Learning - Mini Project
+# Federated Learning - Mini Project
 
 ## Overview
 Build a working Federated Learning implementation from scratch.

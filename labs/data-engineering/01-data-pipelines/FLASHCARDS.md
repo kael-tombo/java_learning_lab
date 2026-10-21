@@ -1,4 +1,4 @@
-﻿# Flashcards: Data Pipelines
+# Flashcards: Data Pipelines
 
 ## Card 1
 **Front**: What is a data pipeline?

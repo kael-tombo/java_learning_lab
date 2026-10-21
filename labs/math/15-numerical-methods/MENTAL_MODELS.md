@@ -1,4 +1,4 @@
-﻿# Mental Models: Numerical Methods
+# Mental Models: Numerical Methods
 
 ## Conceptual Frameworks
 

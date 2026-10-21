@@ -1,4 +1,4 @@
-﻿# Workflow Orchestration Flashcards
+# Workflow Orchestration Flashcards
 
 ## Card 1
 **Front**: What is a DAG in workflow orchestration?

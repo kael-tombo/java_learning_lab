@@ -1,4 +1,4 @@
-﻿# Visual Guide: Explainable AI
+# Visual Guide: Explainable AI
 
 ## 1. System Architecture Diagram
 [Input Data] → [Preprocessing] → [Model Forward Pass] → [Loss Computation] → [Backward Pass] → [Parameter Update]

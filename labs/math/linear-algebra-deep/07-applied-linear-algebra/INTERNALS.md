@@ -1,4 +1,4 @@
-﻿# Internals: Applied Linear Algebra Implementation
+# Internals: Applied Linear Algebra Implementation
 
 ## Deep Dive into Implementation Details
 

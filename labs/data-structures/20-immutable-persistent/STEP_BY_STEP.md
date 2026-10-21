@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Building Persistent Structures
+# Step-by-Step: Building Persistent Structures
 
 1. Design immutable node class with final fields
 2. Implement empty sentinel

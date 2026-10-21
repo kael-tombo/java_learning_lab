@@ -1,4 +1,4 @@
-﻿# Applied Linear Algebra — Flashcards
+# Applied Linear Algebra — Flashcards
 
 ## Q/A
 

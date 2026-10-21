@@ -1,4 +1,4 @@
-﻿# Visual Guide: Linear Algebra
+# Visual Guide: Linear Algebra
 
 ## Conceptual Diagrams
 

@@ -1,4 +1,4 @@
-﻿# Exercises: Integration Techniques
+# Exercises: Integration Techniques
 
 ## Theoretical Exercises
 

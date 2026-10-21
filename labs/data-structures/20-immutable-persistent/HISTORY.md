@@ -1,4 +1,4 @@
-﻿# History of Persistent Data Structures
+# History of Persistent Data Structures
 
 - **1982**: Driscoll et al. formalize persistence
 - **1986**: Path copying technique described

@@ -1,4 +1,4 @@
-﻿# Step by Step: GraphQL DGS
+# Step by Step: GraphQL DGS
 
 ## Step 1: Schema
 `graphql

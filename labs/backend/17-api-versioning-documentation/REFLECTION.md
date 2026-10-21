@@ -1,4 +1,4 @@
-﻿# Reflection: API Versioning & Documentation
+# Reflection: API Versioning & Documentation
 
 1. URL versioning is simplest but least RESTful
 2. Header versioning is cleanest but hardest to test

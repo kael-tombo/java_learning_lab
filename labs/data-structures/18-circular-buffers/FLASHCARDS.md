@@ -1,4 +1,4 @@
-﻿## Front: What is a circular buffer?
+## Front: What is a circular buffer?
 Back: Fixed-size FIFO buffer with wrap-around pointers. O(1) enqueue/dequeue.
 
 ## Front: What is the overwrite policy?

@@ -1,4 +1,4 @@
-﻿# Interview: Multi-Tenancy
+# Interview: Multi-Tenancy
 
 Q: Compare multi-tenant patterns? A: DB-per-tenant (best isolation, most resources), Schema-per-tenant (good isolation, shared pool), Discriminator (simplest, least isolation).
 

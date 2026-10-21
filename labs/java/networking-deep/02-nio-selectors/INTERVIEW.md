@@ -1,4 +1,4 @@
-﻿# Interview Questions: NIO Selectors
+# Interview Questions: NIO Selectors
 
 ## Company-Specific Focus
 

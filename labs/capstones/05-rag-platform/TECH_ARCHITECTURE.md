@@ -1,4 +1,4 @@
-﻿# Technical Architecture: RAG Platform
+# Technical Architecture: RAG Platform
 
 ## Architecture Overview
 

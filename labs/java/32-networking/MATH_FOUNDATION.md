@@ -1,4 +1,4 @@
-﻿# Networking — Math Foundation
+# Networking — Math Foundation
 
 ## Mathematical Concepts
 

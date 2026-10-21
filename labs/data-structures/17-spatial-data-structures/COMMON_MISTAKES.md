@@ -1,4 +1,4 @@
-﻿# Common Mistakes
+# Common Mistakes
 
 1. Not checking boundary containment before insert
 2. Infinite recursion during subdivision (bad splitting)

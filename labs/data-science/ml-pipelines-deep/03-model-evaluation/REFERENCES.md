@@ -1,4 +1,4 @@
-﻿# Model Evaluation — References
+# Model Evaluation — References
 
 All entries are real publications. Verify editions locally.
 

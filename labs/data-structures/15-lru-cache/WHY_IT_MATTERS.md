@@ -1,4 +1,4 @@
-﻿# Why LRU Cache Matters
+# Why LRU Cache Matters
 
 ## Real-World Impact
 

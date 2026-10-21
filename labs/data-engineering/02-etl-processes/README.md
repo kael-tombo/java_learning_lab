@@ -1,4 +1,4 @@
-﻿# ETL Processes
+# ETL Processes
 
 ## Overview
 ETL (Extract, Transform, Load) is the core process of data engineering - extracting data from sources, transforming it into a usable format, and loading it into a target system.

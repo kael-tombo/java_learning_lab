@@ -1,4 +1,4 @@
-﻿# Benchmark: Skip List Performance
+# Benchmark: Skip List Performance
 
 ## Scenarios
 1. Insert throughput vs TreeMap

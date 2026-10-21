@@ -1,4 +1,4 @@
-﻿# Internals: Security
+# Internals: Security
 
 ## SecurityFilterChain
 Spring Security uses a chain of filters:

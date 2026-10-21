@@ -1,4 +1,4 @@
-﻿# Serialization — Math Foundation
+# Serialization — Math Foundation
 
 ## Mathematical Concepts
 

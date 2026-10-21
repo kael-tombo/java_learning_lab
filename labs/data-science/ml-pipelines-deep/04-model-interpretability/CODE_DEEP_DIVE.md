@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Code Deep Dive (JDK only, verified)
+# Model Interpretability — Code Deep Dive (JDK only, verified)
 Single-class programs, `javac --release 21 -encoding UTF-8`, outputs observed.
 ## 1. PermutationImportance — reversed-x1 shuffle drops 1.0 to 4/6
 ```java

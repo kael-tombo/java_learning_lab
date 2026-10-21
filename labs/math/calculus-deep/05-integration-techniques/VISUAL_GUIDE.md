@@ -1,4 +1,4 @@
-﻿# Visual Guide: Integration Techniques
+# Visual Guide: Integration Techniques
 
 ## Conceptual Diagrams
 

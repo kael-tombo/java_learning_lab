@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Performance
+# Protocol Buffers -- Performance
 
 ## Performance Characteristics
 

@@ -1,4 +1,4 @@
-﻿# History: Database Replication
+# History: Database Replication
 
 ## Evolution
 

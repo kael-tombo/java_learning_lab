@@ -1,4 +1,4 @@
-﻿# Theory: Database Migration Strategies
+# Theory: Database Migration Strategies
 
 ## 1. Fundamental Concepts
 

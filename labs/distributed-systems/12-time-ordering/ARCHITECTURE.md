@@ -1,4 +1,4 @@
-﻿# Architecture of Time Ordering Systems
+# Architecture of Time Ordering Systems
 
 ## 1. System Overview
 

@@ -1,4 +1,4 @@
-﻿# Debugging Guide: Linear Algebra
+# Debugging Guide: Linear Algebra
 
 ## Common Issues and Solutions
 

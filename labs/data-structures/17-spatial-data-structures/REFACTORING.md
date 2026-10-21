@@ -1,4 +1,4 @@
-﻿# Refactoring Spatial Data Structures
+# Refactoring Spatial Data Structures
 
 1. Generic point type (2D, 3D, ND)
 2. Add bulk loading for static data

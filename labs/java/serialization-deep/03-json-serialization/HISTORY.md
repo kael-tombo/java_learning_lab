@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- History
+# JSON Serialization -- History
 
 ## Historical Evolution
 

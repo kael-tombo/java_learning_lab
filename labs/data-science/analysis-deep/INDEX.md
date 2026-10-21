@@ -1,4 +1,4 @@
-﻿# Data Analysis Deep Dive
+# Data Analysis Deep Dive
 
 ## Micro-Labs
 

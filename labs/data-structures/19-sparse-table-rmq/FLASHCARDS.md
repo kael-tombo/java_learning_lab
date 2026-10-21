@@ -1,4 +1,4 @@
-﻿## Front: What is a sparse table?
+## Front: What is a sparse table?
 Back: Precomputed table for O(1) range queries on static arrays. O(n log n) space.
 
 ## Front: What operations support O(1) sparse table queries?

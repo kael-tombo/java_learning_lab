@@ -1,4 +1,4 @@
-﻿# How It Works: Differential Equations
+# How It Works: Differential Equations
 
 ## High-Level Explanation
 

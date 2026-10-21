@@ -1,4 +1,4 @@
-﻿# Exercises: CockroachDB
+# Exercises: CockroachDB
 
 ## Beginner Level
 

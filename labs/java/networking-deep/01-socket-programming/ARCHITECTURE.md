@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Architecture
+# Socket Programming -- Architecture
 ## System Architecture
 
 ### High-Level Design

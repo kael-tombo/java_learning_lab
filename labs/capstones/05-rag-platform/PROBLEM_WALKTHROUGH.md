@@ -1,4 +1,4 @@
-﻿# Problem Walkthrough: RAG Platform with Document Processing and Retrieval
+# Problem Walkthrough: RAG Platform with Document Processing and Retrieval
 
 ## Problem Statement
 

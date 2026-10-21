@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Exercises
+# Protocol Buffers -- Exercises
 
 ## Beginner Exercises
 

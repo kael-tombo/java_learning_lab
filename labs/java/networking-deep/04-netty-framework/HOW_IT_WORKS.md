@@ -1,4 +1,4 @@
-﻿# Netty Framework -- How It Works
+# Netty Framework -- How It Works
 ## Detailed Mechanical Explanation
 
 ### 1. Socket Creation and Binding

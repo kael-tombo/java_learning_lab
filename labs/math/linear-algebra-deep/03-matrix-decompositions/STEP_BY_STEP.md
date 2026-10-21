@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Matrix Decompositions
+# Step-by-Step Guide: Matrix Decompositions
 
 ## Implementation Walkthrough
 

@@ -1,4 +1,4 @@
-﻿# Math Foundation: Query Optimization
+# Math Foundation: Query Optimization
 
 ## Mathematical Models and Formulas
 

@@ -1,4 +1,4 @@
-﻿# Feature Stores — History (confident facts only)
+# Feature Stores — History (confident facts only)
 
 ## What can be said safely
 - The term "feature store" entered industry vocabulary in the mid-2010s

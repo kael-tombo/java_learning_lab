@@ -1,4 +1,4 @@
-﻿# Why Serialization Matters
+# Why Serialization Matters
 
 ## Real-World Impact
 

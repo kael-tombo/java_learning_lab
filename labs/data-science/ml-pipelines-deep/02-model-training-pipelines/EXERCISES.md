@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Exercises
+# Model Training Pipelines — Exercises
 
 ## 1. Gate drill
 In PipelineDag, set the validate entry to false. Predict the printed

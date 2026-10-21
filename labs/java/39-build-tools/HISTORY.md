@@ -1,4 +1,4 @@
-﻿# Build Tools — Evolution Across Versions
+# Build Tools — Evolution Across Versions
 
 ## Early Days (Java 1.0-1.4)
 

@@ -1,4 +1,4 @@
-﻿# Common Mistakes with Concurrent Data Structures
+# Common Mistakes with Concurrent Data Structures
 
 1. **Not handling ABA**: Use AtomicStampedReference
 2. **Forgetting memory ordering**: Missing volatile/Atomic

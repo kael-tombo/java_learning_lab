@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Integral Fundamentals
+# Step-by-Step Guide: Integral Fundamentals
 
 ## Implementation Walkthrough
 

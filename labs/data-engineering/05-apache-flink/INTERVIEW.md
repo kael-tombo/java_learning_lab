@@ -1,4 +1,4 @@
-﻿# Apache Flink Interview Questions
+# Apache Flink Interview Questions
 
 ## Beginner
 **Q**: What is the difference between Flink and Spark Streaming?

@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Flashcards
+# XML Serialization -- Flashcards
 
 ## Spaced-Repetition Learning Cards
 

@@ -1,4 +1,4 @@
-﻿# Mental Models for Spark
+# Mental Models for Spark
 
 ## 1. The Kitchen Brigade
 - **Driver** = Head chef (plans the menu, coordinates)

@@ -1,4 +1,4 @@
-﻿# Debugging ArgoCD Issues
+# Debugging ArgoCD Issues
 
 ## Common Issues and Solutions
 

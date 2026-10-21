@@ -1,4 +1,4 @@
-﻿# Theory of Distributed Locks
+# Theory of Distributed Locks
 
 ## 1. Why Distributed Locks?
 

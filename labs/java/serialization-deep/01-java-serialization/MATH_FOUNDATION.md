@@ -1,4 +1,4 @@
-﻿# Java Serialization — Mathematical Foundation
+# Java Serialization — Mathematical Foundation
 
 ## 1. Asymptotic Complexity Analysis
 

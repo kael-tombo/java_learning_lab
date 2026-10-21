@@ -1,4 +1,4 @@
-﻿# Performance Analysis: Mathematical Optimization
+# Performance Analysis: Mathematical Optimization
 
 ## Algorithmic Complexity
 

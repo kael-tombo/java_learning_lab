@@ -1,4 +1,4 @@
-﻿# Interview Questions: Database Testing (Oracle Focus)
+# Interview Questions: Database Testing (Oracle Focus)
 
 ## Oracle-Specific Questions
 - How do you test Oracle database schema changes in CI/CD? Explain `SQLcl` and `Flyway` in testing pipeline.

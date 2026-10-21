@@ -1,4 +1,4 @@
-﻿# Best Practices — Internal Mechanics
+# Best Practices — Internal Mechanics
 
 ## How Effective Java Patterns Work
 

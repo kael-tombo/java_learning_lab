@@ -1,4 +1,4 @@
-﻿# History of Mathematical Optimization
+# History of Mathematical Optimization
 
 ## Origins
 

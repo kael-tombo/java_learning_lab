@@ -1,4 +1,4 @@
-﻿# Math Foundations — Distributed Locks
+# Math Foundations — Distributed Locks
 
 ## 1. Redlock Majority
 

@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Interview
+# Model Training Pipelines — Interview
 
 ## Q: Walk me through the stages and why each exists.
 A: Ingest pins a dataset version; validate blocks bad data; transform

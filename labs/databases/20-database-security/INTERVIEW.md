@@ -1,4 +1,4 @@
-﻿# Interview Questions: Database Security (Oracle Focus)
+# Interview Questions: Database Security (Oracle Focus)
 
 ## Oracle-Specific Questions
 - Explain Oracle's security architecture: authentication, authorization, and auditing (AAA).

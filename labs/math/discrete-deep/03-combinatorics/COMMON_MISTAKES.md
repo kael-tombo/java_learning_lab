@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Combinatorics
+# Common Mistakes: Combinatorics
 
 ## 1. Permutations Where Combinations Belong (or Vice Versa)
 

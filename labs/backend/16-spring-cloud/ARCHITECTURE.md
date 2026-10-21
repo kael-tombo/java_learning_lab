@@ -1,4 +1,4 @@
-﻿# Architecture: Spring Cloud Microservices Infrastructure
+# Architecture: Spring Cloud Microservices Infrastructure
 
 ## System Architecture Overview
 

@@ -1,4 +1,4 @@
-﻿# Interview Questions: Multi-Task Learning
+# Interview Questions: Multi-Task Learning
 
 ## Conceptual Questions
 1. What is Multi-Task Learning and how does it differ from traditional programming?

@@ -1,4 +1,4 @@
-﻿# ETL References
+# ETL References
 
 ## Books
 - "The Data Warehouse ETL Toolkit" by Ralph Kimball

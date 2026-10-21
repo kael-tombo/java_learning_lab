@@ -1,4 +1,4 @@
-﻿# Reflection: GitOps & ArgoCD
+# Reflection: GitOps & ArgoCD
 
 ## Key Takeaways
 1. Git as the single source of truth transforms how we manage infrastructure

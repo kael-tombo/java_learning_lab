@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Code Deep Dive
+# Model Evaluation — Code Deep Dive
 
 All snippets run on any JDK 9+ (verified on JDK 23), no dependencies.
 Datasets are small and fixed; every number is hand-checkable.

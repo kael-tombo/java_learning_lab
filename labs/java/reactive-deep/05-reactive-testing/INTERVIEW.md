@@ -1,4 +1,4 @@
-﻿# Interview Questions: Reactive Testing
+# Interview Questions: Reactive Testing
 
 ## Company-Specific Focus
 

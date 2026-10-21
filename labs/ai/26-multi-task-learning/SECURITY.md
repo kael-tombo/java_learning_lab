@@ -1,4 +1,4 @@
-﻿# Security: Multi-Task Learning
+# Security: Multi-Task Learning
 
 ## 1. Threat Overview
 Security concerns in Multi-Task Learning include adversarial attacks, data poisoning, model theft, and privacy violations. Understanding these threats is essential for building robust systems.

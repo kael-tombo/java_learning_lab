@@ -1,4 +1,4 @@
-﻿# Time Series Analysis - Theory & Intuition
+# Time Series Analysis - Theory & Intuition
 
 ## The Big Picture
 

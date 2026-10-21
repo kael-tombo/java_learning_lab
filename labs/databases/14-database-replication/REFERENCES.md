@@ -1,4 +1,4 @@
-﻿# References: Database Replication
+# References: Database Replication
 
 ## Academic Papers
 

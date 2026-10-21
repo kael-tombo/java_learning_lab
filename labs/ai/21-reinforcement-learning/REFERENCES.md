@@ -1,4 +1,4 @@
-﻿# References: Reinforcement Learning
+# References: Reinforcement Learning
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

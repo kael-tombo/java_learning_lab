@@ -1,4 +1,4 @@
-﻿# Architecture: Number Theory Implementation
+# Architecture: Number Theory Implementation
 
 ## Package Structure
 

@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks - Theory
+# Graph Neural Networks - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Graph Neural Networks.

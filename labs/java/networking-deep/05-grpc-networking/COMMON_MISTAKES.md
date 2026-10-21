@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Common Mistakes
+# gRPC Networking -- Common Mistakes
 
 ## Top 15 Common Mistakes
 

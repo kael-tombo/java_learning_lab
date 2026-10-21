@@ -1,4 +1,4 @@
-﻿# References: Database Sharding
+# References: Database Sharding
 
 ## Academic Papers
 

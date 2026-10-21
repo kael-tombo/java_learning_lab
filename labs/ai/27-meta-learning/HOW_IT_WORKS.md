@@ -1,4 +1,4 @@
-﻿# How Meta-Learning Works
+# How Meta-Learning Works
 
 ## 1. Basic Idea
 Meta-Learning works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

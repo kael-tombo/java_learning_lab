@@ -1,4 +1,4 @@
-﻿# Real World Project: Genome Sequence Query System
+# Real World Project: Genome Sequence Query System
 
 Build a genome sequence analysis system.
 - Preprocess DNA sequences using sparse tables

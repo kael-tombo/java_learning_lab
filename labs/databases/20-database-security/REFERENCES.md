@@ -1,4 +1,4 @@
-﻿# References: Database Security
+# References: Database Security
 
 ## Academic Papers
 

@@ -1,4 +1,4 @@
-﻿# Step by Step: Query Optimization
+# Step by Step: Query Optimization
 
 ## Implementation Guide
 

@@ -1,4 +1,4 @@
-﻿# Mental Models: Number Theory
+# Mental Models: Number Theory
 
 ## Conceptual Frameworks
 

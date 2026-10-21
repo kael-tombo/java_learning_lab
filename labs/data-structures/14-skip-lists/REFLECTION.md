@@ -1,4 +1,4 @@
-﻿# Reflection: Skip Lists
+# Reflection: Skip Lists
 
 Skip lists demonstrate that randomization can achieve the same performance as complex deterministic balancing with much simpler code. The key insight is that the probabilistic distribution of levels naturally approximates the ideal perfect balancing.
 

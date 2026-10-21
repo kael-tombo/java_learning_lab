@@ -1,4 +1,4 @@
-﻿# Mini Project: Versioned Document Store
+# Mini Project: Versioned Document Store
 
 Build a versioned document store using persistent data structures.
 - Each edit creates a new version

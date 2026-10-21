@@ -1,4 +1,4 @@
-﻿# Security: AI Safety and Alignment
+# Security: AI Safety and Alignment
 
 ## 1. Threat Overview
 Security concerns in AI Safety and Alignment include adversarial attacks, data poisoning, model theft, and privacy violations. Understanding these threats is essential for building robust systems.

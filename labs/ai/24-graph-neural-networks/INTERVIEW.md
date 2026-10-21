@@ -1,4 +1,4 @@
-﻿# Interview Questions: Graph Neural Networks
+# Interview Questions: Graph Neural Networks
 
 ## Conceptual Questions
 1. What is Graph Neural Networks and how does it differ from traditional programming?

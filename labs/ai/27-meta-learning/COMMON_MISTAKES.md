@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Meta-Learning
+# Common Mistakes in Meta-Learning
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

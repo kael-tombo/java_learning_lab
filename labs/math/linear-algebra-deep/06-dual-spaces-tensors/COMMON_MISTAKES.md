@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Dual Spaces and Tensors
+# Common Mistakes: Dual Spaces and Tensors
 
 ## Top 10 Common Mistakes
 

@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Exercises
+# JSON Serialization -- Exercises
 
 ## Beginner Exercises
 

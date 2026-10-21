@@ -1,4 +1,4 @@
-﻿# Debugging: Generative Adversarial Networks
+# Debugging: Generative Adversarial Networks
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

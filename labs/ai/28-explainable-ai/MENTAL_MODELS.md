@@ -1,4 +1,4 @@
-﻿# Mental Models: Explainable AI
+# Mental Models: Explainable AI
 
 ## 1. Optimization Landscape
 Think of loss as a landscape. Gradient descent is like walking downhill in fog - you can feel the slope at your feet but can't see the whole terrain.

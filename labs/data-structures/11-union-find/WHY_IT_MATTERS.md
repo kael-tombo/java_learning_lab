@@ -1,4 +1,4 @@
-﻿# Why Union-Find Matters
+# Why Union-Find Matters
 
 ## Practical Impact
 

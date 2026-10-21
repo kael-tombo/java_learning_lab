@@ -1,4 +1,4 @@
-﻿# Debugging: Reinforcement Learning
+# Debugging: Reinforcement Learning
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

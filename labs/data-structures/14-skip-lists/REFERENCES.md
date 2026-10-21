@@ -1,4 +1,4 @@
-﻿# References: Skip Lists
+# References: Skip Lists
 
 1. Pugh, W. (1990). Skip lists: a probabilistic alternative to balanced trees. Communications of the ACM, 33(6), 668-676.
 2. Redis Documentation: Sorted Sets

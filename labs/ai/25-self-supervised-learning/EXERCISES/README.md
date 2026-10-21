@@ -1,4 +1,4 @@
-﻿# Self-Supervised Learning - Exercises
+# Self-Supervised Learning - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

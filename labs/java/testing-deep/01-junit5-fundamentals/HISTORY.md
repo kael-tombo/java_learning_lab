@@ -1,4 +1,4 @@
-﻿# JUnit 5 Fundamentals -- History
+# JUnit 5 Fundamentals -- History
 ## Testing Framework Evolution
 ### JUnit 4 (2006)
 Annotations introduced (@Test, @Before, @After).

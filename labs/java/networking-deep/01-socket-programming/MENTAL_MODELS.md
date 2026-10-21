@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Mental Models
+# Socket Programming -- Mental Models
 ## Key Mental Models for Understanding Networking
 
 ### Model 1: The Telephone System

@@ -1,4 +1,4 @@
-﻿# Exercises: CQRS Axon
+# Exercises: CQRS Axon
 
 ## Exercise 1: Basic Aggregate
 Create an Order aggregate with CreateOrderCommand and OrderCreatedEvent.

@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Graph Neural Networks
+# Mathematical Foundations of Graph Neural Networks
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying Graph Neural Networks. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

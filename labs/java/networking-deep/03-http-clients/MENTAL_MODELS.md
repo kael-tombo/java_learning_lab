@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Mental Models
+# HTTP Clients (Java 11+) -- Mental Models
 ## Key Mental Models for Understanding Networking
 
 ### Model 1: The Telephone System

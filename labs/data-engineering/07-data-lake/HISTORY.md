@@ -1,4 +1,4 @@
-﻿# History of Data Lakes
+# History of Data Lakes
 
 ## Timeline
 - **2010**: Hadoop HDFS becomes popular for storing raw data

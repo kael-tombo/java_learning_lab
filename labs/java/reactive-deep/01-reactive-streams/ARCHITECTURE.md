@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Architecture
+# Reactive Streams -- Architecture
 ## Reactive Architecture
 ### Event-Driven
 Components communicate via events rather than direct calls.

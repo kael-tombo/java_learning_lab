@@ -1,4 +1,4 @@
-﻿# Visual Guide: Performance
+# Visual Guide: Performance
 
 `
 Latency Distribution:

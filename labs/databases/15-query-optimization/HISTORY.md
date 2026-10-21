@@ -1,4 +1,4 @@
-﻿# History: Query Optimization
+# History: Query Optimization
 
 ## Evolution
 

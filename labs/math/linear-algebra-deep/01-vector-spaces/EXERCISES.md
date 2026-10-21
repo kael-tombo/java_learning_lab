@@ -1,4 +1,4 @@
-﻿# Vector Spaces — Exercises
+# Vector Spaces — Exercises
 
 ## 1. Span membership
 

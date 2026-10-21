@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Debugging
+# Protocol Buffers -- Debugging
 
 ## Debugging Strategies
 

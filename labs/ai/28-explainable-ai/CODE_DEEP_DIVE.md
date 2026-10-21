@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: Explainable AI Implementation
+# Code Deep Dive: Explainable AI Implementation
 
 ## 1. Architecture Overview
 The Explainable AI implementation follows modular design principles with clear separation between data handling, model computation, training logic, and evaluation. This architecture ensures testability, extensibility, and performance.

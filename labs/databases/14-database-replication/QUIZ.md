@@ -1,4 +1,4 @@
-﻿# Quiz: Database Replication
+# Quiz: Database Replication
 
 ## Section 1: Fundamentals
 

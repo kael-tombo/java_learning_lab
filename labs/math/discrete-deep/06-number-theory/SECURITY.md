@@ -1,4 +1,4 @@
-﻿# Security: Number Theory in Practice
+# Security: Number Theory in Practice
 
 ## RSA Key Generation, Start to Finish (Small Primes)
 

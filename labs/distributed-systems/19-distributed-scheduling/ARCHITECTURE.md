@@ -1,4 +1,4 @@
-﻿# Architecture — Distributed Scheduling
+# Architecture — Distributed Scheduling
 
 ## Scheduler Architecture
 `

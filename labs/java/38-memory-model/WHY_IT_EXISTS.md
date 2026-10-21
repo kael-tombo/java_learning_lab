@@ -1,4 +1,4 @@
-﻿# Why Memory Model Exists
+# Why Memory Model Exists
 
 ## The Problem It Solves
 

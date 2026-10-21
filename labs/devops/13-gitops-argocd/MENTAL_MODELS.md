@@ -1,4 +1,4 @@
-﻿# Mental Models for GitOps & ArgoCD
+# Mental Models for GitOps & ArgoCD
 
 ## The Git-Centric Model
 Think of Git as the control plane for your infrastructure. Every change to the system is a commit. The Git repository is not just version control — it is the source of truth, the audit log, and the rollback mechanism all in one. When you understand GitOps, you start thinking in terms of commits, branches, and merges instead of deployments, rollouts, and rollbacks.

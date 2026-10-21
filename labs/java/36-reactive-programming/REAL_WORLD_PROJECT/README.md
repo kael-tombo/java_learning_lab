@@ -1,4 +1,4 @@
-﻿# REAL_WORLD_PROJECT
+# REAL_WORLD_PROJECT
 
 This directory contains the REAL_WORLD_PROJECT component for this lab.
 

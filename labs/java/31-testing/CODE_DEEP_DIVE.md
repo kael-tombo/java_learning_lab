@@ -1,4 +1,4 @@
-﻿# Testing — Visual Guide
+# Testing — Visual Guide
 
 ## ASCII Diagram: Testing Pyramid
 

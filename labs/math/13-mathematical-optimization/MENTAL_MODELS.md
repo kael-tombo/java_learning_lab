@@ -1,4 +1,4 @@
-﻿# Mental Models: Mathematical Optimization
+# Mental Models: Mathematical Optimization
 
 ## Conceptual Frameworks
 

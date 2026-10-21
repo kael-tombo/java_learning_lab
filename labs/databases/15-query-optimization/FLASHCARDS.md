@@ -1,4 +1,4 @@
-﻿# Flashcards: Query Optimization
+# Flashcards: Query Optimization
 
 ## Q: What is query optimization?
 **A:** Strategy that distributes data across multiple independent database instances for scalability.

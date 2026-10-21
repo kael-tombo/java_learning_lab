@@ -1,4 +1,4 @@
-﻿# Reflection: AI Safety and Alignment
+# Reflection: AI Safety and Alignment
 
 ## Self-Assessment
 - Can I explain AI Safety and Alignment to a non-technical person?

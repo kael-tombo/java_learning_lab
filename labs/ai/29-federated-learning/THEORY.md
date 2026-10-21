@@ -1,4 +1,4 @@
-﻿# Federated Learning - Complete Theory
+# Federated Learning - Complete Theory
 
 ## 1. Introduction
 

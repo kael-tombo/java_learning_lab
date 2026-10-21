@@ -1,4 +1,4 @@
-﻿# Flashcards: Performance
+# Flashcards: Performance
 
 Card 1: JMH full name? A: Java Microbenchmark Harness
 Card 2: Best connection pool? A: HikariCP

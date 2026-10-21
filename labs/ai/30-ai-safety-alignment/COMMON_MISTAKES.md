@@ -1,4 +1,4 @@
-﻿# Common Mistakes in AI Safety and Alignment
+# Common Mistakes in AI Safety and Alignment
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

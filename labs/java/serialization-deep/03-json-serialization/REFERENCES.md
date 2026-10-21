@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- References
+# JSON Serialization -- References
 
 ## Further Reading
 

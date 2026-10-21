@@ -1,4 +1,4 @@
-﻿# Debugging Spatial Data Structures
+# Debugging Spatial Data Structures
 
 ## Common Issues
 | Symptom | Cause |

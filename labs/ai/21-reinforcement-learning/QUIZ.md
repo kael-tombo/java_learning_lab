@@ -1,4 +1,4 @@
-﻿# Quiz: Reinforcement Learning
+# Quiz: Reinforcement Learning
 
 ## Instructions
 30 questions covering Reinforcement Learning concepts. Passing score: 70%.

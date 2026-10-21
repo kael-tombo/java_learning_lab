@@ -1,4 +1,4 @@
-﻿# Interview Questions: Segment Trees
+# Interview Questions: Segment Trees
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

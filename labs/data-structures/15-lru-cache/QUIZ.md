@@ -1,4 +1,4 @@
-﻿# Quiz: LRU Cache
+# Quiz: LRU Cache
 
 1. What data structure combination does LRU use? HashMap + Doubly Linked List
 2. What is the time complexity of get? O(1)

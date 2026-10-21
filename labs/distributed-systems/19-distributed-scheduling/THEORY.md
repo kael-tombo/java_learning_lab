@@ -1,4 +1,4 @@
-﻿# Theory of Distributed Scheduling
+# Theory of Distributed Scheduling
 
 ## 1. Why Distributed Scheduling?
 

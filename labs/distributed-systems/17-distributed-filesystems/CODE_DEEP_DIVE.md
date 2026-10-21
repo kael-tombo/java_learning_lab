@@ -1,4 +1,4 @@
-﻿# Code Deep Dive — Distributed Filesystems
+# Code Deep Dive — Distributed Filesystems
 
 ## 1. DistributedFileSystem Interface
 

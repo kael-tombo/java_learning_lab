@@ -1,4 +1,4 @@
-﻿# History: Cassandra NoSQL
+# History: Cassandra NoSQL
 
 ## Evolution
 

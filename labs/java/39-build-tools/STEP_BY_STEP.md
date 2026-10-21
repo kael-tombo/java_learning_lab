@@ -1,4 +1,4 @@
-﻿# Step-by-Step Tutorial
+# Step-by-Step Tutorial
 
 ## Step 1: Project Setup
 

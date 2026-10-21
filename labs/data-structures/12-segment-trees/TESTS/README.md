@@ -1,4 +1,4 @@
-﻿# Tests: Segment Trees
+# Tests: Segment Trees
 
 ## Test Files
 - SegmentTreeTest.java — JUnit 5 test suite

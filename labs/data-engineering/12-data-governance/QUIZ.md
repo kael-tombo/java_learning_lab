@@ -1,4 +1,4 @@
-﻿# Data Governance Quiz
+# Data Governance Quiz
 
 ## Question 1
 What is the primary purpose of a data catalog?

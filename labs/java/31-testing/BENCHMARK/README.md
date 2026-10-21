@@ -1,4 +1,4 @@
-﻿# Benchmark — Test Performance
+# Benchmark — Test Performance
 
 ## Objective
 Measure and optimize the execution time of your test suite.

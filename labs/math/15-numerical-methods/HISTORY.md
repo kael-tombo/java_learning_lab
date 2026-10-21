@@ -1,4 +1,4 @@
-﻿# History of Numerical Methods
+# History of Numerical Methods
 
 ## Origins
 

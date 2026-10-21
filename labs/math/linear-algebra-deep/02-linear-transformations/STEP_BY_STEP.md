@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Linear Transformations
+# Step-by-Step Guide: Linear Transformations
 
 ## Implementation Walkthrough
 

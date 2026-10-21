@@ -1,4 +1,4 @@
-﻿# Visual Guide to Fenwick Tree
+# Visual Guide to Fenwick Tree
 
 ## Part 1: BIT Structure for n = 8
 

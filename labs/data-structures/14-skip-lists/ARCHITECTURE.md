@@ -1,4 +1,4 @@
-﻿# Architecture of Skip Lists
+# Architecture of Skip Lists
 
 ## Integration Patterns
 

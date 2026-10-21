@@ -1,4 +1,4 @@
-﻿# Theory: Disjoint Set Union (Union-Find)
+# Theory: Disjoint Set Union (Union-Find)
 
 ## Fundamentals
 

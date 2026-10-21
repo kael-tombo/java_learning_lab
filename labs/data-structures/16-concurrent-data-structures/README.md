@@ -1,4 +1,4 @@
-﻿# Lab 16: Concurrent Data Structures
+# Lab 16: Concurrent Data Structures
 
 <div align="center">
 

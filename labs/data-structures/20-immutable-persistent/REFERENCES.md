@@ -1,4 +1,4 @@
-﻿# References
+# References
 
 1. Okasaki, C. (1998). Purely Functional Data Structures. Cambridge University Press.
 2. Driscoll et al. (1989). Making Data Structures Persistent. JCSS.

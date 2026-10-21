@@ -1,4 +1,4 @@
-﻿# Refactoring: CockroachDB
+# Refactoring: CockroachDB
 
 ## Common Refactoring Patterns
 

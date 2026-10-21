@@ -1,4 +1,4 @@
-﻿# Visual Guide: Number Theory
+# Visual Guide: Number Theory
 
 ## Conceptual Diagrams
 

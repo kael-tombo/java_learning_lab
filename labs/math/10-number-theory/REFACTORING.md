@@ -1,4 +1,4 @@
-﻿# Refactoring Guide: Number Theory
+# Refactoring Guide: Number Theory
 
 ## Code Smells to Address
 

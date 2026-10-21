@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Architecture
+# JSON Serialization -- Architecture
 
 ## System Architecture
 

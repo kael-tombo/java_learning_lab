@@ -1,4 +1,4 @@
-﻿# Internals: Vector Spaces Implementation
+# Internals: Vector Spaces Implementation
 
 ## Deep Dive into Implementation Details
 

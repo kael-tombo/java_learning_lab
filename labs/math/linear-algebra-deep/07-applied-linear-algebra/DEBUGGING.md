@@ -1,4 +1,4 @@
-﻿# Debugging: Applied Linear Algebra Implementation
+# Debugging: Applied Linear Algebra Implementation
 
 ## Common Bugs
 

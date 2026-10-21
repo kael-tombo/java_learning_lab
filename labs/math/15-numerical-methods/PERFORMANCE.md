@@ -1,4 +1,4 @@
-﻿# Performance Analysis: Numerical Methods
+# Performance Analysis: Numerical Methods
 
 ## Algorithmic Complexity
 

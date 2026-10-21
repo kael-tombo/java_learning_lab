@@ -1,4 +1,4 @@
-﻿# Security: Combinatorics in Practice
+# Security: Combinatorics in Practice
 
 ## Counting Is What "Entropy" Means
 

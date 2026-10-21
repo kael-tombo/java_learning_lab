@@ -1,4 +1,4 @@
-﻿# Mental Models for Data Governance
+# Mental Models for Data Governance
 
 ## 1. The City Government
 - **Data Catalog** = City map (find anything)

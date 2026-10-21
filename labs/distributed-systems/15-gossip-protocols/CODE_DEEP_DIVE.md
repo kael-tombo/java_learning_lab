@@ -1,4 +1,4 @@
-﻿# Code Deep Dive — Gossip Protocols
+# Code Deep Dive — Gossip Protocols
 
 ## 1. GossipProtocol Interface
 

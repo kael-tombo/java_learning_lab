@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Why It Exists
+# Java Serialization -- Why It Exists
 
 ## Historical Context and Motivation
 

@@ -1,4 +1,4 @@
-﻿# Amazon Interview Guide — Oracle APEX Academy
+# Amazon Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 

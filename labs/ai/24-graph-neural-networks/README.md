@@ -1,4 +1,4 @@
-﻿# 24-24-graph-neural-networks - Graph Neural Networks
+# 24-24-graph-neural-networks - Graph Neural Networks
 
 GCN, GAT, GraphSAGE, message passing
 

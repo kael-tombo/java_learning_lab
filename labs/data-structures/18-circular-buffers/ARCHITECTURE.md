@@ -1,4 +1,4 @@
-﻿# Architecture
+# Architecture
 
 Circular buffers integrate as:
 `

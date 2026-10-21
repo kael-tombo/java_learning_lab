@@ -1,4 +1,4 @@
-﻿# Interview: Spring Cloud
+# Interview: Spring Cloud
 
 ## Common Interview Questions
 

@@ -1,4 +1,4 @@
-﻿# Step by Step: Linear Algebra Learning Path
+# Step by Step: Linear Algebra Learning Path
 
 ## Stage 1: Foundation (Week 1)
 

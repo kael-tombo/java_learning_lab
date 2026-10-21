@@ -1,4 +1,4 @@
-﻿# Visual Guide: Database Testing
+# Visual Guide: Database Testing
 
 ## Architecture Diagrams
 

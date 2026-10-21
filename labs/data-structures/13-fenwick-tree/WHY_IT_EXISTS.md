@@ -1,4 +1,4 @@
-﻿# Why Fenwick Tree Exists
+# Why Fenwick Tree Exists
 
 ## The Problem: Prefix Sums with Updates
 

@@ -1,4 +1,4 @@
-﻿# Refactoring: Database Security
+# Refactoring: Database Security
 
 ## Common Refactoring Patterns
 

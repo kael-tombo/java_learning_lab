@@ -1,4 +1,4 @@
-﻿# Why Numerical Methods Matters
+# Why Numerical Methods Matters
 
 ## Real-World Impact
 

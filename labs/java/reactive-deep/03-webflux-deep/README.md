@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive
+# WebFlux Deep Dive
 ## Overview
 @RestController vs RouterFunction, WebClient, SSE, EventLoop, connection pooling, Reactor Netty internals
 ## Learning Objectives

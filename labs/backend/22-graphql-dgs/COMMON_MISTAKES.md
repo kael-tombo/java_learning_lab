@@ -1,4 +1,4 @@
-﻿# Common Mistakes: GraphQL DGS
+# Common Mistakes: GraphQL DGS
 
 1. Not using DataLoader for related entities (N+1 problem)
 2. Exposing schema introspection in production

@@ -1,4 +1,4 @@
-﻿# Flashcards: Multi-Task Learning
+# Flashcards: Multi-Task Learning
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

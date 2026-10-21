@@ -1,4 +1,4 @@
-﻿# Internals: Information Theory Implementation Details
+# Internals: Information Theory Implementation Details
 
 ## Core Algorithms
 

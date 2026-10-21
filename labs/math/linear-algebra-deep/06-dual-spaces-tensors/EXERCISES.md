@@ -1,4 +1,4 @@
-﻿# Dual Spaces and Tensors — Exercises
+# Dual Spaces and Tensors — Exercises
 
 ## 1. Dual basis
 

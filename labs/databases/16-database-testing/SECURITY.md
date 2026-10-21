@@ -1,4 +1,4 @@
-﻿# Security: Database Testing
+# Security: Database Testing
 
 ## Security Model
 

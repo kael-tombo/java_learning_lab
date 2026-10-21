@@ -1,4 +1,4 @@
-﻿# Interview Questions: Testcontainers
+# Interview Questions: Testcontainers
 
 ## Company-Specific Focus
 

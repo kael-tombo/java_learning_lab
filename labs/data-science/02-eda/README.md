@@ -1,4 +1,4 @@
-﻿# Exploratory Data Analysis
+# Exploratory Data Analysis
 
 Welcome to the atomic mastery lab for **Exploratory Data Analysis**. This lab is part of the Data Science Academy.
 

@@ -1,4 +1,4 @@
-﻿# Why Mathematical Optimization Matters
+# Why Mathematical Optimization Matters
 
 ## Real-World Impact
 

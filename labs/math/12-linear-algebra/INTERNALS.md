@@ -1,4 +1,4 @@
-﻿# Internals: Linear Algebra Implementation Details
+# Internals: Linear Algebra Implementation Details
 
 ## Core Algorithms
 

@@ -1,4 +1,4 @@
-﻿# Meta-Learning - Real-World Project
+# Meta-Learning - Real-World Project
 
 ## Overview
 Build a production-ready Meta-Learning system.

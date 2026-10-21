@@ -1,4 +1,4 @@
-﻿# How Feature Stores Work
+# How Feature Stores Work
 
 ## Feast Feature Store
 `java

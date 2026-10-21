@@ -1,4 +1,4 @@
-﻿# Mental Models: Derivative Applications
+# Mental Models: Derivative Applications
 
 ## Conceptual Frameworks
 

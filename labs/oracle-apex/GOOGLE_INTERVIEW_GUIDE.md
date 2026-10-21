@@ -1,4 +1,4 @@
-﻿# Google Interview Guide — Oracle APEX Academy
+# Google Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 

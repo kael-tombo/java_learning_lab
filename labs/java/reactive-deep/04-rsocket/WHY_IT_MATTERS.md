@@ -1,4 +1,4 @@
-﻿# RSocket -- Why It Matters
+# RSocket -- Why It Matters
 ## Why Reactive Matters
 ### Scalability
 Reactive systems handle more concurrent users with fewer resources.

@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Common Mistakes
+# Kryo Serialization -- Common Mistakes
 
 ## Top 20 Common Mistakes
 

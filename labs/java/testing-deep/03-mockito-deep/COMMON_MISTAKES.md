@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Common Mistakes
+# Mockito Deep Dive -- Common Mistakes
 ## Top 10 Common Mistakes
 1. Tests that depend on execution order
 2. Testing implementation details instead of behavior

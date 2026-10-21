@@ -1,4 +1,4 @@
-﻿# References: Vector Spaces
+# References: Vector Spaces
 
 ## Textbooks
 1. Standard Textbook on Calculus

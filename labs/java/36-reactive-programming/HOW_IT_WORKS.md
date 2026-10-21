@@ -1,4 +1,4 @@
-﻿# How Reactive Programming Works — Step by Step
+# How Reactive Programming Works — Step by Step
 
 ## Step 1: Understanding the Basics
 

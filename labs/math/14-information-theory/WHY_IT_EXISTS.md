@@ -1,4 +1,4 @@
-﻿# Why Information Theory Exists
+# Why Information Theory Exists
 
 ## Purpose and Justification
 

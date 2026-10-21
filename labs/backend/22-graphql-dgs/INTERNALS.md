@@ -1,4 +1,4 @@
-﻿# Internals: GraphQL DGS
+# Internals: GraphQL DGS
 
 ## GraphQL-Java Execution
 1. Parse query to Document

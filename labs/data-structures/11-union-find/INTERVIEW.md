@@ -1,4 +1,4 @@
-﻿# Interview Questions: Union-Find (Disjoint Set Union)
+# Interview Questions: Union-Find (Disjoint Set Union)
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

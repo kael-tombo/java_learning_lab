@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Internal Implementation
+# JSON Serialization -- Internal Implementation
 
 ## Internal Architecture
 

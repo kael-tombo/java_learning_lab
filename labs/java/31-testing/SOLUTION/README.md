@@ -1,4 +1,4 @@
-﻿# SOLUTION — Exercise Solutions
+# SOLUTION — Exercise Solutions
 
 ## Exercise 1: StringUtils TDD
 

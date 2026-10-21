@@ -1,4 +1,4 @@
-﻿# Why Reactive Programming Exists
+# Why Reactive Programming Exists
 
 ## The Problem It Solves
 

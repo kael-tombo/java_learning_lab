@@ -1,4 +1,4 @@
-﻿# How It Works: Core Set Mechanics
+# How It Works: Core Set Mechanics
 
 ## 1. HashSet Add/Contains, Step by Step
 

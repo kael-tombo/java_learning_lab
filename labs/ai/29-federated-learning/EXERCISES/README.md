@@ -1,4 +1,4 @@
-﻿# Federated Learning - Exercises
+# Federated Learning - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

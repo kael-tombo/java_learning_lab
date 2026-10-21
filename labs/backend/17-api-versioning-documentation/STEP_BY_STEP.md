@@ -1,4 +1,4 @@
-﻿# Step by Step: API Versioning & Documentation
+# Step by Step: API Versioning & Documentation
 
 ## Step 1: Add SpringDoc Dependency
 `xml

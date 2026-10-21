@@ -1,4 +1,4 @@
-﻿# How Multi-Task Learning Works
+# How Multi-Task Learning Works
 
 ## 1. Basic Idea
 Multi-Task Learning works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

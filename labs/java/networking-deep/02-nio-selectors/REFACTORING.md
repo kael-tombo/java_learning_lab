@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Refactoring
+# NIO Selectors -- Refactoring
 ## Refactoring Strategies
 1. Replace thread-per-connection with thread pool for better resource management
 2. Replace blocking I/O with non-blocking NIO for higher concurrency

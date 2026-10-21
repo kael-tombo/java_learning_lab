@@ -1,4 +1,4 @@
-﻿# How It Works: Number Theory
+# How It Works: Number Theory
 
 ## Conceptual Overview
 

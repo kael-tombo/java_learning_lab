@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Derivative Applications
+# Step-by-Step Guide: Derivative Applications
 
 ## Implementation Walkthrough
 

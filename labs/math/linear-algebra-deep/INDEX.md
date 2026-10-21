@@ -1,4 +1,4 @@
-﻿# Linear Algebra Deep Dive
+# Linear Algebra Deep Dive
 
 ## Micro-Labs
 

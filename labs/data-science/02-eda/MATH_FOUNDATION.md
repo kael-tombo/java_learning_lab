@@ -1,4 +1,4 @@
-﻿# Exploratory Data Analysis - Mathematical Foundations
+# Exploratory Data Analysis - Mathematical Foundations
 
 ## Probability Theory
 

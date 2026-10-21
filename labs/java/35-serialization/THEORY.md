@@ -1,4 +1,4 @@
-﻿# Serialization — Theoretical Foundation
+# Serialization — Theoretical Foundation
 
 ## Core Concepts
 

@@ -1,4 +1,4 @@
-﻿# Reflection: Vector Calculus
+# Reflection: Vector Calculus
 
 ## Self-Assessment Questions
 

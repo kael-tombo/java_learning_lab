@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Reflection
+# gRPC Networking -- Reflection
 ## Guided Self-Reflection Prompts
 1. Can you explain the difference between blocking and non-blocking I/O?
 2. When would you choose thread-per-connection vs event loop architecture?

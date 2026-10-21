@@ -1,4 +1,4 @@
-﻿# Interview: Dual Spaces and Tensors
+# Interview: Dual Spaces and Tensors
 
 ## Common Interview Questions
 

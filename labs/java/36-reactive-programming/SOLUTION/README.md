@@ -1,4 +1,4 @@
-﻿# SOLUTION
+# SOLUTION
 
 This directory contains the SOLUTION component for this lab.
 

@@ -1,4 +1,4 @@
-﻿# How Apache Flink Works
+# How Apache Flink Works
 
 ## Streaming Topology
 `java

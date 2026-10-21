@@ -1,4 +1,4 @@
-﻿# Why It Exists: Linear Transformations
+# Why It Exists: Linear Transformations
 
 ## The Problem It Solves
 Before the formal development of Linear Transformations, practitioners relied on approximate methods with unknown error bounds, intuitive reasoning without rigor, and ad-hoc techniques that did not generalize across problems.

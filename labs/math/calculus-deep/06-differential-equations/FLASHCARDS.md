@@ -1,4 +1,4 @@
-﻿# Flashcards: Differential Equations
+# Flashcards: Differential Equations
 
 ## Front-Back Cards
 

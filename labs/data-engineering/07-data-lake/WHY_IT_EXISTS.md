@@ -1,4 +1,4 @@
-﻿# Why Data Lakes Exist
+# Why Data Lakes Exist
 
 ## The Problem
 Traditional data warehouses are expensive, rigid, and can't handle unstructured data. Organizations need a place to store all data types - structured, semi-structured, and unstructured - without upfront schema design.

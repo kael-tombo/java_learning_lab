@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Architecture
+# Model Evaluation — Architecture
 
 ## Components
 1. Splitter: stratified train/val/test and K-fold partitioner.

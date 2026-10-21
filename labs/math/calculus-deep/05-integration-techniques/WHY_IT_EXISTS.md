@@ -1,4 +1,4 @@
-﻿# Why It Exists: Integration Techniques
+# Why It Exists: Integration Techniques
 
 ## The Problem It Solves
 

@@ -1,4 +1,4 @@
-﻿# How It Works: Graph Algorithm Mechanics
+# How It Works: Graph Algorithm Mechanics
 
 ## 1. BFS: Queue + On-Push Marking
 

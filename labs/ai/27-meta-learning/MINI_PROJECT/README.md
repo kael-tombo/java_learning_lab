@@ -1,4 +1,4 @@
-﻿# Meta-Learning - Mini Project
+# Meta-Learning - Mini Project
 
 ## Overview
 Build a working Meta-Learning implementation from scratch.

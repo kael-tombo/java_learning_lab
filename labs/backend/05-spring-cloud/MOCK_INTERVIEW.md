@@ -1,4 +1,4 @@
-﻿# Mock Interview: Service Registry with Health Checking (Lab 05)
+# Mock Interview: Service Registry with Health Checking (Lab 05)
 
 **Role:** Senior Backend Engineer
 **Duration:** 55 minutes

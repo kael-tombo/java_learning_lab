@@ -1,4 +1,4 @@
-﻿# Quiz: Variational Autoencoders
+# Quiz: Variational Autoencoders
 
 ## Instructions
 30 questions covering Variational Autoencoders concepts. Passing score: 70%.

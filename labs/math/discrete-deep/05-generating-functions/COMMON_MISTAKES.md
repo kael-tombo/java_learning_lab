@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Generating Functions
+# Common Mistakes: Generating Functions
 
 ## 1. Using an Ordinary GF Where an Exponential GF Belongs
 

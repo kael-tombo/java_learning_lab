@@ -1,4 +1,4 @@
-﻿# Security: Vector Calculus Implementation
+# Security: Vector Calculus Implementation
 
 ## Security Considerations
 

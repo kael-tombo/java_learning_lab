@@ -1,4 +1,4 @@
-﻿# Time Ordering (Duplicate Lab) - Interview Preparation
+# Time Ordering (Duplicate Lab) - Interview Preparation
 
 > Key interview questions about time and ordering in distributed systems.
 

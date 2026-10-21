@@ -1,4 +1,4 @@
-﻿# How It Works: Mathematical Optimization
+# How It Works: Mathematical Optimization
 
 ## Conceptual Overview
 

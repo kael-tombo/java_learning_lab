@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: Spring Cloud
+# Mathematical Foundation: Spring Cloud
 
 ## 1. Circuit Breaker Probability Model
 

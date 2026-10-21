@@ -1,4 +1,4 @@
-﻿# Performance: Number Theory Algorithms
+# Performance: Number Theory Algorithms
 
 ## The Core Operations (exact complexities)
 

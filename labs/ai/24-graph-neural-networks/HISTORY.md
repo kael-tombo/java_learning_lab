@@ -1,4 +1,4 @@
-﻿# History of Graph Neural Networks
+# History of Graph Neural Networks
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

@@ -1,4 +1,4 @@
-﻿# Flashcards: Multivariable Calculus
+# Flashcards: Multivariable Calculus
 
 ## Front-Back Cards
 

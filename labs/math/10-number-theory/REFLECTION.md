@@ -1,4 +1,4 @@
-﻿# Reflection: Number Theory
+# Reflection: Number Theory
 
 ## Personal Learning Journey
 

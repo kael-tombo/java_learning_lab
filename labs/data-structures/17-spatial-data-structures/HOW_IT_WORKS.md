@@ -1,4 +1,4 @@
-﻿# How Spatial Data Structures Work
+# How Spatial Data Structures Work
 
 ## Quadtree Insertion
 1. Start at root

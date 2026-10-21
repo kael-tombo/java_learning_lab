@@ -1,4 +1,4 @@
-﻿# Theory of Gossip Protocols
+# Theory of Gossip Protocols
 
 ## 1. What are Gossip Protocols?
 

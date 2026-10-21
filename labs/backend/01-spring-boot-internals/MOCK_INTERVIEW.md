@@ -1,4 +1,4 @@
-﻿# Mock Interview: In-Memory Cache with TTL and Eviction Policies
+# Mock Interview: In-Memory Cache with TTL and Eviction Policies
 
 **Role:** Senior Backend Engineer (Staff Level)  
 **Duration:** 55 minutes  

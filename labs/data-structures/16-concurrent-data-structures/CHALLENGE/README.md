@@ -1,4 +1,4 @@
-﻿# Challenge: Lock-Free Linked List
+# Challenge: Lock-Free Linked List
 
 Implement a fully lock-free concurrent linked list supporting:
 1. Thread-safe insert, delete, search

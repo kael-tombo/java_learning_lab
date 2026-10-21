@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- How It Works
+# JSON Serialization -- How It Works
 
 ## Detailed Mechanical Explanation
 

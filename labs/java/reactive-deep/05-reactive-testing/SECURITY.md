@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- Security
+# Reactive Testing -- Security
 ## Reactive Security Considerations
 ### Input Validation
 Validate data early in reactive pipelines.

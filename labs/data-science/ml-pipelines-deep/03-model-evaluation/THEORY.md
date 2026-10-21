@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Theoretical Foundation
+# Model Evaluation — Theoretical Foundation
 
 ## Core Concept
 

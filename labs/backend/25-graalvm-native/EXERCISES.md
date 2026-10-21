@@ -1,4 +1,4 @@
-﻿# Exercises: GraalVM Native
+# Exercises: GraalVM Native
 
 ## Exercise 1: Basic Native Image
 Build a simple Spring Boot app as a native image.

@@ -1,4 +1,4 @@
-﻿# Feature Stores — Performance
+# Feature Stores — Performance
 
 ## What dominates cost
 As-of joins scan history per entity; online reads are single-key

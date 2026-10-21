@@ -1,4 +1,4 @@
-﻿# Math Foundation of LRU Cache
+# Math Foundation of LRU Cache
 
 ## Analysis
 

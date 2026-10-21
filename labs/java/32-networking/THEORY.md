@@ -1,4 +1,4 @@
-﻿# Networking — Theoretical Foundation
+# Networking — Theoretical Foundation
 
 ## Core Concepts
 

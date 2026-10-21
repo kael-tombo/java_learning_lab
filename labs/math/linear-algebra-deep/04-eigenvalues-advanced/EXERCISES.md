@@ -1,4 +1,4 @@
-﻿# Eigenvalues Advanced — Exercises
+# Eigenvalues Advanced — Exercises
 
 ## 1. Characteristic polynomial
 

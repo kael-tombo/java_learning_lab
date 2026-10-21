@@ -1,4 +1,4 @@
-﻿# Linear Transformations — Math Foundation
+# Linear Transformations — Math Foundation
 
 All values computed in exact rational arithmetic (Python `fractions`).
 

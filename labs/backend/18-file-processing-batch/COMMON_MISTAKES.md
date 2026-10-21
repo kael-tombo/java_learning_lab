@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Spring Batch
+# Common Mistakes: Spring Batch
 
 1. **Too small chunk size**: Default 1 is too small for large datasets
 2. **Not configuring skip logic**: One bad record fails entire job

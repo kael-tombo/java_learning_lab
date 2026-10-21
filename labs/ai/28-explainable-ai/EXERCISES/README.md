@@ -1,4 +1,4 @@
-﻿# Explainable AI - Exercises
+# Explainable AI - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

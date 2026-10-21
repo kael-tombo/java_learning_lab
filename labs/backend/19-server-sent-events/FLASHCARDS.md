@@ -1,4 +1,4 @@
-﻿# Flashcards: SSE
+# Flashcards: SSE
 
 Card 1: SSE Content-Type? A: text/event-stream
 Card 2: SSE direction? A: Server to client

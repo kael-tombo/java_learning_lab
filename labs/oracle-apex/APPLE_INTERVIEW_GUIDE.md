@@ -1,4 +1,4 @@
-﻿# Apple Interview Guide — Oracle APEX Academy
+# Apple Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 

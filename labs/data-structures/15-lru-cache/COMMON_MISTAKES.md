@@ -1,4 +1,4 @@
-﻿# Common Mistakes with LRU Cache
+# Common Mistakes with LRU Cache
 
 1. **Not updating map on eviction**: Node removed from list but key stays in map
 2. **Sentinel node confusion**: Treating sentinels as actual nodes

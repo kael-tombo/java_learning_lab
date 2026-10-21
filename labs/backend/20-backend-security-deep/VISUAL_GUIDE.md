@@ -1,4 +1,4 @@
-﻿# Visual Guide: Security
+# Visual Guide: Security
 
 `
 Attack → [WAF] → [Rate Limit] → [CORS] → [Auth] → [CSRF] → [Validation] → [App]

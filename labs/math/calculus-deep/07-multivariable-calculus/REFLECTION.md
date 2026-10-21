@@ -1,4 +1,4 @@
-﻿# Reflection: Multivariable Calculus
+# Reflection: Multivariable Calculus
 
 ## Self-Assessment Questions
 

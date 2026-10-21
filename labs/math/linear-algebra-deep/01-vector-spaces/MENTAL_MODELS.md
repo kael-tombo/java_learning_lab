@@ -1,4 +1,4 @@
-﻿# Mental Models: Vector Spaces
+# Mental Models: Vector Spaces
 
 ## Conceptual Frameworks
 

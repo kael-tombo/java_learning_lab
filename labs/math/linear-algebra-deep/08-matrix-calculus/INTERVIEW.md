@@ -1,4 +1,4 @@
-﻿# Interview: Matrix Calculus
+# Interview: Matrix Calculus
 
 ## Common Interview Questions
 

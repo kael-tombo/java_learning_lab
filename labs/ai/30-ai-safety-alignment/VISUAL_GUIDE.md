@@ -1,4 +1,4 @@
-﻿# Visual Guide: AI Safety and Alignment
+# Visual Guide: AI Safety and Alignment
 
 ## 1. System Architecture Diagram
 [Input Data] → [Preprocessing] → [Model Forward Pass] → [Loss Computation] → [Backward Pass] → [Parameter Update]

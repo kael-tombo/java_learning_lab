@@ -1,4 +1,4 @@
-﻿# Why Apache Spark Exists
+# Why Apache Spark Exists
 
 ## The Problem
 MapReduce (Hadoop) was too slow for iterative algorithms and interactive queries. Each job writes to disk between stages, making ML training and repeated queries extremely slow.

@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Reflection
+# Java Serialization -- Reflection
 
 ## Guided Self-Reflection Prompts
 

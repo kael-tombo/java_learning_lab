@@ -1,4 +1,4 @@
-﻿# How Concurrent Data Structures Work
+# How Concurrent Data Structures Work
 
 ## Treiber Stack (Lock-Free Stack)
 

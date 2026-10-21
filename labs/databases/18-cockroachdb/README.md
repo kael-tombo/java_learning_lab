@@ -1,4 +1,4 @@
-﻿# Lab 18: CockroachDB
+# Lab 18: CockroachDB
 
 ## Focus
 Comprehensive deep-dive into cockroachdb with Java 21+ implementations, real-world patterns, distributed systems theory, and JUnit 5 integration tests.

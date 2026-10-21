@@ -1,4 +1,4 @@
-﻿# RSocket
+# RSocket
 ## Overview
 RSocket interaction models (request/response, fire-and-forget, streaming, channel), setup payload, routing, resumability
 ## Learning Objectives

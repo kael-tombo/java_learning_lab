@@ -1,4 +1,4 @@
-﻿# JUnit 5 Fundamentals -- Architecture
+# JUnit 5 Fundamentals -- Architecture
 ## Testing Architecture
 ### Component Isolation
 Tests should isolate the component under test.

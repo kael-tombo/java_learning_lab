@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Why It Matters
+# Protocol Buffers -- Why It Matters
 
 ## Practical Importance in Real-World Development
 

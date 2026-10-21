@@ -1,4 +1,4 @@
-﻿# Exercises
+# Exercises
 
 ## Beginner
 1. Implement SpatialPoint class

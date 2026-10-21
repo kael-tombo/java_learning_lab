@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Visual Guide
+# Model Training Pipelines — Visual Guide
 
 ## The DAG
 ```

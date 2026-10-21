@@ -1,4 +1,4 @@
-﻿# References: Variational Autoencoders
+# References: Variational Autoencoders
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

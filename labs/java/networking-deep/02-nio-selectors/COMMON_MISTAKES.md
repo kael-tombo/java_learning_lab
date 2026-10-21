@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Common Mistakes
+# NIO Selectors -- Common Mistakes
 
 ## Top 15 Common Mistakes
 

@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Debugging
+# gRPC Networking -- Debugging
 
 ## Debugging Strategies
 

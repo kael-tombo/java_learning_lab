@@ -1,4 +1,4 @@
-﻿# References
+# References
 
 1. Herlihy & Shavit, The Art of Multiprocessor Programming
 2. Goetz et al., Java Concurrency in Practice

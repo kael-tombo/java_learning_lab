@@ -1,4 +1,4 @@
-﻿# Quiz
+# Quiz
 
 ## Question 1
 What is the primary benefit of good software design?

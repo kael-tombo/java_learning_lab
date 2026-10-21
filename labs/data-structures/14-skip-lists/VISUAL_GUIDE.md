@@ -1,4 +1,4 @@
-﻿# Visual Guide to Skip Lists
+# Visual Guide to Skip Lists
 
 ## Insertion of Key 4 with Level 2
 

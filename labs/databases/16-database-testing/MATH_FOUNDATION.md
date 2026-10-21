@@ -1,4 +1,4 @@
-﻿# Math Foundation: Database Testing
+# Math Foundation: Database Testing
 
 ## Mathematical Models and Formulas
 

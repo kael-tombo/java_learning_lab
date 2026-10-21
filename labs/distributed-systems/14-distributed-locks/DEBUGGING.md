@@ -1,4 +1,4 @@
-﻿# Debugging — Distributed Locks
+# Debugging — Distributed Locks
 
 ## Common Issues
 1. **Race conditions**: Ensure thread-safe access to shared state

@@ -1,4 +1,4 @@
-﻿# Why Data Warehousing Exists
+# Why Data Warehousing Exists
 
 ## The Problem
 Transactional databases are optimized for writes, not analytical queries. Running complex aggregations on OLTP systems degrades performance for both operational and analytical users.

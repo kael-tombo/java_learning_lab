@@ -1,4 +1,4 @@
-﻿# Serialization — Internal Mechanics
+# Serialization — Internal Mechanics
 
 ## How Java Serialization Works Internally
 

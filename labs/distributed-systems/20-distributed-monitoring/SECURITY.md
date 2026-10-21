@@ -1,4 +1,4 @@
-﻿# SECURITY.md - Distributed Monitoring
+# SECURITY.md - Distributed Monitoring
 
 ## Overview
 This document covers Distributed Monitoring concepts related to SECURITY.

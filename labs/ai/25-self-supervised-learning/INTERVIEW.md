@@ -1,4 +1,4 @@
-﻿# Interview Questions: Self-Supervised Learning
+# Interview Questions: Self-Supervised Learning
 
 ## Conceptual Questions
 1. What is Self-Supervised Learning and how does it differ from traditional programming?

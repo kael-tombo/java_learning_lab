@@ -1,4 +1,4 @@
-﻿# Theory: Immutable & Persistent Data Structures
+# Theory: Immutable & Persistent Data Structures
 
 ## Fundamentals
 

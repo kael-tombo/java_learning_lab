@@ -1,4 +1,4 @@
-﻿# Reinforcement Learning - Exercises
+# Reinforcement Learning - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

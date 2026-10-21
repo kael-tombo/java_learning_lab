@@ -1,4 +1,4 @@
-﻿# Data Quality Quiz
+# Data Quality Quiz
 
 ## Question 1
 What are the six dimensions of data quality?

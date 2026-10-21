@@ -1,4 +1,4 @@
-﻿# Data Warehousing Interview Questions
+# Data Warehousing Interview Questions
 
 ## Beginner
 **Q**: Explain the difference between OLTP and OLAP.

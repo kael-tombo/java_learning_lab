@@ -1,4 +1,4 @@
-﻿# Mental Models — Distributed ID Generation
+# Mental Models — Distributed ID Generation
 
 1. **Factory Assembly Line**: Parts (bits) assembled into IDs
 2. **License Plate System**: Unique identifiers per region (worker)

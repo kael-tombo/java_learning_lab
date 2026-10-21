@@ -1,4 +1,4 @@
-﻿# Mock Interview: URL Shortener — System Design (Lab 02)
+# Mock Interview: URL Shortener — System Design (Lab 02)
 
 **Role:** Senior Backend Engineer  
 **Duration:** 55 minutes  

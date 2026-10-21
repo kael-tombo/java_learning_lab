@@ -1,4 +1,4 @@
-﻿# How CDC Works
+# How CDC Works
 
 ## Debezium MySQL Connector
 `java

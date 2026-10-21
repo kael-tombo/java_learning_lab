@@ -1,4 +1,4 @@
-﻿# Tests: Skip Lists
+# Tests: Skip Lists
 
 ## Test Files
 - SkipListTest.java — JUnit 5 test suite

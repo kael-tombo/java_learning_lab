@@ -1,4 +1,4 @@
-﻿# Why Fenwick Tree Matters
+# Why Fenwick Tree Matters
 
 ## Practical Significance
 

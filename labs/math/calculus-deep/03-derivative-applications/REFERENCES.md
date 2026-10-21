@@ -1,4 +1,4 @@
-﻿# References: Derivative Applications
+# References: Derivative Applications
 
 ## Textbooks
 

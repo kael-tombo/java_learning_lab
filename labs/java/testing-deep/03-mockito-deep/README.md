@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive
+# Mockito Deep Dive
 ## Overview
 @Mock/@InjectMocks, when/thenReturn, verify, ArgumentCaptor, @Spy, @Answer, BDDMockito, static mocking (MockedStatic)
 ## Learning Objectives

@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Self-Supervised Learning
+# Mathematical Foundations of Self-Supervised Learning
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying Self-Supervised Learning. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

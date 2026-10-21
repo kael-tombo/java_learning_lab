@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Debugging
+# Kryo Serialization -- Debugging
 
 ## Debugging Strategies
 

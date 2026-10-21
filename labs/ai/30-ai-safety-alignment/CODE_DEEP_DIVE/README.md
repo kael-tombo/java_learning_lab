@@ -1,4 +1,4 @@
-﻿# AI Safety and Alignment - Code Deep Dive
+# AI Safety and Alignment - Code Deep Dive
 
 ## Overview
 Detailed examination of the AI Safety and Alignment Java implementation.

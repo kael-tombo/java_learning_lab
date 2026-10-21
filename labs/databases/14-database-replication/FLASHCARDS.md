@@ -1,4 +1,4 @@
-﻿# Flashcards: Database Replication
+# Flashcards: Database Replication
 
 ## Q: What is database replication?
 **A:** Strategy that distributes data across multiple independent database instances for scalability.

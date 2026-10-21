@@ -1,4 +1,4 @@
-﻿# ETL Flashcards
+# ETL Flashcards
 
 ## Card 1
 **Front**: What is ETL?

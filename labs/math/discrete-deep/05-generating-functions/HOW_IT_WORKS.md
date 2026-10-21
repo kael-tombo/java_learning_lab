@@ -1,4 +1,4 @@
-﻿# How It Works: Solving a Recurrence With Its Generating Function
+# How It Works: Solving a Recurrence With Its Generating Function
 
 Worked problem: aₙ = aₙ₋₁ + 2aₙ₋₂ for n ≥ 2, with a₀ = 1, a₁ = 3. Find a closed form for aₙ.
 

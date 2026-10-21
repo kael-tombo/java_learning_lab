@@ -1,4 +1,4 @@
-﻿# Spring Boot vs Jakarta EE: Comprehensive Comparison Guide
+# Spring Boot vs Jakarta EE: Comprehensive Comparison Guide
 
 This guide is designed to help you answer the most common interview question: "Jakarta EE vs Spring — which would you choose and why?"
 

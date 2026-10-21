@@ -1,4 +1,4 @@
-﻿# Data Lake References
+# Data Lake References
 
 ## Books
 - "The Enterprise Big Data Lake" by Alex Gorelik

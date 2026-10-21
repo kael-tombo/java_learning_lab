@@ -1,4 +1,4 @@
-﻿# History of Reinforcement Learning
+# History of Reinforcement Learning
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

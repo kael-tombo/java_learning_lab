@@ -1,4 +1,4 @@
-﻿# Math Foundation of Fenwick Tree
+# Math Foundation of Fenwick Tree
 
 ## Binary Index Mathematics
 

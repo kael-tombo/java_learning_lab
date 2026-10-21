@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Exercises
+# XML Serialization -- Exercises
 
 ## Beginner Exercises
 

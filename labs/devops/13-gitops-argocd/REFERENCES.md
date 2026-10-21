@@ -1,4 +1,4 @@
-﻿# References & Further Reading
+# References & Further Reading
 
 ## Official Documentation
 - ArgoCD Documentation: https://argo-cd.readthedocs.io/

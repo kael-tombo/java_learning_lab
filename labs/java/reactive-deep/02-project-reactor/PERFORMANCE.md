@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Performance
+# Project Reactor -- Performance
 ## Reactive Performance
 ### Non-Blocking Advantage
 Fewer threads, less context switching, better resource utilization.

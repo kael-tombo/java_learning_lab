@@ -1,4 +1,4 @@
-﻿# Kafka Streams References
+# Kafka Streams References
 
 ## Books
 - "Kafka: The Definitive Guide" by Neha Narkhede, Gwen Shapira, Todd Palino

@@ -1,4 +1,4 @@
-﻿# Variational Autoencoders - Real-World Project
+# Variational Autoencoders - Real-World Project
 
 ## Overview
 Build a production-ready Variational Autoencoders system.

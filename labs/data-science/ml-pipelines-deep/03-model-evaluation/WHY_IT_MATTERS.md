@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Why It Matters
+# Model Evaluation — Why It Matters
 
 Promotion, rollback, and launch decisions all rest on evaluation
 numbers, so the numbers must mean what they claim. A team that leads

@@ -1,4 +1,4 @@
-﻿# Best Practices — Math Foundation
+# Best Practices — Math Foundation
 
 ## Mathematical Concepts
 

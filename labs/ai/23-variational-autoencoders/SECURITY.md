@@ -1,4 +1,4 @@
-﻿# Security: Variational Autoencoders
+# Security: Variational Autoencoders
 
 ## 1. Threat Overview
 Security concerns in Variational Autoencoders include adversarial attacks, data poisoning, model theft, and privacy violations. Understanding these threats is essential for building robust systems.

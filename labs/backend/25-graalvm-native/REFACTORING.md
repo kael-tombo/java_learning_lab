@@ -1,4 +1,4 @@
-﻿# Refactoring: GraalVM Native
+# Refactoring: GraalVM Native
 
 Before: Dynamic class loading with Class.forName
 After: Explicit switch/Map-based factory

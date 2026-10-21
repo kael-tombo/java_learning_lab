@@ -1,4 +1,4 @@
-﻿# Reflection: Federated Learning
+# Reflection: Federated Learning
 
 ## Self-Assessment
 - Can I explain Federated Learning to a non-technical person?

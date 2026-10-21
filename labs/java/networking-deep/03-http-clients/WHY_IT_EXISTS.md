@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Why It Exists
+# HTTP Clients (Java 11+) -- Why It Exists
 ## Historical Context and Motivation
 
 ### The Problem

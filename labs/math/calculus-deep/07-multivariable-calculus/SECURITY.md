@@ -1,4 +1,4 @@
-﻿# Security: Multivariable Calculus Implementation
+# Security: Multivariable Calculus Implementation
 
 ## Security Considerations
 

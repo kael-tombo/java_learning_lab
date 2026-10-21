@@ -1,4 +1,4 @@
-﻿# Protocol Buffers — Mathematical Foundation
+# Protocol Buffers — Mathematical Foundation
 
 ## 1. Varint Encoding
 

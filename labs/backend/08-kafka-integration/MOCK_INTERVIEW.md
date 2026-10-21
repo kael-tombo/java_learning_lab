@@ -1,4 +1,4 @@
-﻿# Mock Interview: Distributed Log / Event Bus with Kafka Semantics (Lab 08)
+# Mock Interview: Distributed Log / Event Bus with Kafka Semantics (Lab 08)
 
 **Role:** Senior Backend Engineer
 **Duration:** 55 minutes

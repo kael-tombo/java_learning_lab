@@ -1,4 +1,4 @@
-﻿# Interview Questions: Data Pipelines
+# Interview Questions: Data Pipelines
 
 ## Beginner
 **Q**: Explain what a data pipeline is in simple terms.

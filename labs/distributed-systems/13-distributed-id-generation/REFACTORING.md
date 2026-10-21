@@ -1,4 +1,4 @@
-﻿# Refactoring — Distributed ID Generation
+# Refactoring — Distributed ID Generation
 
 1. Extract IdGenerator interface for pluggable implementations
 2. Separate timestamp source from generator logic

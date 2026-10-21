@@ -1,4 +1,4 @@
-﻿# Performance: GraphQL DGS
+# Performance: GraphQL DGS
 
 - DataLoaders reduce N+1 queries significantly
 - Use pagination for list queries

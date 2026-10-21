@@ -1,4 +1,4 @@
-﻿# AI Safety and Alignment - Mathematical Foundations
+# AI Safety and Alignment - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding AI Safety and Alignment.

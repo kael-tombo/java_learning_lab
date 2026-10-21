@@ -1,4 +1,4 @@
-﻿# Best Practices — Theoretical Foundation
+# Best Practices — Theoretical Foundation
 
 ## Core Concepts
 

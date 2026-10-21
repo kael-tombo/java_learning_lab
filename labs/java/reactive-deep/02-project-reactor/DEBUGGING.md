@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Debugging
+# Project Reactor -- Debugging
 ## Debugging Reactive Code
 ### Hooks.onOperatorDebug()
 Enables operator stack traces for debugging.

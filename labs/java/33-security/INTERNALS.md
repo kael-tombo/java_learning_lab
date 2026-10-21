@@ -1,4 +1,4 @@
-﻿
+
 # Security — Internal Mechanics
 
 ## How the JVM Implements Security

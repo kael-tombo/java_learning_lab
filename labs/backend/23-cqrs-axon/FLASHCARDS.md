@@ -1,4 +1,4 @@
-﻿# Flashcards: CQRS Axon
+# Flashcards: CQRS Axon
 
 Card 1: Aggregate annotation? A: @Aggregate
 Card 2: Command bus purpose? A: Routes write operations

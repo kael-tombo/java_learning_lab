@@ -1,4 +1,4 @@
-﻿# Reflection: Vector Spaces
+# Reflection: Vector Spaces
 
 ## Self-Assessment Questions
 

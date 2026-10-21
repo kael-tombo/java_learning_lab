@@ -1,4 +1,4 @@
-﻿# Feature Stores — Security
+# Feature Stores — Security
 
 ## Threats specific to feature layers
 - Poisoned history: a writer pushes crafted values that later train

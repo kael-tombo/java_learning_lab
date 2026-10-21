@@ -1,4 +1,4 @@
-﻿# Common Mistakes: GraalVM Native
+# Common Mistakes: GraalVM Native
 
 1. Missing reflection configuration (Runtime reflection errors)
 2. Dynamic class loading (Class.forName)

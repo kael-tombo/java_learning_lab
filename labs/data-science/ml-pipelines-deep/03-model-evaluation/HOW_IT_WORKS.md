@@ -1,4 +1,4 @@
-﻿# Model Evaluation — How It Works
+# Model Evaluation — How It Works
 
 ## 1. Fix the splits before touching models
 Partition data into train/validation/test with stratification, and lock

@@ -1,4 +1,4 @@
-﻿# Mental Models: Integration Techniques
+# Mental Models: Integration Techniques
 
 ## Conceptual Frameworks
 

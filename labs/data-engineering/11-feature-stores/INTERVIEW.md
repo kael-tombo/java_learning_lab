@@ -1,4 +1,4 @@
-﻿# Feature Store Interview Questions
+# Feature Store Interview Questions
 
 ## Beginner
 **Q**: What problem does a feature store solve?

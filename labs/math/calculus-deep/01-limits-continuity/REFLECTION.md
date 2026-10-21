@@ -1,4 +1,4 @@
-﻿# Reflection: Limits and Continuity
+# Reflection: Limits and Continuity
 
 ## Self-Assessment Questions
 

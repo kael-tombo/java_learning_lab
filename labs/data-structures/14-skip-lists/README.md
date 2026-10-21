@@ -1,4 +1,4 @@
-﻿# Lab 14: Skip Lists
+# Lab 14: Skip Lists
 
 <div align="center">
 

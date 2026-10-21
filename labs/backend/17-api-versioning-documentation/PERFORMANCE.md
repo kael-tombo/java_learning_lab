@@ -1,4 +1,4 @@
-﻿# Performance: API Versioning & Documentation
+# Performance: API Versioning & Documentation
 
 ## 1. SpringDoc Performance
 

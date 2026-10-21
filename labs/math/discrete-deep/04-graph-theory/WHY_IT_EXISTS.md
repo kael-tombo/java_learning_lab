@@ -1,4 +1,4 @@
-﻿# Why Graph Theory Exists
+# Why Graph Theory Exists
 
 ## It Answers "What If Position Doesn't Matter?"
 

@@ -1,4 +1,4 @@
-﻿# Interview Questions: Serialization
+# Interview Questions: Serialization
 
 ## Company-Specific Focus
 

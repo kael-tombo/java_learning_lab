@@ -1,4 +1,4 @@
-﻿# Architecture of Union-Find in Context
+# Architecture of Union-Find in Context
 
 ## Integration Patterns
 

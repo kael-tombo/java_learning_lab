@@ -1,4 +1,4 @@
-﻿# Quiz: CQRS Axon
+# Quiz: CQRS Axon
 
 Q1: What annotation marks an Axon aggregate? A: @Aggregate
 Q2: What is event sourcing? A: Storing events instead of current state.

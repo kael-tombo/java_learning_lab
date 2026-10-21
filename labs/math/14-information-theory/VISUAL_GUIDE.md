@@ -1,4 +1,4 @@
-﻿# Visual Guide: Information Theory
+# Visual Guide: Information Theory
 
 ## Conceptual Diagrams
 

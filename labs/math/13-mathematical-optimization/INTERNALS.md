@@ -1,4 +1,4 @@
-﻿# Internals: Mathematical Optimization Implementation Details
+# Internals: Mathematical Optimization Implementation Details
 
 ## Core Algorithms
 

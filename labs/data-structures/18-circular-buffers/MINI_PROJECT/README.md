@@ -1,4 +1,4 @@
-﻿# Mini Project: Real-Time Data Logger
+# Mini Project: Real-Time Data Logger
 
 Build a real-time data logger using circular buffer.
 - Append timestamped log entries

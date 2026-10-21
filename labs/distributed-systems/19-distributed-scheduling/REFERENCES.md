@@ -1,4 +1,4 @@
-﻿# References — Distributed Scheduling
+# References — Distributed Scheduling
 
 ## Academic Papers
 1. Key papers in distributed systems and related areas

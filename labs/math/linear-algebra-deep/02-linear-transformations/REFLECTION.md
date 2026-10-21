@@ -1,4 +1,4 @@
-﻿# Reflection: Linear Transformations
+# Reflection: Linear Transformations
 
 ## Self-Assessment Questions
 

@@ -1,4 +1,4 @@
-﻿# History of Explainable AI
+# History of Explainable AI
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

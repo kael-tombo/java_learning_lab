@@ -1,4 +1,4 @@
-﻿# References: Integral Fundamentals
+# References: Integral Fundamentals
 
 ## Textbooks
 

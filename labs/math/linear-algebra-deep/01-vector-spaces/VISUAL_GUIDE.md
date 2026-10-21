@@ -1,4 +1,4 @@
-﻿# Visual Guide: Vector Spaces
+# Visual Guide: Vector Spaces
 
 ## Conceptual Diagrams
 

@@ -1,4 +1,4 @@
-﻿# Common Mistakes in ArgoCD & GitOps
+# Common Mistakes in ArgoCD & GitOps
 
 ## Mistake 1: Storing Secrets in Git
 Storing plaintext secrets in Git repositories defeats the purpose of GitOps security. Always use Sealed Secrets, External Secrets Operator, SOPS, or Vault integration for sensitive data.

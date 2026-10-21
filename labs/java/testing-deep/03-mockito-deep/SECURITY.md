@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Security Testing
+# Mockito Deep Dive -- Security Testing
 ## Security Testing Considerations
 ### Test Security Boundaries
 Verify authentication and authorization in integration tests.

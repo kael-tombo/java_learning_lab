@@ -1,4 +1,4 @@
-﻿# Security Considerations
+# Security Considerations
 
 1. Validate capacity > 0
 2. Protect against integer overflow in size

@@ -1,4 +1,4 @@
-﻿# Security: Matrix Calculus Implementation
+# Security: Matrix Calculus Implementation
 
 ## Security Considerations
 

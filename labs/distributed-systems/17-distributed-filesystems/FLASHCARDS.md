@@ -1,4 +1,4 @@
-﻿# Flashcards — Distributed Filesystems
+# Flashcards — Distributed Filesystems
 
 1. Q: What is the primary purpose? A: Provide distributed-filesystems at scale
 2. Q: Key components? A: Client, coordinator, workers, storage

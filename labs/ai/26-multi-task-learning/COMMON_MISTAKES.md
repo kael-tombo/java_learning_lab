@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Multi-Task Learning
+# Common Mistakes in Multi-Task Learning
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

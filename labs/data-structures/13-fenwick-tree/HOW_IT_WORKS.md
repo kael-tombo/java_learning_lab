@@ -1,4 +1,4 @@
-﻿# How Fenwick Tree Works
+# How Fenwick Tree Works
 
 ## Core Mechanism
 

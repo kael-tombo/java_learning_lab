@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Architecture
+# HTTP Clients (Java 11+) -- Architecture
 ## System Architecture
 
 ### High-Level Design

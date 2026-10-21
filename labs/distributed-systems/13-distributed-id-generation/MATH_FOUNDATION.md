@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations — ID Generation
+# Mathematical Foundations — ID Generation
 
 ## 1. Collision Probability (Birthday Problem)
 

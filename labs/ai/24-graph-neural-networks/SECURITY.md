@@ -1,4 +1,4 @@
-﻿# Security: Graph Neural Networks
+# Security: Graph Neural Networks
 
 ## 1. Threat Overview
 Security concerns in Graph Neural Networks include adversarial attacks, data poisoning, model theft, and privacy violations. Understanding these threats is essential for building robust systems.

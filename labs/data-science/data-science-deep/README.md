@@ -1,4 +1,4 @@
-﻿# Data Science Deep Dive
+# Data Science Deep Dive
 
 Welcome to the atomic mastery lab for **Data Science Deep Dive**. This lab is part of the Data Science Academy.
 

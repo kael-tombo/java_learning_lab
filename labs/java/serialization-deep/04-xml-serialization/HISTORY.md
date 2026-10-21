@@ -1,4 +1,4 @@
-﻿# XML Serialization -- History
+# XML Serialization -- History
 
 ## Historical Evolution
 

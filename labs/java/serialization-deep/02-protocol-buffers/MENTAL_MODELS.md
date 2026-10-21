@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Mental Models
+# Protocol Buffers -- Mental Models
 
 ## Key Mental Models for Understanding Protocol Buffers
 

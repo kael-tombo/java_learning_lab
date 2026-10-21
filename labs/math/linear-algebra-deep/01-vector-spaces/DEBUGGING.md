@@ -1,4 +1,4 @@
-﻿# Debugging: Vector Spaces Implementation
+# Debugging: Vector Spaces Implementation
 
 ## Common Bugs
 

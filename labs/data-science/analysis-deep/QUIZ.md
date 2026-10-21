@@ -1,4 +1,4 @@
-﻿# Analysis Deep Dive - Quiz
+# Analysis Deep Dive - Quiz
 
 ## Question 1
 What is the primary goal of 

@@ -1,4 +1,4 @@
-﻿# Architecture of LRU Cache
+# Architecture of LRU Cache
 
 ## Integration Patterns
 

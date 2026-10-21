@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Multi-Tenancy
+# Common Mistakes: Multi-Tenancy
 
 1. Tenant ID not propagated to async operations
 2. Forgetting to clear ThreadLocal (memory leak)

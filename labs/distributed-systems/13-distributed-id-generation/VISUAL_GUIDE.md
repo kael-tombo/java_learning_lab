@@ -1,4 +1,4 @@
-﻿# Visual Guide — Distributed ID Generation
+# Visual Guide — Distributed ID Generation
 
 ## Snowflake Bit Layout
 `

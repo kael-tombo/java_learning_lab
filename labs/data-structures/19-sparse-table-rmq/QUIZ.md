@@ -1,4 +1,4 @@
-﻿# Quiz
+# Quiz
 
 1. What is the time complexity of sparse table queries? O(1)
 2. What is the space complexity? O(n log n)

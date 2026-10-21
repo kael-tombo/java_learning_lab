@@ -1,4 +1,4 @@
-﻿# How Segment Trees Work
+# How Segment Trees Work
 
 ## Core Mechanics
 

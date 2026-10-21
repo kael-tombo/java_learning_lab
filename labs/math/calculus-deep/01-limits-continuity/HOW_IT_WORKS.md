@@ -1,4 +1,4 @@
-﻿# How It Works: Limits and Continuity
+# How It Works: Limits and Continuity
 
 ## High-Level Explanation
 

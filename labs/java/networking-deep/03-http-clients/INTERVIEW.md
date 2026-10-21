@@ -1,4 +1,4 @@
-﻿# Interview Questions: HTTP Clients
+# Interview Questions: HTTP Clients
 
 ## Company-Specific Focus
 

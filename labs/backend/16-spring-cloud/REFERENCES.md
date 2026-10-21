@@ -1,4 +1,4 @@
-﻿# References: Spring Cloud
+# References: Spring Cloud
 
 ## Official Documentation
 - [Spring Cloud Reference](https://docs.spring.io/spring-cloud/docs/current/reference/html/)

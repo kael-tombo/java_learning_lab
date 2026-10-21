@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Generative Adversarial Networks
+# Step-by-Step: Generative Adversarial Networks
 
 ## Step 1: Understand the Problem
 Define inputs, outputs, constraints, and success metrics.

@@ -1,4 +1,4 @@
-﻿# Apache Spark Interview Questions
+# Apache Spark Interview Questions
 
 ## Beginner
 **Q**: Explain the difference between transformations and actions in Spark.

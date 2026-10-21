@@ -1,4 +1,4 @@
-﻿# Flashcards: Derivative Applications
+# Flashcards: Derivative Applications
 
 ## Front-Back Cards
 

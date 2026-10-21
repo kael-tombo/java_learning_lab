@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Reflection
+# Kryo Serialization -- Reflection
 
 ## Guided Self-Reflection Prompts
 

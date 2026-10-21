@@ -1,4 +1,4 @@
-﻿# Refactoring: Database Migration Strategies
+# Refactoring: Database Migration Strategies
 
 ## Common Refactoring Patterns
 

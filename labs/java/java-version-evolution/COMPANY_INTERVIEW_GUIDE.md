@@ -1,4 +1,4 @@
-﻿# Company Interview Guide — Java Version Knowledge
+# Company Interview Guide — Java Version Knowledge
 
 > How different companies test Java version knowledge, what they care about, and how to prepare.
 

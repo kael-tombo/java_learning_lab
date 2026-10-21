@@ -1,4 +1,4 @@
-﻿# Dual Spaces and Tensors
+# Dual Spaces and Tensors
 
 Micro-lab on dual bases computed explicitly, annihilators, Kronecker
 products with the mixed-product identity, and rank-one matrices.

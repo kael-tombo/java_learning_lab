@@ -1,4 +1,4 @@
-﻿# Visual Guide — Distributed Caching
+# Visual Guide — Distributed Caching
 
 ## System Architecture
 `

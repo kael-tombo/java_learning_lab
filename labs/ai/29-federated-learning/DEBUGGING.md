@@ -1,4 +1,4 @@
-﻿# Debugging: Federated Learning
+# Debugging: Federated Learning
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

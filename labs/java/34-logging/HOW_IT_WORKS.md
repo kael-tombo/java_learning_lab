@@ -1,4 +1,4 @@
-﻿# How Logging Works — Step by Step
+# How Logging Works — Step by Step
 
 ## Step 1: Understanding the Basics
 

@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Why It Exists
+# Reactive Streams -- Why It Exists
 ## Motivation
 ### The Problem
 Traditional blocking I/O does not scale efficiently.

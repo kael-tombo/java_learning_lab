@@ -1,4 +1,4 @@
-﻿# How It Works: Matrix Calculus
+# How It Works: Matrix Calculus
 
 ## High-Level Explanation
 

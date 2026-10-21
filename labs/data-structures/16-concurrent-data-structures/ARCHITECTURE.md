@@ -1,4 +1,4 @@
-﻿# Architecture of Concurrent Data Structures
+# Architecture of Concurrent Data Structures
 
 ## Design Patterns
 

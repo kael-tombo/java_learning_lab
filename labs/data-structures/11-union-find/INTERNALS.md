@@ -1,4 +1,4 @@
-﻿# Internals of Union-Find
+# Internals of Union-Find
 
 ## Memory Layout
 

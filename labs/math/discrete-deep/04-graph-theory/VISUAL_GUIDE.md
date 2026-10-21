@@ -1,4 +1,4 @@
-﻿# Visual Guide: Graph Theory
+# Visual Guide: Graph Theory
 
 ## 1. The Königsberg Bridge Graph (Euler, 1736)
 

@@ -1,4 +1,4 @@
-﻿# Testing — Evolution Across Versions
+# Testing — Evolution Across Versions
 
 ## JUnit Timeline
 

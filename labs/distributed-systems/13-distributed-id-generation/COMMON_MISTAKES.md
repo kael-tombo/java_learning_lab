@@ -1,4 +1,4 @@
-﻿# Common Mistakes — Distributed ID Generation
+# Common Mistakes — Distributed ID Generation
 
 1. Ignoring clock rollback (assumes monotonic clock)
 2. Insufficient sequence bits for peak throughput

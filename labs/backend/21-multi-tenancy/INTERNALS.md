@@ -1,4 +1,4 @@
-﻿# Internals: Multi-Tenancy
+# Internals: Multi-Tenancy
 
 ## Hibernate MultiTenancyStrategy
 Three strategies:

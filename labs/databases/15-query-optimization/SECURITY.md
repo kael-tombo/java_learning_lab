@@ -1,4 +1,4 @@
-﻿# Security: Query Optimization
+# Security: Query Optimization
 
 ## Security Model
 

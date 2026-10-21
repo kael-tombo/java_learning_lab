@@ -1,4 +1,4 @@
-﻿# Mental Models: Eigenvalues Advanced
+# Mental Models: Eigenvalues Advanced
 
 ## Conceptual Frameworks
 

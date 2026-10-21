@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Implementing Lock-Free Stack
+# Step-by-Step: Implementing Lock-Free Stack
 
 1. Define Node<T> with next AtomicReference
 2. Create top AtomicReference<Node<T>>

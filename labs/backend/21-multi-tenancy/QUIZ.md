@@ -1,4 +1,4 @@
-﻿# Quiz: Multi-Tenancy
+# Quiz: Multi-Tenancy
 
 Q1: Which pattern has highest isolation? A: Database-per-tenant.
 Q2: Which pattern shares the same tables? A: Discriminator column.

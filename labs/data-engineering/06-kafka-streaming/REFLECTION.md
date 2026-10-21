@@ -1,4 +1,4 @@
-﻿# Kafka Streams Reflection
+# Kafka Streams Reflection
 
 ## Key Learnings
 - Kafka Streams provides the tightest Kafka integration for stream processing

@@ -1,4 +1,4 @@
-﻿# Interview: Eigenvalues Advanced
+# Interview: Eigenvalues Advanced
 
 ## Common Interview Questions
 

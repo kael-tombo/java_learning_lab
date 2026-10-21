@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks - Code Deep Dive
+# Graph Neural Networks - Code Deep Dive
 
 ## Overview
 Detailed examination of the Graph Neural Networks Java implementation.

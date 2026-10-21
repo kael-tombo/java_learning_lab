@@ -1,4 +1,4 @@
-﻿# Math Foundations — Gossip Protocols
+# Math Foundations — Gossip Protocols
 
 ## 1. Epidemic Spreading Model
 

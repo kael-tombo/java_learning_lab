@@ -1,4 +1,4 @@
-﻿# Flashcards: Variational Autoencoders
+# Flashcards: Variational Autoencoders
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

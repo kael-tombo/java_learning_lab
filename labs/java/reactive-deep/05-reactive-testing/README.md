@@ -1,4 +1,4 @@
-﻿# Reactive Testing
+# Reactive Testing
 ## Overview
 StepVerifier, virtual time (StepVerifier.withVirtualTime), TestPublisher, OperatorDebug, Reactor DebugAgent
 ## Learning Objectives

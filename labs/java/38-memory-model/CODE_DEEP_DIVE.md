@@ -1,4 +1,4 @@
-﻿# Memory Model — Visual Guide
+# Memory Model — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

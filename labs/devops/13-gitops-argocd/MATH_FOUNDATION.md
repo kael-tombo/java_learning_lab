@@ -1,4 +1,4 @@
-﻿# Math Foundation for GitOps & ArgoCD
+# Math Foundation for GitOps & ArgoCD
 
 ## Reconciliation Loop Mathematics
 

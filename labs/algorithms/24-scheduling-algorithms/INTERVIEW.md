@@ -1,4 +1,4 @@
-﻿# Interview Questions: Scheduling Algorithms
+# Interview Questions: Scheduling Algorithms
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

@@ -1,4 +1,4 @@
-﻿# References: Number Theory
+# References: Number Theory
 
 ## Primary Sources
 

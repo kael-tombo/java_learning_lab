@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: SSE
+# Mathematical Foundation: SSE
 
 ## Connection Capacity
 Max concurrent connections = thread_pool_size (MVC) or event_loop_size * N (WebFlux)

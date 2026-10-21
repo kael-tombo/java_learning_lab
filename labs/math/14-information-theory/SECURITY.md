@@ -1,4 +1,4 @@
-﻿# Security Considerations: Information Theory
+# Security Considerations: Information Theory
 
 ## Security Principles
 

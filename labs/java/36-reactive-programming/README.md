@@ -1,4 +1,4 @@
-﻿# Lab 36: Reactive Programming — Project Reactor
+# Lab 36: Reactive Programming — Project Reactor
 
 ## Overview
 Deep dive into Reactive Programming in Java. This lab provides comprehensive coverage of Project Reactor with practical examples, theory, and exercises.

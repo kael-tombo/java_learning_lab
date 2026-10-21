@@ -1,4 +1,4 @@
-﻿# Mental Models for Flink
+# Mental Models for Flink
 
 ## 1. The Factory Conveyor Belt
 - **Source** = Products enter belt

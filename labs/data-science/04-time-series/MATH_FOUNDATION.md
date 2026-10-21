@@ -1,4 +1,4 @@
-﻿# Time Series Analysis - Mathematical Foundations
+# Time Series Analysis - Mathematical Foundations
 
 ## Probability Theory
 

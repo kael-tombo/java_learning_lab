@@ -1,4 +1,4 @@
-﻿# Why Logging Matters
+# Why Logging Matters
 
 ## Real-World Impact
 

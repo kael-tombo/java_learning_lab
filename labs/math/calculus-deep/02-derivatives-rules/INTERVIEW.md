@@ -1,4 +1,4 @@
-﻿# Interview: Derivatives and Differentiation Rules
+# Interview: Derivatives and Differentiation Rules
 
 ## Common Interview Questions
 

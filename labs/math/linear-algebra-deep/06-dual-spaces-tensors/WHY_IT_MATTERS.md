@@ -1,4 +1,4 @@
-﻿# Why It Matters: Dual Spaces and Tensors
+# Why It Matters: Dual Spaces and Tensors
 
 ## Real-World Importance
 

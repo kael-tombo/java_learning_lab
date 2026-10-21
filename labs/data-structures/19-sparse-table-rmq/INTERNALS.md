@@ -1,4 +1,4 @@
-﻿# Internals of Sparse Tables
+# Internals of Sparse Tables
 
 ## Memory Layout
 

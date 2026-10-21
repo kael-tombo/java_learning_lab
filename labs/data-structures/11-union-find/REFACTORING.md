@@ -1,4 +1,4 @@
-﻿# Refactoring Union-Find
+# Refactoring Union-Find
 
 ## Refactoring Opportunities
 

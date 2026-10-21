@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Why It Exists
+# Protocol Buffers -- Why It Exists
 
 ## Historical Context and Motivation
 

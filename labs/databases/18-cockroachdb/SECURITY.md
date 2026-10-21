@@ -1,4 +1,4 @@
-﻿# Security: CockroachDB
+# Security: CockroachDB
 
 ## Security Model
 

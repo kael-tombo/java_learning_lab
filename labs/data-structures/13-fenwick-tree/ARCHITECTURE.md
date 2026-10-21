@@ -1,4 +1,4 @@
-﻿# Architecture of Fenwick Tree in Applications
+# Architecture of Fenwick Tree in Applications
 
 ## Integration Patterns
 

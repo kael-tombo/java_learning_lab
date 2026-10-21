@@ -1,4 +1,4 @@
-﻿# Challenge: 2D Sparse Table
+# Challenge: 2D Sparse Table
 
 Implement a 2D sparse table for range minimum queries on a matrix.
 - Preprocess in O(n*m*log(n)*log(m))

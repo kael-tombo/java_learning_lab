@@ -1,4 +1,4 @@
-﻿# Architecture: Eigenvalues Advanced Implementation
+# Architecture: Eigenvalues Advanced Implementation
 
 ## System Design
 

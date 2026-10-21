@@ -1,4 +1,4 @@
-﻿# Architecture: Applied Linear Algebra Implementation
+# Architecture: Applied Linear Algebra Implementation
 
 ## System Design
 

@@ -1,4 +1,4 @@
-﻿# Kafka Streams Flashcards
+# Kafka Streams Flashcards
 
 ## Card 1
 **Front**: What is a KStream?

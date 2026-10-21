@@ -1,4 +1,4 @@
-﻿# Performance
+# Performance
 
 | Structure | Build | NN Query | Range Query | Memory |
 |-----------|-------|----------|-------------|--------|

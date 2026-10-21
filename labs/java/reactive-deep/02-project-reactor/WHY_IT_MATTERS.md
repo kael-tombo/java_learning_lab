@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Why It Matters
+# Project Reactor -- Why It Matters
 ## Why Reactive Matters
 ### Scalability
 Reactive systems handle more concurrent users with fewer resources.

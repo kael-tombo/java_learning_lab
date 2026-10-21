@@ -1,4 +1,4 @@
-﻿# Why Time Ordering Exists
+# Why Time Ordering Exists
 
 No node has complete knowledge of system state. Information travels at light speed or slower. By the time you learn about an event, it's in the past.
 

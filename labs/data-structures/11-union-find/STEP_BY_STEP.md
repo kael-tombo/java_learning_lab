@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Implementing Union-Find
+# Step-by-Step: Implementing Union-Find
 
 ## Step 1: Problem Understanding
 

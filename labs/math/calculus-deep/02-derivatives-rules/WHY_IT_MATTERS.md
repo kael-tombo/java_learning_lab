@@ -1,4 +1,4 @@
-﻿# Why It Matters: Derivatives and Differentiation Rules
+# Why It Matters: Derivatives and Differentiation Rules
 
 ## Real-World Importance
 

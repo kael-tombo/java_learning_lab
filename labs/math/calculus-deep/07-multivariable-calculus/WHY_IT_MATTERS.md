@@ -1,4 +1,4 @@
-﻿# Why It Matters: Multivariable Calculus
+# Why It Matters: Multivariable Calculus
 
 ## Real-World Importance
 

@@ -1,4 +1,4 @@
-﻿# Reinforcement Learning - Code Deep Dive
+# Reinforcement Learning - Code Deep Dive
 
 ## Overview
 Detailed examination of the Reinforcement Learning Java implementation.

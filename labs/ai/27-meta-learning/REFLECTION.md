@@ -1,4 +1,4 @@
-﻿# Reflection: Meta-Learning
+# Reflection: Meta-Learning
 
 ## Self-Assessment
 - Can I explain Meta-Learning to a non-technical person?

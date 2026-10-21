@@ -1,4 +1,4 @@
-﻿# Feature Stores — Reflection
+# Feature Stores — Reflection
 
 ## What surprised you?
 Most learners expect the hard part to be model math; the lab shows the

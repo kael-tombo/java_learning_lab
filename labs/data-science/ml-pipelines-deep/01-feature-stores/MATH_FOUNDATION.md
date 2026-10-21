@@ -1,4 +1,4 @@
-﻿# Feature Stores — Math Foundation
+# Feature Stores — Math Foundation
 
 ## 1. As-of join as an argmax
 For entity e and label time t, with history pairs (ts_i, v_i):

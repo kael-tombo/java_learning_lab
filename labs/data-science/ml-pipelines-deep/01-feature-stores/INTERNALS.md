@@ -1,4 +1,4 @@
-﻿# Feature Stores — Internals
+# Feature Stores — Internals
 
 ## Offline layout
 Partition by (time bucket, entity hash). Rows immutable, compressed

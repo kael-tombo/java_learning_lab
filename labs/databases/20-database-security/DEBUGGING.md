@@ -1,4 +1,4 @@
-﻿# Debugging: Database Security
+# Debugging: Database Security
 
 ## Common Issues and Solutions
 

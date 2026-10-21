@@ -1,4 +1,4 @@
-﻿# Visual Guide: Multivariable Calculus
+# Visual Guide: Multivariable Calculus
 
 ## Conceptual Diagrams
 

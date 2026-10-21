@@ -1,4 +1,4 @@
-﻿# Theory: Spring Cloud Microservice Infrastructure
+# Theory: Spring Cloud Microservice Infrastructure
 
 ## 1. Service Discovery (Eureka)
 

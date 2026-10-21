@@ -1,4 +1,4 @@
-﻿# How It Works: Integral Fundamentals
+# How It Works: Integral Fundamentals
 
 ## High-Level Explanation
 

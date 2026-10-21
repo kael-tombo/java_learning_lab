@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Common Mistakes
+# Model Evaluation — Common Mistakes
 
 ## 1. Leading with accuracy on imbalanced data
 Accuracy divides by all items, so rare positives barely register. The

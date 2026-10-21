@@ -1,4 +1,4 @@
-﻿# Distributed Filesystems - Interview Preparation
+# Distributed Filesystems - Interview Preparation
 
 > Key interview questions about distributed file systems.
 

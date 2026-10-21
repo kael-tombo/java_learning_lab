@@ -1,4 +1,4 @@
-﻿# How It Works: API Versioning & Documentation
+# How It Works: API Versioning & Documentation
 
 ## How SpringDoc Generates Documentation
 When the application starts, SpringDoc scans all @RestController beans. For each method with @RequestMapping, it reads annotations (@Operation, @ApiResponse), infers parameter types, and builds an OpenAPI Operation object. The OpenAPI object is serialized to JSON when /v3/api-docs is called. Swagger UI fetches this JSON and renders interactive documentation.

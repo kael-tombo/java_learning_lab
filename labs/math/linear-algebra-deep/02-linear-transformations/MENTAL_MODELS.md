@@ -1,4 +1,4 @@
-﻿# Mental Models: Linear Transformations
+# Mental Models: Linear Transformations
 
 ## Conceptual Frameworks
 

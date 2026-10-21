@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Mental Models
+# Java Serialization -- Mental Models
 
 ## Key Mental Models for Understanding Java Serialization
 

@@ -1,4 +1,4 @@
-﻿# Why Gossip Protocols Matters
+# Why Gossip Protocols Matters
 
 In modern distributed systems, gossip-protocols is essential because:
 - Systems are too large for single-node solutions

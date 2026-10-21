@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Multivariable Calculus
+# Step-by-Step Guide: Multivariable Calculus
 
 ## Implementation Walkthrough
 

@@ -1,4 +1,4 @@
-﻿# Feature Engineering - Theory & Intuition
+# Feature Engineering - Theory & Intuition
 
 ## The Big Picture
 

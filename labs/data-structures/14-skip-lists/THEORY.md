@@ -1,4 +1,4 @@
-﻿# Theory: Skip Lists
+# Theory: Skip Lists
 
 ## Fundamentals
 

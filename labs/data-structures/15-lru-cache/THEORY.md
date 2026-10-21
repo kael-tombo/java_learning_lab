@@ -1,4 +1,4 @@
-﻿# Theory: LRU Cache
+# Theory: LRU Cache
 
 ## Fundamentals
 

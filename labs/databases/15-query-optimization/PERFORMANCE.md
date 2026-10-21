@@ -1,4 +1,4 @@
-﻿# Performance: Query Optimization
+# Performance: Query Optimization
 
 ## Performance Characteristics
 

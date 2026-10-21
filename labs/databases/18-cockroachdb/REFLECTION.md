@@ -1,4 +1,4 @@
-﻿# Reflection: CockroachDB
+# Reflection: CockroachDB
 
 ## Key Learnings
 

@@ -1,4 +1,4 @@
-﻿# Math Foundations — Distributed Queues
+# Math Foundations — Distributed Queues
 
 ## 1. Throughput vs Partitions
 

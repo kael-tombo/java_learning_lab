@@ -1,4 +1,4 @@
-﻿# Discrete Math and Combinatorics Deep Dive
+# Discrete Math and Combinatorics Deep Dive
 
 ## Micro-Labs
 

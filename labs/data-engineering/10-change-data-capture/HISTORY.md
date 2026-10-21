@@ -1,4 +1,4 @@
-﻿# History of Change Data Capture
+# History of Change Data Capture
 
 ## Timeline
 - **1990s**: Trigger-based CDC in ETL tools

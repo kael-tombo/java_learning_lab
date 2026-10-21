@@ -1,4 +1,4 @@
-﻿# Flashcards: CockroachDB
+# Flashcards: CockroachDB
 
 ## Q: What is cockroachdb?
 **A:** Strategy that distributes data across multiple independent database instances for scalability.

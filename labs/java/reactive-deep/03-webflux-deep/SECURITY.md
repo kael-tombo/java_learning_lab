@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- Security
+# WebFlux Deep Dive -- Security
 ## Reactive Security Considerations
 ### Input Validation
 Validate data early in reactive pipelines.

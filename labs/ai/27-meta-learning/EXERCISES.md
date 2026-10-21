@@ -1,4 +1,4 @@
-﻿# Exercises: Meta-Learning
+# Exercises: Meta-Learning
 
 ## Overview
 This document contains practice problems organized by difficulty. Attempt each problem before consulting the solution.

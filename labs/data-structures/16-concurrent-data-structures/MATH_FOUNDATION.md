@@ -1,4 +1,4 @@
-﻿# Math Foundation of Concurrent Data Structures
+# Math Foundation of Concurrent Data Structures
 
 ## Progress Conditions
 

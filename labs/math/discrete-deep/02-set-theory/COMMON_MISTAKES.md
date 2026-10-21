@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Set Theory
+# Common Mistakes: Set Theory
 
 ## 1. Confusing ∈ with ⊆
 

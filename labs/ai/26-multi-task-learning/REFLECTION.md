@@ -1,4 +1,4 @@
-﻿# Reflection: Multi-Task Learning
+# Reflection: Multi-Task Learning
 
 ## Self-Assessment
 - Can I explain Multi-Task Learning to a non-technical person?

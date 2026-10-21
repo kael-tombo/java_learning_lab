@@ -1,4 +1,4 @@
-﻿# Visual Guide: Number Theory
+# Visual Guide: Number Theory
 
 ## 1. The Clock Faces (Residue Classes mod 6)
 

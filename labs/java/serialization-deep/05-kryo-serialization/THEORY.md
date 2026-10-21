@@ -1,4 +1,4 @@
-﻿# Kryo Serialization — Theoretical Foundation
+# Kryo Serialization — Theoretical Foundation
 
 ## Core Concepts
 

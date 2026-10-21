@@ -1,4 +1,4 @@
-﻿# Mini Project: Frequency Counter
+# Mini Project: Frequency Counter
 
 Build a frequency analysis tool using BIT.
 

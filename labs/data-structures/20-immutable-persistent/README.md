@@ -1,4 +1,4 @@
-﻿# Lab 20: Immutable & Persistent Data Structures
+# Lab 20: Immutable & Persistent Data Structures
 
 <div align="center">
 

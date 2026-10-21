@@ -1,4 +1,4 @@
-﻿# References — Gossip Protocols
+# References — Gossip Protocols
 
 ## Academic Papers
 1. Key papers in distributed systems and related areas

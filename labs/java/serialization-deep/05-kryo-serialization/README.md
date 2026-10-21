@@ -1,4 +1,4 @@
-﻿# Kryo Serialization
+# Kryo Serialization
 
 ## Overview
 Kryo serialization, registration, thread-safe serializer, field vs field serializer, performance comparisons

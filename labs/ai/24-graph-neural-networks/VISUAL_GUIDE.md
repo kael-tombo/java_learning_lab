@@ -1,4 +1,4 @@
-﻿# Visual Guide: Graph Neural Networks
+# Visual Guide: Graph Neural Networks
 
 ## 1. System Architecture Diagram
 [Input Data] → [Preprocessing] → [Model Forward Pass] → [Loss Computation] → [Backward Pass] → [Parameter Update]

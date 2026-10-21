@@ -1,4 +1,4 @@
-﻿# Data Warehousing
+# Data Warehousing
 
 ## Overview
 A data warehouse is a centralized repository optimized for analytics, reporting, and business intelligence, storing integrated data from multiple sources.

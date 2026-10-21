@@ -1,4 +1,4 @@
-﻿# Reflection: Database Migration Strategies
+# Reflection: Database Migration Strategies
 
 ## Key Learnings
 

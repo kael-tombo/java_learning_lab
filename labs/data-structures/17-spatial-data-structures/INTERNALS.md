@@ -1,4 +1,4 @@
-﻿# Internals of Spatial Data Structures
+# Internals of Spatial Data Structures
 
 ## Quadtree Node Structure
 `java

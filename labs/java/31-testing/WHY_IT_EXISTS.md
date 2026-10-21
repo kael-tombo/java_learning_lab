@@ -1,4 +1,4 @@
-﻿# Why Testing Exists
+# Why Testing Exists
 
 ## The Problem Testing Solves
 

@@ -1,4 +1,4 @@
-﻿# Debugging: Database Sharding
+# Debugging: Database Sharding
 
 ## Common Issues and Solutions
 

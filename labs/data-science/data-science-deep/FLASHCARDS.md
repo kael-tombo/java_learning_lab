@@ -1,4 +1,4 @@
-﻿# Data Science Deep Dive - Flashcards
+# Data Science Deep Dive - Flashcards
 
 ## Card 1
 **Q**: What is 

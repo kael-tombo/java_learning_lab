@@ -1,4 +1,4 @@
-﻿# Visual Guide: Applied Linear Algebra
+# Visual Guide: Applied Linear Algebra
 
 ## Conceptual Diagrams
 

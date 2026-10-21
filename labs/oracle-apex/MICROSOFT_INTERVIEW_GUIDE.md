@@ -1,4 +1,4 @@
-﻿# Microsoft Interview Guide — Oracle APEX Academy
+# Microsoft Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 

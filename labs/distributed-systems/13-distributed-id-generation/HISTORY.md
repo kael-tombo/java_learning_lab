@@ -1,4 +1,4 @@
-﻿# History — Distributed ID Generation
+# History — Distributed ID Generation
 
 - **2010**: Twitter Snowflake paper published
 - **2012**: Snowflake open-sourced

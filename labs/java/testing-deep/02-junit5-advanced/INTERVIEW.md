@@ -1,4 +1,4 @@
-﻿# Interview Questions: JUnit 5 Advanced
+# Interview Questions: JUnit 5 Advanced
 
 ## Company-Specific Focus
 

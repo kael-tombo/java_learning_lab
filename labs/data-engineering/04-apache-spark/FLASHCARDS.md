@@ -1,4 +1,4 @@
-﻿# Apache Spark Flashcards
+# Apache Spark Flashcards
 
 ## Card 1
 **Front**: What is Apache Spark?

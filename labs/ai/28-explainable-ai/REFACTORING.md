@@ -1,4 +1,4 @@
-﻿# Refactoring: Explainable AI
+# Refactoring: Explainable AI
 
 ## 1. Why Refactor
 Improves code quality, maintainability, and testability without changing behavior. Reduces technical debt and makes debugging easier.

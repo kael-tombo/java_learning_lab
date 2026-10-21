@@ -1,4 +1,4 @@
-﻿# Why Combinatorics Exists
+# Why Combinatorics Exists
 
 ## Born From an Unfinished Game
 

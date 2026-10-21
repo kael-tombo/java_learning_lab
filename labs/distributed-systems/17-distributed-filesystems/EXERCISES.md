@@ -1,4 +1,4 @@
-﻿# Exercises — Distributed Filesystems
+# Exercises — Distributed Filesystems
 
 1. **File Replicator (Easy)**: Implement block re-replication on failure
 2. **Erasure Codec (Medium)**: Implement Reed-Solomon (k=4, m=2)

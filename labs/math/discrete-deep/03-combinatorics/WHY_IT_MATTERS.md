@@ -1,4 +1,4 @@
-﻿# Why Combinatorics Matters
+# Why Combinatorics Matters
 
 ## Algorithm Analysis Starts With Counting
 

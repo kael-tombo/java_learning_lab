@@ -1,4 +1,4 @@
-﻿# Feature Store References
+# Feature Store References
 
 ## Books
 - "Designing Machine Learning Systems" by Chip Huyen

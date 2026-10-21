@@ -1,4 +1,4 @@
-﻿# Why Segment Trees Exist
+# Why Segment Trees Exist
 
 ## The Problem: Efficient Range Operations
 

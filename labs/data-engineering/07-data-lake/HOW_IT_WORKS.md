@@ -1,4 +1,4 @@
-﻿# How Data Lakes Work
+# How Data Lakes Work
 
 ## Medallion Architecture Implementation
 `java

@@ -1,4 +1,4 @@
-﻿# Lab 22: GraphQL with Netflix DGS
+# Lab 22: GraphQL with Netflix DGS
 
 ## Overview
 Netflix DGS (Domain Graph Service) framework simplifies building GraphQL services. Learn schema-first development, data loaders, federated GraphQL, and subscriptions.

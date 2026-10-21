@@ -1,4 +1,4 @@
-﻿# Mental Models: Variational Autoencoders
+# Mental Models: Variational Autoencoders
 
 ## 1. Optimization Landscape
 Think of loss as a landscape. Gradient descent is like walking downhill in fog - you can feel the slope at your feet but can't see the whole terrain.

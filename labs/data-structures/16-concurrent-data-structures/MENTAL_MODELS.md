@@ -1,4 +1,4 @@
-﻿# Mental Models for Concurrent Data Structures
+# Mental Models for Concurrent Data Structures
 
 ## 1. The Traffic Intersection Model
 

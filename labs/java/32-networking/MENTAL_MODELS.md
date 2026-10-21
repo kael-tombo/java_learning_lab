@@ -1,4 +1,4 @@
-﻿# Networking — Mental Models
+# Networking — Mental Models
 
 ## Model 1: The Blueprint
 

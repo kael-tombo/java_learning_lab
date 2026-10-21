@@ -1,4 +1,4 @@
-﻿# Security Considerations
+# Security Considerations
 
 1. Validate query ranges
 2. Handle empty arrays gracefully

@@ -1,4 +1,4 @@
-﻿# Quiz: Segment Trees
+# Quiz: Segment Trees
 
 ## Multiple Choice
 

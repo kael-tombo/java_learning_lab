@@ -1,4 +1,4 @@
-﻿# Interview Questions: Number Theory
+# Interview Questions: Number Theory
 
 ## Conceptual Questions
 

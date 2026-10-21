@@ -1,4 +1,4 @@
-﻿# Code Deep Dive — Distributed Caching
+# Code Deep Dive — Distributed Caching
 
 ## 1. CacheClient Interface
 

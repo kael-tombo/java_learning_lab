@@ -1,4 +1,4 @@
-﻿# History: Number Theory
+# History: Number Theory
 
 ## The Ancient Foundations
 

@@ -1,4 +1,4 @@
-﻿# Common Mistakes: API Versioning & Documentation
+# Common Mistakes: API Versioning & Documentation
 
 ## 1. Exposing Swagger UI in Production
 **Mistake**: Leaving Swagger UI enabled in production

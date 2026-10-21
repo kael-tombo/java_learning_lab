@@ -1,4 +1,4 @@
-﻿# Testing — Theoretical Foundation
+# Testing — Theoretical Foundation
 
 ## What Is Software Testing?
 

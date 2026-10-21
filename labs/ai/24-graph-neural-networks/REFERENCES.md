@@ -1,4 +1,4 @@
-﻿# References: Graph Neural Networks
+# References: Graph Neural Networks
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

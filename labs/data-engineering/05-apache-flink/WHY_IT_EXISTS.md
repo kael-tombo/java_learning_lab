@@ -1,4 +1,4 @@
-﻿# Why Apache Flink Exists
+# Why Apache Flink Exists
 
 ## The Problem
 Stream processing engines before Flink had limitations: Spark Streaming used micro-batching (not true streaming), Storm lacked exactly-once semantics, and Samza relied on Kafka's log-based processing.

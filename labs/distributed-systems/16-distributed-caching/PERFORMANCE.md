@@ -1,4 +1,4 @@
-﻿# Performance — Distributed Caching
+# Performance — Distributed Caching
 
 ## Latency (p99)
 | Operation | Local | Redis (net) | Memcached (net) |

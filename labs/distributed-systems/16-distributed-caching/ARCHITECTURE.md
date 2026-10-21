@@ -1,4 +1,4 @@
-﻿# Architecture — Distributed Caching
+# Architecture — Distributed Caching
 
 ## Cache Topology
 `

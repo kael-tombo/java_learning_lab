@@ -1,4 +1,4 @@
-﻿# Solutions: Skip List Exercises
+# Solutions: Skip List Exercises
 
 Solutions in src/ directory.
 

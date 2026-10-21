@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Variational Autoencoders
+# Mathematical Foundations of Variational Autoencoders
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying Variational Autoencoders. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

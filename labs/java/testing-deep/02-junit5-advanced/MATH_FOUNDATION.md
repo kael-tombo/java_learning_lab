@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Mathematical Foundation
+# JUnit 5 Advanced -- Mathematical Foundation
 ## 1. Code Coverage Mathematics
 ### Line Coverage
 lines_covered / total_lines * 100%

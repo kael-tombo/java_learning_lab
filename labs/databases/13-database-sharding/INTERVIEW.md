@@ -1,4 +1,4 @@
-﻿# Interview Questions: Database Sharding (Oracle Focus)
+# Interview Questions: Database Sharding (Oracle Focus)
 
 ## Oracle-Specific Questions
 - How does Oracle Sharding (Oracle Database 12c+) compare to MongoDB sharding and Cassandra partitioning?

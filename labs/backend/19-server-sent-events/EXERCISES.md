@@ -1,4 +1,4 @@
-﻿# Exercises: Server-Sent Events
+# Exercises: Server-Sent Events
 
 ## Exercise 1: Basic SSE Stream
 Create an SSE endpoint that streams timestamp events every second.

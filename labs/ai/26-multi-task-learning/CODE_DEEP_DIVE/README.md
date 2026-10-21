@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning - Code Deep Dive
+# Multi-Task Learning - Code Deep Dive
 
 ## Overview
 Detailed examination of the Multi-Task Learning Java implementation.

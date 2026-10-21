@@ -1,4 +1,4 @@
-﻿# Step by Step: Spring Batch
+# Step by Step: Spring Batch
 
 ## Step 1: Configure Batch Database
 `yaml

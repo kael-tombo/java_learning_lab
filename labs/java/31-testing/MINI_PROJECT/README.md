@@ -1,4 +1,4 @@
-﻿# MINI_PROJECT — TDD String Calculator Kata
+# MINI_PROJECT — TDD String Calculator Kata
 
 ## Goal
 Implement a String Calculator using strict TDD. Follow the Red-Green-Refactor cycle for each requirement.

@@ -1,4 +1,4 @@
-﻿# Reflection: Mathematical Optimization
+# Reflection: Mathematical Optimization
 
 ## Personal Learning Journey
 

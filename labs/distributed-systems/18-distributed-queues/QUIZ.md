@@ -1,4 +1,4 @@
-﻿# Quiz — Distributed Queues
+# Quiz — Distributed Queues
 
 1. SQS is which AWS service? Answer: Simple Queue Service
 2. Pulsar uses what for storage? Answer: Apache BookKeeper

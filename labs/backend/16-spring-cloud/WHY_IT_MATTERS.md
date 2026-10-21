@@ -1,4 +1,4 @@
-﻿# Why It Matters: Spring Cloud
+# Why It Matters: Spring Cloud
 
 Spring Cloud matters because it provides production-tested infrastructure patterns for distributed systems. In a world where applications are split into microservices, the challenges of service discovery, configuration management, resilience, and observability become critical.
 

@@ -1,4 +1,4 @@
-﻿# Testing — Reflection Prompts
+# Testing — Reflection Prompts
 
 ## Section 1: Knowledge Check
 

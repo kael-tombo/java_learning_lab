@@ -1,4 +1,4 @@
-﻿# Interview Questions: Advanced Number Theory
+# Interview Questions: Advanced Number Theory
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

@@ -1,4 +1,4 @@
-﻿# Mock Interview: GraalVM Polyglot Function Execution Engine (Lab 09)
+# Mock Interview: GraalVM Polyglot Function Execution Engine (Lab 09)
 
 **Role:** Senior Backend Engineer
 **Duration:** 55 minutes

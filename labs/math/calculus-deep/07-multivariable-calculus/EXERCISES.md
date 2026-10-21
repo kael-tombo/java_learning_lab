@@ -1,4 +1,4 @@
-﻿# Exercises: Multivariable Calculus
+# Exercises: Multivariable Calculus
 
 ## Theoretical Exercises
 

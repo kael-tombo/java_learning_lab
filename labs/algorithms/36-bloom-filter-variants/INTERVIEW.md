@@ -1,4 +1,4 @@
-﻿# Interview Questions: Bloom Filter Variants
+# Interview Questions: Bloom Filter Variants
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

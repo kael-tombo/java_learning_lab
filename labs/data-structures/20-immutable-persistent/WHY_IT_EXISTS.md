@@ -1,4 +1,4 @@
-﻿# Why Immutable & Persistent Data Structures Exist
+# Why Immutable & Persistent Data Structures Exist
 
 ## The Problem: Shared Mutable State
 

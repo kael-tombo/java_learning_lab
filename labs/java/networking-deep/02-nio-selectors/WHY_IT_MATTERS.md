@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Why It Matters
+# NIO Selectors -- Why It Matters
 ## Practical Importance in Real-World Development
 
 ### 1. Distributed Systems Foundation

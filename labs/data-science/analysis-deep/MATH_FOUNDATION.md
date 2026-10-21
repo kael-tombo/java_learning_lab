@@ -1,4 +1,4 @@
-﻿# Analysis Deep Dive - Mathematical Foundations
+# Analysis Deep Dive - Mathematical Foundations
 
 ## Probability Theory
 

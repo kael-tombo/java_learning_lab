@@ -1,4 +1,4 @@
-﻿# Security: Logic and Proofs
+# Security: Logic and Proofs
 
 ## Formal Verification of Security Protocols
 

@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Implementing a Skip List
+# Step-by-Step: Implementing a Skip List
 
 1. Define node structure with key, value, forward array
 2. Initialize header with MAX_LEVEL forward pointers

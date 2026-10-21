@@ -1,4 +1,4 @@
-﻿# Security: Graph Theory in Practice
+# Security: Graph Theory in Practice
 
 ## Attack Graphs Are Reachability Problems
 

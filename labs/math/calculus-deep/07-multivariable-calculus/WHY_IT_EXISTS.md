@@ -1,4 +1,4 @@
-﻿# Why It Exists: Multivariable Calculus
+# Why It Exists: Multivariable Calculus
 
 ## The Problem It Solves
 

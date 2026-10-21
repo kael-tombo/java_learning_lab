@@ -1,4 +1,4 @@
-﻿# Why Self-Supervised Learning Matters
+# Why Self-Supervised Learning Matters
 
 ## Economic Impact
 Self-Supervised Learning drives automation, personalization, and optimization across industries. It creates new products and services while improving efficiency in existing processes.

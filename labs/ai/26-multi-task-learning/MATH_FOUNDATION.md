@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Multi-Task Learning
+# Mathematical Foundations of Multi-Task Learning
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying Multi-Task Learning. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

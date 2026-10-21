@@ -1,4 +1,4 @@
-﻿# Generative Adversarial Networks - Quiz
+# Generative Adversarial Networks - Quiz
 
 ## Overview
 Assessment covering all Generative Adversarial Networks topics.

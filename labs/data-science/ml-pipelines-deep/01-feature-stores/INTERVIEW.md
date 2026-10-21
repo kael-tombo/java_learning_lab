@@ -1,4 +1,4 @@
-﻿# Feature Stores — Interview
+# Feature Stores — Interview
 
 ## Q: Why not just query the warehouse at serving time?
 A: Warehouses optimize scans, not single-row millisecond lookups, and

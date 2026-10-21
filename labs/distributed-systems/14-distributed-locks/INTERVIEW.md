@@ -1,4 +1,4 @@
-﻿# Distributed Locks - Interview Preparation
+# Distributed Locks - Interview Preparation
 
 > Key interview questions about distributed lock implementations.
 

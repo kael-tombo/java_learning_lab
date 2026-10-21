@@ -1,4 +1,4 @@
-﻿# Lab 12: Segment Trees
+# Lab 12: Segment Trees
 
 <div align="center">
 

@@ -1,4 +1,4 @@
-﻿# Architecture: Derivatives and Differentiation Rules Implementation
+# Architecture: Derivatives and Differentiation Rules Implementation
 
 ## System Design
 

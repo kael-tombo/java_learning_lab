@@ -1,4 +1,4 @@
-﻿# CHALLENGE
+# CHALLENGE
 
 This directory contains the CHALLENGE component for this lab.
 

@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Step-by-Step Implementation
+# Netty Framework -- Step-by-Step Implementation
 
 ## Step 1: Create Project Structure
 Create a Maven or Gradle project with the standard directory layout.

@@ -1,4 +1,4 @@
-﻿# Architecture: Performance
+# Architecture: Performance
 
 `
 Performance Testing Pipeline:

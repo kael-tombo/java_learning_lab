@@ -1,4 +1,4 @@
-﻿# VISUAL_GUIDE.md - Gossip Protocols
+# VISUAL_GUIDE.md - Gossip Protocols
 
 ## Overview
 This document covers Gossip Protocols concepts related to VISUAL_GUIDE.

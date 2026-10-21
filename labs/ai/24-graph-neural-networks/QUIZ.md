@@ -1,4 +1,4 @@
-﻿# Quiz: Graph Neural Networks
+# Quiz: Graph Neural Networks
 
 ## Instructions
 30 questions covering Graph Neural Networks concepts. Passing score: 70%.

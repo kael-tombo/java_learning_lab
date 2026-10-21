@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Debugging
+# Reactive Streams -- Debugging
 ## Debugging Reactive Code
 ### Hooks.onOperatorDebug()
 Enables operator stack traces for debugging.

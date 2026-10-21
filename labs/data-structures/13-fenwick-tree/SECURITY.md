@@ -1,4 +1,4 @@
-﻿# Security Considerations for Fenwick Tree
+# Security Considerations for Fenwick Tree
 
 ## Input Validation
 

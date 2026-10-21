@@ -1,4 +1,4 @@
-﻿# Why Performance Profiling Matters
+# Why Performance Profiling Matters
 
 ## Real-World Impact
 

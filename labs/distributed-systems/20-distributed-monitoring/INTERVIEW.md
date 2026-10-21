@@ -1,4 +1,4 @@
-﻿# Distributed Monitoring - Interview Preparation
+# Distributed Monitoring - Interview Preparation
 
 > Key interview questions about monitoring and observability in distributed systems.
 

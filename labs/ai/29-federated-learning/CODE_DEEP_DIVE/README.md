@@ -1,4 +1,4 @@
-﻿# Federated Learning - Code Deep Dive
+# Federated Learning - Code Deep Dive
 
 ## Overview
 Detailed examination of the Federated Learning Java implementation.

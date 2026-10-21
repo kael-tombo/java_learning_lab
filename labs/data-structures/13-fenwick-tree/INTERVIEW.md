@@ -1,4 +1,4 @@
-﻿# Interview Questions: Fenwick Tree (Binary Indexed Tree)
+# Interview Questions: Fenwick Tree (Binary Indexed Tree)
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

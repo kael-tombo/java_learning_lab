@@ -1,4 +1,4 @@
-﻿# Security: Differential Equations Implementation
+# Security: Differential Equations Implementation
 
 ## Security Considerations
 

@@ -65,4 +65,10 @@ venv/
 
 # Agent / Tool Artifacts
 .freebuff/
-.kilo/
+.kilo/
+# JVM diagnostic artifacts (byproduct of snippet sweeps)
+*.hprof
+*.jfr
+output.txt
+inventory_results.csv
+COMMIT_MSG.txt

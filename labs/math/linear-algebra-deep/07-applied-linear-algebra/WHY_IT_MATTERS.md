@@ -1,4 +1,4 @@
-﻿# Why It Matters: Applied Linear Algebra
+# Why It Matters: Applied Linear Algebra
 
 ## Real-World Importance
 

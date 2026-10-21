@@ -1,4 +1,4 @@
-﻿# XML Serialization — Theoretical Foundation
+# XML Serialization — Theoretical Foundation
 
 ## Core Concepts
 

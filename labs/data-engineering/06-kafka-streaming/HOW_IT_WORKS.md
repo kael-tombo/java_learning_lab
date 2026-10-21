@@ -1,4 +1,4 @@
-﻿# How Kafka Streaming Works
+# How Kafka Streaming Works
 
 ## Core Processing Model
 `java

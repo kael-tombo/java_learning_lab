@@ -1,4 +1,4 @@
-﻿# Mental Models: Matrix Calculus
+# Mental Models: Matrix Calculus
 
 ## Conceptual Frameworks
 

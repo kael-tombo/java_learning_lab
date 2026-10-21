@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- Debugging
+# Reactive Testing -- Debugging
 ## Debugging Reactive Code
 ### Hooks.onOperatorDebug()
 Enables operator stack traces for debugging.

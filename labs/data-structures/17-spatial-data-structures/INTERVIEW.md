@@ -1,4 +1,4 @@
-﻿# Interview Questions: Spatial Data Structures
+# Interview Questions: Spatial Data Structures
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

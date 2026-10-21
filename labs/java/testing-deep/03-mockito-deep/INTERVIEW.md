@@ -1,4 +1,4 @@
-﻿# Interview Questions: Mockito Deep Dive
+# Interview Questions: Mockito Deep Dive
 
 ## Company-Specific Focus
 

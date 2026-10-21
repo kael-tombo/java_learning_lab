@@ -1,4 +1,4 @@
-﻿# Internals: CQRS Axon
+# Internals: CQRS Axon
 
 ## Event Store Storage
 Axon stores events in an event store table:

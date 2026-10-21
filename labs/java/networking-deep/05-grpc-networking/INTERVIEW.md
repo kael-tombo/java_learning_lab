@@ -1,4 +1,4 @@
-﻿# Interview Questions: gRPC Networking
+# Interview Questions: gRPC Networking
 
 ## Company-Specific Focus
 

@@ -1,4 +1,4 @@
-﻿
+
 # Networking — Internal Mechanics
 
 ## How the JVM Implements Networking

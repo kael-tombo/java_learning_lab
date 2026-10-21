@@ -1,4 +1,4 @@
-﻿# Interview Questions: Query Optimization II (Oracle Advanced)
+# Interview Questions: Query Optimization II (Oracle Advanced)
 
 ## Oracle-Specific Questions
 - Explain Oracle's Adaptive Query Optimization: adaptive plans, adaptive statistics, and automatic re-optimization.

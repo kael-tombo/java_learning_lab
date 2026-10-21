@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Performance
+# Common Mistakes: Performance
 
 1. Premature optimization (measure first!)
 2. Not warming up caches after restart

@@ -1,4 +1,4 @@
-﻿# Common Mistakes — Distributed Filesystems
+# Common Mistakes — Distributed Filesystems
 
 1. Not handling network failures (assume reliable network)
 2. Ignoring clock synchronization issues

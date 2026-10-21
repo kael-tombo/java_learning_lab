@@ -1,4 +1,4 @@
-﻿# Data Lake Reflection
+# Data Lake Reflection
 
 ## Key Learnings
 - Data lakes enable storing all data types cheaply

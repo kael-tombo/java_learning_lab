@@ -1,4 +1,4 @@
-﻿# Why Build Tools Matters
+# Why Build Tools Matters
 
 ## Real-World Impact
 

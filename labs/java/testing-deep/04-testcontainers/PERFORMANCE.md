@@ -1,4 +1,4 @@
-﻿# Testcontainers -- Test Performance
+# Testcontainers -- Test Performance
 ## Performance Considerations
 ### Fast Tests
 Unit tests should run in milliseconds.

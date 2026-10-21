@@ -1,4 +1,4 @@
-﻿# Refactoring Fenwick Tree
+# Refactoring Fenwick Tree
 
 ## 1. Generic BIT for Different Types
 

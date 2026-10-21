@@ -1,4 +1,4 @@
-﻿# Step by Step: Database Security
+# Step by Step: Database Security
 
 ## Implementation Guide
 

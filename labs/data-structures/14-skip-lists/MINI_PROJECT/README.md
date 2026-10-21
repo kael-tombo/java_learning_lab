@@ -1,4 +1,4 @@
-﻿# Mini Project: In-Memory Key-Value Store
+# Mini Project: In-Memory Key-Value Store
 
 Build a fast in-memory key-value store using skip lists.
 

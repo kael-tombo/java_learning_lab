@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- Flashcards
+# WebFlux Deep Dive -- Flashcards
 Card 1: Q: Publisher? A: Emits data to Subscriber
 Card 2: Q: Subscriber? A: Receives data from Publisher
 Card 3: Q: Subscription? A: Manages demand (backpressure)

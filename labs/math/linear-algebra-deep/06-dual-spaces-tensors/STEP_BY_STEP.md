@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Dual Spaces and Tensors
+# Step-by-Step Guide: Dual Spaces and Tensors
 
 ## Implementation Walkthrough
 

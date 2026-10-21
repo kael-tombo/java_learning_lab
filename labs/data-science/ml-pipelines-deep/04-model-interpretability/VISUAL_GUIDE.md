@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Visual Guide
+# Model Interpretability — Visual Guide
 
 ## Global vs local
 ```

@@ -1,4 +1,4 @@
-﻿# Refactoring: API Versioning & Documentation
+# Refactoring: API Versioning & Documentation
 
 ## 1. Adding Versioning to Unversioned API
 

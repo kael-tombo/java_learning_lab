@@ -1,4 +1,4 @@
-﻿# Variational Autoencoders - Theory
+# Variational Autoencoders - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Variational Autoencoders.

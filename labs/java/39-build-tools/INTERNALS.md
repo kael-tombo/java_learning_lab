@@ -1,4 +1,4 @@
-﻿# Build Tools — Internal Mechanics
+# Build Tools — Internal Mechanics
 
 ## How Maven Works
 

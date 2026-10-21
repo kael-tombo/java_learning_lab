@@ -1,4 +1,4 @@
-﻿# History: Database Sharding
+# History: Database Sharding
 
 ## Evolution
 

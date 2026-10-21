@@ -1,4 +1,4 @@
-﻿# Security: Derivative Applications Implementation
+# Security: Derivative Applications Implementation
 
 ## Security Considerations
 

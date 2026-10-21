@@ -1,4 +1,4 @@
-﻿# Performance
+# Performance
 
 | n | Preprocess | Query (min) | Memory |
 |---|-----------|-------------|--------|

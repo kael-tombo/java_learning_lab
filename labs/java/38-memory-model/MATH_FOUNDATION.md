@@ -1,4 +1,4 @@
-﻿# Memory Model — Math Foundation
+# Memory Model — Math Foundation
 
 ## Mathematical Concepts
 

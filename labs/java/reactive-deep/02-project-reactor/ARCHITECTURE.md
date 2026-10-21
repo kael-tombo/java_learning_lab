@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Architecture
+# Project Reactor -- Architecture
 ## Reactive Architecture
 ### Event-Driven
 Components communicate via events rather than direct calls.

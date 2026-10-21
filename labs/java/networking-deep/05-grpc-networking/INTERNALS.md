@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Internal Implementation
+# gRPC Networking -- Internal Implementation
 
 ## Internal Architecture
 

@@ -1,4 +1,4 @@
-﻿# History of Fenwick Tree
+# History of Fenwick Tree
 
 ## Discovery (1994)
 

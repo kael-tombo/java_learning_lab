@@ -1,4 +1,4 @@
-﻿# Security in ArgoCD & GitOps
+# Security in ArgoCD & GitOps
 
 ## Authentication Mechanisms
 

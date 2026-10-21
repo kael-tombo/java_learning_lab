@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Visual Guide
+# NIO Selectors -- Visual Guide
 ## Network Architecture Diagram
 `
     +-----------+     +-----------+     +-----------+

@@ -1,4 +1,4 @@
-﻿# Mini Project: Stock Price Analyzer
+# Mini Project: Stock Price Analyzer
 
 Build a stock price analysis tool using sparse tables.
 - Load historical price data

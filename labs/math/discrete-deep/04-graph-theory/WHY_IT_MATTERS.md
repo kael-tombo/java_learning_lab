@@ -1,4 +1,4 @@
-﻿# Why Graph Theory Matters
+# Why Graph Theory Matters
 
 ## It Is the Model Behind Everyday Software
 

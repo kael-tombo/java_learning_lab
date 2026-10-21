@@ -1,4 +1,4 @@
-﻿# Exercises: Cassandra NoSQL
+# Exercises: Cassandra NoSQL
 
 ## Beginner Level
 

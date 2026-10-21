@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) — Theoretical Foundation
+# HTTP Clients (Java 11+) — Theoretical Foundation
 
 ## Core Concept
 

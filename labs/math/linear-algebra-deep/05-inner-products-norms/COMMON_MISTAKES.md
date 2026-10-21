@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Inner Products and Norms
+# Common Mistakes: Inner Products and Norms
 
 ## Top 10 Common Mistakes
 

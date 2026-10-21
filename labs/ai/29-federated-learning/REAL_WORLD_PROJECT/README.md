@@ -1,4 +1,4 @@
-﻿# Federated Learning - Real-World Project
+# Federated Learning - Real-World Project
 
 ## Overview
 Build a production-ready Federated Learning system.

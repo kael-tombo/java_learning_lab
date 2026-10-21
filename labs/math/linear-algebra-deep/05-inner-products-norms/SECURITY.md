@@ -1,4 +1,4 @@
-﻿# Security: Inner Products and Norms Implementation
+# Security: Inner Products and Norms Implementation
 
 ## Security Considerations
 

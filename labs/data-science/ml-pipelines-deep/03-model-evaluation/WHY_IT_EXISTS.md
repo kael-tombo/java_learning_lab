@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Why It Exists
+# Model Evaluation — Why It Exists
 
 Evaluation exists because models are fluent liars: they produce
 confident outputs on any input, and only disciplined measurement tells

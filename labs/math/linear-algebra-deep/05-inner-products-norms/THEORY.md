@@ -1,4 +1,4 @@
-﻿# Inner Products and Norms — Theory
+# Inner Products and Norms — Theory
 
 ## 1. Inner product and norm
 

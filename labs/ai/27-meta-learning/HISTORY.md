@@ -1,4 +1,4 @@
-﻿# History of Meta-Learning
+# History of Meta-Learning
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

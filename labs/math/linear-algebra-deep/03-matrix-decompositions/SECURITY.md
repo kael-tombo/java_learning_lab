@@ -1,4 +1,4 @@
-﻿# Security: Matrix Decompositions Implementation
+# Security: Matrix Decompositions Implementation
 
 ## Security Considerations
 

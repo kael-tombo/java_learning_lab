@@ -1,4 +1,4 @@
-﻿## Front: What is an immutable data structure?
+## Front: What is an immutable data structure?
 Back: A structure that cannot be modified after creation. Operations return new structures.
 
 ## Front: What is path copying?

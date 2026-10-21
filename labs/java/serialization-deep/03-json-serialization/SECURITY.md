@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Security
+# JSON Serialization -- Security
 
 ## Security Considerations
 

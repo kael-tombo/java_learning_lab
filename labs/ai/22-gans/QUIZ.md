@@ -1,4 +1,4 @@
-﻿# Quiz: Generative Adversarial Networks
+# Quiz: Generative Adversarial Networks
 
 ## Instructions
 30 questions covering Generative Adversarial Networks concepts. Passing score: 70%.

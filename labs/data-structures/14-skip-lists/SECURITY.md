@@ -1,4 +1,4 @@
-﻿# Security Considerations for Skip Lists
+# Security Considerations for Skip Lists
 
 1. **Input Validation**: Validate key types, reject null keys
 2. **Randomness Quality**: Use SecureRandom for cryptographic applications

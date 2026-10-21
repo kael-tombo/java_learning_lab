@@ -1,4 +1,4 @@
-﻿# Mental Models: Derivatives and Differentiation Rules
+# Mental Models: Derivatives and Differentiation Rules
 
 ## Conceptual Frameworks
 

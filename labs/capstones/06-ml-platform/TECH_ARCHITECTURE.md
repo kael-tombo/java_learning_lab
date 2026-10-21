@@ -1,4 +1,4 @@
-﻿# Technical Architecture: ML Platform
+# Technical Architecture: ML Platform
 
 ## Architecture Overview
 

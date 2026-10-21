@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Reflection
+# JSON Serialization -- Reflection
 
 ## Guided Self-Reflection Prompts
 

@@ -1,4 +1,4 @@
-﻿# Internals: Logic and Proofs
+# Internals: Logic and Proofs
 
 ## Propositional Logic
 

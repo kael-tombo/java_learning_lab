@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Matrix Decompositions
+# Common Mistakes: Matrix Decompositions
 
 ## Top 10 Common Mistakes
 

@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- Internals
+# Reactive Testing -- Internals
 ## Internal Architecture
 ### Publisher Subscription
 Publisher creates Subscription on subscribe(). Subscription manages demand.

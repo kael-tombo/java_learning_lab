@@ -1,4 +1,4 @@
-﻿# Lab 03 — Model Evaluation
+# Lab 03 — Model Evaluation
 
 ## Goal
 Evaluate classifiers honestly: read a confusion matrix, compute

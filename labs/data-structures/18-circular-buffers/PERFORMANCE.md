@@ -1,4 +1,4 @@
-﻿# Performance
+# Performance
 
 | Implementation | Enqueue | Dequeue | Memory |
 |---------------|---------|---------|--------|

@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- How It Works
+# Kryo Serialization -- How It Works
 
 ## Detailed Mechanical Explanation
 

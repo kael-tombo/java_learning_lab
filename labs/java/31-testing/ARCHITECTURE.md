@@ -1,4 +1,4 @@
-﻿# Architectural Implications of Testing
+# Architectural Implications of Testing
 
 ## Testability Drives Architecture
 

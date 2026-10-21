@@ -1,4 +1,4 @@
-﻿# References — Distributed ID Generation
+# References — Distributed ID Generation
 
 ## Papers and Specifications
 1. Twitter Snowflake ID Generation (blog.twitter.com)

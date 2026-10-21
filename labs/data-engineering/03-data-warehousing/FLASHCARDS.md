@@ -1,4 +1,4 @@
-﻿# Data Warehousing Flashcards
+# Data Warehousing Flashcards
 
 ## Card 1
 **Front**: What is a data warehouse?

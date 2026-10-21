@@ -1,4 +1,4 @@
-﻿# Architecture: Mathematical Optimization Implementation
+# Architecture: Mathematical Optimization Implementation
 
 ## Package Structure
 

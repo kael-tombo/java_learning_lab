@@ -1,4 +1,4 @@
-﻿# Refactoring — Gossip Protocols
+# Refactoring — Gossip Protocols
 
 1. Extract interface for pluggable implementations
 2. Separate concerns: configuration, runtime, monitoring

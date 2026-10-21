@@ -1,4 +1,4 @@
-﻿# References: Fenwick Tree
+# References: Fenwick Tree
 
 ## Original Paper
 

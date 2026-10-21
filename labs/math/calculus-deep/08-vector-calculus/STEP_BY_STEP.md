@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Vector Calculus
+# Step-by-Step Guide: Vector Calculus
 
 ## Implementation Walkthrough
 

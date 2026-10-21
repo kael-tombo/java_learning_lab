@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Flashcards
+# Model Evaluation — Flashcards
 
 Q: The four confusion-matrix cells?
 A: TP label1/pred1, FP label0/pred1, TN label0/pred0, FN label1/pred0.

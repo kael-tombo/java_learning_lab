@@ -1,4 +1,4 @@
-﻿# Implement a GraalVM Polyglot Function Execution Engine
+# Implement a GraalVM Polyglot Function Execution Engine
 
 ## Problem Statement
 Design and implement a polyglot function execution engine that:

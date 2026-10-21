@@ -1,4 +1,4 @@
-﻿# Security: API Versioning & Documentation
+# Security: API Versioning & Documentation
 
 ## 1. Securing OpenAPI Documentation
 

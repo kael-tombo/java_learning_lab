@@ -1,4 +1,4 @@
-﻿# CHALLENGE — Mocking Time
+# CHALLENGE — Mocking Time
 
 ## Problem
 Test code that depends on System.currentTimeMillis() or Instant.now() without modifying production code.

@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Count Bitstrings With No Consecutive Zeros
+# Step-by-Step: Count Bitstrings With No Consecutive Zeros
 
 Goal: count strings over {0, 1} of length n containing no substring "00".
 

@@ -1,4 +1,4 @@
-﻿# Flashcards: Union-Find
+# Flashcards: Union-Find
 
 ## Front: What is Union-Find?
 **Back**: A data structure that maintains disjoint sets and supports two operations: Find (determine which set an element belongs to) and Union (merge two sets).

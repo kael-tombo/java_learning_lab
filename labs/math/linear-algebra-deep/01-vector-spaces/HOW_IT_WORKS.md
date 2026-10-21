@@ -1,4 +1,4 @@
-﻿# How It Works: Vector Spaces
+# How It Works: Vector Spaces
 
 ## High-Level Explanation
 

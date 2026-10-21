@@ -1,4 +1,4 @@
-﻿# Step-by-Step — Gossip Protocols
+# Step-by-Step — Gossip Protocols
 
 ## Step 1: Setup
 1. Create project structure with Maven/Gradle

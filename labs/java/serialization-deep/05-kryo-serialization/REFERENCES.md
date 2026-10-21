@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- References
+# Kryo Serialization -- References
 
 ## Further Reading
 

@@ -1,4 +1,4 @@
-﻿# Interview: Limits and Continuity
+# Interview: Limits and Continuity
 
 ## Common Interview Questions
 

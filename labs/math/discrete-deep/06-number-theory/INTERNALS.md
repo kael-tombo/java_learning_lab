@@ -1,4 +1,4 @@
-﻿# Internals: Number Theory Implementations
+# Internals: Number Theory Implementations
 
 ## Binary Exponentiation (modPow)
 

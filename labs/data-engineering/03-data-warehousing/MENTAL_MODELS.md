@@ -1,4 +1,4 @@
-﻿# Mental Models for Data Warehousing
+# Mental Models for Data Warehousing
 
 ## 1. The Library Model
 - **Facts** = Books on shelves (measurable events)

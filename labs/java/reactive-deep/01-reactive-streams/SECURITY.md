@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Security
+# Reactive Streams -- Security
 ## Reactive Security Considerations
 ### Input Validation
 Validate data early in reactive pipelines.

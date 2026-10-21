@@ -1,4 +1,4 @@
-﻿# Why Distributed Filesystems Matters
+# Why Distributed Filesystems Matters
 
 In modern distributed systems, distributed-filesystems is essential because:
 - Systems are too large for single-node solutions

@@ -1,4 +1,4 @@
-﻿# Self-Supervised Learning - Code Deep Dive
+# Self-Supervised Learning - Code Deep Dive
 
 ## Overview
 Detailed examination of the Self-Supervised Learning Java implementation.

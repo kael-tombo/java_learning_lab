@@ -1,4 +1,4 @@
-﻿# Internals: Combinatorics Data Structures
+# Internals: Combinatorics Data Structures
 
 ## Binomial Coefficient: Three Strategies and Their Footprints
 

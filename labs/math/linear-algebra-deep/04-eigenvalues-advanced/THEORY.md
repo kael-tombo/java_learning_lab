@@ -1,4 +1,4 @@
-﻿# Eigenvalues Advanced — Theory
+# Eigenvalues Advanced — Theory
 
 ## 1. Definitions
 

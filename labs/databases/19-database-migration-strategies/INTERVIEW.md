@@ -1,4 +1,4 @@
-﻿# Interview Questions: Database Migration Strategies (Oracle Focus)
+# Interview Questions: Database Migration Strategies (Oracle Focus)
 
 ## Oracle-Specific Questions
 - What are the key strategies for migrating Oracle databases to the cloud (OCI, AWS RDS, Azure SQL)?

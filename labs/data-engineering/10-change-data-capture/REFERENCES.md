@@ -1,4 +1,4 @@
-﻿# CDC References
+# CDC References
 
 ## Books
 - "Streaming Data" by Andrew Psaltis

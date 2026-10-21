@@ -1,4 +1,4 @@
-﻿# References: Generative Adversarial Networks
+# References: Generative Adversarial Networks
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

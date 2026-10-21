@@ -1,4 +1,4 @@
-﻿# References — Distributed Locks
+# References — Distributed Locks
 
 ## Academic Papers
 1. Key papers in distributed systems and related areas

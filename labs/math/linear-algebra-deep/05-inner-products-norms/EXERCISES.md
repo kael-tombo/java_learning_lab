@@ -1,4 +1,4 @@
-﻿# Inner Products and Norms — Exercises
+# Inner Products and Norms — Exercises
 
 ## 1. Gram-Schmidt
 

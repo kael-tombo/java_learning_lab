@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Internal Implementation
+# Socket Programming -- Internal Implementation
 
 ## Internal Architecture
 

@@ -1,4 +1,4 @@
-﻿# Security: Integration Techniques Implementation
+# Security: Integration Techniques Implementation
 
 ## Security Considerations
 

@@ -1,4 +1,4 @@
-﻿# References: Combinatorics
+# References: Combinatorics
 
 ## Primary Sources
 

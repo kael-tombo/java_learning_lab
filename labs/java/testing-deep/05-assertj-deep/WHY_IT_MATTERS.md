@@ -1,4 +1,4 @@
-﻿# AssertJ Deep Dive -- Why It Matters
+# AssertJ Deep Dive -- Why It Matters
 ## Practical Importance
 ### Quality Assurance
 Tests verify code correctness and prevent regressions.

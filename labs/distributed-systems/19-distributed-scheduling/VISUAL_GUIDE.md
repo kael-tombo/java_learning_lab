@@ -1,4 +1,4 @@
-﻿# Visual Guide — Distributed Scheduling
+# Visual Guide — Distributed Scheduling
 
 ## Leader Election Flow
 `

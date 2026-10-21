@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Security
+# Model Evaluation — Security
 
 ## Threats specific to evaluation
 - Test-set exposure: test rows leak into training data or

@@ -1,4 +1,4 @@
-﻿# References — Distributed Monitoring
+# References — Distributed Monitoring
 
 ## Academic Papers
 1. Key papers in distributed systems and related areas

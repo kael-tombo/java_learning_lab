@@ -1,4 +1,4 @@
-﻿# Quiz: Server-Sent Events
+# Quiz: Server-Sent Events
 
 Q1: What is the Content-Type for SSE? A: text/event-stream
 Q2: How does SSE differ from WebSocket? A: SSE is unidirectional (server→client), WebSocket is bidirectional

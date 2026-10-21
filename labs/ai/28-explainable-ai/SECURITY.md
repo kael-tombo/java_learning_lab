@@ -1,4 +1,4 @@
-﻿# Security: Explainable AI
+# Security: Explainable AI
 
 ## 1. Threat Overview
 Security concerns in Explainable AI include adversarial attacks, data poisoning, model theft, and privacy violations. Understanding these threats is essential for building robust systems.

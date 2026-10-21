@@ -1,4 +1,4 @@
-﻿# Flashcards: Segment Trees
+# Flashcards: Segment Trees
 
 ## Front: What is a segment tree?
 **Back**: A binary tree data structure for storing intervals, supporting range queries and updates in O(log n) time.

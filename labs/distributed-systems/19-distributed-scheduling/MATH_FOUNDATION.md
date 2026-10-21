@@ -1,4 +1,4 @@
-﻿# Math Foundations — Distributed Scheduling
+# Math Foundations — Distributed Scheduling
 
 ## 1. Cron Expression Grammar
 

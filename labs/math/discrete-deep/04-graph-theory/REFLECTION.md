@@ -1,4 +1,4 @@
-﻿# Reflection: Graph Theory
+# Reflection: Graph Theory
 
 ## The Abstraction Move Is the Real Lesson
 

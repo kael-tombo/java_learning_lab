@@ -1,4 +1,4 @@
-﻿# Variational Autoencoders - Quiz
+# Variational Autoencoders - Quiz
 
 ## Overview
 Assessment covering all Variational Autoencoders topics.

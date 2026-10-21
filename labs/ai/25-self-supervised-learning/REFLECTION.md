@@ -1,4 +1,4 @@
-﻿# Reflection: Self-Supervised Learning
+# Reflection: Self-Supervised Learning
 
 ## Self-Assessment
 - Can I explain Self-Supervised Learning to a non-technical person?

@@ -1,4 +1,4 @@
-﻿# Theory: Segment Trees
+# Theory: Segment Trees
 
 ## Fundamentals
 

@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: GraphQL DGS
+# Mathematical Foundation: GraphQL DGS
 
 ## N+1 Problem
 Without DataLoader: N+1 queries = 1 (list) + N (item details)

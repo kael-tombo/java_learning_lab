@@ -1,4 +1,4 @@
-﻿# Exercises: Self-Supervised Learning
+# Exercises: Self-Supervised Learning
 
 ## Overview
 This document contains practice problems organized by difficulty. Attempt each problem before consulting the solution.

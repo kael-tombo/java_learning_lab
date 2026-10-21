@@ -1,4 +1,4 @@
-﻿# History of Kafka Streaming
+# History of Kafka Streaming
 
 ## Timeline
 - **2011**: Apache Kafka created at LinkedIn

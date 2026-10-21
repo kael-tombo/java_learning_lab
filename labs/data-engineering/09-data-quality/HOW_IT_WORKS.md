@@ -1,4 +1,4 @@
-﻿# How Data Quality Works
+# How Data Quality Works
 
 ## Quality Check Implementation
 `java

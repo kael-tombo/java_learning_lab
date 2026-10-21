@@ -1,4 +1,4 @@
-﻿# Interview Questions: Skip Lists
+# Interview Questions: Skip Lists
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

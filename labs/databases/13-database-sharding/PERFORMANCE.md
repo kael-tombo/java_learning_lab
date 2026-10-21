@@ -1,4 +1,4 @@
-﻿# Performance: Database Sharding
+# Performance: Database Sharding
 
 ## Performance Characteristics
 

@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Why It Exists
+# NIO Selectors -- Why It Exists
 ## Historical Context and Motivation
 
 ### The Problem

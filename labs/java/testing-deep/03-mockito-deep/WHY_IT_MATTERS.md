@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Why It Matters
+# Mockito Deep Dive -- Why It Matters
 ## Practical Importance
 ### Quality Assurance
 Tests verify code correctness and prevent regressions.

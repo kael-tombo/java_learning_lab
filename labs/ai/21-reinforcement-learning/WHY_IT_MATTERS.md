@@ -1,4 +1,4 @@
-﻿# Why Reinforcement Learning Matters
+# Why Reinforcement Learning Matters
 
 ## Economic Impact
 Reinforcement Learning drives automation, personalization, and optimization across industries. It creates new products and services while improving efficiency in existing processes.

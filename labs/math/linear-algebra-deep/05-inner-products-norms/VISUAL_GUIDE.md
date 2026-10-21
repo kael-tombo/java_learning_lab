@@ -1,4 +1,4 @@
-﻿# Visual Guide: Inner Products and Norms
+# Visual Guide: Inner Products and Norms
 
 ## Conceptual Diagrams
 

@@ -1,4 +1,4 @@
-﻿# Reactive Programming — Math Foundation
+# Reactive Programming — Math Foundation
 
 ## Mathematical Concepts
 

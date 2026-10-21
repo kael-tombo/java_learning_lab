@@ -1,4 +1,4 @@
-﻿# Lab 18: Circular Buffers & Ring Buffers
+# Lab 18: Circular Buffers & Ring Buffers
 
 <div align="center">
 

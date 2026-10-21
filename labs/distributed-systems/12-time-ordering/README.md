@@ -1,4 +1,4 @@
-﻿# 12 - Time Ordering in Distributed Systems
+# 12 - Time Ordering in Distributed Systems
 
 ## Overview
 Time ordering is a fundamental challenge in distributed systems where nodes lack a shared clock. This lab explores logical clocks, vector clocks, hybrid clocks, and causal ordering mechanisms that enable distributed processes to agree on event ordering without physical clock synchronization.

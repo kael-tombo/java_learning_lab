@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Theory
+# Model Interpretability — Theory
 
 ## 1. Global vs local
 A global explanation describes the model everywhere (which features

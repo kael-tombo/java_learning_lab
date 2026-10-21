@@ -1,4 +1,4 @@
-﻿# Data Quality Interview Questions
+# Data Quality Interview Questions
 
 ## Beginner
 **Q**: Why is data quality important?

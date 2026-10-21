@@ -1,4 +1,4 @@
-﻿# Inner Products and Norms
+# Inner Products and Norms
 
 Micro-lab on Cauchy-Schwarz, Gram-Schmidt with exact fractions, the
 projection formula, and orthogonal matrices.

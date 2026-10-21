@@ -1,4 +1,4 @@
-﻿# Interview Questions: Database Replication (Oracle Focus)
+# Interview Questions: Database Replication (Oracle Focus)
 
 ## Oracle-Specific Questions
 - Explain Oracle Data Guard architecture: physical standby vs logical standby vs snapshot standby.

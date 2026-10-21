@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Step by Step
+# Model Training Pipelines — Step by Step
 
 ## Step 1. List the stages
 Write the six names in order: ingest, validate, transform, train,

@@ -1,4 +1,4 @@
-﻿# Architecture — Distributed Filesystems
+# Architecture — Distributed Filesystems
 
 ## HDFS Architecture
 `

@@ -1,4 +1,4 @@
-﻿# Reinforcement Learning - Complete Theory
+# Reinforcement Learning - Complete Theory
 
 ## 1. Introduction
 

@@ -1,4 +1,4 @@
-﻿# Why Networking Exists
+# Why Networking Exists
 
 ## The Problem It Solves
 

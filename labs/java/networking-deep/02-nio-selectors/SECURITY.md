@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Security
+# NIO Selectors -- Security
 
 ## Security Considerations
 

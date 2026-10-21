@@ -1,4 +1,4 @@
-﻿# Interview Questions: Java Serialization
+# Interview Questions: Java Serialization
 
 ## Company-Specific Focus
 

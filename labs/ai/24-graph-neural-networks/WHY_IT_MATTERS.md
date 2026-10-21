@@ -1,4 +1,4 @@
-﻿# Why Graph Neural Networks Matters
+# Why Graph Neural Networks Matters
 
 ## Economic Impact
 Graph Neural Networks drives automation, personalization, and optimization across industries. It creates new products and services while improving efficiency in existing processes.

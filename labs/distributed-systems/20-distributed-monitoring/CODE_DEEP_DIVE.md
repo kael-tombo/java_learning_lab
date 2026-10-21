@@ -1,4 +1,4 @@
-﻿# Code Deep Dive — Distributed Monitoring
+# Code Deep Dive — Distributed Monitoring
 
 ## 1. MetricRegistry Implementation
 

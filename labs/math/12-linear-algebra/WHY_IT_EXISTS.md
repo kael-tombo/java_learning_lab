@@ -1,4 +1,4 @@
-﻿# Why Linear Algebra Exists
+# Why Linear Algebra Exists
 
 ## Purpose and Justification
 

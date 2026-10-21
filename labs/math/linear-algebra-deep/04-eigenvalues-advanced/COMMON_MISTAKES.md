@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Eigenvalues Advanced
+# Common Mistakes: Eigenvalues Advanced
 
 ## Top 10 Common Mistakes
 

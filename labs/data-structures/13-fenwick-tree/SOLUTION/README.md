@@ -1,4 +1,4 @@
-﻿# Solutions: Fenwick Tree Exercises
+# Solutions: Fenwick Tree Exercises
 
 Solutions in src/ directory.
 

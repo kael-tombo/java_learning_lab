@@ -1,4 +1,4 @@
-﻿# Internals of Segment Trees
+# Internals of Segment Trees
 
 ## Memory Layout
 

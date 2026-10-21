@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Visual Guide
+# gRPC Networking -- Visual Guide
 ## Network Architecture Diagram
 `
     +-----------+     +-----------+     +-----------+

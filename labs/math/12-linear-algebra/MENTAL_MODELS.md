@@ -1,4 +1,4 @@
-﻿# Mental Models: Linear Algebra
+# Mental Models: Linear Algebra
 
 ## Conceptual Frameworks
 

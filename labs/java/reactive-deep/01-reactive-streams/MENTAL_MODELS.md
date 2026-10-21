@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Mental Models
+# Reactive Streams -- Mental Models
 ## Key Mental Models
 ### The Assembly Line
 Reactive operators are like stations on an assembly line.

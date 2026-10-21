@@ -1,4 +1,4 @@
-﻿# Explainable AI - Complete Theory
+# Explainable AI - Complete Theory
 
 ## 1. Introduction
 

@@ -1,4 +1,4 @@
-﻿# Reactive Programming — Mental Models
+# Reactive Programming — Mental Models
 
 ## Model 1: The Blueprint
 

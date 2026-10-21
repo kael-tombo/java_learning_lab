@@ -1,4 +1,4 @@
-﻿# Debugging: Performance
+# Debugging: Performance
 
 1. Use Async Profiler flame graphs
 2. Analyze GC logs with GCViewer

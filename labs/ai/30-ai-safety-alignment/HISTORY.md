@@ -1,4 +1,4 @@
-﻿# History of AI Safety and Alignment
+# History of AI Safety and Alignment
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

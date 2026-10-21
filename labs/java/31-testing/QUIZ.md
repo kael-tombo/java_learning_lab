@@ -1,4 +1,4 @@
-﻿# Testing — Quiz
+# Testing — Quiz
 
 ## Question 1
 What annotation marks a method as a JUnit 5 test?

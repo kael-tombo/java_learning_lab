@@ -1,4 +1,4 @@
-﻿# Interview: Derivative Applications
+# Interview: Derivative Applications
 
 ## Common Interview Questions
 

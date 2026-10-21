@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning - Mathematical Foundations
+# Multi-Task Learning - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Multi-Task Learning.

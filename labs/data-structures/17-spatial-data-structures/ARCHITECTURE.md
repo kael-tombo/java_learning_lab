@@ -1,4 +1,4 @@
-﻿# Architecture
+# Architecture
 
 Spatial data structures typically integrate as:
 `

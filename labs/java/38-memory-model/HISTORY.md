@@ -1,4 +1,4 @@
-﻿# Memory Model — Evolution Across Versions
+# Memory Model — Evolution Across Versions
 
 ## Early Days (Java 1.0-1.4)
 

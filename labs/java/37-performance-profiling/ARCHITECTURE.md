@@ -1,4 +1,4 @@
-﻿# Architecture
+# Architecture
 
 ## How Architecture Shapes
 

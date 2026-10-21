@@ -1,4 +1,4 @@
-﻿# Why Kafka Streaming Exists
+# Why Kafka Streaming Exists
 
 ## The Problem
 Before Kafka Streams, Kafka consumers had to use external frameworks (Spark, Flink, Storm) for stream processing, adding complexity in deployment, monitoring, and operations.

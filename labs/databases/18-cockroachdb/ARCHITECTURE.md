@@ -1,4 +1,4 @@
-﻿# Architecture: CockroachDB
+# Architecture: CockroachDB
 
 ## System Architecture
 

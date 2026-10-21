@@ -1,4 +1,4 @@
-﻿# Visual Guide: Federated Learning
+# Visual Guide: Federated Learning
 
 ## 1. System Architecture Diagram
 [Input Data] → [Preprocessing] → [Model Forward Pass] → [Loss Computation] → [Backward Pass] → [Parameter Update]

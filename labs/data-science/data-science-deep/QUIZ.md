@@ -1,4 +1,4 @@
-﻿# Data Science Deep Dive - Quiz
+# Data Science Deep Dive - Quiz
 
 ## Question 1
 What is the primary goal of 

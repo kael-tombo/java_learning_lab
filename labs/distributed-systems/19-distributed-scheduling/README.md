@@ -1,4 +1,4 @@
-﻿# 19 - Distributed Scheduling
+# 19 - Distributed Scheduling
 
 ## Overview
 Distributed scheduling coordinates time-based and event-driven job execution across multiple nodes. This lab covers Quartz Scheduler, distributed cron, leader election for job execution, and job partitioning.

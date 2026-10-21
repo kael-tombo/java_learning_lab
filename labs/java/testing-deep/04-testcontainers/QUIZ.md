@@ -1,4 +1,4 @@
-﻿# Testcontainers -- Quiz
+# Testcontainers -- Quiz
 ## Question 1: What annotation marks a test method?
 A: @Test
 ## Question 2: What is the purpose of @BeforeEach?

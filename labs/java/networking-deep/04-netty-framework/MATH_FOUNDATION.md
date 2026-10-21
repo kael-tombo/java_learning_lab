@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Mathematical Foundation
+# Netty Framework -- Mathematical Foundation
 
 ## 1. Event Loop Mathematics
 N_event_loops = N_CPU_cores for compute-bound

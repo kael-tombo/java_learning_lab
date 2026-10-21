@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: Self-Supervised Learning Implementation
+# Code Deep Dive: Self-Supervised Learning Implementation
 
 ## 1. Architecture Overview
 The Self-Supervised Learning implementation follows modular design principles with clear separation between data handling, model computation, training logic, and evaluation. This architecture ensures testability, extensibility, and performance.

@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Step by Step
+# Model Interpretability — Step by Step
 
 ## Step 1. Run the permutation demo
 Compile and run PermutationImportance. Confirm baseline_acc=1.0,

@@ -1,4 +1,4 @@
-﻿# Visual Guide: Numerical Methods
+# Visual Guide: Numerical Methods
 
 ## Conceptual Diagrams
 

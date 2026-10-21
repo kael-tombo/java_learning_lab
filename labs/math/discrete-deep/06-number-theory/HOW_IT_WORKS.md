@@ -1,4 +1,4 @@
-﻿# How It Works: Number Theory Mechanics
+# How It Works: Number Theory Mechanics
 
 ## 1. Why the Euclidean Algorithm Works
 

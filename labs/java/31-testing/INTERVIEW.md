@@ -1,4 +1,4 @@
-﻿# Interview Questions: Testing
+# Interview Questions: Testing
 
 ## Company-Specific Focus
 

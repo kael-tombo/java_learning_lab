@@ -1,4 +1,4 @@
-﻿# RSocket -- Internals
+# RSocket -- Internals
 ## Internal Architecture
 ### Publisher Subscription
 Publisher creates Subscription on subscribe(). Subscription manages demand.

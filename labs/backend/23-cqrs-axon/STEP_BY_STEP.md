@@ -1,4 +1,4 @@
-﻿# Step by Step: CQRS Axon
+# Step by Step: CQRS Axon
 
 ## Step 1: Define Command
 `java

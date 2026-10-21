@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Flashcards
+# Kryo Serialization -- Flashcards
 
 ## Spaced-Repetition Learning Cards
 

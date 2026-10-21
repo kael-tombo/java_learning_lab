@@ -1,4 +1,4 @@
-﻿# Step by Step: Number Theory Learning Path
+# Step by Step: Number Theory Learning Path
 
 ## Stage 1: Foundation (Week 1)
 

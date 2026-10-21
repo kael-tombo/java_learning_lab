@@ -1,4 +1,4 @@
-﻿# Testcontainers -- Mental Models
+# Testcontainers -- Mental Models
 ## Key Mental Models
 ### The Safety Net
 Tests are a safety net that catch regressions when you make changes.

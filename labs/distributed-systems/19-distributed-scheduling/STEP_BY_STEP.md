@@ -1,4 +1,4 @@
-﻿# Step-by-Step — Distributed Scheduling
+# Step-by-Step — Distributed Scheduling
 
 ## Step 1: Setup
 1. Create project structure with Maven/Gradle

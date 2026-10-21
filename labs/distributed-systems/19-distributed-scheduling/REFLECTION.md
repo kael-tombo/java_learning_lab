@@ -1,4 +1,4 @@
-﻿# Reflection — Distributed Scheduling
+# Reflection — Distributed Scheduling
 
 ## Key Questions
 1. How does this pattern handle edge cases?

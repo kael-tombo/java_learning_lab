@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- History
+# Kryo Serialization -- History
 
 ## Historical Evolution
 

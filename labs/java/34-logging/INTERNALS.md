@@ -1,4 +1,4 @@
-﻿
+
 # Logging — Internal Mechanics
 
 ## How the JVM Implements Logging

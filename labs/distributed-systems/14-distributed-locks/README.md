@@ -1,4 +1,4 @@
-﻿# 14 - Distributed Locks
+# 14 - Distributed Locks
 
 ## Overview
 Distributed locks coordinate access to shared resources across multiple nodes. This lab covers Redis Redlock, ZooKeeper locks, lease-based locking, and fencing tokens for safe distributed mutual exclusion.

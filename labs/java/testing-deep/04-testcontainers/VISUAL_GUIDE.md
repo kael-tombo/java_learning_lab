@@ -1,4 +1,4 @@
-﻿# Testcontainers -- Visual Guide
+# Testcontainers -- Visual Guide
 ## Test Lifecycle Flow
 @BeforeAll -> @BeforeEach -> @Test -> @AfterEach -> @AfterAll
 ## Mock Interaction Flow

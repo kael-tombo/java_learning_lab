@@ -1,4 +1,4 @@
-﻿# Mock Interview: JWT with Refresh Token Rotation (Lab 04)
+# Mock Interview: JWT with Refresh Token Rotation (Lab 04)
 
 **Role:** Senior Backend Engineer
 **Duration:** 55 minutes

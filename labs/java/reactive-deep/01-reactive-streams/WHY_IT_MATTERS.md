@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Why It Matters
+# Reactive Streams -- Why It Matters
 ## Why Reactive Matters
 ### Scalability
 Reactive systems handle more concurrent users with fewer resources.

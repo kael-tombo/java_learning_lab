@@ -1,4 +1,4 @@
-﻿# Common Mistakes: CockroachDB
+# Common Mistakes: CockroachDB
 
 ## Mistake 1: Choosing the Wrong Routing Key
 **Problem:** Selecting a key with low cardinality or highly skewed distribution.

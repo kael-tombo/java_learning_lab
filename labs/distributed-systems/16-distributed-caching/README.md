@@ -1,4 +1,4 @@
-﻿# 16 - Distributed Caching
+# 16 - Distributed Caching
 
 ## Overview
 Distributed caching accelerates data access by storing frequently used data across multiple nodes. This lab covers Memcached, Redis Cluster, cache coherency strategies, write-behind patterns, and cache invalidation techniques.

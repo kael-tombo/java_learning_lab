@@ -1,4 +1,4 @@
-﻿# Interview: Security
+# Interview: Security
 
 Q: How does CSRF token work? A: Server generates random token, sends to client in form/page. Client includes token in state-changing requests. Server validates token equals stored value.
 

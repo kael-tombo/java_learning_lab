@@ -1,4 +1,4 @@
-﻿# Linear Transformations — Exercises
+# Linear Transformations — Exercises
 
 ## 1. Kernel
 

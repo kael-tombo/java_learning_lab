@@ -1,4 +1,4 @@
-﻿# History: Database Testing
+# History: Database Testing
 
 ## Evolution
 

@@ -1,4 +1,4 @@
-﻿# Performance Analysis: Information Theory
+# Performance Analysis: Information Theory
 
 ## Algorithmic Complexity
 

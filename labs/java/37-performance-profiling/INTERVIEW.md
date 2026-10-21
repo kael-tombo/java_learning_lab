@@ -1,4 +1,4 @@
-﻿# Interview Questions: Performance Profiling
+# Interview Questions: Performance Profiling
 
 ## Company-Specific Focus
 

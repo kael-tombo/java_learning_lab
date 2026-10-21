@@ -1,4 +1,4 @@
-﻿# Interview Questions: JSON Serialization
+# Interview Questions: JSON Serialization
 
 ## Company-Specific Focus
 

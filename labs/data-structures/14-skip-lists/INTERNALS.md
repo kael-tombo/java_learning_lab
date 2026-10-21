@@ -1,4 +1,4 @@
-﻿# Internals of Skip Lists
+# Internals of Skip Lists
 
 ## Node Structure
 

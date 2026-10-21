@@ -1,4 +1,4 @@
-﻿# Debugging: Eigenvalues Advanced Implementation
+# Debugging: Eigenvalues Advanced Implementation
 
 ## Common Bugs
 

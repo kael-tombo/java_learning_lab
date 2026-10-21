@@ -1,4 +1,4 @@
-﻿# Flashcards: Skip Lists
+# Flashcards: Skip Lists
 
 ## Front: What is a skip list?
 Back: A probabilistic data structure with multiple linked list levels for O(log n) expected search/insert/delete.

@@ -1,4 +1,4 @@
-﻿# RSocket -- References
+# RSocket -- References
 ## Resources
 - Reactive Streams: reactive-streams.org
 - Project Reactor: projectreactor.io

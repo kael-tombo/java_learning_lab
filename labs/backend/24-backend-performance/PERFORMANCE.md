@@ -1,4 +1,4 @@
-﻿# Performance: Performance Optimization (Meta!)
+# Performance: Performance Optimization (Meta!)
 
 Key metrics to measure:
 - p50/p95/p99 latency

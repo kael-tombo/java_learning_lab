@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Refactoring
+# Kryo Serialization -- Refactoring
 
 ## Refactoring Strategies
 

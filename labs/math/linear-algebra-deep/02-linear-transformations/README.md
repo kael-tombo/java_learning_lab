@@ -1,4 +1,4 @@
-﻿# Linear Transformations
+# Linear Transformations
 
 Micro-lab on the matrix of a linear map, kernel/image with rank-nullity,
 composition as matrix product, and change of basis via similarity.

@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Flashcards
+# gRPC Networking -- Flashcards
 ## Spaced-Repetition Cards
 Card 1: Q: What port range is reserved for well-known services? A: 0-1023
 Card 2: Q: What is the purpose of TCP sequence numbers? A: Ordered delivery and retransmission

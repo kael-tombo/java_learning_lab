@@ -1,4 +1,4 @@
-﻿# Workflow Orchestration Quiz
+# Workflow Orchestration Quiz
 
 ## Question 1
 What does DAG stand for?

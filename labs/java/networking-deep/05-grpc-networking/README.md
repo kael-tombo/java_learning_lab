@@ -1,4 +1,4 @@
-﻿# gRPC Networking
+# gRPC Networking
 
 Contract-first RPC: `.proto` IDL generates stubs and skeletons, protobuf
 serializes binary messages, HTTP/2 multiplexes concurrent calls over one

@@ -1,4 +1,4 @@
-﻿# Variational Autoencoders - Code Deep Dive
+# Variational Autoencoders - Code Deep Dive
 
 ## Overview
 Detailed examination of the Variational Autoencoders Java implementation.

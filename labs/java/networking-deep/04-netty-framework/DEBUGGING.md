@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Debugging
+# Netty Framework -- Debugging
 
 ## Debugging Strategies
 

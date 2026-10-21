@@ -1,4 +1,4 @@
-﻿# Interview Questions: XML Serialization
+# Interview Questions: XML Serialization
 
 ## Company-Specific Focus
 

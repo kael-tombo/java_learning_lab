@@ -1,4 +1,4 @@
-﻿# Reflection: Applied Linear Algebra
+# Reflection: Applied Linear Algebra
 
 ## Self-Assessment Questions
 

@@ -1,4 +1,4 @@
-﻿# 20 - Distributed Monitoring
+# 20 - Distributed Monitoring
 
 ## Overview
 Distributed monitoring provides observability at scale across distributed systems. This lab covers Prometheus federation, Thanos, Cortex, distributed tracing with OpenTelemetry, and metrics aggregation at scale.

@@ -1,4 +1,4 @@
-﻿# Performance Profiling — Internal Mechanics
+# Performance Profiling — Internal Mechanics
 
 ## How JFR Works
 

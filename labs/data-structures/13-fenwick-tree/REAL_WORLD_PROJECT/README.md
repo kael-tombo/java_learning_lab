@@ -1,4 +1,4 @@
-﻿# Real World Project: Inversion Counter
+# Real World Project: Inversion Counter
 
 Build a collaborative filtering tool that measures similarity between user rankings.
 

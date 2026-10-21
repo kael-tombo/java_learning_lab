@@ -1,4 +1,4 @@
-﻿# Flashcards: Database Migration Strategies
+# Flashcards: Database Migration Strategies
 
 ## Q: What is database migration strategies?
 **A:** Strategy that distributes data across multiple independent database instances for scalability.

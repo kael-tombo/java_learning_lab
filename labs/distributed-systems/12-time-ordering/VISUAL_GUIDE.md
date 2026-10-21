@@ -1,4 +1,4 @@
-﻿# Visual Guide — Time Ordering
+# Visual Guide — Time Ordering
 
 ## Lamport Clock Flow
 `

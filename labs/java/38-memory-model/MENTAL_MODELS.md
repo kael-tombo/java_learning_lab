@@ -1,4 +1,4 @@
-﻿# Memory Model — Mental Models
+# Memory Model — Mental Models
 
 ## Model 1: The Blueprint
 

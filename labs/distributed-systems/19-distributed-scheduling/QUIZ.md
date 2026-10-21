@@ -1,4 +1,4 @@
-﻿# Quiz — Distributed Scheduling
+# Quiz — Distributed Scheduling
 
 1. Quartz uses what for cluster coordination? Answer: Database locks
 2. Leader election ensures? Answer: Single executor

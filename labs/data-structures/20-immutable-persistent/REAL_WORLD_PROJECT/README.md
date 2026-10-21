@@ -1,4 +1,4 @@
-﻿# Real World Project: Functional Task Scheduler
+# Real World Project: Functional Task Scheduler
 
 Build a task scheduler with persistent priority queue.
 - Adding/removing tasks creates new version

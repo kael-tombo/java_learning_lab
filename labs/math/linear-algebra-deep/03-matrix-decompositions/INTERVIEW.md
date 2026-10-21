@@ -1,4 +1,4 @@
-﻿# Interview: Matrix Decompositions
+# Interview: Matrix Decompositions
 
 ## Common Interview Questions
 

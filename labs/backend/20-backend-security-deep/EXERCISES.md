@@ -1,4 +1,4 @@
-﻿# Exercises: Backend Security Deep Dive
+# Exercises: Backend Security Deep Dive
 
 ## Exercise 1: CSRF Protection
 Configure CSRF protection in a Spring Boot app.

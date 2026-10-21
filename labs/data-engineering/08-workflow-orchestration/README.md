@@ -1,4 +1,4 @@
-﻿# Workflow Orchestration
+# Workflow Orchestration
 
 ## Overview
 Workflow orchestration manages the scheduling, execution, and monitoring of complex data pipelines using Directed Acyclic Graphs (DAGs). Apache Airflow is the leading open-source orchestrator.

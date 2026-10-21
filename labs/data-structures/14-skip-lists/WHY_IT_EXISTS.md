@@ -1,4 +1,4 @@
-﻿# Why Skip Lists Exist
+# Why Skip Lists Exist
 
 ## The Problem: Simpler Balanced Structures
 

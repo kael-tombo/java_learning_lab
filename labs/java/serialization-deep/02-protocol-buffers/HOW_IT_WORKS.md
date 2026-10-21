@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- How It Works
+# Protocol Buffers -- How It Works
 
 ## Detailed Mechanical Explanation
 

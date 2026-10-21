@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Mathematical Foundation
+# Mockito Deep Dive -- Mathematical Foundation
 ## 1. Code Coverage Mathematics
 ### Line Coverage
 lines_covered / total_lines * 100%

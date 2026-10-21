@@ -1,4 +1,4 @@
-﻿# How Generative Adversarial Networks Works
+# How Generative Adversarial Networks Works
 
 ## 1. Basic Idea
 Generative Adversarial Networks works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

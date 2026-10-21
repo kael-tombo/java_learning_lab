@@ -1,4 +1,4 @@
-﻿# Apache Spark Quiz
+# Apache Spark Quiz
 
 ## Question 1
 What does RDD stand for?

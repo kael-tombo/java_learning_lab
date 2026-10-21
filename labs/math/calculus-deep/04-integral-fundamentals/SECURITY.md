@@ -1,4 +1,4 @@
-﻿# Security: Integral Fundamentals Implementation
+# Security: Integral Fundamentals Implementation
 
 ## Security Considerations
 

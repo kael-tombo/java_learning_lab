@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Time Ordering
+# Mathematical Foundations of Time Ordering
 
 ## 1. Partial Orders and Total Orders
 

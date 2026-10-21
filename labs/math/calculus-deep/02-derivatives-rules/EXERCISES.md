@@ -1,4 +1,4 @@
-﻿# Exercises: Derivatives and Differentiation Rules
+# Exercises: Derivatives and Differentiation Rules
 
 ## Theoretical Exercises
 

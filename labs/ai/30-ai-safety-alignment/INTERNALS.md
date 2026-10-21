@@ -1,4 +1,4 @@
-﻿# Internal Implementation: AI Safety and Alignment
+# Internal Implementation: AI Safety and Alignment
 
 ## 1. Core Engine
 The computational engine manages a directed acyclic graph of operations. Each node is an operation, edges represent data dependencies. The engine schedules operations for efficient execution considering dependencies and available resources.

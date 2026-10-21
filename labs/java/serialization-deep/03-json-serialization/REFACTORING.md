@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Refactoring
+# JSON Serialization -- Refactoring
 
 ## Refactoring Strategies
 

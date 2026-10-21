@@ -1,4 +1,4 @@
-﻿# Refactoring: Security
+# Refactoring: Security
 
 Before: Disabling CSRF globally
 After: Selective CSRF for specific path patterns

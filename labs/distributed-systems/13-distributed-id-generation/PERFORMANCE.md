@@ -1,4 +1,4 @@
-﻿# Performance — ID Generation
+# Performance — ID Generation
 
 ## Throughput (IDs/second)
 | Generator | Single Thread | 8 Threads |

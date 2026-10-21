@@ -1,4 +1,4 @@
-﻿# Testing — Step-by-Step Tutorial
+# Testing — Step-by-Step Tutorial
 
 ## Step 1: Set Up Your Project
 

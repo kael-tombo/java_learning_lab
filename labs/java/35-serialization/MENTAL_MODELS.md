@@ -1,4 +1,4 @@
-﻿# Serialization — Mental Models
+# Serialization — Mental Models
 
 ## Model 1: The Blueprint
 

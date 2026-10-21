@@ -1,4 +1,4 @@
-﻿# Interview Questions: Concurrent Data Structures
+# Interview Questions: Concurrent Data Structures
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

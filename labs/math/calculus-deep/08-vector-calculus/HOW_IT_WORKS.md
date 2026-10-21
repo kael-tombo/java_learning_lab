@@ -1,4 +1,4 @@
-﻿# How It Works: Vector Calculus
+# How It Works: Vector Calculus
 
 ## High-Level Explanation
 

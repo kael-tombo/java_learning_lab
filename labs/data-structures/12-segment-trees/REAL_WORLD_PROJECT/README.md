@@ -1,4 +1,4 @@
-﻿# Real World Project: Stock Market Analysis
+# Real World Project: Stock Market Analysis
 
 Build a stock market analysis tool using segment trees for efficient range queries.
 

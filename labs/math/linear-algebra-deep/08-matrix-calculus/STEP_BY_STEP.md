@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Matrix Calculus
+# Step-by-Step Guide: Matrix Calculus
 
 ## Implementation Walkthrough
 

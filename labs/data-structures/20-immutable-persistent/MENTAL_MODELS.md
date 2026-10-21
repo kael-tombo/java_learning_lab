@@ -1,4 +1,4 @@
-﻿# Mental Models
+# Mental Models
 
 ## 1. The Versioned Document Model
 Think of a document where each edit creates a new version. Old versions remain accessible. Most content is shared between versions (structural sharing). This is exactly how Git works.

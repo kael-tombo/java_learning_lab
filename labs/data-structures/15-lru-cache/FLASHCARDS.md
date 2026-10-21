@@ -1,4 +1,4 @@
-﻿# Flashcards: LRU Cache
+# Flashcards: LRU Cache
 
 ## Front: What is an LRU cache?
 Back: A bounded cache that evicts the least recently used item when full.

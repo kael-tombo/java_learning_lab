@@ -1,4 +1,4 @@
-﻿# Debugging: Graph Neural Networks
+# Debugging: Graph Neural Networks
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

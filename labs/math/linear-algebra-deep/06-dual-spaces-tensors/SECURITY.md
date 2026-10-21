@@ -1,4 +1,4 @@
-﻿# Security: Dual Spaces and Tensors Implementation
+# Security: Dual Spaces and Tensors Implementation
 
 ## Security Considerations
 

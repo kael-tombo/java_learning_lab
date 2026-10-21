@@ -1,4 +1,4 @@
-﻿# Visual Guide to Persistent Structures
+# Visual Guide to Persistent Structures
 
 ## Persistent List Add
 

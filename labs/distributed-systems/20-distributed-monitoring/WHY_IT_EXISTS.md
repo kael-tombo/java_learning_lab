@@ -1,4 +1,4 @@
-﻿# Why Distributed Monitoring Exists
+# Why Distributed Monitoring Exists
 
 Distributed Monitoring exists to solve specific distributed systems challenges that cannot be addressed by single-node solutions. The fundamental problem is that as systems scale horizontally, coordination, communication, and consistency become exponentially more complex.
 

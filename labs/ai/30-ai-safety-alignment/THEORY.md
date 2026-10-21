@@ -1,4 +1,4 @@
-﻿# AI Safety and Alignment - Complete Theory
+# AI Safety and Alignment - Complete Theory
 
 ## 1. Introduction
 

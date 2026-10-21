@@ -1,4 +1,4 @@
-﻿# Visual Guide — Distributed Locks
+# Visual Guide — Distributed Locks
 
 ## Redis Lock Flow
 `

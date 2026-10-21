@@ -1,4 +1,4 @@
-﻿# Quiz: Backend Performance
+# Quiz: Backend Performance
 
 Q1: What does JMH stand for? A: Java Microbenchmark Harness
 Q2: Which connection pool is fastest? A: HikariCP

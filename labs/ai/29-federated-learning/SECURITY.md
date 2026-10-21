@@ -1,4 +1,4 @@
-﻿# Security: Federated Learning
+# Security: Federated Learning
 
 ## 1. Threat Overview
 Security concerns in Federated Learning include adversarial attacks, data poisoning, model theft, and privacy violations. Understanding these threats is essential for building robust systems.

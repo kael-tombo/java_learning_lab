@@ -1,4 +1,4 @@
-﻿# Internals: Multivariable Calculus Implementation
+# Internals: Multivariable Calculus Implementation
 
 ## Deep Dive into Implementation Details
 

@@ -1,4 +1,4 @@
-﻿# Internal Architecture of Data Pipelines
+# Internal Architecture of Data Pipelines
 
 ## Pipeline Runtime Components
 

@@ -1,4 +1,4 @@
-﻿# Why Mathematical Optimization Exists
+# Why Mathematical Optimization Exists
 
 ## Purpose and Justification
 

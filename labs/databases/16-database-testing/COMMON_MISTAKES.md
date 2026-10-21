@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Database Testing
+# Common Mistakes: Database Testing
 
 ## Mistake 1: Choosing the Wrong Routing Key
 **Problem:** Selecting a key with low cardinality or highly skewed distribution.

@@ -1,4 +1,4 @@
-﻿# Why Data Quality Matters
+# Why Data Quality Matters
 
 ## Business Impact
 - **Trust**: Stakeholders trust data-driven decisions

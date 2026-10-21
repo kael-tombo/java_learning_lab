@@ -1,4 +1,4 @@
-﻿# Feature Engineering - Flashcards
+# Feature Engineering - Flashcards
 
 ## Card 1
 **Q**: What is 

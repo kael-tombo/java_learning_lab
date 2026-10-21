@@ -1,4 +1,4 @@
-﻿# Visual Guide: Variational Autoencoders
+# Visual Guide: Variational Autoencoders
 
 ## 1. System Architecture Diagram
 [Input Data] → [Preprocessing] → [Model Forward Pass] → [Loss Computation] → [Backward Pass] → [Parameter Update]

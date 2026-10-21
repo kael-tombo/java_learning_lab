@@ -1,4 +1,4 @@
-﻿# Reinforcement Learning - Theory
+# Reinforcement Learning - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Reinforcement Learning.

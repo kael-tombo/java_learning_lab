@@ -1,4 +1,4 @@
-﻿# Data Lake Flashcards
+# Data Lake Flashcards
 
 ## Card 1
 **Front**: What is a data lake?

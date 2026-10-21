@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Reflection
+# Model Training Pipelines — Reflection
 
 ## What surprised you?
 That the most valuable pipeline component produces nothing: the gate

@@ -1,4 +1,4 @@
-﻿# Debugging: SSE
+# Debugging: SSE
 
 1. Check Content-Type header is text/event-stream
 2. Verify events are flushed (not buffered)

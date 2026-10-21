@@ -1,4 +1,4 @@
-﻿# Internals: Numerical Methods Implementation Details
+# Internals: Numerical Methods Implementation Details
 
 ## Core Algorithms
 

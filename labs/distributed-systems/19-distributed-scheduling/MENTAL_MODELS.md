@@ -1,4 +1,4 @@
-﻿# Mental Models — Distributed Scheduling
+# Mental Models — Distributed Scheduling
 
 1. **Post Office**: Messages are sent, sorted, delivered
 2. **Team of Developers**: Divide work, coordinate, review

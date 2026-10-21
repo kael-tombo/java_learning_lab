@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Security
+# gRPC Networking -- Security
 
 ## Security Considerations
 

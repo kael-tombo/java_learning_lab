@@ -1,4 +1,4 @@
-﻿# References: Security
+# References: Security
 
 - OWASP Top 10: https://owasp.org/www-project-top-ten/
 - Spring Security Reference: https://docs.spring.io/spring-security/reference/

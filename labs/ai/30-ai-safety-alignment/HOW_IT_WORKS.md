@@ -1,4 +1,4 @@
-﻿# How AI Safety and Alignment Works
+# How AI Safety and Alignment Works
 
 ## 1. Basic Idea
 AI Safety and Alignment works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

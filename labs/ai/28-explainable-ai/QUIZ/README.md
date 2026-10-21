@@ -1,4 +1,4 @@
-﻿# Explainable AI - Quiz
+# Explainable AI - Quiz
 
 ## Overview
 Assessment covering all Explainable AI topics.

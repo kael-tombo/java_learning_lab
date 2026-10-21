@@ -1,4 +1,4 @@
-﻿# Flashcards: Spring Batch
+# Flashcards: Spring Batch
 
 Card 1: Q: Default chunk size? A: 1
 Card 2: Q: Interface for data transformation? A: ItemProcessor

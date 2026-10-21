@@ -1,4 +1,4 @@
-﻿# Mental Models: Number Theory
+# Mental Models: Number Theory
 
 ## 1. Modulo Is a Clock, Then It's a Partition
 

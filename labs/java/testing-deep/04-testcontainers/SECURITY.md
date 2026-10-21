@@ -1,4 +1,4 @@
-﻿# Testcontainers -- Security Testing
+# Testcontainers -- Security Testing
 ## Security Testing Considerations
 ### Test Security Boundaries
 Verify authentication and authorization in integration tests.

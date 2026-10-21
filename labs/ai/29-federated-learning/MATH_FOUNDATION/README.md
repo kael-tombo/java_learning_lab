@@ -1,4 +1,4 @@
-﻿# Federated Learning - Mathematical Foundations
+# Federated Learning - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Federated Learning.

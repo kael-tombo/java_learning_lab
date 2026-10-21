@@ -1,4 +1,4 @@
-﻿# References: Segment Trees
+# References: Segment Trees
 
 ## Academic Papers
 

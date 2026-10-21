@@ -1,4 +1,4 @@
-﻿# Lab 35: Serialization — Serializable, JSON, Protocol Buffers
+# Lab 35: Serialization — Serializable, JSON, Protocol Buffers
 
 ## Overview
 Deep dive into Serialization in Java. This lab provides comprehensive coverage of Serializable, JSON, Protocol Buffers with practical examples, theory, and exercises.

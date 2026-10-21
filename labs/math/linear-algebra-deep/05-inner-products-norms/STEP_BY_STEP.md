@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Inner Products and Norms
+# Step-by-Step Guide: Inner Products and Norms
 
 ## Implementation Walkthrough
 

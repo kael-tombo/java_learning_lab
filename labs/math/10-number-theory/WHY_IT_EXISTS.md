@@ -1,4 +1,4 @@
-﻿# Why Number Theory Exists
+# Why Number Theory Exists
 
 ## Purpose and Justification
 

@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Internal Implementation
+# Protocol Buffers -- Internal Implementation
 
 ## Internal Architecture
 

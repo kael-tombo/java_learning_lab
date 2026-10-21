@@ -1,4 +1,4 @@
-﻿# Common Mistakes: SSE
+# Common Mistakes: SSE
 
 1. Not setting correct Content-Type
 2. Blocking on event loop threads (WebFlux)

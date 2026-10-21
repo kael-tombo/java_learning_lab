@@ -1,4 +1,4 @@
-﻿# Mental Models
+# Mental Models
 
 ## 1. The Reference Book Model
 A sparse table is like a reference book with precomputed answers for intervals of every length that is a power of 2. Any question about an interval can be answered by combining at most 2 precomputed answers.

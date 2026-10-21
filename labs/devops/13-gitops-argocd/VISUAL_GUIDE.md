@@ -1,4 +1,4 @@
-﻿# Visual Guide to ArgoCD
+# Visual Guide to ArgoCD
 
 ## Architecture Diagram
 ```

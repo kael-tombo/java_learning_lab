@@ -1,4 +1,4 @@
-﻿# Lab 20: Backend Security Deep Dive
+# Lab 20: Backend Security Deep Dive
 
 ## Overview
 Advanced security topics: CSRF protection, CORS configuration, rate limiting, input validation, SQL injection prevention, and secure coding practices.

@@ -1,4 +1,4 @@
-﻿# Challenge: Range Updates with Lazy Propagation
+# Challenge: Range Updates with Lazy Propagation
 
 Implement a segment tree supporting:
 1. Range assignment (set all values in [l,r] to x)

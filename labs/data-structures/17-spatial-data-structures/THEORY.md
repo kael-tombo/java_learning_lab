@@ -1,4 +1,4 @@
-﻿# Theory: Spatial Data Structures
+# Theory: Spatial Data Structures
 
 ## Fundamentals
 Spatial data structures organize multi-dimensional data for efficient queries. Two primary structures are quadtrees (2D space partitioning) and k-d trees (multi-dimensional binary search trees).

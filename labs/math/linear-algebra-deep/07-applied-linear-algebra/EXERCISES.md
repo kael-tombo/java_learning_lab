@@ -1,4 +1,4 @@
-﻿# Applied Linear Algebra — Exercises
+# Applied Linear Algebra — Exercises
 
 ## 1. Normal equations
 

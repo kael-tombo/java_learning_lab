@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Step-by-Step
+# Reactive Streams -- Step-by-Step
 ## Step 1: Add Reactor dependency
 Add reactor-core and reactor-test to build.
 ## Step 2: Create Publisher

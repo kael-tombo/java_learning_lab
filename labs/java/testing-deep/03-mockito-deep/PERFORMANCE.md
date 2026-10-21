@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Test Performance
+# Mockito Deep Dive -- Test Performance
 ## Performance Considerations
 ### Fast Tests
 Unit tests should run in milliseconds.

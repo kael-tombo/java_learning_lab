@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: AI Safety and Alignment Implementation
+# Code Deep Dive: AI Safety and Alignment Implementation
 
 ## 1. Architecture Overview
 The AI Safety and Alignment implementation follows modular design principles with clear separation between data handling, model computation, training logic, and evaluation. This architecture ensures testability, extensibility, and performance.

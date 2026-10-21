@@ -1,4 +1,4 @@
-﻿# Feature Engineering - Quiz
+# Feature Engineering - Quiz
 
 ## Question 1
 What is the primary goal of 

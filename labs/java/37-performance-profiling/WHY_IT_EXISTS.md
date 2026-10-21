@@ -1,4 +1,4 @@
-﻿# Why Performance Profiling Exists
+# Why Performance Profiling Exists
 
 ## The Problem It Solves
 

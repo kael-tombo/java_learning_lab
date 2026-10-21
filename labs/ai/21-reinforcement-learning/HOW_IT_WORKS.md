@@ -1,4 +1,4 @@
-﻿# How Reinforcement Learning Works
+# How Reinforcement Learning Works
 
 ## 1. Basic Idea
 Reinforcement Learning works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

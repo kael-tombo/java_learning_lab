@@ -1,4 +1,4 @@
-﻿# Networking — Visual Guide
+# Networking — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

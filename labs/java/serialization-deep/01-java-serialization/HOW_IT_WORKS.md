@@ -1,4 +1,4 @@
-﻿# Java Serialization -- How It Works
+# Java Serialization -- How It Works
 
 ## Detailed Mechanical Explanation
 

@@ -1,4 +1,4 @@
-﻿# Why It Matters: Vector Spaces
+# Why It Matters: Vector Spaces
 
 ## Real-World Importance
 

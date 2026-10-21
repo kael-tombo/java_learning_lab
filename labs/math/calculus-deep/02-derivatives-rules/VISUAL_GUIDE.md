@@ -1,4 +1,4 @@
-﻿# Visual Guide: Derivatives and Differentiation Rules
+# Visual Guide: Derivatives and Differentiation Rules
 
 ## Conceptual Diagrams
 

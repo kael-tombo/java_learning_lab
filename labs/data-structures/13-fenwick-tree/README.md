@@ -1,4 +1,4 @@
-﻿# Lab 13: Fenwick Tree (Binary Indexed Tree)
+# Lab 13: Fenwick Tree (Binary Indexed Tree)
 
 <div align="center">
 

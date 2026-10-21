@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Derivatives and Differentiation Rules
+# Step-by-Step Guide: Derivatives and Differentiation Rules
 
 ## Implementation Walkthrough
 

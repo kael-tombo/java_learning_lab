@@ -1,4 +1,4 @@
-﻿# Exercises: Fenwick Tree
+# Exercises: Fenwick Tree
 
 ## Beginner
 

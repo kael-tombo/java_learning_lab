@@ -1,4 +1,4 @@
-﻿# Real World Project: Audio Sample Buffer
+# Real World Project: Audio Sample Buffer
 
 Build an audio sample buffer using circular buffer.
 - Real-time audio sample processing

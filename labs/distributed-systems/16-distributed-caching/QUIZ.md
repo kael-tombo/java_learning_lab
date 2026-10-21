@@ -1,4 +1,4 @@
-﻿# Quiz — Distributed Caching
+# Quiz — Distributed Caching
 
 1. Cache-aside is also called? Answer: Lazy loading
 2. Write-behind write goes to? Answer: Cache first, then DB

@@ -1,4 +1,4 @@
-﻿# Refactoring
+# Refactoring
 
 ## Common Refactoring Patterns
 

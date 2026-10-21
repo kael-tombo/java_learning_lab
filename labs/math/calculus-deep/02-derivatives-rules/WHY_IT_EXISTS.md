@@ -1,4 +1,4 @@
-﻿# Why It Exists: Derivatives and Differentiation Rules
+# Why It Exists: Derivatives and Differentiation Rules
 
 ## The Problem It Solves
 

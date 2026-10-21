@@ -1,4 +1,4 @@
-﻿# ML Pipelines Deep Dive
+# ML Pipelines Deep Dive
 
 Welcome to the atomic mastery lab for **ML Pipelines Deep Dive**. This lab is part of the Data Science Academy.
 

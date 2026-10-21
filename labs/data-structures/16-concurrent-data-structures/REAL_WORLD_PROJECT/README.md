@@ -1,4 +1,4 @@
-﻿# Real World Project: High-Frequency Trading Order Book
+# Real World Project: High-Frequency Trading Order Book
 
 Build a concurrent order book for trading.
 - Lock-free queues for order ingestion

@@ -1,4 +1,4 @@
-﻿# Matrix Decompositions — Exercises
+# Matrix Decompositions — Exercises
 
 ## 1. LU multipliers
 

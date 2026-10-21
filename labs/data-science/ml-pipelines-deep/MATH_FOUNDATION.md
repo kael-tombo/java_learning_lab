@@ -1,4 +1,4 @@
-﻿# ML Pipelines Deep Dive - Mathematical Foundations
+# ML Pipelines Deep Dive - Mathematical Foundations
 
 ## Probability Theory
 

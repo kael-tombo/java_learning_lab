@@ -1,4 +1,4 @@
-﻿# Reflection: Linear Algebra
+# Reflection: Linear Algebra
 
 ## Personal Learning Journey
 

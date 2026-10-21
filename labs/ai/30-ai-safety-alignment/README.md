@@ -1,4 +1,4 @@
-﻿# 30-30-ai-safety-alignment - AI Safety and Alignment
+# 30-30-ai-safety-alignment - AI Safety and Alignment
 
 Reward modeling, RLHF, constitutional AI, red teaming
 

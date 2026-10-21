@@ -1,4 +1,4 @@
-﻿# Reflection: Matrix Calculus
+# Reflection: Matrix Calculus
 
 ## Self-Assessment Questions
 

@@ -1,4 +1,4 @@
-﻿# Meta-Learning - Theory
+# Meta-Learning - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Meta-Learning.

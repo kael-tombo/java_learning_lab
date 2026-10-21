@@ -1,4 +1,4 @@
-﻿# Memory Model — Theoretical Foundation
+# Memory Model — Theoretical Foundation
 
 ## Core Concepts
 

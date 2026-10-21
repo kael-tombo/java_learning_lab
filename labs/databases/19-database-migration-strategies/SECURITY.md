@@ -1,4 +1,4 @@
-﻿# Security: Database Migration Strategies
+# Security: Database Migration Strategies
 
 ## Security Model
 

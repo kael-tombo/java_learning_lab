@@ -1,4 +1,4 @@
-﻿# Netty Framework -- History
+# Netty Framework -- History
 ## Historical Evolution
 
 ### Early Networking (1980s)

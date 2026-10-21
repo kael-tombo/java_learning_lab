@@ -1,4 +1,4 @@
-﻿# Performance — Distributed Scheduling
+# Performance — Distributed Scheduling
 
 ## Scheduling Overhead
 | Operation | Latency |

@@ -1,4 +1,4 @@
-﻿# Interview Questions: CockroachDB (Oracle Comparison)
+# Interview Questions: CockroachDB (Oracle Comparison)
 
 ## Oracle-Specific Questions
 - Compare CockroachDB's distributed SQL architecture with Oracle RAC + Sharding.

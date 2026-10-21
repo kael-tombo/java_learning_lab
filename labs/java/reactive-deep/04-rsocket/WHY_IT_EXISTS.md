@@ -1,4 +1,4 @@
-﻿# RSocket -- Why It Exists
+# RSocket -- Why It Exists
 ## Motivation
 ### The Problem
 Traditional blocking I/O does not scale efficiently.

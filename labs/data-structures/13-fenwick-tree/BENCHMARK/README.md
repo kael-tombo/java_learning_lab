@@ -1,4 +1,4 @@
-﻿# Benchmark: Fenwick Tree Performance
+# Benchmark: Fenwick Tree Performance
 
 ## Scenarios
 1. Point update throughput

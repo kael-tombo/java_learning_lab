@@ -1,4 +1,4 @@
-﻿# Solutions: Segment Tree Exercises
+# Solutions: Segment Tree Exercises
 
 Exercise solutions are in the src/ directory.
 

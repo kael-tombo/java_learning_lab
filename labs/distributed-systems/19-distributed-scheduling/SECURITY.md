@@ -1,4 +1,4 @@
-﻿# SECURITY.md - Distributed Scheduling
+# SECURITY.md - Distributed Scheduling
 
 ## Overview
 This document covers Distributed Scheduling concepts related to SECURITY.

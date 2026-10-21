@@ -1,4 +1,4 @@
-﻿# Interview Questions: Federated Learning
+# Interview Questions: Federated Learning
 
 ## Conceptual Questions
 1. What is Federated Learning and how does it differ from traditional programming?

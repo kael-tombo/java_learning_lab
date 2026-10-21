@@ -1,4 +1,4 @@
-﻿# BENCHMARK
+# BENCHMARK
 
 This directory contains the BENCHMARK component for this lab.
 

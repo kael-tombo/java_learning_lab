@@ -1,4 +1,4 @@
-﻿# Architecture: Differential Equations Implementation
+# Architecture: Differential Equations Implementation
 
 ## System Design
 

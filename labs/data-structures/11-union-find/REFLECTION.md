@@ -1,4 +1,4 @@
-﻿# Reflection: Union-Find
+# Reflection: Union-Find
 
 ## What I Learned
 

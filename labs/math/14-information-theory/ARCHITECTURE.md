@@ -1,4 +1,4 @@
-﻿# Architecture: Information Theory Implementation
+# Architecture: Information Theory Implementation
 
 ## Package Structure
 

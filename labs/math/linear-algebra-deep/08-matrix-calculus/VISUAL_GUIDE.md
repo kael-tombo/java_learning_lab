@@ -1,4 +1,4 @@
-﻿# Visual Guide: Matrix Calculus
+# Visual Guide: Matrix Calculus
 
 ## Conceptual Diagrams
 

@@ -1,4 +1,4 @@
-﻿# Why Distributed Queues Matters
+# Why Distributed Queues Matters
 
 In modern distributed systems, distributed-queues is essential because:
 - Systems are too large for single-node solutions

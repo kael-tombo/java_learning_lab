@@ -1,4 +1,4 @@
-﻿# Why It Matters: Matrix Calculus
+# Why It Matters: Matrix Calculus
 
 ## Real-World Importance
 

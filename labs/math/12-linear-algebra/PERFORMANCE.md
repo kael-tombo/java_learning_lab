@@ -1,4 +1,4 @@
-﻿# Performance Analysis: Linear Algebra
+# Performance Analysis: Linear Algebra
 
 ## Algorithmic Complexity
 

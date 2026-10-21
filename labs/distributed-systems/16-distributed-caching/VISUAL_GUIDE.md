@@ -1,4 +1,4 @@
-﻿# VISUAL_GUIDE.md - Distributed Caching
+# VISUAL_GUIDE.md - Distributed Caching
 
 ## Overview
 This document covers Distributed Caching concepts related to VISUAL_GUIDE.

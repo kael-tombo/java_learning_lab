@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Debugging
+# Model Training Pipelines — Debugging
 
 ## Symptom: metrics change between identical reruns
 Likely an unpinned seed or unversioned data. Check: compare the two

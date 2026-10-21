@@ -1,4 +1,4 @@
-﻿# Flashcards: Spring Cloud
+# Flashcards: Spring Cloud
 
 ## Card 1
 **Front**: What annotation enables a Eureka server?

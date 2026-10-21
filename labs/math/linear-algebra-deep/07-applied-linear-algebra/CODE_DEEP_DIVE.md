@@ -1,4 +1,4 @@
-﻿# Applied Linear Algebra — Code Deep Dive
+# Applied Linear Algebra — Code Deep Dive
 
 Stdlib only (`fractions`). Outputs pasted from execution.
 

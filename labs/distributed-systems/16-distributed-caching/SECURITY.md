@@ -1,4 +1,4 @@
-﻿# Security — Distributed Caching
+# Security — Distributed Caching
 
 ## Threats
 - Cache poisoning (malicious data injection)

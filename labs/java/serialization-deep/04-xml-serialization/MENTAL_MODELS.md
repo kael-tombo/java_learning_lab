@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Mental Models
+# XML Serialization -- Mental Models
 
 ## Key Mental Models for Understanding XML Serialization
 

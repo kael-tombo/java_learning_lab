@@ -1,4 +1,4 @@
-﻿# Quiz: Multi-Task Learning
+# Quiz: Multi-Task Learning
 
 ## Instructions
 30 questions covering Multi-Task Learning concepts. Passing score: 70%.

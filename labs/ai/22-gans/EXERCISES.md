@@ -1,4 +1,4 @@
-﻿# Exercises: Generative Adversarial Networks
+# Exercises: Generative Adversarial Networks
 
 ## Overview
 This document contains practice problems organized by difficulty. Attempt each problem before consulting the solution.

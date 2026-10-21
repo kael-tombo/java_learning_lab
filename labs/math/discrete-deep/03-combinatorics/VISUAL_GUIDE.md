@@ -1,4 +1,4 @@
-﻿# Visual Guide: Combinatorics
+# Visual Guide: Combinatorics
 
 ## 1. Pascal's Triangle With Combinator Labels
 

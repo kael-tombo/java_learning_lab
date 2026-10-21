@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- History
+# WebFlux Deep Dive -- History
 ## Reactive Evolution
 ### Reactive Extensions (.NET 2009)
 Rx.NET introduced Observable pattern for .NET.

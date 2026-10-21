@@ -1,4 +1,4 @@
-﻿# Refactoring — Distributed Filesystems
+# Refactoring — Distributed Filesystems
 
 1. Extract interface for pluggable implementations
 2. Separate concerns: configuration, runtime, monitoring

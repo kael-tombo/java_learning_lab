@@ -1,4 +1,4 @@
-﻿# Technical Architecture: Mini Spark — Distributed Compute Engine
+# Technical Architecture: Mini Spark — Distributed Compute Engine
 
 ## Architecture Overview
 

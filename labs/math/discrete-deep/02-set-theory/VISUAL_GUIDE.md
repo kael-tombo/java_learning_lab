@@ -1,4 +1,4 @@
-﻿# Visual Guide: Set Theory
+# Visual Guide: Set Theory
 
 ## 1. Venn Regions for Two Sets
 

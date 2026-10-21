@@ -1,4 +1,4 @@
-﻿# Exercises — Distributed ID Generation
+# Exercises — Distributed ID Generation
 
 Design + failure-injection tasks. Each has a goal, steps, and acceptance criteria.
 

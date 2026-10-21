@@ -1,4 +1,4 @@
-﻿# Math Foundation: Database Sharding
+# Math Foundation: Database Sharding
 
 ## Mathematical Models and Formulas
 

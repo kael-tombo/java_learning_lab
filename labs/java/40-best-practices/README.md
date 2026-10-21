@@ -1,4 +1,4 @@
-﻿# Lab 40: Best Practices — Effective Java, Clean Code
+# Lab 40: Best Practices — Effective Java, Clean Code
 
 ## Overview
 Deep dive into Best Practices in Java. This lab provides comprehensive coverage of Effective Java, Clean Code with practical examples, theory, and exercises.

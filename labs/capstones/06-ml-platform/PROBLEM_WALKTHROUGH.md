@@ -1,4 +1,4 @@
-﻿# Problem Walkthrough: ML Platform with Feature Store and Model Registry
+# Problem Walkthrough: ML Platform with Feature Store and Model Registry
 
 ## Problem Statement
 

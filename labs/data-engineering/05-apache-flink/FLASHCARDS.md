@@ -1,4 +1,4 @@
-﻿# Apache Flink Flashcards
+# Apache Flink Flashcards
 
 ## Card 1
 **Front**: What is event time in Flink?

@@ -1,4 +1,4 @@
-﻿# ETL Quiz
+# ETL Quiz
 
 ## Question 1
 What does ETL stand for?

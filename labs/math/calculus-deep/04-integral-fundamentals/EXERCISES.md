@@ -1,4 +1,4 @@
-﻿# Exercises: Integral Fundamentals
+# Exercises: Integral Fundamentals
 
 ## Theoretical Exercises
 

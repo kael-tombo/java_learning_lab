@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Interview
+# Model Evaluation — Interview
 
 ## Q: Read this matrix: TP=4, FP=1, TN=4, FN=1. What do you report?
 A: Precision 4/5=0.8, recall 4/5=0.8, F1 0.8 (observed ...002 is fp

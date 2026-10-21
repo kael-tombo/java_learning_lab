@@ -1,4 +1,4 @@
-﻿# Data Warehousing References
+# Data Warehousing References
 
 ## Books
 - "The Data Warehouse Toolkit" by Ralph Kimball

@@ -1,4 +1,4 @@
-﻿# JSON Serialization
+# JSON Serialization
 
 ## Overview
 Jackson ObjectMapper, @JsonProperty, @JsonFormat, custom serializer/deserializer, Jackson vs Gson vs JSON-B

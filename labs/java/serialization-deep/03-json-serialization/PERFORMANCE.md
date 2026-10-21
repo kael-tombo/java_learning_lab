@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Performance
+# JSON Serialization -- Performance
 
 ## Performance Characteristics
 

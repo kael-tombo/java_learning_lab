@@ -1,4 +1,4 @@
-﻿# Architecture: Cassandra NoSQL
+# Architecture: Cassandra NoSQL
 
 ## System Architecture
 

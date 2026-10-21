@@ -1,4 +1,4 @@
-﻿# Mock Interview: GraphQL Federation / Schema Stitching (Lab 07)
+# Mock Interview: GraphQL Federation / Schema Stitching (Lab 07)
 
 **Role:** Senior Backend Engineer
 **Duration:** 55 minutes

@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Generative Adversarial Networks
+# Mathematical Foundations of Generative Adversarial Networks
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying Generative Adversarial Networks. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

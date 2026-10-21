@@ -1,4 +1,4 @@
-﻿# Architecture: Limits and Continuity Implementation
+# Architecture: Limits and Continuity Implementation
 
 ## System Design
 

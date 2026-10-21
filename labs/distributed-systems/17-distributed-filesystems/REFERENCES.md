@@ -1,4 +1,4 @@
-﻿# References — Distributed Filesystems
+# References — Distributed Filesystems
 
 ## Academic Papers
 1. Key papers in distributed systems and related areas

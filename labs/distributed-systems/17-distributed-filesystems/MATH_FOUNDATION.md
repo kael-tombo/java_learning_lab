@@ -1,4 +1,4 @@
-﻿# Math Foundations — Distributed Filesystems
+# Math Foundations — Distributed Filesystems
 
 ## 1. Replication Durability
 

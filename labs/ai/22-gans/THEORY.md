@@ -1,4 +1,4 @@
-﻿# Generative Adversarial Networks - Complete Theory
+# Generative Adversarial Networks - Complete Theory
 
 ## 1. Introduction
 

@@ -1,4 +1,4 @@
-﻿# Data Science Deep Dive - Code Deep Dive
+# Data Science Deep Dive - Code Deep Dive
 
 ## Architecture Overview
 

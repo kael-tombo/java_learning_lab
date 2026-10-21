@@ -1,4 +1,4 @@
-﻿# Step-by-Step — Distributed Queues
+# Step-by-Step — Distributed Queues
 
 ## Step 1: Setup
 1. Create project structure with Maven/Gradle

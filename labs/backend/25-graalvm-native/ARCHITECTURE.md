@@ -1,4 +1,4 @@
-﻿# Architecture: GraalVM Native
+# Architecture: GraalVM Native
 
 `
 Traditional JVM:                    Native Image:

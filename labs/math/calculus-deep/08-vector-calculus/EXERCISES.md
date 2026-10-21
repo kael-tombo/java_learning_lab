@@ -1,4 +1,4 @@
-﻿# Exercises: Vector Calculus
+# Exercises: Vector Calculus
 
 ## Theoretical Exercises
 

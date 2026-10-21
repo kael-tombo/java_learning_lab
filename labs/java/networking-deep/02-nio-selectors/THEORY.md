@@ -1,4 +1,4 @@
-﻿# NIO Selectors — Theoretical Foundation
+# NIO Selectors — Theoretical Foundation
 
 ## Core Concept
 

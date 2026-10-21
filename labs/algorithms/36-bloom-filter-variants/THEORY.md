@@ -1,4 +1,4 @@
-﻿# Theory of Bloom Filter Variants
+# Theory of Bloom Filter Variants
 
 ## Counting Bloom Filter
 

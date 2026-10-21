@@ -1,4 +1,4 @@
-﻿# Interview Questions: Netty Framework
+# Interview Questions: Netty Framework
 
 ## Company-Specific Focus
 

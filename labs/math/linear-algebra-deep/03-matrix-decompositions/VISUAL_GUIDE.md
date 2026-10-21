@@ -1,4 +1,4 @@
-﻿# Visual Guide: Matrix Decompositions
+# Visual Guide: Matrix Decompositions
 
 ## Conceptual Diagrams
 

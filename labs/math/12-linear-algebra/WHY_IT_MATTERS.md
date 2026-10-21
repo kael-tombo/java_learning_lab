@@ -1,4 +1,4 @@
-﻿# Why Linear Algebra Matters
+# Why Linear Algebra Matters
 
 ## Real-World Impact
 

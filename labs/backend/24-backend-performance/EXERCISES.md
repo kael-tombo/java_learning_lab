@@ -1,4 +1,4 @@
-﻿# Exercises: Backend Performance
+# Exercises: Backend Performance
 
 ## Exercise 1: JMH Benchmarks
 Write JMH benchmarks comparing ArrayList vs LinkedList operations.

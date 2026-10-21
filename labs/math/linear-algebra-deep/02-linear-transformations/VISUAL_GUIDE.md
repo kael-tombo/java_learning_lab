@@ -1,4 +1,4 @@
-﻿# Visual Guide: Linear Transformations
+# Visual Guide: Linear Transformations
 
 ## Conceptual Diagrams
 

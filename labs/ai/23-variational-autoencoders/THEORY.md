@@ -1,4 +1,4 @@
-﻿# Variational Autoencoders - Complete Theory
+# Variational Autoencoders - Complete Theory
 
 ## 1. Introduction
 

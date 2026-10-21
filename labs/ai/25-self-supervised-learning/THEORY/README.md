@@ -1,4 +1,4 @@
-﻿# Self-Supervised Learning - Theory
+# Self-Supervised Learning - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Self-Supervised Learning.

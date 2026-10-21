@@ -1,4 +1,4 @@
-﻿# History of Number Theory
+# History of Number Theory
 
 ## Origins
 

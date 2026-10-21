@@ -1,4 +1,4 @@
-﻿# Security: Spring Cloud Infrastructure
+# Security: Spring Cloud Infrastructure
 
 ## 1. Eureka Security
 

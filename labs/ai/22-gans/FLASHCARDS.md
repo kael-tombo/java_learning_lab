@@ -1,4 +1,4 @@
-﻿# Flashcards: Generative Adversarial Networks
+# Flashcards: Generative Adversarial Networks
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

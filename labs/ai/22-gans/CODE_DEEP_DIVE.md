@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: Generative Adversarial Networks Implementation
+# Code Deep Dive: Generative Adversarial Networks Implementation
 
 ## 1. Architecture Overview
 The Generative Adversarial Networks implementation follows modular design principles with clear separation between data handling, model computation, training logic, and evaluation. This architecture ensures testability, extensibility, and performance.

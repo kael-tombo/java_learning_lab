@@ -1,4 +1,4 @@
-﻿# Matrix Decompositions — Code Deep Dive
+# Matrix Decompositions — Code Deep Dive
 
 Stdlib only (`fractions`). Outputs pasted from execution.
 

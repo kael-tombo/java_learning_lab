@@ -1,4 +1,4 @@
-﻿# Debugging LRU Cache
+# Debugging LRU Cache
 
 ## Common Issues
 

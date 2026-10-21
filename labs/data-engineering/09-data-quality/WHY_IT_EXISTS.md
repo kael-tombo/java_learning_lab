@@ -1,4 +1,4 @@
-﻿# Why Data Quality Exists
+# Why Data Quality Exists
 
 ## The Problem
 Bad data leads to bad decisions. Gartner estimates poor data quality costs organizations .9M annually. Without quality checks, data pipelines silently produce incorrect results.

@@ -1,4 +1,4 @@
-﻿# Matrix Decompositions — Math Foundation
+# Matrix Decompositions — Math Foundation
 
 All values computed in exact rational arithmetic (Python `fractions`).
 

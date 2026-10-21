@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Refactoring
+# XML Serialization -- Refactoring
 
 ## Refactoring Strategies
 

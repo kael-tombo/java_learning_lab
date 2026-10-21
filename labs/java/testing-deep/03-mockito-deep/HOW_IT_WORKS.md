@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- How It Works
+# Mockito Deep Dive -- How It Works
 ## How Testing Frameworks Work
 ### Test Discovery
 JUnit 5 discovers tests by scanning classpath for @Test annotations.

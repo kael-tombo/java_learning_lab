@@ -1,4 +1,4 @@
-﻿# Interview: API Versioning & Documentation
+# Interview: API Versioning & Documentation
 
 Q1: What API versioning strategy would you recommend? A: URL-based for external APIs (explicit), header-based for internal APIs (clean URLs). Use content negotiation for RESTful purity.
 

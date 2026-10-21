@@ -1,4 +1,4 @@
-﻿# Analysis Deep Dive - Code Deep Dive
+# Analysis Deep Dive - Code Deep Dive
 
 ## Architecture Overview
 

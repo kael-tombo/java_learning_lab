@@ -1,4 +1,4 @@
-﻿# Visual Guide: Vector Calculus
+# Visual Guide: Vector Calculus
 
 ## Conceptual Diagrams
 

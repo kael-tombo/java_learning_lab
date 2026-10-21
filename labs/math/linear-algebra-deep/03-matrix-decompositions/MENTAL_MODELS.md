@@ -1,4 +1,4 @@
-﻿# Mental Models: Matrix Decompositions
+# Mental Models: Matrix Decompositions
 
 ## Conceptual Frameworks
 

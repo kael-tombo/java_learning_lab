@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Math Foundation
+# Model Evaluation — Math Foundation
 
 ## 1. From counts to rates
 With TP=4, FP=1, TN=4, FN=1, n=10:

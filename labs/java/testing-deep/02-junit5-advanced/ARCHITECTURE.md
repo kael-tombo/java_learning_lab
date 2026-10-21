@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Architecture
+# JUnit 5 Advanced -- Architecture
 ## Testing Architecture
 ### Component Isolation
 Tests should isolate the component under test.

@@ -1,4 +1,4 @@
-﻿# Performance Profiling — Mental Models
+# Performance Profiling — Mental Models
 
 ## Model 1: The Blueprint
 

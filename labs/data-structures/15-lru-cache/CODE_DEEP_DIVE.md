@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: LRUCache.java
+# Code Deep Dive: LRUCache.java
 
 ## Implementation
 

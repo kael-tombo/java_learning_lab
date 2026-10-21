@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Performance
+# HTTP Clients (Java 11+) -- Performance
 
 ## Performance Characteristics
 

@@ -1,4 +1,4 @@
-﻿# References: CockroachDB
+# References: CockroachDB
 
 ## Academic Papers
 

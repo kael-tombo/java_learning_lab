@@ -1,4 +1,4 @@
-﻿# How It Works — Distributed ID Generation
+# How It Works — Distributed ID Generation
 
 ID generation in distributed systems needs to produce unique, ordered identifiers without coordination between nodes.
 

@@ -1,4 +1,4 @@
-﻿# Visual Guide: Limits and Continuity
+# Visual Guide: Limits and Continuity
 
 ## Conceptual Diagrams
 

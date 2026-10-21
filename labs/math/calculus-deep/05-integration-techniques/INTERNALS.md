@@ -1,4 +1,4 @@
-﻿# Internals: Integration Techniques Implementation
+# Internals: Integration Techniques Implementation
 
 ## Deep Dive into Implementation Details
 

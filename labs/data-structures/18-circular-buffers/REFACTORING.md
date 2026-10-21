@@ -1,4 +1,4 @@
-﻿# Refactoring
+# Refactoring
 
 1. Power-of-2 capacity for fast modulo
 2. Lock-free for SPSC using volatile

@@ -1,4 +1,4 @@
-﻿# RSocket -- How It Works
+# RSocket -- How It Works
 ## How Reactive Streams Work
 ### Subscription Setup
 1. Publisher.subscribe(Subscriber) called

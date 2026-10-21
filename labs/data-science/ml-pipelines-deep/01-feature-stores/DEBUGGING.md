@@ -1,4 +1,4 @@
-﻿# Feature Stores — Debugging
+# Feature Stores — Debugging
 
 ## Symptom: offline metrics look great, production flops
 Likely future leakage in the training join. Check: rebuild one

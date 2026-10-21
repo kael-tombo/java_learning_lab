@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Why It Exists
+# Kryo Serialization -- Why It Exists
 
 ## Historical Context and Motivation
 

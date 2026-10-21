@@ -1,4 +1,4 @@
-﻿# History of Self-Supervised Learning
+# History of Self-Supervised Learning
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

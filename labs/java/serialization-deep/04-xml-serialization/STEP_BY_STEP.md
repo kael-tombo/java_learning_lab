@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Step-by-Step Implementation
+# XML Serialization -- Step-by-Step Implementation
 
 ## Step 1: Create Project Structure
 Create a standard Maven or Gradle project with the required directory structure.

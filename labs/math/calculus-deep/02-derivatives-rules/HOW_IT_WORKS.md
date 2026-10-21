@@ -1,4 +1,4 @@
-﻿# How It Works: Derivatives and Differentiation Rules
+# How It Works: Derivatives and Differentiation Rules
 
 ## High-Level Explanation
 

@@ -1,4 +1,4 @@
-﻿# Interview Questions: Linear Algebra
+# Interview Questions: Linear Algebra
 
 ## Conceptual Questions
 

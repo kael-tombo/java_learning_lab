@@ -1,4 +1,4 @@
-﻿# Theory: Database Replication
+# Theory: Database Replication
 
 ## 1. Fundamental Concepts
 

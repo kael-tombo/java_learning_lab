@@ -1,4 +1,4 @@
-﻿# Testcontainers -- Theoretical Foundation
+# Testcontainers -- Theoretical Foundation
 ## Core Concepts
 ### 1. Testing Fundamentals
 Software testing verifies that code behaves as expected. The Testcontainers provides a framework for writing and running tests.

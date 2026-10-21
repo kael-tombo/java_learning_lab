@@ -1,4 +1,4 @@
-﻿# Debugging Skip Lists
+# Debugging Skip Lists
 
 ## Common Issues
 

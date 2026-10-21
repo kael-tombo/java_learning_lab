@@ -1,4 +1,4 @@
-﻿# Problem Walkthrough: Autonomous Agent System with Planning and Tool Use
+# Problem Walkthrough: Autonomous Agent System with Planning and Tool Use
 
 ## Problem Statement
 

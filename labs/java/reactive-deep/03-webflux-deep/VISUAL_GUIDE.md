@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- Visual Guide
+# WebFlux Deep Dive -- Visual Guide
 ## Reactive Stream Flow
 Publisher -> [Operator1] -> [Operator2] -> Subscriber
 ## Backpressure Flow

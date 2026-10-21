@@ -1,4 +1,4 @@
-﻿# Architecture: Number Theory Code
+# Architecture: Number Theory Code
 
 ## One Layered Library, Four Concerns
 

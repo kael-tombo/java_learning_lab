@@ -1,4 +1,4 @@
-﻿# Exercises
+# Exercises
 
 ## Exercise 1: Basic Implementation
 **Difficulty:** Easy

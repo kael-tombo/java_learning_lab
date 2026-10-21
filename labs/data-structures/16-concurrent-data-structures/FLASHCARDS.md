@@ -1,4 +1,4 @@
-﻿## Front: What is a lock-free data structure?
+## Front: What is a lock-free data structure?
 Back: A concurrent structure guaranteeing system-wide progress without locks.
 
 ## Front: How does CAS work?

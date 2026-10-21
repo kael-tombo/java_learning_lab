@@ -1,4 +1,4 @@
-﻿# Project Reactor
+# Project Reactor
 ## Overview
 Flux/Mono, map/flatMap/concatMap, publishOn/subscribeOn, Schedulers, backpressure strategies, hot vs cold publishers
 ## Learning Objectives

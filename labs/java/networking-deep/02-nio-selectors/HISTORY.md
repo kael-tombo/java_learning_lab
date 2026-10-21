@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- History
+# NIO Selectors -- History
 ## Historical Evolution
 
 ### Early Networking (1980s)

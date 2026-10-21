@@ -1,4 +1,4 @@
-﻿# Visual Guide: Dual Spaces and Tensors
+# Visual Guide: Dual Spaces and Tensors
 
 ## Conceptual Diagrams
 

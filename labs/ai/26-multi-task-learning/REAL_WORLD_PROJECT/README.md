@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning - Real-World Project
+# Multi-Task Learning - Real-World Project
 
 ## Overview
 Build a production-ready Multi-Task Learning system.

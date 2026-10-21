@@ -1,4 +1,4 @@
-﻿# Debugging: Generating Functions Code
+# Debugging: Generating Functions Code
 
 ## Symptom: Coefficient Arrays Are Off by One Power
 

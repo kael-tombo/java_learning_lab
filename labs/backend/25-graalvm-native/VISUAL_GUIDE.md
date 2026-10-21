@@ -1,4 +1,4 @@
-﻿# Visual Guide: GraalVM Native
+# Visual Guide: GraalVM Native
 
 `
 Build Time (mvn -Pnative native:compile):

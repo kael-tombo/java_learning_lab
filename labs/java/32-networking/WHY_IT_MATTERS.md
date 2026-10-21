@@ -1,4 +1,4 @@
-﻿# Why Networking Matters
+# Why Networking Matters
 
 ## Real-World Impact
 

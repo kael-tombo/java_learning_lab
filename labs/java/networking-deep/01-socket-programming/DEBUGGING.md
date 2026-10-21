@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Debugging
+# Socket Programming -- Debugging
 
 ## Debugging Strategies
 

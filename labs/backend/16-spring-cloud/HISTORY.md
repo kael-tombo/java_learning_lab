@@ -1,4 +1,4 @@
-﻿# History: Spring Cloud
+# History: Spring Cloud
 
 ## Origins (2014-2015)
 Spring Cloud emerged from Netflix's open-source contributions. Netflix had built a comprehensive microservices infrastructure internally, and in 2014 began releasing components like Eureka, Hystrix, and Ribbon to open source. Spring Cloud wrapped these Netflix components with Spring Boot auto-configuration, making them accessible to the broader Java community.

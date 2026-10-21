@@ -1,4 +1,4 @@
-﻿# Challenge: Persistent Hash Map
+# Challenge: Persistent Hash Map
 
 Implement a persistent hash map using a HAMT (Hash Array Mapped Trie).
 - O(log32 n) operations

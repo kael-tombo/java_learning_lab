@@ -1,4 +1,4 @@
-﻿# Internals: Number Theory Implementation Details
+# Internals: Number Theory Implementation Details
 
 ## Core Algorithms
 

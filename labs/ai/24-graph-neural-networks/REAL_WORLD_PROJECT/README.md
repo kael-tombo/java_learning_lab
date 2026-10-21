@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks - Real-World Project
+# Graph Neural Networks - Real-World Project
 
 ## Overview
 Build a production-ready Graph Neural Networks system.

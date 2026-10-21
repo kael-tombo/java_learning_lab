@@ -1,4 +1,4 @@
-﻿# Exercises: Differential Equations
+# Exercises: Differential Equations
 
 ## Theoretical Exercises
 

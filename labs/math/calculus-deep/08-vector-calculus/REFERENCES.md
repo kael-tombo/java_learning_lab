@@ -1,4 +1,4 @@
-﻿# References: Vector Calculus
+# References: Vector Calculus
 
 ## Textbooks
 

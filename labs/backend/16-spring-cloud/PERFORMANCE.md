@@ -1,4 +1,4 @@
-﻿# Performance: Spring Cloud
+# Performance: Spring Cloud
 
 ## 1. Eureka Performance Tuning
 

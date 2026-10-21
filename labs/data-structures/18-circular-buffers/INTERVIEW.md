@@ -1,4 +1,4 @@
-﻿# Interview Questions: Circular Buffers
+# Interview Questions: Circular Buffers
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

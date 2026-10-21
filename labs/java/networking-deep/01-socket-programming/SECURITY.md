@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Security
+# Socket Programming -- Security
 
 ## Security Considerations
 

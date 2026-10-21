@@ -1,4 +1,4 @@
-﻿# Math Foundation of Skip Lists
+# Math Foundation of Skip Lists
 
 ## Expected Height
 

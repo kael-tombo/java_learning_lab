@@ -1,4 +1,4 @@
-﻿# CDC Flashcards
+# CDC Flashcards
 
 ## Card 1
 **Front**: What is Change Data Capture?

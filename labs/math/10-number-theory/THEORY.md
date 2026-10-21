@@ -1,4 +1,4 @@
-﻿# Number Theory: A Comprehensive Treatment
+# Number Theory: A Comprehensive Treatment
 
 ## 1. Divisibility and Prime Numbers
 

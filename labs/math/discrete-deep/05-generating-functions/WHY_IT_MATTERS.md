@@ -1,4 +1,4 @@
-﻿# Why Generating Functions Matter
+# Why Generating Functions Matter
 
 ## They Solve Recurrences You Meet in Code
 

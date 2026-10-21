@@ -1,4 +1,4 @@
-﻿# Workflow Orchestration Reflection
+# Workflow Orchestration Reflection
 
 ## Key Learnings
 - Orchestration solves the dependency management problem at scale

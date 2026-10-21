@@ -1,4 +1,4 @@
-﻿# Java Serialization
+# Java Serialization
 
 ## Overview
 ObjectOutputStream/ObjectInputStream, serialVersionUID, writeObject/readObject, readResolve/writeReplace, Externalizable, serialization proxy pattern

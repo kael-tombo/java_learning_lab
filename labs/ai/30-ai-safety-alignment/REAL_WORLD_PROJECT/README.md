@@ -1,4 +1,4 @@
-﻿# AI Safety and Alignment - Real-World Project
+# AI Safety and Alignment - Real-World Project
 
 ## Overview
 Build a production-ready AI Safety and Alignment system.

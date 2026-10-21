@@ -1,4 +1,4 @@
-﻿# Flashcards: Graph Neural Networks
+# Flashcards: Graph Neural Networks
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

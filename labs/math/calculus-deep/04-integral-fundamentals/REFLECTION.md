@@ -1,4 +1,4 @@
-﻿# Reflection: Integral Fundamentals
+# Reflection: Integral Fundamentals
 
 ## Self-Assessment Questions
 

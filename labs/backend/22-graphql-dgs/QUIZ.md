@@ -1,4 +1,4 @@
-﻿# Quiz: GraphQL DGS
+# Quiz: GraphQL DGS
 
 Q1: What annotation marks a DGS component? A: @DgsComponent
 Q2: What solves the N+1 problem? A: DataLoader

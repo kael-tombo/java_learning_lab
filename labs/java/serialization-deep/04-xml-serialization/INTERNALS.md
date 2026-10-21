@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Internal Implementation
+# XML Serialization -- Internal Implementation
 
 ## Internal Architecture
 

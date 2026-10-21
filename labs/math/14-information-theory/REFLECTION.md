@@ -1,4 +1,4 @@
-﻿# Reflection: Information Theory
+# Reflection: Information Theory
 
 ## Personal Learning Journey
 

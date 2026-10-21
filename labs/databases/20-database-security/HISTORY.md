@@ -1,4 +1,4 @@
-﻿# History: Database Security
+# History: Database Security
 
 ## Evolution
 

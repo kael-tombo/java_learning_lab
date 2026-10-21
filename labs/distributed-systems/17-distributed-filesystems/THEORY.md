@@ -1,4 +1,4 @@
-﻿# Theory of Distributed Filesystems
+# Theory of Distributed Filesystems
 
 ## 1. Why Distributed Filesystems?
 

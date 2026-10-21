@@ -1,4 +1,4 @@
-﻿# References: GraphQL DGS
+# References: GraphQL DGS
 
 - DGS Framework: https://netflix.github.io/dgs/
 - GraphQL-Java: https://www.graphql-java.com/

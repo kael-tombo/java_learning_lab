@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: Spring Cloud Infrastructure
+# Code Deep Dive: Spring Cloud Infrastructure
 
 ## Eureka Server Implementation
 

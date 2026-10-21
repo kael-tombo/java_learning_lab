@@ -1,4 +1,4 @@
-﻿# Data Quality Flashcards
+# Data Quality Flashcards
 
 ## Card 1
 **Front**: What are the six dimensions of data quality?

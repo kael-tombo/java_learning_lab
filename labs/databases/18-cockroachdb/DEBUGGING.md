@@ -1,4 +1,4 @@
-﻿# Debugging: CockroachDB
+# Debugging: CockroachDB
 
 ## Common Issues and Solutions
 

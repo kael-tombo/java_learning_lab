@@ -1,4 +1,4 @@
-﻿# Reflection — Distributed ID Generation
+# Reflection — Distributed ID Generation
 
 ## Key Questions
 1. When would you choose Snowflake over UUID v7?

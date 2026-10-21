@@ -1,4 +1,4 @@
-﻿# Quiz: Explainable AI
+# Quiz: Explainable AI
 
 ## Instructions
 30 questions covering Explainable AI concepts. Passing score: 70%.

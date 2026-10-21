@@ -1,4 +1,4 @@
-﻿# Reactive Streams
+# Reactive Streams
 ## Overview
 Publisher/Subscriber/Subscription/Processor, backpressure, request(n), onSubscribe/onNext/onError/onComplete contracts
 ## Learning Objectives

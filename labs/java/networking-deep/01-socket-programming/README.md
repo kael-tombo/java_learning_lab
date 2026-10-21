@@ -1,4 +1,4 @@
-﻿# Socket Programming
+# Socket Programming
 
 Blocking TCP sockets (`ServerSocket`/`Socket`): the kernel completes the
 handshake before `accept()` returns, one thread (or pool slot) owns each

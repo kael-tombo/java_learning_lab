@@ -1,4 +1,4 @@
-﻿# Interview: Set Theory
+# Interview: Set Theory
 
 ## Conceptual Questions
 

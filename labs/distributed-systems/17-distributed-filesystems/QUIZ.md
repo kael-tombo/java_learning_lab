@@ -1,4 +1,4 @@
-﻿# Quiz — Distributed Filesystems
+# Quiz — Distributed Filesystems
 
 1. HDFS default block size? Answer: 128MB
 2. HDFS single point of failure? Answer: NameNode

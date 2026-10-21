@@ -1,4 +1,4 @@
-﻿# Security: Database Replication
+# Security: Database Replication
 
 ## Security Model
 

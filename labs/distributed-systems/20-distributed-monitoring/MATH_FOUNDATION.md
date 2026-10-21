@@ -1,4 +1,4 @@
-﻿# Math Foundations — Distributed Monitoring
+# Math Foundations — Distributed Monitoring
 
 ## 1. Time Series Model
 

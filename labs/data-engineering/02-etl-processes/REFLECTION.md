@@ -1,4 +1,4 @@
-﻿# ETL Reflection
+# ETL Reflection
 
 ## Key Takeaways
 - ETL is the foundation of data warehousing and analytics

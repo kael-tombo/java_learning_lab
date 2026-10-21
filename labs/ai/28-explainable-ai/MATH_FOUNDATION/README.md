@@ -1,4 +1,4 @@
-﻿# Explainable AI - Mathematical Foundations
+# Explainable AI - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Explainable AI.

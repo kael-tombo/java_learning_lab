@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Internals
+# Model Training Pipelines — Internals
 
 ## Orchestrator mechanics
 The runner stores per-stage state (pending, running, passed, failed)

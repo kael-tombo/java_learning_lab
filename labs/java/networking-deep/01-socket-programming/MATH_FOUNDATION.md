@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Mathematical Foundation
+# Socket Programming -- Mathematical Foundation
 
 ## 1. Network Latency Mathematics
 

@@ -1,4 +1,4 @@
-﻿# Feature Stores
+# Feature Stores
 
 ## Overview
 A feature store is a centralized platform for managing, serving, and reusing machine learning features across an organization, providing consistency between training and serving.

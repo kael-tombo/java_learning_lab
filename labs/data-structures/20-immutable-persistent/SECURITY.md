@@ -1,4 +1,4 @@
-﻿# Security Considerations
+# Security Considerations
 
 1. Immutability prevents data tampering
 2. No defensive copying needed (security benefit)

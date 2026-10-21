@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- Architecture
+# WebFlux Deep Dive -- Architecture
 ## Reactive Architecture
 ### Event-Driven
 Components communicate via events rather than direct calls.

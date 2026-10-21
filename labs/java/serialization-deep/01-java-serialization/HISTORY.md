@@ -1,4 +1,4 @@
-﻿# Java Serialization -- History
+# Java Serialization -- History
 
 ## Historical Evolution
 

@@ -1,4 +1,4 @@
-﻿# Generative Adversarial Networks - Theory
+# Generative Adversarial Networks - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Generative Adversarial Networks.

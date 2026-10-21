@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Performance
+# XML Serialization -- Performance
 
 ## Performance Characteristics
 

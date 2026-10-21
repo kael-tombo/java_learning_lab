@@ -1,4 +1,4 @@
-﻿# Benchmark: Segment Tree Performance
+# Benchmark: Segment Tree Performance
 
 ## Scenarios
 1. Recursive vs iterative (construction time)

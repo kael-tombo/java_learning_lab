@@ -1,4 +1,4 @@
-﻿# Security — Visual Guide
+# Security — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

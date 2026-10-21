@@ -1,4 +1,4 @@
-﻿# Data Pipelines
+# Data Pipelines
 
 ## Overview
 A data pipeline is a series of data processing steps that move data from sources to destinations, transforming and enriching it along the way.

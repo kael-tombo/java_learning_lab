@@ -1,4 +1,4 @@
-﻿# Data Governance Flashcards
+# Data Governance Flashcards
 
 ## Card 1
 **Front**: What is a data catalog?

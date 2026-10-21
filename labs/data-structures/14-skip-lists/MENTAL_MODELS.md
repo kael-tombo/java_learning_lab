@@ -1,4 +1,4 @@
-﻿# Mental Models for Skip Lists
+# Mental Models for Skip Lists
 
 ## 1. The Multi-Lane Highway Model
 

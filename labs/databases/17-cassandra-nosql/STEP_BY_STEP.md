@@ -1,4 +1,4 @@
-﻿# Step by Step: Cassandra NoSQL
+# Step by Step: Cassandra NoSQL
 
 ## Implementation Guide
 

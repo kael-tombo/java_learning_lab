@@ -1,4 +1,4 @@
-﻿# How Data Governance Works
+# How Data Governance Works
 
 ## Data Catalog Implementation
 `java

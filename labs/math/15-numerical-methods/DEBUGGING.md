@@ -1,4 +1,4 @@
-﻿# Debugging Guide: Numerical Methods
+# Debugging Guide: Numerical Methods
 
 ## Common Issues and Solutions
 

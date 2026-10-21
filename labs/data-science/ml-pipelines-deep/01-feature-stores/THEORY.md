@@ -1,4 +1,4 @@
-﻿# Feature Stores — Theoretical Foundation
+# Feature Stores — Theoretical Foundation
 
 ## Core Concept
 

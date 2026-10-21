@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Federated Learning
+# Step-by-Step: Federated Learning
 
 ## Step 1: Understand the Problem
 Define inputs, outputs, constraints, and success metrics.

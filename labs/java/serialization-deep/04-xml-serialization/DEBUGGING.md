@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Debugging
+# XML Serialization -- Debugging
 
 ## Debugging Strategies
 

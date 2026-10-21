@@ -1,4 +1,4 @@
-﻿# Challenge: Lock-Free Ring Buffer
+# Challenge: Lock-Free Ring Buffer
 
 Implement a lock-free single-producer single-consumer (SPSC) ring buffer.
 - No locks, only volatile/atomic

@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Internals
+# Reactive Streams -- Internals
 ## Internal Architecture
 ### Publisher Subscription
 Publisher creates Subscription on subscribe(). Subscription manages demand.

@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- Visual Guide
+# Reactive Testing -- Visual Guide
 ## Reactive Stream Flow
 Publisher -> [Operator1] -> [Operator2] -> Subscriber
 ## Backpressure Flow

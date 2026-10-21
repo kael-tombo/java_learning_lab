@@ -1,4 +1,4 @@
-﻿# References: Multivariable Calculus
+# References: Multivariable Calculus
 
 ## Textbooks
 

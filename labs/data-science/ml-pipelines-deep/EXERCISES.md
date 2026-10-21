@@ -1,4 +1,4 @@
-﻿# ML Pipelines Deep Dive - Exercises
+# ML Pipelines Deep Dive - Exercises
 
 ## Exercise 1: Basic Concepts
 Implement a Java class that demonstrates fundamental ML Pipelines Deep Dive operations. Create methods for data input, processing, and output validation.

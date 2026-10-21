@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- How It Works
+# gRPC Networking -- How It Works
 ## Detailed Mechanical Explanation
 
 ### 1. Socket Creation and Binding

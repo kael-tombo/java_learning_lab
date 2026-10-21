@@ -1,4 +1,4 @@
-﻿# Why Information Theory Matters
+# Why Information Theory Matters
 
 ## Real-World Impact
 

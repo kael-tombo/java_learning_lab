@@ -1,4 +1,4 @@
-﻿# References: Database Testing
+# References: Database Testing
 
 ## Academic Papers
 

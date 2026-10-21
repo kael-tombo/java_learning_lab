@@ -1,4 +1,4 @@
-﻿# Debugging Union-Find
+# Debugging Union-Find
 
 ## Logging Strategy
 

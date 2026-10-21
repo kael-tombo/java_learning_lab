@@ -1,4 +1,4 @@
-﻿# References: Matrix Decompositions
+# References: Matrix Decompositions
 
 ## Textbooks
 1. Standard Textbook on Calculus

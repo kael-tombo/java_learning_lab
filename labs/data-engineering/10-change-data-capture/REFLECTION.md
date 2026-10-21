@@ -1,4 +1,4 @@
-﻿# CDC Reflection
+# CDC Reflection
 
 ## Key Learnings
 - Log-based CDC is the gold standard for real-time data replication

@@ -1,4 +1,4 @@
-﻿# Reflection: Integration Techniques
+# Reflection: Integration Techniques
 
 ## Self-Assessment Questions
 

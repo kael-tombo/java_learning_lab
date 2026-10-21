@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Internal Implementation
+# NIO Selectors -- Internal Implementation
 
 ## Internal Architecture
 

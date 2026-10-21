@@ -1,4 +1,4 @@
-﻿# Workflow Orchestration Interview Questions
+# Workflow Orchestration Interview Questions
 
 ## Beginner
 **Q**: What is a DAG and why must it be acyclic?

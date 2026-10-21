@@ -1,4 +1,4 @@
-﻿## Front: What is a quadtree?
+## Front: What is a quadtree?
 Back: A tree structure dividing 2D space into four quadrants recursively.
 
 ## Front: What is a k-d tree?

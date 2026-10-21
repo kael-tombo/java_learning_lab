@@ -1,4 +1,4 @@
-﻿# History: Logic and Proofs
+# History: Logic and Proofs
 
 ## Ancient Foundations
 

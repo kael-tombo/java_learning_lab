@@ -1,4 +1,4 @@
-﻿# Performance: Cassandra NoSQL
+# Performance: Cassandra NoSQL
 
 ## Performance Characteristics
 

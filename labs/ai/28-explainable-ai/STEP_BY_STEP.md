@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Explainable AI
+# Step-by-Step: Explainable AI
 
 ## Step 1: Understand the Problem
 Define inputs, outputs, constraints, and success metrics.

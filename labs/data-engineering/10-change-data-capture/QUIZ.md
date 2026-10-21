@@ -1,4 +1,4 @@
-﻿# CDC Quiz
+# CDC Quiz
 
 ## Question 1
 What CDC mechanism has the least impact on source databases?

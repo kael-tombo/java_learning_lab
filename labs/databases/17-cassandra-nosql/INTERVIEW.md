@@ -1,4 +1,4 @@
-﻿# Interview Questions: Cassandra (Oracle Comparison)
+# Interview Questions: Cassandra (Oracle Comparison)
 
 ## Oracle-Specific Questions
 - Compare Cassandra's partition key model with Oracle Sharding for distributed data distribution.

@@ -1,4 +1,4 @@
-﻿# Tests: Fenwick Tree
+# Tests: Fenwick Tree
 
 ## Test Files
 - FenwickTreeTest.java — JUnit 5 test suite

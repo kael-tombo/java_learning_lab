@@ -1,4 +1,4 @@
-﻿# Security Considerations for Segment Trees
+# Security Considerations for Segment Trees
 
 ## Input Validation
 

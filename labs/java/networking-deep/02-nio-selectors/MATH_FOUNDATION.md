@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Mathematical Foundation
+# NIO Selectors -- Mathematical Foundation
 
 ## 1. Network Latency Mathematics
 

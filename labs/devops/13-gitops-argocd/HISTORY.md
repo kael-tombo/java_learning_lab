@@ -1,4 +1,4 @@
-﻿# History of GitOps
+# History of GitOps
 
 ## Origins (2017)
 GitOps was first coined by Alexis Richardson (CEO of Weaveworks) in 2017. The concept emerged from the principles of Infrastructure as Code and the operational patterns developed at companies like Google, Netflix, and Facebook.

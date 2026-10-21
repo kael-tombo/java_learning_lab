@@ -1,4 +1,4 @@
-﻿# Common Mistakes
+# Common Mistakes
 
 1. Array index out of bounds in DP loop
 2. Wrong log calculation (off by one)

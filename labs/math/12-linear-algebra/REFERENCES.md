@@ -1,4 +1,4 @@
-﻿# References: Linear Algebra
+# References: Linear Algebra
 
 ## Textbooks
 

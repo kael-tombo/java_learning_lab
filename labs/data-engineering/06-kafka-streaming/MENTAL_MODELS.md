@@ -1,4 +1,4 @@
-﻿# Mental Models for Kafka Streaming
+# Mental Models for Kafka Streaming
 
 ## 1. The Whiteboard
 - **KStream** = Dry-erase marker (writes facts, permanent)

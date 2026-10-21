@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Why It Exists
+# Project Reactor -- Why It Exists
 ## Motivation
 ### The Problem
 Traditional blocking I/O does not scale efficiently.

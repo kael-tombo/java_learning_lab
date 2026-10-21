@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Building a Quadtree
+# Step-by-Step: Building a Quadtree
 
 1. Define BoundingBox class
 2. Define SpatialPoint class

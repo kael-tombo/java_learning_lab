@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- References
+# Protocol Buffers -- References
 
 ## Further Reading
 

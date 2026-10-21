@@ -1,4 +1,4 @@
-﻿# Debugging Fenwick Tree
+# Debugging Fenwick Tree
 
 ## Verification Strategy
 

@@ -1,4 +1,4 @@
-﻿# How It Works: Matrix Decompositions
+# How It Works: Matrix Decompositions
 
 ## High-Level Explanation
 

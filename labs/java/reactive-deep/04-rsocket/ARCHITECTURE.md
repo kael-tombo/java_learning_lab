@@ -1,4 +1,4 @@
-﻿# RSocket -- Architecture
+# RSocket -- Architecture
 ## Reactive Architecture
 ### Event-Driven
 Components communicate via events rather than direct calls.

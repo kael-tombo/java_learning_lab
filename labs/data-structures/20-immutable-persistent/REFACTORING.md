@@ -1,4 +1,4 @@
-﻿# Refactoring
+# Refactoring
 
 1. Add lazy evaluation for large structures
 2. Implement transients for batch operations

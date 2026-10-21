@@ -1,4 +1,4 @@
-﻿# Why CDC Matters
+# Why CDC Matters
 
 ## Business Impact
 - **Real-time**: Sub-second data freshness from source systems

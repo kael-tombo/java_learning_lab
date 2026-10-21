@@ -1,4 +1,4 @@
-﻿# Theory: CockroachDB
+# Theory: CockroachDB
 
 ## 1. Fundamental Concepts
 

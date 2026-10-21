@@ -1,4 +1,4 @@
-﻿# AssertJ Deep Dive
+# AssertJ Deep Dive
 ## Overview
 AssertJ soft assertions, extracting, flatExtracting, tuple, condition, exception assertion, recursive comparison, custom assertions
 ## Learning Objectives

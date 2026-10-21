@@ -1,4 +1,4 @@
-﻿# References: LRU Cache
+# References: LRU Cache
 
 1. LeetCode 146: LRU Cache
 2. Java LinkedHashMap documentation

@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Mental Models
+# Model Training Pipelines — Mental Models
 
 ## 1. Assembly line with inspectors
 Each stage is a workstation; validation gates are inspectors with stop

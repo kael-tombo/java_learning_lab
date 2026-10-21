@@ -1,4 +1,4 @@
-﻿# Performance: Set Theory Operations
+# Performance: Set Theory Operations
 
 ## Costs of the Standard Implementations (Java)
 

@@ -1,4 +1,4 @@
-﻿# Common Mistakes with Fenwick Tree
+# Common Mistakes with Fenwick Tree
 
 ## 1. Forgetting 1-Indexed Conversion
 

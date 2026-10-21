@@ -1,4 +1,4 @@
-﻿# Interview Questions: Kryo Serialization
+# Interview Questions: Kryo Serialization
 
 ## Company-Specific Focus
 

@@ -1,4 +1,4 @@
-﻿# Debugging: Dual Spaces and Tensors Implementation
+# Debugging: Dual Spaces and Tensors Implementation
 
 ## Common Bugs
 

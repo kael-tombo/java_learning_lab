@@ -1,4 +1,4 @@
-﻿# Data Science Deep Dive - Theory & Intuition
+# Data Science Deep Dive - Theory & Intuition
 
 ## The Big Picture
 

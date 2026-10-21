@@ -1,4 +1,4 @@
-﻿# Mental Models: Set Theory
+# Mental Models: Set Theory
 
 ## 1. A Set as a Membership Predicate
 

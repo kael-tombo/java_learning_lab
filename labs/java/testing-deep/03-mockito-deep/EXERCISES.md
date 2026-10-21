@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Exercises
+# Mockito Deep Dive -- Exercises
 ## Beginner Exercises
 ### Exercise 1: Write your first test
 Write a test that verifies basic arithmetic operations.

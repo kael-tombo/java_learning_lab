@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Why It Matters
+# JSON Serialization -- Why It Matters
 
 ## Practical Importance in Real-World Development
 

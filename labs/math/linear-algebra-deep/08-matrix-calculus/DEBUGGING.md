@@ -1,4 +1,4 @@
-﻿# Debugging: Matrix Calculus Implementation
+# Debugging: Matrix Calculus Implementation
 
 ## Common Bugs
 

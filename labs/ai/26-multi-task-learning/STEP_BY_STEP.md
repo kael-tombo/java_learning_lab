@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Multi-Task Learning
+# Step-by-Step: Multi-Task Learning
 
 ## Step 1: Understand the Problem
 Define inputs, outputs, constraints, and success metrics.

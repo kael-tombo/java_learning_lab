@@ -1,4 +1,4 @@
-﻿# Quiz: Linear Algebra
+# Quiz: Linear Algebra
 
 ## Question 1
 What is the dimension of the vector space R³?

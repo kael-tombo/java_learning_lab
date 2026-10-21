@@ -1,4 +1,4 @@
-﻿# Interview Questions: Logging
+# Interview Questions: Logging
 
 ## Company-Specific Focus
 

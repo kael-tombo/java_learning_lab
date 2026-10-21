@@ -1,4 +1,4 @@
-﻿# Security: Generative Adversarial Networks
+# Security: Generative Adversarial Networks
 
 ## 1. Threat Overview
 Security concerns in Generative Adversarial Networks include adversarial attacks, data poisoning, model theft, and privacy violations. Understanding these threats is essential for building robust systems.

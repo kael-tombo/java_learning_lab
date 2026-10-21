@@ -1,4 +1,4 @@
-﻿# Why It Matters: Limits and Continuity
+# Why It Matters: Limits and Continuity
 
 ## Real-World Importance
 

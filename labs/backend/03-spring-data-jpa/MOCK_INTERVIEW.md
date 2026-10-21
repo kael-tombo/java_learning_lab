@@ -1,4 +1,4 @@
-﻿# Mock Interview: Pagination/Sorting Framework for Large Datasets (Lab 03)
+# Mock Interview: Pagination/Sorting Framework for Large Datasets (Lab 03)
 
 **Role:** Senior Backend Engineer
 **Duration:** 55 minutes

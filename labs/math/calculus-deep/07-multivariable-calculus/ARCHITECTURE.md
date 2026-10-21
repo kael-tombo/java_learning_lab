@@ -1,4 +1,4 @@
-﻿# Architecture: Multivariable Calculus Implementation
+# Architecture: Multivariable Calculus Implementation
 
 ## System Design
 

@@ -1,4 +1,4 @@
-﻿# Why It Matters: Integration Techniques
+# Why It Matters: Integration Techniques
 
 ## Real-World Importance
 

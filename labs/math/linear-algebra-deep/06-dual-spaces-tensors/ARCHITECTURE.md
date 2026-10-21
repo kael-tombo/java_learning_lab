@@ -1,4 +1,4 @@
-﻿# Architecture: Dual Spaces and Tensors Implementation
+# Architecture: Dual Spaces and Tensors Implementation
 
 ## System Design
 

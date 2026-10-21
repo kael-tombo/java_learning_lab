@@ -1,4 +1,4 @@
-﻿# Quiz: Spring Cloud
+# Quiz: Spring Cloud
 
 ## Question 1
 What is the default heartbeat interval for Eureka clients?

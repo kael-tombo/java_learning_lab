@@ -1,4 +1,4 @@
-﻿# 29-29-federated-learning - Federated Learning
+# 29-29-federated-learning - Federated Learning
 
 FedAvg, secure aggregation, differential privacy
 

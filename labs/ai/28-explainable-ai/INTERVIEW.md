@@ -1,4 +1,4 @@
-﻿# Interview Questions: Explainable AI
+# Interview Questions: Explainable AI
 
 ## Conceptual Questions
 1. What is Explainable AI and how does it differ from traditional programming?

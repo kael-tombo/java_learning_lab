@@ -1,4 +1,4 @@
-﻿# Mental Models: Generating Functions
+# Mental Models: Generating Functions
 
 ## 1. A Sequence Wears a Name Tag
 

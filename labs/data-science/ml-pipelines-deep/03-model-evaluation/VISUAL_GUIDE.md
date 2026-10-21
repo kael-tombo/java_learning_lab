@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Visual Guide
+# Model Evaluation — Visual Guide
 
 ## Confusion matrix (demo)
 ```

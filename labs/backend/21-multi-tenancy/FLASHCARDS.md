@@ -1,4 +1,4 @@
-﻿# Flashcards: Multi-Tenancy
+# Flashcards: Multi-Tenancy
 
 Card 1: Highest isolation pattern? A: Database-per-tenant
 Card 2: Simplest pattern? A: Discriminator column

@@ -1,4 +1,4 @@
-﻿# History of Apache Flink
+# History of Apache Flink
 
 ## Timeline
 - **2009**: Stratosphere project started at TU Berlin

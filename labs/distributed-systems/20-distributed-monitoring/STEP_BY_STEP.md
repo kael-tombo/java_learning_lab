@@ -1,4 +1,4 @@
-﻿# Step-by-Step — Distributed Monitoring
+# Step-by-Step — Distributed Monitoring
 
 ## Step 1: Setup
 1. Create project structure with Maven/Gradle

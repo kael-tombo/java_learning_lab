@@ -1,4 +1,4 @@
-﻿# Interview Questions: Meta-Learning
+# Interview Questions: Meta-Learning
 
 ## Conceptual Questions
 1. What is Meta-Learning and how does it differ from traditional programming?

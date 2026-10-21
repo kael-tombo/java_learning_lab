@@ -1,4 +1,4 @@
-﻿# Mental Models for CDC
+# Mental Models for CDC
 
 ## 1. The Security Camera
 - **Database log** = Security footage (everything recorded)

@@ -1,4 +1,4 @@
-﻿# Theory: Database Testing
+# Theory: Database Testing
 
 ## 1. Fundamental Concepts
 

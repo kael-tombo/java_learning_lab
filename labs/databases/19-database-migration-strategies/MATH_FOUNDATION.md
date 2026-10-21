@@ -1,4 +1,4 @@
-﻿# Math Foundation: Database Migration Strategies
+# Math Foundation: Database Migration Strategies
 
 ## Mathematical Models and Formulas
 

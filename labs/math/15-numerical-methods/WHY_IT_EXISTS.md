@@ -1,4 +1,4 @@
-﻿# Why Numerical Methods Exists
+# Why Numerical Methods Exists
 
 ## Purpose and Justification
 

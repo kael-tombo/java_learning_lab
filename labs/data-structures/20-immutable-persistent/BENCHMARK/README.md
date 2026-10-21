@@ -1,4 +1,4 @@
-﻿# Benchmark: Persistent vs Mutable
+# Benchmark: Persistent vs Mutable
 
 Compare persistent and mutable data structures:
 - Construction time

@@ -1,4 +1,4 @@
-﻿# Interview: CQRS Axon
+# Interview: CQRS Axon
 
 Q: What is CQRS? A: Separating command (write) and query (read) responsibilities into different models.
 

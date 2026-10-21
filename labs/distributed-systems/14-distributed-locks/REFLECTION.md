@@ -1,4 +1,4 @@
-﻿# Reflection — Distributed Locks
+# Reflection — Distributed Locks
 
 ## Key Questions
 1. How does this pattern handle edge cases?

@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Architecture
+# Model Training Pipelines — Architecture
 
 ## Components
 1. Orchestrator: executes the DAG in order, enforces gates, retries

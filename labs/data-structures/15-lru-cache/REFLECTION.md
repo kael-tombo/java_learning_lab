@@ -1,4 +1,4 @@
-﻿# Reflection: LRU Cache
+# Reflection: LRU Cache
 
 The LRU cache demonstrates how combining two simple data structures (HashMap and linked list) creates something more powerful. It's a perfect example of the principle that data structures are tools, and combining them solves complex problems.
 

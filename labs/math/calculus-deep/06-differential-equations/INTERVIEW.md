@@ -1,4 +1,4 @@
-﻿# Interview: Differential Equations
+# Interview: Differential Equations
 
 ## Common Interview Questions
 

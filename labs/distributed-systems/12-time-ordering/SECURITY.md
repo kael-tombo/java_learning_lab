@@ -1,4 +1,4 @@
-﻿# Security — Time Ordering
+# Security — Time Ordering
 
 ## 1. Attack Vectors
 - **NTP Spoofing**: Fake NTP responses skew clocks

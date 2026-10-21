@@ -1,4 +1,4 @@
-﻿# Interview Questions: LRU Cache
+# Interview Questions: LRU Cache
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

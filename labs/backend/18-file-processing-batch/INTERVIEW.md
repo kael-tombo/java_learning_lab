@@ -1,4 +1,4 @@
-﻿# Interview: Spring Batch
+# Interview: Spring Batch
 
 Q: How does Spring Batch handle failures?
 A: Transaction rollback at chunk level. Items can be skipped or retried. Job can restart from last failed chunk.

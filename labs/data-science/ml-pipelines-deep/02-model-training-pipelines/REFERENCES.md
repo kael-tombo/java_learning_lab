@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — References
+# Model Training Pipelines — References
 
 All entries are real publications. Verify editions locally.
 

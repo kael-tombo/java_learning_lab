@@ -1,4 +1,4 @@
-﻿# How Security Works — Step by Step
+# How Security Works — Step by Step
 
 ## Step 1: Understanding the Basics
 

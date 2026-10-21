@@ -1,4 +1,4 @@
-﻿# References: Differential Equations
+# References: Differential Equations
 
 ## Textbooks
 

@@ -1,4 +1,4 @@
-﻿# Matrix Calculus — Theory
+# Matrix Calculus — Theory
 
 ## 1. Derivative of Ax
 

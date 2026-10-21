@@ -1,4 +1,4 @@
-﻿# Refactoring Tests
+# Refactoring Tests
 
 ## 1. Extract Setup to @BeforeEach
 

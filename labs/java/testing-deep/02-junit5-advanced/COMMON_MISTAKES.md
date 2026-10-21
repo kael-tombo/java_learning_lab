@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Common Mistakes
+# JUnit 5 Advanced -- Common Mistakes
 ## Top 10 Common Mistakes
 1. Tests that depend on execution order
 2. Testing implementation details instead of behavior

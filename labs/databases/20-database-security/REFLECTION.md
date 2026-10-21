@@ -1,4 +1,4 @@
-﻿# Reflection: Database Security
+# Reflection: Database Security
 
 ## Key Learnings
 

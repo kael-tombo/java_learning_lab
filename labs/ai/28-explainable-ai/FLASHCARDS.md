@@ -1,4 +1,4 @@
-﻿# Flashcards: Explainable AI
+# Flashcards: Explainable AI
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

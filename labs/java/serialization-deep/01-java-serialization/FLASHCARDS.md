@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Flashcards
+# Java Serialization -- Flashcards
 
 ## Spaced-Repetition Learning Cards
 

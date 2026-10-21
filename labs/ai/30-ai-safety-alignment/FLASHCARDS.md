@@ -1,4 +1,4 @@
-﻿# Flashcards: AI Safety and Alignment
+# Flashcards: AI Safety and Alignment
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Common Mistakes
+# Socket Programming -- Common Mistakes
 
 ## Top 15 Common Mistakes
 

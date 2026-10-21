@@ -1,4 +1,4 @@
-﻿# Security: Database Security
+# Security: Database Security
 
 ## Security Model
 

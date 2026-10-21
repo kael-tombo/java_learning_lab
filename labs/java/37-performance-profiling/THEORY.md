@@ -1,4 +1,4 @@
-﻿# Performance Profiling — Theoretical Foundation
+# Performance Profiling — Theoretical Foundation
 
 ## Core Concepts
 

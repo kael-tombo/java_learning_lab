@@ -1,4 +1,4 @@
-﻿# Reflection: Combinatorics
+# Reflection: Combinatorics
 
 ## The Single Question That Fixes Most Errors
 

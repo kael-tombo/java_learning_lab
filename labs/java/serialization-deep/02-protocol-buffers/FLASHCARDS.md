@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Flashcards
+# Protocol Buffers -- Flashcards
 
 ## Spaced-Repetition Learning Cards
 

@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Debugging
+# Java Serialization -- Debugging
 
 ## Debugging Strategies
 

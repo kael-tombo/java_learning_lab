@@ -1,4 +1,4 @@
-﻿# Common Mistakes — Gossip Protocols
+# Common Mistakes — Gossip Protocols
 
 1. Not handling network failures (assume reliable network)
 2. Ignoring clock synchronization issues

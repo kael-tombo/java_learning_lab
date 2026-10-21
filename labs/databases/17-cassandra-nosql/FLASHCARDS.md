@@ -1,4 +1,4 @@
-﻿# Flashcards: Cassandra NoSQL
+# Flashcards: Cassandra NoSQL
 
 ## Q: What is cassandra nosql?
 **A:** Strategy that distributes data across multiple independent database instances for scalability.

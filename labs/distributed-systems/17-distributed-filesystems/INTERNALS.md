@@ -1,4 +1,4 @@
-﻿# Visual Guide — Distributed Filesystems
+# Visual Guide — Distributed Filesystems
 
 ## System Architecture
 `

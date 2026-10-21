@@ -1,4 +1,4 @@
-﻿# Exercises: Multi-Tenancy
+# Exercises: Multi-Tenancy
 
 ## Exercise 1: Tenant Resolver
 Implement tenant resolution from subdomain.

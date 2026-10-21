@@ -1,4 +1,4 @@
-﻿# Analysis Deep Dive - Theory & Intuition
+# Analysis Deep Dive - Theory & Intuition
 
 ## The Big Picture
 

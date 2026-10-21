@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Debugging Tests
+# Mockito Deep Dive -- Debugging Tests
 ## Debugging Strategies
 ### Test Failures
 Read the assertion message carefully - it shows expected vs actual.

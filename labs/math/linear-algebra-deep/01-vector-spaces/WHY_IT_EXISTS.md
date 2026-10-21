@@ -1,4 +1,4 @@
-﻿# Why It Exists: Vector Spaces
+# Why It Exists: Vector Spaces
 
 ## The Problem It Solves
 Before the formal development of Vector Spaces, practitioners relied on approximate methods with unknown error bounds, intuitive reasoning without rigor, and ad-hoc techniques that did not generalize across problems.

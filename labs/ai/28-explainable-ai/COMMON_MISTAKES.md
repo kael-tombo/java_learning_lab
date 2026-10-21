@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Explainable AI
+# Common Mistakes in Explainable AI
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

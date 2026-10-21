@@ -1,4 +1,4 @@
-﻿# Vector Spaces
+# Vector Spaces
 
 Micro-lab on subspaces, span, independence, bases, dimension, and
 rank-nullity, worked with exact rational arithmetic throughout.

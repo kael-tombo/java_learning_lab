@@ -1,4 +1,4 @@
-﻿# Exercises: Segment Trees
+# Exercises: Segment Trees
 
 ## Beginner
 

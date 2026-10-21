@@ -1,4 +1,4 @@
-﻿# Lab 17: Cassandra NoSQL
+# Lab 17: Cassandra NoSQL
 
 ## Focus
 Comprehensive deep-dive into cassandra nosql with Java 21+ implementations, real-world patterns, distributed systems theory, and JUnit 5 integration tests.

@@ -1,4 +1,4 @@
-﻿# Step by Step: Logic and Proofs
+# Step by Step: Logic and Proofs
 
 ## Worked Example: Prove that √2 is Irrational
 

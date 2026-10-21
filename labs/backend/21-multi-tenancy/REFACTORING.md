@@ -1,4 +1,4 @@
-﻿# Refactoring: Multi-Tenancy
+# Refactoring: Multi-Tenancy
 
 Before: Single-tenant application
 After: Add tenant context, filter, and Hibernate multi-tenancy

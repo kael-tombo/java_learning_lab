@@ -1,4 +1,4 @@
-﻿# How Sparse Tables Work
+# How Sparse Tables Work
 
 ## Preprocessing
 

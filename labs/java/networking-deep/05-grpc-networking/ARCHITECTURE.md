@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Architecture
+# gRPC Networking -- Architecture
 ## System Architecture
 
 ### High-Level Design

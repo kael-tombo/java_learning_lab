@@ -1,4 +1,4 @@
-﻿# Why It Exists: Vector Calculus
+# Why It Exists: Vector Calculus
 
 ## The Problem It Solves
 

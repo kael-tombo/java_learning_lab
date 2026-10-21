@@ -1,4 +1,4 @@
-﻿# Challenge: 2D Range Queries
+# Challenge: 2D Range Queries
 
 Implement a 2D BIT supporting:
 1. Point update at (x, y) with value v

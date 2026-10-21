@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- Why It Exists
+# Reactive Testing -- Why It Exists
 ## Motivation
 ### The Problem
 Traditional blocking I/O does not scale efficiently.

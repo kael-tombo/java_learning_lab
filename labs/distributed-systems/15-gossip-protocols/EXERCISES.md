@@ -1,4 +1,4 @@
-﻿# Exercises — Gossip Protocols
+# Exercises — Gossip Protocols
 
 1. **Basic Gossip (Easy)**: Implement push gossip with random peer selection
 2. **Pull Gossip (Medium)**: Implement pull-based gossip

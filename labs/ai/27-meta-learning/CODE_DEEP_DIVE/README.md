@@ -1,4 +1,4 @@
-﻿# Meta-Learning - Code Deep Dive
+# Meta-Learning - Code Deep Dive
 
 ## Overview
 Detailed examination of the Meta-Learning Java implementation.

@@ -1,4 +1,4 @@
-﻿# Lab 17: API Versioning & Documentation
+# Lab 17: API Versioning & Documentation
 
 ## Overview
 Learn API versioning strategies and documentation generation with OpenAPI 3.0 and SpringDoc. Master API contract design, version negotiation, and automated documentation.

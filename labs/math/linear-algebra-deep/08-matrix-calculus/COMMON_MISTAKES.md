@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Matrix Calculus
+# Common Mistakes: Matrix Calculus
 
 ## Top 10 Common Mistakes
 

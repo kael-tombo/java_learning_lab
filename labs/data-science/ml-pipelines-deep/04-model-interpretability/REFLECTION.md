@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Reflection
+# Model Interpretability — Reflection
 
 ## What surprised you?
 That the most rigorous numbers in the lab (5.5/4.5, slope ~4.0) come

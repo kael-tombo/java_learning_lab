@@ -1,4 +1,4 @@
-﻿# Exercises: Database Security
+# Exercises: Database Security
 
 ## Beginner Level
 

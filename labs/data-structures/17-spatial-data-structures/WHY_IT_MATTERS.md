@@ -1,4 +1,4 @@
-﻿# Why Spatial Data Structures Matter
+# Why Spatial Data Structures Matter
 
 ## Real-World Impact
 

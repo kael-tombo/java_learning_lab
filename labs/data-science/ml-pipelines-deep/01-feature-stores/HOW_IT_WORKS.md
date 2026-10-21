@@ -1,4 +1,4 @@
-﻿# Feature Stores — How It Works
+# Feature Stores — How It Works
 
 ## 1. Ingestion
 Raw events land in a log with (entity, event time, payload). A

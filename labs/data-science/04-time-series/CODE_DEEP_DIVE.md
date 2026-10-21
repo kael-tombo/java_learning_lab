@@ -1,4 +1,4 @@
-﻿# Time Series Analysis - Code Deep Dive
+# Time Series Analysis - Code Deep Dive
 
 ## Architecture Overview
 

@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Quiz
+# JSON Serialization -- Quiz
 
 ## Question 1: Fundamentals
 What is the primary purpose of serialization?

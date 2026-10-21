@@ -1,4 +1,4 @@
-﻿# Feature Engineering - Code Deep Dive
+# Feature Engineering - Code Deep Dive
 
 ## Architecture Overview
 

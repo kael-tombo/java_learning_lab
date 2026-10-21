@@ -1,4 +1,4 @@
-﻿# Mini Project: Dynamic Range Statistics
+# Mini Project: Dynamic Range Statistics
 
 Build a tool that maintains an array and supports dynamic range statistics (sum, min, max, average) using segment trees.
 

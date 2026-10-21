@@ -1,4 +1,4 @@
-﻿# VISUAL_GUIDE.md - Distributed Filesystems
+# VISUAL_GUIDE.md - Distributed Filesystems
 
 ## Overview
 This document covers Distributed Filesystems concepts related to VISUAL_GUIDE.

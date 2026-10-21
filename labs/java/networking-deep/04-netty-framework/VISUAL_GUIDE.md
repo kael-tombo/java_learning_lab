@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Visual Guide
+# Netty Framework -- Visual Guide
 ## Network Architecture Diagram
 `
     +-----------+     +-----------+     +-----------+

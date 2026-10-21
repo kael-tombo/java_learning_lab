@@ -1,4 +1,4 @@
-﻿# Architecture — Gossip Protocols
+# Architecture — Gossip Protocols
 
 ## Node Architecture
 `

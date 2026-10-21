@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Security
+# Netty Framework -- Security
 
 ## Security Considerations
 

@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Security
+# Kryo Serialization -- Security
 
 ## Security Considerations
 

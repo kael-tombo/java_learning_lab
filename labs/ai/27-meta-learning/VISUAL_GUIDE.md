@@ -1,4 +1,4 @@
-﻿# Visual Guide: Meta-Learning
+# Visual Guide: Meta-Learning
 
 ## 1. System Architecture Diagram
 [Input Data] → [Preprocessing] → [Model Forward Pass] → [Loss Computation] → [Backward Pass] → [Parameter Update]

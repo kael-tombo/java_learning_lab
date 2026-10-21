@@ -1,4 +1,4 @@
-﻿# Refactoring Concurrent Data Structures
+# Refactoring Concurrent Data Structures
 
 1. Extract synchronization strategy (Strategy pattern)
 2. Add backoff for CAS contention

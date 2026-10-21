@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Performance
+# Socket Programming -- Performance
 
 ## Performance Characteristics
 

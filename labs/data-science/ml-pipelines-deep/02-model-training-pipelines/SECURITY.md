@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Security
+# Model Training Pipelines — Security
 
 ## Threats specific to training pipelines
 - Data poisoning: crafted rows in the source become model behavior.

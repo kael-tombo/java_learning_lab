@@ -1,4 +1,4 @@
-﻿# Performance of Skip Lists
+# Performance of Skip Lists
 
 ## Empirical Benchmarks
 

@@ -1,4 +1,4 @@
-﻿# How It Works — Distributed Locks
+# How It Works — Distributed Locks
 
 The system operates on a client-server model where multiple nodes coordinate to provide a distributed service. Each node runs identical software but may take on different roles (leader, worker, observer).
 

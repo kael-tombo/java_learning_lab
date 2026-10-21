@@ -1,4 +1,4 @@
-﻿# Quiz: Numerical Methods
+# Quiz: Numerical Methods
 
 ## Question 1
 The trapezoidal rule approximates the integral by:

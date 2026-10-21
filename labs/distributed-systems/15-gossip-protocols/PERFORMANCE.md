@@ -1,4 +1,4 @@
-﻿# Performance — Gossip Protocols
+# Performance — Gossip Protocols
 
 ## Convergence Time
 | N (nodes) | Fan-out | Rounds | Time (100ms/round) |

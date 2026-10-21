@@ -1,4 +1,4 @@
-﻿# Reflection: Query Optimization
+# Reflection: Query Optimization
 
 ## Key Learnings
 

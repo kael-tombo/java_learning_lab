@@ -1,4 +1,4 @@
-﻿# Interview: Integral Fundamentals
+# Interview: Integral Fundamentals
 
 ## Common Interview Questions
 

@@ -1,4 +1,4 @@
-﻿# Quiz: CockroachDB
+# Quiz: CockroachDB
 
 ## Section 1: Fundamentals
 

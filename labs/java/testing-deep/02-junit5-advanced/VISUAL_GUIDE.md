@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Visual Guide
+# JUnit 5 Advanced -- Visual Guide
 ## Test Lifecycle Flow
 @BeforeAll -> @BeforeEach -> @Test -> @AfterEach -> @AfterAll
 ## Mock Interaction Flow

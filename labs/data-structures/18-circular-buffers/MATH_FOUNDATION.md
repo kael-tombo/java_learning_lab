@@ -1,4 +1,4 @@
-﻿# Math Foundation
+# Math Foundation
 
 ## Capacity and Size
 

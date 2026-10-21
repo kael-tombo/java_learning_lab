@@ -1,4 +1,4 @@
-﻿# Visual Guide to Concurrent Data Structures
+# Visual Guide to Concurrent Data Structures
 
 ## Treiber Stack Push
 

@@ -1,4 +1,4 @@
-﻿# Performance: Database Migration Strategies
+# Performance: Database Migration Strategies
 
 ## Performance Characteristics
 

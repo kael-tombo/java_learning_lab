@@ -1,4 +1,4 @@
-﻿# Lab 39: Build Tools — Maven/Gradle Deep Dive
+# Lab 39: Build Tools — Maven/Gradle Deep Dive
 
 ## Overview
 Deep dive into Build Tools in Java. This lab provides comprehensive coverage of Maven/Gradle Deep Dive with practical examples, theory, and exercises.

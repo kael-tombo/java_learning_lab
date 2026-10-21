@@ -1,4 +1,4 @@
-﻿# History — Gossip Protocols
+# History — Gossip Protocols
 
 - **Early 2000s**: First practical implementations emerged
 - **2005-2010**: Major adoption in large-scale web services

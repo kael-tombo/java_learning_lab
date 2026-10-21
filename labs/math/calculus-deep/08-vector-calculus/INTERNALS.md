@@ -1,4 +1,4 @@
-﻿# Internals: Vector Calculus Implementation
+# Internals: Vector Calculus Implementation
 
 ## Deep Dive into Implementation Details
 

@@ -1,4 +1,4 @@
-﻿# Kafka Streams Interview Questions
+# Kafka Streams Interview Questions
 
 ## Beginner
 **Q**: What is Kafka Streams and how is it different from Kafka Consumer?

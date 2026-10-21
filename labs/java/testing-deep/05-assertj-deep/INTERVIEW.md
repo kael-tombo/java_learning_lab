@@ -1,4 +1,4 @@
-﻿# Interview Questions: AssertJ Deep Dive
+# Interview Questions: AssertJ Deep Dive
 
 ## Company-Specific Focus
 

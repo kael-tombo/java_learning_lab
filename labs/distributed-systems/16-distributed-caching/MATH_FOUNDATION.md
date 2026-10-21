@@ -1,4 +1,4 @@
-﻿# Math Foundations — Distributed Caching
+# Math Foundations — Distributed Caching
 
 ## 1. Cache Hit Ratio
 

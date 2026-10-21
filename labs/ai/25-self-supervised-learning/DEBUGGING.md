@@ -1,4 +1,4 @@
-﻿# Debugging: Self-Supervised Learning
+# Debugging: Self-Supervised Learning
 
 ## 1. Debugging Principles
 - Reproduce the issue reliably

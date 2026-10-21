@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Reinforcement Learning
+# Step-by-Step: Reinforcement Learning
 
 ## Step 1: Understand the Problem
 Define inputs, outputs, constraints, and success metrics.

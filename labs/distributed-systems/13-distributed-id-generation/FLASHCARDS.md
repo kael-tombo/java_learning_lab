@@ -1,4 +1,4 @@
-﻿# Flashcards — Distributed ID Generation
+# Flashcards — Distributed ID Generation
 
 Self-test cards. Cover the prompt, recall, then check.
 

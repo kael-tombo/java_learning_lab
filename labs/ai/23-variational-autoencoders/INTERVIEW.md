@@ -1,4 +1,4 @@
-﻿# Interview Questions: Variational Autoencoders
+# Interview Questions: Variational Autoencoders
 
 ## Conceptual Questions
 1. What is Variational Autoencoders and how does it differ from traditional programming?

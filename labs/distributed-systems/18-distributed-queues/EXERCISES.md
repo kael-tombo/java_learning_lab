@@ -1,4 +1,4 @@
-﻿# Exercises — Distributed Queues
+# Exercises — Distributed Queues
 
 1. **In-Memory Queue (Easy)**: Implement basic producer-consumer queue
 2. **Partitioned Queue (Medium)**: Add partition logic with routing

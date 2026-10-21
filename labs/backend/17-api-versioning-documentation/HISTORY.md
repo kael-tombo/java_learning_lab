@@ -1,4 +1,4 @@
-﻿# History: API Versioning & Documentation
+# History: API Versioning & Documentation
 
 ## Early Days (2000s)
 REST APIs began with informal documentation. WSDL was used for SOAP but was complex. Early REST APIs often had no documentation or inline HTML docs.

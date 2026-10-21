@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Quiz
+# Protocol Buffers -- Quiz
 
 ## Question 1: Fundamentals
 What is the primary purpose of serialization?

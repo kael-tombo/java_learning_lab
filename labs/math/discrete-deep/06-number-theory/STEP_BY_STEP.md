@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Number Theory by Hand
+# Step-by-Step: Number Theory by Hand
 
 ## 1. Euclid's Algorithm: gcd(1071, 462)
 

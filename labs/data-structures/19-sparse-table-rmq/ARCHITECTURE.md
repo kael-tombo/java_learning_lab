@@ -1,4 +1,4 @@
-﻿# Architecture
+# Architecture
 
 Sparse tables are typically used as a component within larger systems:
 `

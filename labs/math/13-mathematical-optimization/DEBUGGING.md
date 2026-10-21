@@ -1,4 +1,4 @@
-﻿# Debugging Guide: Mathematical Optimization
+# Debugging Guide: Mathematical Optimization
 
 ## Common Issues and Solutions
 

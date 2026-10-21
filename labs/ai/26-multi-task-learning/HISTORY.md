@@ -1,4 +1,4 @@
-﻿# History of Multi-Task Learning
+# History of Multi-Task Learning
 
 ## 1940s-1960s: Foundations
 - McCulloch-Pitts neuron model (1943)

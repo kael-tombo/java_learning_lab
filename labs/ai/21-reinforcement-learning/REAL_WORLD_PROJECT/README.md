@@ -1,4 +1,4 @@
-﻿# Reinforcement Learning - Real-World Project
+# Reinforcement Learning - Real-World Project
 
 ## Overview
 Build a production-ready Reinforcement Learning system.

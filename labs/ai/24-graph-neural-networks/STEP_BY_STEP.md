@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Graph Neural Networks
+# Step-by-Step: Graph Neural Networks
 
 ## Step 1: Understand the Problem
 Define inputs, outputs, constraints, and success metrics.

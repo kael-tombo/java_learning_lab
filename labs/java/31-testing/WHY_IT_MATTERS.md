@@ -1,4 +1,4 @@
-﻿# Why Testing Matters
+# Why Testing Matters
 
 ## Professional Software Development
 

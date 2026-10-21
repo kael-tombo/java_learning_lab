@@ -1,4 +1,4 @@
-﻿# Interview: Linear Transformations
+# Interview: Linear Transformations
 
 ## Common Interview Questions
 

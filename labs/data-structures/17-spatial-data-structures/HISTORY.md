@@ -1,4 +1,4 @@
-﻿# History of Spatial Data Structures
+# History of Spatial Data Structures
 
 - **1974**: K-d tree invented by Jon Louis Bentley
 - **1975**: Point quadtree by Raphael Finkel and Jon Bentley

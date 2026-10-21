@@ -1,4 +1,4 @@
-﻿# History of Skip Lists
+# History of Skip Lists
 
 ## Invention (1989)
 

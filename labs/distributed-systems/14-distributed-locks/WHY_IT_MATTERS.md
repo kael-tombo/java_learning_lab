@@ -1,4 +1,4 @@
-﻿# Why Distributed Locks Matters
+# Why Distributed Locks Matters
 
 In modern distributed systems, distributed-locks is essential because:
 - Systems are too large for single-node solutions

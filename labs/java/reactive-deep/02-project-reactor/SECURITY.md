@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Security
+# Project Reactor -- Security
 ## Reactive Security Considerations
 ### Input Validation
 Validate data early in reactive pipelines.

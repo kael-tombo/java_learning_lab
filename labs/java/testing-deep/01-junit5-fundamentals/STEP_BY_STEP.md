@@ -1,4 +1,4 @@
-﻿# JUnit 5 Fundamentals -- Step-by-Step
+# JUnit 5 Fundamentals -- Step-by-Step
 ## Step 1: Set up test dependencies
 Add JUnit 5 and Mockito to build file.
 ## Step 2: Create test class

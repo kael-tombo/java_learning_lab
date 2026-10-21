@@ -1,4 +1,4 @@
-﻿# Why Distributed ID Generation Exists
+# Why Distributed ID Generation Exists
 
 Auto-increment IDs don't work in distributed systems: every node would need to coordinate to get the next value, creating a bottleneck.
 

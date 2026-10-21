@@ -1,4 +1,4 @@
-﻿# Visual Guide: Database Sharding
+# Visual Guide: Database Sharding
 
 ## Architecture Diagrams
 

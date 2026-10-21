@@ -1,4 +1,4 @@
-﻿# Feature Stores — Code Deep Dive
+# Feature Stores — Code Deep Dive
 
 All snippets run on any JDK 9+ (verified on JDK 23), no dependencies.
 Each snippet models one store mechanism on small fixed datasets with

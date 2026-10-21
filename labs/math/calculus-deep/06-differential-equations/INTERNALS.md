@@ -1,4 +1,4 @@
-﻿# Internals: Differential Equations Implementation
+# Internals: Differential Equations Implementation
 
 ## Deep Dive into Implementation Details
 

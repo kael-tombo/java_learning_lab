@@ -1,4 +1,4 @@
-﻿# Visual Guide: Differential Equations
+# Visual Guide: Differential Equations
 
 ## Conceptual Diagrams
 

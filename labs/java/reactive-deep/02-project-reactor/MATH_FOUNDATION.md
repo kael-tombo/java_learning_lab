@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Mathematical Foundation
+# Project Reactor -- Mathematical Foundation
 ## 1. Backpressure Mathematics
 ### Request-N Pattern
 Subscriber requests N items: downstream produces at most N.

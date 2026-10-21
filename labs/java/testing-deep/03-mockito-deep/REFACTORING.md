@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Refactoring Tests
+# Mockito Deep Dive -- Refactoring Tests
 ## Test Refactoring Strategies
 1. Extract common setup to @BeforeEach
 2. Use parameterized tests to reduce duplication

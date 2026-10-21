@@ -1,4 +1,4 @@
-﻿# Quiz
+# Quiz
 
 1. How many children does a quadtree node have? 4
 2. How does a k-d tree choose splitting dimension? Cycles through dimensions

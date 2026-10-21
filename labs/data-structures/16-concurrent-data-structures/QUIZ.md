@@ -1,4 +1,4 @@
-﻿# Quiz: Concurrent Data Structures
+# Quiz: Concurrent Data Structures
 
 1. What does CAS stand for? Compare-And-Swap
 2. What is the ABA problem? Pointer returning to previous value

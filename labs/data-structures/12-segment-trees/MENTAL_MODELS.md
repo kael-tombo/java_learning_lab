@@ -1,4 +1,4 @@
-﻿# Mental Models for Segment Trees
+# Mental Models for Segment Trees
 
 ## 1. The Org Chart Model
 

@@ -1,4 +1,4 @@
-﻿# Visual Guide to Union-Find
+# Visual Guide to Union-Find
 
 ## Part 1: Basic Operations
 

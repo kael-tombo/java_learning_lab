@@ -1,4 +1,4 @@
-﻿# Build Tools — Visual Guide
+# Build Tools — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

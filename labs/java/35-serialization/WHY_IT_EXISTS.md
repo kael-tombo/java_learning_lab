@@ -1,4 +1,4 @@
-﻿# Why Serialization Exists
+# Why Serialization Exists
 
 ## The Problem It Solves
 

@@ -1,4 +1,4 @@
-﻿# Performance — Distributed Queues
+# Performance — Distributed Queues
 
 ## Throughput (messages/sec)
 | System | Single partition | 10 partitions | 100 partitions |

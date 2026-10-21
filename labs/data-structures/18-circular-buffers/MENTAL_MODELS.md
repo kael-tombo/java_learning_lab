@@ -1,4 +1,4 @@
-﻿# Mental Models
+# Mental Models
 
 ## 1. The Round Table Model
 Think of a round table with N seats. A waiter places dishes at the next empty seat (tail). A diner takes dishes from the next occupied seat (head). When they reach the end, they continue from the start.

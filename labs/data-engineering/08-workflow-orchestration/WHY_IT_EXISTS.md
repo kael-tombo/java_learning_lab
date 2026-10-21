@@ -1,4 +1,4 @@
-﻿# Why Workflow Orchestration Exists
+# Why Workflow Orchestration Exists
 
 ## The Problem
 Data pipelines have complex dependencies: Task B needs Task A to finish, but only if Task A succeeded. Running these manually is error-prone. Cron jobs lack dependency management, retry logic, and monitoring.

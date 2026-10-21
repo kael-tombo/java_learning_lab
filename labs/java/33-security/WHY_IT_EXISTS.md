@@ -1,4 +1,4 @@
-﻿# Why Security Exists
+# Why Security Exists
 
 ## The Problem It Solves
 

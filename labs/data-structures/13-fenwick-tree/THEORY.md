@@ -1,4 +1,4 @@
-﻿# Theory: Fenwick Tree (Binary Indexed Tree)
+# Theory: Fenwick Tree (Binary Indexed Tree)
 
 ## Fundamentals
 

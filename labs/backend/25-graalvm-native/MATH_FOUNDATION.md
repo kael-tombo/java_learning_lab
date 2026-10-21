@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: GraalVM Native
+# Mathematical Foundation: GraalVM Native
 
 ## Startup Time Comparison
 JVM startup = JVM_init + class_loading + bytecode_verification + JIT_warmup

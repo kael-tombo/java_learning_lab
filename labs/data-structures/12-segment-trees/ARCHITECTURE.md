@@ -1,4 +1,4 @@
-﻿# Architecture of Segment Trees in Applications
+# Architecture of Segment Trees in Applications
 
 ## Integration Patterns
 

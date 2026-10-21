@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- How It Works
+# Reactive Testing -- How It Works
 ## How Reactive Streams Work
 ### Subscription Setup
 1. Publisher.subscribe(Subscriber) called

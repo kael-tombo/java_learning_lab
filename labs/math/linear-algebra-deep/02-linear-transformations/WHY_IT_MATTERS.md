@@ -1,4 +1,4 @@
-﻿# Why It Matters: Linear Transformations
+# Why It Matters: Linear Transformations
 
 ## Real-World Importance
 

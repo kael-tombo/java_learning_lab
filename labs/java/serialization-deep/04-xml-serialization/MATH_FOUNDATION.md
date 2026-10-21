@@ -1,4 +1,4 @@
-﻿# XML Serialization — Mathematical Foundation
+# XML Serialization — Mathematical Foundation
 
 ## 1. XML Document Structure Mathematics
 

@@ -1,4 +1,4 @@
-﻿# Why Number Theory Exists
+# Why Number Theory Exists
 
 ## Counting Remainders Was Already a 3,000-Year-Old Job
 

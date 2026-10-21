@@ -1,4 +1,4 @@
-﻿# Internals of Persistent Data Structures
+# Internals of Persistent Data Structures
 
 ## Node Structure
 

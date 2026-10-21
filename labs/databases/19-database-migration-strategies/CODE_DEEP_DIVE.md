@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: Database Migration Strategies
+# Code Deep Dive: Database Migration Strategies
 
 ## Architecture Overview
 This deep dive examines the Java implementation patterns used throughout this lab. The code leverages Java 21+ features including records, sealed classes, pattern matching, and virtual threads.

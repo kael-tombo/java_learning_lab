@@ -1,4 +1,4 @@
-﻿# Interview Questions: Memory Model
+# Interview Questions: Memory Model
 
 ## Company-Specific Focus
 

@@ -1,4 +1,4 @@
-﻿# References: Query Optimization
+# References: Query Optimization
 
 ## Academic Papers
 

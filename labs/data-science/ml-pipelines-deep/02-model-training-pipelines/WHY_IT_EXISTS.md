@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Why It Exists
+# Model Training Pipelines — Why It Exists
 
 Training pipelines exist because manual retraining does not survive
 contact with production. A notebook that worked once depends on the

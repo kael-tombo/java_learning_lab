@@ -1,4 +1,4 @@
-﻿# How Graph Neural Networks Works
+# How Graph Neural Networks Works
 
 ## 1. Basic Idea
 Graph Neural Networks works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

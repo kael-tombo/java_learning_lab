@@ -1,4 +1,4 @@
-﻿# Why ETL Processes Exist
+# Why ETL Processes Exist
 
 ## The Problem
 Organizations need to consolidate data from disparate systems (ERP, CRM, billing, logs) into a unified analytical view. Each system has its own schema, data format, and quality level.

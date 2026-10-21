@@ -1,4 +1,4 @@
-﻿# Calculus Deep Dive
+# Calculus Deep Dive
 
 ## Micro-Labs
 

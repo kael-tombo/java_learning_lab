@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Architecture
+# Model Interpretability — Architecture
 
 ## Components
 1. Explainer router: maps the stated question to a method (global vs

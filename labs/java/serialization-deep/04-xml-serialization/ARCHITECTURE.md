@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Architecture
+# XML Serialization -- Architecture
 
 ## System Architecture
 

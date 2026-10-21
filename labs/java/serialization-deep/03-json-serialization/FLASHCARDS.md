@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Flashcards
+# JSON Serialization -- Flashcards
 
 ## Spaced-Repetition Learning Cards
 

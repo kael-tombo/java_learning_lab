@@ -1,4 +1,4 @@
-﻿# Interview: Combinatorics
+# Interview: Combinatorics
 
 ## Counting Questions
 

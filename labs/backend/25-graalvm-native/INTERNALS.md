@@ -1,4 +1,4 @@
-﻿# Internals: GraalVM Native
+# Internals: GraalVM Native
 
 ## Points-to Analysis
 GraalVM's static analysis traces all reachable code starting from the entry point (main method). It:

@@ -1,4 +1,4 @@
-﻿# Security of Tests
+# Security of Tests
 
 ## Test Secrets
 

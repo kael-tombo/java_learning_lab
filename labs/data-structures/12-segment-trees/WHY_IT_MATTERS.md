@@ -1,4 +1,4 @@
-﻿# Why Segment Trees Matter
+# Why Segment Trees Matter
 
 ## Practical Impact
 

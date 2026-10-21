@@ -1,4 +1,4 @@
-﻿# Internals: Linear Transformations Implementation
+# Internals: Linear Transformations Implementation
 
 ## Deep Dive into Implementation Details
 

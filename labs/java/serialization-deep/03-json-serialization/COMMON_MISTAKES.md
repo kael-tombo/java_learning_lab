@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Common Mistakes
+# JSON Serialization -- Common Mistakes
 
 ## Top 20 Common Mistakes
 

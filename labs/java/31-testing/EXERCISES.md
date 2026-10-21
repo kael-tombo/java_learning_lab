@@ -1,4 +1,4 @@
-﻿# Testing — Exercises
+# Testing — Exercises
 
 ## Exercise 1: Write Tests First (TDD)
 

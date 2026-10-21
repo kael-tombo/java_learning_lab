@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Security
+# Common Mistakes: Security
 
 1. Disabling CSRF for all endpoints (not just REST APIs)
 2. CORS set to * with credentials (not allowed by spec)

@@ -1,4 +1,4 @@
-﻿# How It Works: Integration Techniques
+# How It Works: Integration Techniques
 
 ## High-Level Explanation
 

@@ -1,4 +1,4 @@
-﻿# AssertJ Deep Dive -- Architecture
+# AssertJ Deep Dive -- Architecture
 ## Testing Architecture
 ### Component Isolation
 Tests should isolate the component under test.

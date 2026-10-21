@@ -1,4 +1,4 @@
-﻿# Performance: Database Testing
+# Performance: Database Testing
 
 ## Performance Characteristics
 

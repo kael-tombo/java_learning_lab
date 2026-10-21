@@ -1,4 +1,4 @@
-﻿# Reflection: Derivative Applications
+# Reflection: Derivative Applications
 
 ## Self-Assessment Questions
 

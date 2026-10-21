@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks - Complete Theory
+# Graph Neural Networks - Complete Theory
 
 ## 1. Introduction
 

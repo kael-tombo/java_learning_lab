@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- References
+# gRPC Networking -- References
 ## Further Reading
 
 ### Books

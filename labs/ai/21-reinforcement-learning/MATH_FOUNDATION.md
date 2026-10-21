@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Reinforcement Learning
+# Mathematical Foundations of Reinforcement Learning
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying Reinforcement Learning. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

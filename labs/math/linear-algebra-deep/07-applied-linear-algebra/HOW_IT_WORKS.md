@@ -1,4 +1,4 @@
-﻿# How It Works: Applied Linear Algebra
+# How It Works: Applied Linear Algebra
 
 ## High-Level Explanation
 

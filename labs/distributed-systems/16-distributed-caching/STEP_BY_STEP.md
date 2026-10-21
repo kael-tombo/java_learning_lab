@@ -1,4 +1,4 @@
-﻿# Step-by-Step — Distributed Caching
+# Step-by-Step — Distributed Caching
 
 ## Step 1: Setup
 1. Create project structure with Maven/Gradle

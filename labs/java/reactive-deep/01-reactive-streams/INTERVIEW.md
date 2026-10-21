@@ -1,4 +1,4 @@
-﻿# Interview Questions: Reactive Streams
+# Interview Questions: Reactive Streams
 
 ## Company-Specific Focus
 

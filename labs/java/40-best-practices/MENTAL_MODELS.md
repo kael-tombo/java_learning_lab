@@ -1,4 +1,4 @@
-﻿# Best Practices — Mental Models
+# Best Practices — Mental Models
 
 ## Model 1: The Blueprint
 

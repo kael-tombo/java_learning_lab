@@ -1,4 +1,4 @@
-﻿# Step by Step: Numerical Methods Learning Path
+# Step by Step: Numerical Methods Learning Path
 
 ## Stage 1: Foundation (Week 1)
 

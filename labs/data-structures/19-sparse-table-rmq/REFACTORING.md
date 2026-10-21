@@ -1,4 +1,4 @@
-﻿# Refactoring
+# Refactoring
 
 1. Generic combine operator
 2. 2D sparse table for matrices

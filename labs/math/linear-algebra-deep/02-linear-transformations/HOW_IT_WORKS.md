@@ -1,4 +1,4 @@
-﻿# How It Works: Linear Transformations
+# How It Works: Linear Transformations
 
 ## High-Level Explanation
 

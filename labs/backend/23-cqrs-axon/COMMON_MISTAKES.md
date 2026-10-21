@@ -1,4 +1,4 @@
-﻿# Common Mistakes: CQRS Axon
+# Common Mistakes: CQRS Axon
 
 1. Storing too many events without snapshots
 2. Complex aggregates (breaking single responsibility)

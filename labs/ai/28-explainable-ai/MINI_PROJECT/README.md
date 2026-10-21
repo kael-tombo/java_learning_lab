@@ -1,4 +1,4 @@
-﻿# Explainable AI - Mini Project
+# Explainable AI - Mini Project
 
 ## Overview
 Build a working Explainable AI implementation from scratch.

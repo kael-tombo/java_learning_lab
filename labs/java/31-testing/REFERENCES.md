@@ -1,4 +1,4 @@
-﻿# Testing — References
+# Testing — References
 
 ## Official Documentation
 - [JUnit 5 User Guide](https://junit.org/junit5/docs/current/user-guide/)

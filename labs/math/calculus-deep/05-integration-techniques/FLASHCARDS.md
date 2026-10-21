@@ -1,4 +1,4 @@
-﻿# Flashcards: Integration Techniques
+# Flashcards: Integration Techniques
 
 ## Front-Back Cards
 

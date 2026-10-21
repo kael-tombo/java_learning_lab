@@ -1,4 +1,4 @@
-﻿# How Self-Supervised Learning Works
+# How Self-Supervised Learning Works
 
 ## 1. Basic Idea
 Self-Supervised Learning works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

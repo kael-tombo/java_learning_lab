@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Exercises
+# JUnit 5 Advanced -- Exercises
 ## Beginner Exercises
 ### Exercise 1: Write your first test
 Write a test that verifies basic arithmetic operations.

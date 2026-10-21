@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Performance
+# Netty Framework -- Performance
 
 ## Performance Characteristics
 

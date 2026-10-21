@@ -1,4 +1,4 @@
-﻿# Debugging: Cassandra NoSQL
+# Debugging: Cassandra NoSQL
 
 ## Common Issues and Solutions
 

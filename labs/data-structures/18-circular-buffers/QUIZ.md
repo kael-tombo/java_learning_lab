@@ -1,4 +1,4 @@
-﻿# Quiz
+# Quiz
 
 1. What is the time complexity of all circular buffer operations? O(1)
 2. How is wrapping typically implemented? Modulo arithmetic

@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- How It Works
+# Reactive Streams -- How It Works
 ## How Reactive Streams Work
 ### Subscription Setup
 1. Publisher.subscribe(Subscriber) called

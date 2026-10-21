@@ -1,4 +1,4 @@
-﻿# Visual Guide — Distributed Monitoring
+# Visual Guide — Distributed Monitoring
 
 ## System Architecture
 `

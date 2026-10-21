@@ -1,4 +1,4 @@
-﻿# Reflection — Distributed Filesystems
+# Reflection — Distributed Filesystems
 
 ## Key Questions
 1. How does this pattern handle edge cases?

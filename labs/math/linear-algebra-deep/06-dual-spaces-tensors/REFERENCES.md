@@ -1,4 +1,4 @@
-﻿# References: Dual Spaces and Tensors
+# References: Dual Spaces and Tensors
 
 ## Textbooks
 1. Standard Textbook on Calculus

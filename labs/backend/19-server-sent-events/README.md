@@ -1,4 +1,4 @@
-﻿# Lab 19: Server-Sent Events (SSE)
+# Lab 19: Server-Sent Events (SSE)
 
 ## Overview
 Server-Sent Events enable real-time, unidirectional data streaming from server to client over HTTP. Learn SSE protocol, Spring WebFlux SSE, and reactive event streams.

@@ -1,4 +1,4 @@
-﻿# Testing — Mental Models
+# Testing — Mental Models
 
 ## Model 1: The Safety Net
 

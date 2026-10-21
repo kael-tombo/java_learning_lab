@@ -1,4 +1,4 @@
-﻿# Performance: Generating Function Algorithms
+# Performance: Generating Function Algorithms
 
 ## Extraction Strategies and Their Exact Costs
 

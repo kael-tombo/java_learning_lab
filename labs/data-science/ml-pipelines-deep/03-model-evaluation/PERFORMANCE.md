@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Performance
+# Model Evaluation — Performance
 
 ## Cost structure
 Scoring passes are linear in n; curve building adds one sort (n log n);

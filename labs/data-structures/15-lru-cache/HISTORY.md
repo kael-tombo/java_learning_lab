@@ -1,4 +1,4 @@
-﻿# History of LRU Cache
+# History of LRU Cache
 
 ## Origins
 

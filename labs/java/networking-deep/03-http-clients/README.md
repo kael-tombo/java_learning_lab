@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+)
+# HTTP Clients (Java 11+)
 
 The JDK's built-in HTTP/1.1 + HTTP/2 client: one shared immutable
 `HttpClient` (pooling + multiplexing inside), cheap `HttpRequest` values,

@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Dijkstra on a 6-Node Graph
+# Step-by-Step: Dijkstra on a 6-Node Graph
 
 Graph (undirected, nonnegative weights) — adjacency listing:
 

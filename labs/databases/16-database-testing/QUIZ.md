@@ -1,4 +1,4 @@
-﻿# Quiz: Database Testing
+# Quiz: Database Testing
 
 ## Section 1: Fundamentals
 

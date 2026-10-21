@@ -1,4 +1,4 @@
-﻿# Security: Derivatives and Differentiation Rules Implementation
+# Security: Derivatives and Differentiation Rules Implementation
 
 ## Security Considerations
 

@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Performance
+# Model Training Pipelines — Performance
 
 ## Where time goes
 Ingest and transform scale with data volume; training scales with data

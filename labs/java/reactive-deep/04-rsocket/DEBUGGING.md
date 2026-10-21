@@ -1,4 +1,4 @@
-﻿# RSocket -- Debugging
+# RSocket -- Debugging
 ## Debugging Reactive Code
 ### Hooks.onOperatorDebug()
 Enables operator stack traces for debugging.

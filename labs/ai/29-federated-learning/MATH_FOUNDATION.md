@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of Federated Learning
+# Mathematical Foundations of Federated Learning
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying Federated Learning. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

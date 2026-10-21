@@ -1,4 +1,4 @@
-﻿# References: Multi-Task Learning
+# References: Multi-Task Learning
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

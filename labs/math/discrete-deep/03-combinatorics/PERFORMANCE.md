@@ -1,4 +1,4 @@
-﻿# Performance: Combinatorics Algorithms
+# Performance: Combinatorics Algorithms
 
 ## Binomial Coefficient: Closed Form vs DP (Precise Costs)
 

@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Coin Change for 50 Cents via Generating Function
+# Step-by-Step: Coin Change for 50 Cents via Generating Function
 
 US coins: 1¢, 5¢, 10¢, 25¢, 50¢. Question: how many ways to make exactly 50 cents, order of coins irrelevant?
 

@@ -1,4 +1,4 @@
-﻿# Flashcards: Limits and Continuity
+# Flashcards: Limits and Continuity
 
 ## Front-Back Cards
 

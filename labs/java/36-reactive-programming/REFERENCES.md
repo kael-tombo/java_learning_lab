@@ -1,4 +1,4 @@
-﻿# References
+# References
 
 ## Official Documentation
 - Java SE Documentation: https://docs.oracle.com/en/java/javase/21/

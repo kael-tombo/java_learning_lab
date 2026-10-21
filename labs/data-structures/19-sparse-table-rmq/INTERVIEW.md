@@ -1,4 +1,4 @@
-﻿# Interview Questions: Sparse Table & RMQ
+# Interview Questions: Sparse Table & RMQ
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

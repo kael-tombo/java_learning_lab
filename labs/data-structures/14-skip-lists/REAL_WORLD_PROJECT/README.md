@@ -1,4 +1,4 @@
-﻿# Real World Project: Database Index Simulator
+# Real World Project: Database Index Simulator
 
 Simulate a database index using skip lists.
 

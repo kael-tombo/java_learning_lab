@@ -1,4 +1,4 @@
-﻿# Data Lake
+# Data Lake
 
 ## Overview
 A data lake is a centralized repository that stores all structured and unstructured data at any scale, supporting schema-on-read, diverse data types, and the lakehouse architecture.

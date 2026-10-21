@@ -1,4 +1,4 @@
-﻿# Lab 13: Database Sharding
+# Lab 13: Database Sharding
 
 ## Focus
 Comprehensive deep-dive into database sharding with Java 21+ implementations, real-world patterns, distributed systems theory, and JUnit 5 integration tests.

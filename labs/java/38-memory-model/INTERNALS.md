@@ -1,4 +1,4 @@
-﻿# Memory Model — Internal Mechanics
+# Memory Model — Internal Mechanics
 
 ## JVM Memory Model Implementation
 

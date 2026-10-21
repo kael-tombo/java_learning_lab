@@ -1,4 +1,4 @@
-﻿# Benchmark: Circular Buffer Performance
+# Benchmark: Circular Buffer Performance
 
 Compare circular buffer implementations:
 - Lock-free vs lock-based throughput

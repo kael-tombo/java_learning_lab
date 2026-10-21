@@ -1,4 +1,4 @@
-﻿# References: Linear Transformations
+# References: Linear Transformations
 
 ## Textbooks
 1. Standard Textbook on Calculus

@@ -1,4 +1,4 @@
-﻿# Why It Matters: Logic and Proofs
+# Why It Matters: Logic and Proofs
 
 ## Software Verification
 

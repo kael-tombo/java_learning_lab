@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Implementing a Segment Tree
+# Step-by-Step: Implementing a Segment Tree
 
 ## Step 1: Understand the Problem
 

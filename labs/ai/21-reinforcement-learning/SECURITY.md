@@ -1,4 +1,4 @@
-﻿# Security: Reinforcement Learning
+# Security: Reinforcement Learning
 
 ## 1. Threat Overview
 Security concerns in Reinforcement Learning include adversarial attacks, data poisoning, model theft, and privacy violations. Understanding these threats is essential for building robust systems.

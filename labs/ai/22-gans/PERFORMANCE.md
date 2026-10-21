@@ -1,4 +1,4 @@
-﻿# Performance: Generative Adversarial Networks
+# Performance: Generative Adversarial Networks
 
 ## 1. Performance Metrics
 Key metrics include throughput (samples/sec), latency (ms per prediction), memory usage, and GPU utilization.

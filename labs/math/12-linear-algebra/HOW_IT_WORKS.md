@@ -1,4 +1,4 @@
-﻿# How It Works: Linear Algebra
+# How It Works: Linear Algebra
 
 ## Conceptual Overview
 

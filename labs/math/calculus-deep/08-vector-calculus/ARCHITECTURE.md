@@ -1,4 +1,4 @@
-﻿# Architecture: Vector Calculus Implementation
+# Architecture: Vector Calculus Implementation
 
 ## System Design
 

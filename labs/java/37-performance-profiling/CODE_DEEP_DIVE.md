@@ -1,4 +1,4 @@
-﻿# Performance Profiling — Visual Guide
+# Performance Profiling — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

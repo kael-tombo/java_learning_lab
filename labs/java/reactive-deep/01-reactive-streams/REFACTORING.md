@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Refactoring
+# Reactive Streams -- Refactoring
 1. Replace blocking calls with WebClient
 2. Use Mono/Flux instead of CompletableFuture
 3. Add backpressure to hot publishers

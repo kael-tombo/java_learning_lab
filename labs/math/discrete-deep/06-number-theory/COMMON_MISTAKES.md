@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Number Theory
+# Common Mistakes: Number Theory
 
 ## 1. Treating the Modular Inverse Like Division
 

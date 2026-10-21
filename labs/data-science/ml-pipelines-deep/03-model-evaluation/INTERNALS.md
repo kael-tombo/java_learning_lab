@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Internals
+# Model Evaluation — Internals
 
 ## Single-pass scoring
 The scorer accumulates TP/FP/TN/FN plus log-loss and Brier numerators

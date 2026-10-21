@@ -1,4 +1,4 @@
-﻿# Socket Programming -- References
+# Socket Programming -- References
 ## Further Reading
 
 ### Books

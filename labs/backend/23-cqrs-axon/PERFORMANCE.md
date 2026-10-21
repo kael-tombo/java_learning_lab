@@ -1,4 +1,4 @@
-﻿# Performance: CQRS Axon
+# Performance: CQRS Axon
 
 - Event store is append-only (fast writes)
 - Snapshots prevent replaying entire event stream

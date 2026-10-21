@@ -1,4 +1,4 @@
-﻿# Workflow Orchestration References
+# Workflow Orchestration References
 
 ## Books
 - "Data Pipelines with Apache Airflow" by Bas P. Harenslak and Julian Rutger

@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Reflection
+# Protocol Buffers -- Reflection
 
 ## Guided Self-Reflection Prompts
 

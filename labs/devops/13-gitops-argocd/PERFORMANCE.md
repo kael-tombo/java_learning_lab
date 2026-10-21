@@ -1,4 +1,4 @@
-﻿# Performance Optimization in ArgoCD
+# Performance Optimization in ArgoCD
 
 ## Repository Server Performance
 

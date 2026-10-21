@@ -1,4 +1,4 @@
-﻿# Data Governance Interview Questions
+# Data Governance Interview Questions
 
 ## Beginner
 **Q**: What is data governance?

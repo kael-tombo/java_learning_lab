@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- Theoretical Foundation
+# Reactive Testing -- Theoretical Foundation
 ## Core Concepts
 ### 1. Reactive Manifesto
 Reactive systems are Responsive, Resilient, Elastic, and Message-Driven.

@@ -1,4 +1,4 @@
-﻿# Lab 37: Performance Profiling — JFR, JMC, Profiling
+# Lab 37: Performance Profiling — JFR, JMC, Profiling
 
 ## Overview
 Deep dive into Performance Profiling in Java. This lab provides comprehensive coverage of JFR, JMC, Profiling with practical examples, theory, and exercises.

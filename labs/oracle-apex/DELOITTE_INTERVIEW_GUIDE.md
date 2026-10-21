@@ -1,4 +1,4 @@
-﻿# Deloitte Interview Guide — Oracle APEX Academy
+# Deloitte Interview Guide — Oracle APEX Academy
 
 ## Interview Process for APEX/Database Roles
 

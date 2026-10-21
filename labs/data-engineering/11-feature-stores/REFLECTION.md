@@ -1,4 +1,4 @@
-﻿# Feature Store Reflection
+# Feature Store Reflection
 
 ## Key Learnings
 - Feature stores solve critical ML infrastructure problems

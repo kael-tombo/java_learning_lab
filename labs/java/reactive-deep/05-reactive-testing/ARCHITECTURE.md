@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- Architecture
+# Reactive Testing -- Architecture
 ## Reactive Architecture
 ### Event-Driven
 Components communicate via events rather than direct calls.

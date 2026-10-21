@@ -1,4 +1,4 @@
-﻿# Kafka Streaming
+# Kafka Streaming
 
 ## Overview
 Kafka Streams is a client library for building stream processing applications that run on top of Apache Kafka, providing exactly-once semantics, stateful processing, and real-time data pipelines.

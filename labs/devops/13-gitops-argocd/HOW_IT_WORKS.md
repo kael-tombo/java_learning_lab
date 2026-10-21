@@ -1,4 +1,4 @@
-﻿# How ArgoCD Works
+# How ArgoCD Works
 
 ## The Pull-Based Model
 ArgoCD operates on a pull-based deployment model. Unlike traditional CI/CD tools that push deployments to the cluster (requiring cluster API access from the CI system), ArgoCD runs inside the cluster and pulls the desired state from Git. This eliminates the need for external systems to have credentials to access the cluster.

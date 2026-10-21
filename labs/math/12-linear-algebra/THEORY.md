@@ -1,4 +1,4 @@
-﻿# Linear Algebra
+# Linear Algebra
 
 The study of vectors, matrices, and linear transformations.
 

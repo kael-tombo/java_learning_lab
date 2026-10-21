@@ -1,4 +1,4 @@
-﻿# Why It Exists: Limits and Continuity
+# Why It Exists: Limits and Continuity
 
 ## The Problem It Solves
 

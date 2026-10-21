@@ -1,4 +1,4 @@
-﻿# Linear Transformations — Code Deep Dive
+# Linear Transformations — Code Deep Dive
 
 Stdlib only (`fractions`). Outputs pasted from execution.
 

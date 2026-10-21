@@ -1,4 +1,4 @@
-﻿# Reinforcement Learning - Mathematical Foundations
+# Reinforcement Learning - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Reinforcement Learning.

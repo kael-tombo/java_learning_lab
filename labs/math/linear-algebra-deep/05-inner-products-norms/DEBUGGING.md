@@ -1,4 +1,4 @@
-﻿# Debugging: Inner Products and Norms Implementation
+# Debugging: Inner Products and Norms Implementation
 
 ## Common Bugs
 

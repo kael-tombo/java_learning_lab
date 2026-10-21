@@ -1,4 +1,4 @@
-﻿# Exploratory Data Analysis - Code Deep Dive
+# Exploratory Data Analysis - Code Deep Dive
 
 ## Architecture Overview
 

@@ -1,4 +1,4 @@
-﻿# References: Integration Techniques
+# References: Integration Techniques
 
 ## Textbooks
 

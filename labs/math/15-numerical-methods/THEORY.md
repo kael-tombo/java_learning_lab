@@ -1,4 +1,4 @@
-﻿# Numerical Methods: A Comprehensive Treatment
+# Numerical Methods: A Comprehensive Treatment
 
 ## 1. Numerical Integration
 

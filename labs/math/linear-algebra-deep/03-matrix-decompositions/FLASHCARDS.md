@@ -1,4 +1,4 @@
-﻿# Matrix Decompositions — Flashcards
+# Matrix Decompositions — Flashcards
 
 ## Q/A
 

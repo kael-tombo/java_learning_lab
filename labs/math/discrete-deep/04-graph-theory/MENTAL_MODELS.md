@@ -1,4 +1,4 @@
-﻿# Mental Models: Graph Theory
+# Mental Models: Graph Theory
 
 ## 1. A Graph Is Just a Binary Relation
 

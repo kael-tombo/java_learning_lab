@@ -1,4 +1,4 @@
-﻿# How Build Tools Works — Step by Step
+# How Build Tools Works — Step by Step
 
 ## Step 1: Understanding the Basics
 

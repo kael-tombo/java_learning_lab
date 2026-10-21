@@ -1,4 +1,4 @@
-﻿# References
+# References
 
 1. Wikipedia: Circular buffer
 2. LMAX Disruptor technical paper

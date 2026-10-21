@@ -1,4 +1,4 @@
-﻿# Why Best Practices Matters
+# Why Best Practices Matters
 
 ## Real-World Impact
 

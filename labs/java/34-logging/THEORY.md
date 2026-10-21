@@ -1,4 +1,4 @@
-﻿# Logging — Theoretical Foundation
+# Logging — Theoretical Foundation
 
 ## Core Concepts
 

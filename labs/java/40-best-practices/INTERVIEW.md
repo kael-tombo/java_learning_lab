@@ -1,4 +1,4 @@
-﻿# Interview Questions: Best Practices
+# Interview Questions: Best Practices
 
 ## Company-Specific Focus
 

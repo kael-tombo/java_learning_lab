@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning - Quiz
+# Multi-Task Learning - Quiz
 
 ## Overview
 Assessment covering all Multi-Task Learning topics.

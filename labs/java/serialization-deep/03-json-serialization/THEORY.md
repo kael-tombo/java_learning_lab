@@ -1,4 +1,4 @@
-﻿# JSON Serialization — Theoretical Foundation
+# JSON Serialization — Theoretical Foundation
 
 ## Core Concepts
 

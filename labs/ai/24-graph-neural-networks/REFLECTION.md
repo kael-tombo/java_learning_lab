@@ -1,4 +1,4 @@
-﻿# Reflection: Graph Neural Networks
+# Reflection: Graph Neural Networks
 
 ## Self-Assessment
 - Can I explain Graph Neural Networks to a non-technical person?

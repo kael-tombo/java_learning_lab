@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Integration Techniques
+# Step-by-Step Guide: Integration Techniques
 
 ## Implementation Walkthrough
 

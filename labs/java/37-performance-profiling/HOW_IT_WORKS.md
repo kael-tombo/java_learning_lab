@@ -1,4 +1,4 @@
-﻿# How Performance Profiling Works — Step by Step
+# How Performance Profiling Works — Step by Step
 
 ## Step 1: Understanding the Basics
 

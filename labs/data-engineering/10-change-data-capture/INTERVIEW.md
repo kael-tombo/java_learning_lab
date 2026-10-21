@@ -1,4 +1,4 @@
-﻿# CDC Interview Questions
+# CDC Interview Questions
 
 ## Beginner
 **Q**: What is CDC and why is it useful?

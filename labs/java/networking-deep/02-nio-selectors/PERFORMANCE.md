@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Performance
+# NIO Selectors -- Performance
 
 ## Performance Characteristics
 

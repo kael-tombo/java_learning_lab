@@ -1,4 +1,4 @@
-﻿# Feature Stores — References
+# Feature Stores — References
 
 All entries are real publications. Verify editions locally.
 

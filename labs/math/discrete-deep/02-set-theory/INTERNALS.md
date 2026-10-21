@@ -1,4 +1,4 @@
-﻿# Internals: How Sets Are Implemented
+# Internals: How Sets Are Implemented
 
 ## HashSet = HashMap with a Placeholder Value
 

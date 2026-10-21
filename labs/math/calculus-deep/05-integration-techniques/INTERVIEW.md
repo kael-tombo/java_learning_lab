@@ -1,4 +1,4 @@
-﻿# Interview: Integration Techniques
+# Interview: Integration Techniques
 
 ## Common Interview Questions
 

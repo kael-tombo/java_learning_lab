@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Step by Step
+# Model Evaluation — Step by Step
 
 ## Step 1. Count the matrix by hand
 Labels {1,0,1,1,0,1,0,0,1,0}, preds {1,0,0,1,0,1,1,0,1,0}. Tally each

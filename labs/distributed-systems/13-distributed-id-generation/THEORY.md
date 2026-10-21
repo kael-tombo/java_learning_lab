@@ -1,4 +1,4 @@
-﻿# Theory of Distributed ID Generation
+# Theory of Distributed ID Generation
 
 ## 1. The Problem of Distributed IDs
 

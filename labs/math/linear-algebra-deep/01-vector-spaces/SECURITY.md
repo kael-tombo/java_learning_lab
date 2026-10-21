@@ -1,4 +1,4 @@
-﻿# Security: Vector Spaces Implementation
+# Security: Vector Spaces Implementation
 
 ## Security Considerations
 

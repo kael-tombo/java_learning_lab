@@ -1,4 +1,4 @@
-﻿# Reflection
+# Reflection
 
 Circular buffers exemplify the elegant simplicity that comes from rethinking data layout. By treating memory as circular rather than linear, we achieve O(1) operations with fixed memory. This is a key insight in systems programming.
 

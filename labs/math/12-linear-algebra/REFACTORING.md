@@ -1,4 +1,4 @@
-﻿# Refactoring Guide: Linear Algebra
+# Refactoring Guide: Linear Algebra
 
 ## Code Smells to Address
 

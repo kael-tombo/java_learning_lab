@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Eigenvalues Advanced
+# Step-by-Step Guide: Eigenvalues Advanced
 
 ## Implementation Walkthrough
 

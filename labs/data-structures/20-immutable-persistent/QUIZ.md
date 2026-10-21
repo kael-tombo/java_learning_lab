@@ -1,4 +1,4 @@
-﻿# Quiz
+# Quiz
 
 1. What is an immutable data structure? Cannot be modified after creation
 2. What is persistence? Previous versions are preserved

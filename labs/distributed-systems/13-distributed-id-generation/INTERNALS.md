@@ -1,4 +1,4 @@
-﻿# INTERNALS.md - Distributed Id Generation
+# INTERNALS.md - Distributed Id Generation
 
 ## Overview
 This document covers Distributed Id Generation concepts related to INTERNALS.

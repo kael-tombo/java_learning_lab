@@ -1,4 +1,4 @@
-﻿# References: Union-Find
+# References: Union-Find
 
 ## Academic Papers
 

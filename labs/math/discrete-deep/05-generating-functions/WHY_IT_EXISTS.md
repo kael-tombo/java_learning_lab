@@ -1,4 +1,4 @@
-﻿# Why Generating Functions Exist
+# Why Generating Functions Exist
 
 ## Because Unrolling Recurrences Doesn't Scale
 

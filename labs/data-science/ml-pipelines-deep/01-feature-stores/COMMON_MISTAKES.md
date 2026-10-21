@@ -1,4 +1,4 @@
-﻿# Feature Stores — Common Mistakes
+# Feature Stores — Common Mistakes
 
 ## 1. Naive latest-value join
 Taking the newest feature row regardless of label time leaks the

@@ -1,4 +1,4 @@
-﻿# Reflection: Cassandra NoSQL
+# Reflection: Cassandra NoSQL
 
 ## Key Learnings
 

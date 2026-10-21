@@ -1,4 +1,4 @@
-﻿# Architecture: GraphQL DGS
+# Architecture: GraphQL DGS
 
 `
 Client â”€â”€â–¶ HTTP POST /graphql

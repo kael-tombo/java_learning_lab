@@ -1,4 +1,4 @@
-﻿# Why Union-Find Exists
+# Why Union-Find Exists
 
 ## The Problem: Managing Disjoint Sets
 

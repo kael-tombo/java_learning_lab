@@ -1,4 +1,4 @@
-﻿# Exercises: Limits and Continuity
+# Exercises: Limits and Continuity
 
 ## Theoretical Exercises
 

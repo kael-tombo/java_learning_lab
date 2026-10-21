@@ -1,4 +1,4 @@
-﻿# gRPC Networking — Theoretical Foundation
+# gRPC Networking — Theoretical Foundation
 
 ## Core Concept (transport + IDL, version-agnostic)
 

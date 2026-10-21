@@ -1,4 +1,4 @@
-﻿# Internals — Time Ordering
+# Internals — Time Ordering
 
 ## Lamport Clock
 - 4 bytes int counter (or 8 bytes long)

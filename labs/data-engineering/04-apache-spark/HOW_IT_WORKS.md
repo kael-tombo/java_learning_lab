@@ -1,4 +1,4 @@
-﻿# How Apache Spark Works
+# How Apache Spark Works
 
 ## Execution Pipeline
 

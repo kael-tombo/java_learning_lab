@@ -1,4 +1,4 @@
-﻿# JUnit 5 Fundamentals
+# JUnit 5 Fundamentals
 ## Overview
 @Test, assertions, assumptions, @BeforeEach/@AfterEach, @BeforeAll/@AfterAll, @DisplayName, test lifecycle, nested tests
 ## Learning Objectives

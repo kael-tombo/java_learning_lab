@@ -1,4 +1,4 @@
-﻿# Analysis Deep Dive - Flashcards
+# Analysis Deep Dive - Flashcards
 
 ## Card 1
 **Q**: What is 

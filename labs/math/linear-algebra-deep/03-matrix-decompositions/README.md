@@ -1,4 +1,4 @@
-﻿# Matrix Decompositions
+# Matrix Decompositions
 
 Micro-lab on LU, QR, and SVD: existence, shapes, and one fully checked
 numeric instance of each.

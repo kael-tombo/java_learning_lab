@@ -1,4 +1,4 @@
-﻿# Feature Stores — Flashcards
+# Feature Stores — Flashcards
 
 Q: Offline store vs online store?
 A: Offline holds full (entity, ts, value) history for training joins;

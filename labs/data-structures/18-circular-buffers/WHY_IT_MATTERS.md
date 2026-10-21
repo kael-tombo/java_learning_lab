@@ -1,4 +1,4 @@
-﻿# Why Circular Buffers Matter
+# Why Circular Buffers Matter
 
 ## Real-World Impact
 

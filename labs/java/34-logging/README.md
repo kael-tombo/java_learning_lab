@@ -1,4 +1,4 @@
-﻿# Lab 34: Logging — SLF4J, Logback, Log4j2
+# Lab 34: Logging — SLF4J, Logback, Log4j2
 
 ## Overview
 Deep dive into Logging in Java. This lab provides comprehensive coverage of SLF4J, Logback, Log4j2 with practical examples, theory, and exercises.

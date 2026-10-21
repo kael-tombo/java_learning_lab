@@ -1,4 +1,4 @@
-﻿# Why Number Theory Matters
+# Why Number Theory Matters
 
 ## It Is the Foundation of Every Secure Connection
 

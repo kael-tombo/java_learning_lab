@@ -1,4 +1,4 @@
-﻿# Apache Spark Reflection
+# Apache Spark Reflection
 
 ## Key Learnings
 - Spark's in-memory processing provides massive speedup over disk-based systems

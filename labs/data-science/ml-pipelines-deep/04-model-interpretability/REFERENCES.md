@@ -1,4 +1,4 @@
-﻿# Model Interpretability — References
+# Model Interpretability — References
 
 All entries are real publications. Verify editions and venues locally.
 

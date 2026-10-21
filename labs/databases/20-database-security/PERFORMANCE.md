@@ -1,4 +1,4 @@
-﻿# Performance: Database Security
+# Performance: Database Security
 
 ## Performance Characteristics
 

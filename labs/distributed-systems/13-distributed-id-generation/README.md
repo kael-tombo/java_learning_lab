@@ -1,4 +1,4 @@
-﻿# 13 - Distributed ID Generation
+# 13 - Distributed ID Generation
 
 ## Overview
 Distributed ID generation creates unique identifiers across multiple nodes without coordination. This lab covers Snowflake-style IDs, UUID v7, ULID, database sequences, and custom distributed ID generators.

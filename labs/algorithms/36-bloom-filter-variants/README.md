@@ -1,4 +1,4 @@
-﻿# Bloom Filter Variants — Overview
+# Bloom Filter Variants — Overview
 
 This lab explores advanced probabilistic data structures derived from the classic Bloom filter: Counting Bloom Filter, Scalable Bloom Filter, Cuckoo Filter, Quotient Filter, and XOR Filter. Each variant addresses specific limitations of the original—deletion support, dynamic resizing, higher space efficiency, and faster membership queries. Students implement each variant from scratch, compare their performance, and understand the tradeoffs between false positive rate, memory usage, and operational complexity.
 

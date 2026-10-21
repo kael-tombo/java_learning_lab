@@ -1,4 +1,4 @@
-﻿# Internals: Spring Batch
+# Internals: Spring Batch
 
 ## JobLauncher
 JobLauncher.start() creates a JobExecution, validates parameters, and delegates to Job.execute().

@@ -1,4 +1,4 @@
-﻿# Security: Server-Sent Events
+# Security: Server-Sent Events
 
 - Authenticate SSE connections (don't expose to unauthenticated users)
 - Validate origin headers to prevent cross-origin abuse

@@ -1,4 +1,4 @@
-﻿# PwC Interview Guide — Oracle EBS Academy
+# PwC Interview Guide — Oracle EBS Academy
 
 ## Interview Process for EBS Roles
 

@@ -1,4 +1,4 @@
-﻿# Logging — Math Foundation
+# Logging — Math Foundation
 
 ## Mathematical Concepts
 

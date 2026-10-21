@@ -1,4 +1,4 @@
-﻿# Interview Questions: Project Reactor
+# Interview Questions: Project Reactor
 
 ## Company-Specific Focus
 

@@ -1,4 +1,4 @@
-﻿# RSocket -- Visual Guide
+# RSocket -- Visual Guide
 ## Reactive Stream Flow
 Publisher -> [Operator1] -> [Operator2] -> Subscriber
 ## Backpressure Flow

@@ -1,4 +1,4 @@
-﻿# Why Distributed Locks Exists
+# Why Distributed Locks Exists
 
 Distributed Locks exists to solve specific distributed systems challenges that cannot be addressed by single-node solutions. The fundamental problem is that as systems scale horizontally, coordination, communication, and consistency become exponentially more complex.
 

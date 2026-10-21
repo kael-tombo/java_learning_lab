@@ -1,4 +1,4 @@
-﻿# Feature Engineering - Mathematical Foundations
+# Feature Engineering - Mathematical Foundations
 
 ## Probability Theory
 

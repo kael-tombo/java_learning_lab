@@ -1,4 +1,4 @@
-﻿# Flashcards — Distributed Locks
+# Flashcards — Distributed Locks
 
 1. Q: What is the primary purpose? A: Provide distributed-locks at scale
 2. Q: Key components? A: Client, coordinator, workers, storage

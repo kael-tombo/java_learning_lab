@@ -1,4 +1,4 @@
-﻿# Reflection: Database Sharding
+# Reflection: Database Sharding
 
 ## Key Learnings
 

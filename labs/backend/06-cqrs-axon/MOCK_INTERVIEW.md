@@ -1,4 +1,4 @@
-﻿# Mock Interview: Event Sourcing for Banking Transactions (Lab 06)
+# Mock Interview: Event Sourcing for Banking Transactions (Lab 06)
 
 **Role:** Senior Backend Engineer
 **Duration:** 55 minutes

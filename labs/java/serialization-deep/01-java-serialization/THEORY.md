@@ -1,4 +1,4 @@
-﻿# Java Serialization — Theoretical Foundation
+# Java Serialization — Theoretical Foundation
 
 ## Core Concepts
 

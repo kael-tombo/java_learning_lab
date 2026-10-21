@@ -1,4 +1,4 @@
-﻿# Inner Products and Norms — Code Deep Dive
+# Inner Products and Norms — Code Deep Dive
 
 Stdlib only (`fractions`). Outputs pasted from execution.
 

@@ -1,4 +1,4 @@
-﻿# Performance: CockroachDB
+# Performance: CockroachDB
 
 ## Performance Characteristics
 

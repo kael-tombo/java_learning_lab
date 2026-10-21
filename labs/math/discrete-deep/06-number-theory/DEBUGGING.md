@@ -1,4 +1,4 @@
-﻿# Debugging: Number Theory Code
+# Debugging: Number Theory Code
 
 ## Symptom: Negative or Out-of-Range Results After Modular Arithmetic
 

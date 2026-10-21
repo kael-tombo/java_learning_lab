@@ -1,4 +1,4 @@
-﻿# AI Safety and Alignment - Mini Project
+# AI Safety and Alignment - Mini Project
 
 ## Overview
 Build a working AI Safety and Alignment implementation from scratch.

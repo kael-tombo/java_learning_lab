@@ -1,4 +1,4 @@
-﻿# History: Set Theory
+# History: Set Theory
 
 ## Before Sets Had a Name
 

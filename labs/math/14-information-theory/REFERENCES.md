@@ -1,4 +1,4 @@
-﻿# References: Information Theory
+# References: Information Theory
 
 ## Textbooks
 

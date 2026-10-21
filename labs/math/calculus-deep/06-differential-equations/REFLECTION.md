@@ -1,4 +1,4 @@
-﻿# Reflection: Differential Equations
+# Reflection: Differential Equations
 
 ## Self-Assessment Questions
 

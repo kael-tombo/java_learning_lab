@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Mental Models
+# JSON Serialization -- Mental Models
 
 ## Key Mental Models for Understanding JSON Serialization
 

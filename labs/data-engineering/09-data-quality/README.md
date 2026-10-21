@@ -1,4 +1,4 @@
-﻿# Data Quality
+# Data Quality
 
 ## Overview
 Data quality ensures that data meets standards for accuracy, completeness, consistency, timeliness, and validity through automated checks, monitoring, and remediation processes.

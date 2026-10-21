@@ -1,4 +1,4 @@
-﻿# Lab 24: Backend Performance Optimization
+# Lab 24: Backend Performance Optimization
 
 ## Overview
 Master performance optimization techniques: JMH benchmarking, connection pooling, async I/O, caching strategies, and JVM tuning.

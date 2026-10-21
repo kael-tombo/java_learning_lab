@@ -1,4 +1,4 @@
-﻿# Why Best Practices Exists
+# Why Best Practices Exists
 
 ## The Problem It Solves
 

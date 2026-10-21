@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Why It Matters
+# Java Serialization -- Why It Matters
 
 ## Practical Importance in Real-World Development
 

@@ -1,4 +1,4 @@
-﻿# How Persistent Data Structures Work
+# How Persistent Data Structures Work
 
 ## Persistent Singly Linked List
 

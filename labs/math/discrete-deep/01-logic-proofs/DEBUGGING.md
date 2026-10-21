@@ -1,4 +1,4 @@
-﻿# Debugging: Logic and Proofs
+# Debugging: Logic and Proofs
 
 ## Verifying Truth Tables
 

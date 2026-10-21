@@ -1,4 +1,4 @@
-﻿# Data Lake Quiz
+# Data Lake Quiz
 
 ## Question 1
 What are the three layers in the medallion architecture?

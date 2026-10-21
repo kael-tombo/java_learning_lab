@@ -1,4 +1,4 @@
-﻿# Self-Supervised Learning - Mini Project
+# Self-Supervised Learning - Mini Project
 
 ## Overview
 Build a working Self-Supervised Learning implementation from scratch.

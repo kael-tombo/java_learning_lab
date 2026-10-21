@@ -1,4 +1,4 @@
-﻿# Interview Questions: AI Safety and Alignment
+# Interview Questions: AI Safety and Alignment
 
 ## Conceptual Questions
 1. What is AI Safety and Alignment and how does it differ from traditional programming?

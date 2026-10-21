@@ -1,4 +1,4 @@
-﻿# Flashcards: Fenwick Tree
+# Flashcards: Fenwick Tree
 
 ## Front: What is a Fenwick Tree?
 **Back**: A data structure for efficient prefix sum queries and point updates, using O(n) space and O(log n) time per operation.

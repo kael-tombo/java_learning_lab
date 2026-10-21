@@ -1,4 +1,4 @@
-﻿# Internals: Eigenvalues Advanced Implementation
+# Internals: Eigenvalues Advanced Implementation
 
 ## Deep Dive into Implementation Details
 

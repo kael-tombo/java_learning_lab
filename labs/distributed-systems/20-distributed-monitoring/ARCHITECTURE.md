@@ -1,4 +1,4 @@
-﻿# Architecture — Distributed Monitoring
+# Architecture — Distributed Monitoring
 
 ## Prometheus + Thanos Architecture
 `

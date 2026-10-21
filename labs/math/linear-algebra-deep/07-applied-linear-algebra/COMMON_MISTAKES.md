@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Applied Linear Algebra
+# Common Mistakes: Applied Linear Algebra
 
 ## Top 10 Common Mistakes
 

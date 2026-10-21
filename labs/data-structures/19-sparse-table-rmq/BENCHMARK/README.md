@@ -1,4 +1,4 @@
-﻿# Benchmark: Sparse Table vs Segment Tree
+# Benchmark: Sparse Table vs Segment Tree
 
 Compare sparse table and segment tree for:
 - Construction time (varying n)

@@ -1,4 +1,4 @@
-﻿# Reflection: Variational Autoencoders
+# Reflection: Variational Autoencoders
 
 ## Self-Assessment
 - Can I explain Variational Autoencoders to a non-technical person?

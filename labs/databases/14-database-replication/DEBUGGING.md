@@ -1,4 +1,4 @@
-﻿# Debugging: Database Replication
+# Debugging: Database Replication
 
 ## Common Issues and Solutions
 

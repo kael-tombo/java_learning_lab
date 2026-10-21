@@ -1,4 +1,4 @@
-﻿# Why Set Theory Matters
+# Why Set Theory Matters
 
 ## It Is the Notation Every Other Topic Uses
 

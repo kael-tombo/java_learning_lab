@@ -1,4 +1,4 @@
-﻿# Architecture: Logic and Proofs
+# Architecture: Logic and Proofs
 
 ## Where Logic Fits in the Stack
 

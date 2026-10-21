@@ -1,4 +1,4 @@
-﻿# ETL Interview Questions
+# ETL Interview Questions
 
 ## Beginner
 **Q**: What is the purpose of the staging area in ETL?

@@ -1,4 +1,4 @@
-﻿# References
+# References
 
 1. CP-Algorithms: Sparse Table
 2. Wikipedia: Range Minimum Query

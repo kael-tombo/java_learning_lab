@@ -1,4 +1,4 @@
-﻿# Debugging Guide: Information Theory
+# Debugging Guide: Information Theory
 
 ## Common Issues and Solutions
 

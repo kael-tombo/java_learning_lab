@@ -1,4 +1,4 @@
-﻿# Common Mistakes
+# Common Mistakes
 
 ## 1. Over-Engineering
 

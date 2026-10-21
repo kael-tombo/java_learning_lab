@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Performance
+# Kryo Serialization -- Performance
 
 ## Performance Characteristics
 

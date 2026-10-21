@@ -1,4 +1,4 @@
-﻿# Interview: Generating Functions
+# Interview: Generating Functions
 
 ## Conceptual Questions
 

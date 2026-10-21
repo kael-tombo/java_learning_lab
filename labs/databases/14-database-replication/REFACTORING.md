@@ -1,4 +1,4 @@
-﻿# Refactoring: Database Replication
+# Refactoring: Database Replication
 
 ## Common Refactoring Patterns
 

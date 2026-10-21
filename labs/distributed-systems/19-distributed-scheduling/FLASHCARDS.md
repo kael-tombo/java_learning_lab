@@ -1,4 +1,4 @@
-﻿# Flashcards — Distributed Scheduling
+# Flashcards — Distributed Scheduling
 
 1. Q: What is the primary purpose? A: Provide distributed-scheduling at scale
 2. Q: Key components? A: Client, coordinator, workers, storage

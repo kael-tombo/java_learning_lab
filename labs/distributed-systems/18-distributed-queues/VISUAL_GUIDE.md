@@ -1,4 +1,4 @@
-﻿# Visual Guide — Distributed Queues
+# Visual Guide — Distributed Queues
 
 ## Queue Partition Layout
 `

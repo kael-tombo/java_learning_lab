@@ -1,4 +1,4 @@
-﻿# Architecture: CQRS Axon
+# Architecture: CQRS Axon
 
 `
 Command Side (Write)           Query Side (Read)

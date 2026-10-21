@@ -1,4 +1,4 @@
-﻿# Common Mistakes with Skip Lists
+# Common Mistakes with Skip Lists
 
 1. **Incorrect level generation**: Using wrong probability or MAX_LEVEL
 2. **Not using sentinel header**: Complicates edge cases

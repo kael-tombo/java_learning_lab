@@ -1,4 +1,4 @@
-﻿# Step-by-Step Guide: Differential Equations
+# Step-by-Step Guide: Differential Equations
 
 ## Implementation Walkthrough
 

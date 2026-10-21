@@ -1,4 +1,4 @@
-﻿# References: Meta-Learning
+# References: Meta-Learning
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

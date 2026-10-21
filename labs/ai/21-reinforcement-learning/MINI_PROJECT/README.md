@@ -1,4 +1,4 @@
-﻿# Reinforcement Learning - Mini Project
+# Reinforcement Learning - Mini Project
 
 ## Overview
 Build a working Reinforcement Learning implementation from scratch.

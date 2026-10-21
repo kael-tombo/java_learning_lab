@@ -1,4 +1,4 @@
-﻿# Meta-Learning - Mathematical Foundations
+# Meta-Learning - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Meta-Learning.

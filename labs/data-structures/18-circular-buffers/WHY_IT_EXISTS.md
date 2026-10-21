@@ -1,4 +1,4 @@
-﻿# Why Circular Buffers Exist
+# Why Circular Buffers Exist
 
 ## The Problem
 

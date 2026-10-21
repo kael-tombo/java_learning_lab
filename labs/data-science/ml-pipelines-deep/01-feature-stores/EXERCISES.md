@@ -1,4 +1,4 @@
-﻿# Feature Stores — Exercises
+# Feature Stores — Exercises
 
 ## 1. As-of join by hand (pen and paper, then run)
 History: (u1,10,1.0), (u1,20,2.0), (u1,30,3.0). Labels: (u1,25), (u1,30).

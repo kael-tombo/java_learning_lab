@@ -1,4 +1,4 @@
-﻿# Quiz: Database Sharding
+# Quiz: Database Sharding
 
 ## Section 1: Fundamentals
 

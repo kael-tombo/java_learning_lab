@@ -1,4 +1,4 @@
-﻿# Interview Questions: Socket Programming
+# Interview Questions: Socket Programming
 
 ## Company-Specific Focus
 

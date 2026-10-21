@@ -1,4 +1,4 @@
-﻿# Quiz: Fenwick Tree
+# Quiz: Fenwick Tree
 
 ## Multiple Choice
 

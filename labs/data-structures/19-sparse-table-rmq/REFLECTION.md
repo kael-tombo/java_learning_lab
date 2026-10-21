@@ -1,4 +1,4 @@
-﻿# Reflection
+# Reflection
 
 The sparse table demonstrates that precomputation can dramatically reduce query time. The key insight — using power-of-2 intervals — is a recurring theme in computer science. The trade-off between preprocessing and query time is fundamental.
 

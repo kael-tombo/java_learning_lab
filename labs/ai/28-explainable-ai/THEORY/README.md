@@ -1,4 +1,4 @@
-﻿# Explainable AI - Theory
+# Explainable AI - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Explainable AI.

@@ -1,4 +1,4 @@
-﻿# Mental Models: Database Sharding
+# Mental Models: Database Sharding
 
 ## 1. The Library Analogy
 Imagine a massive library with millions of books. Instead of one giant building, we have multiple branch libraries.

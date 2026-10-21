@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Variational Autoencoders
+# Step-by-Step: Variational Autoencoders
 
 ## Step 1: Understand the Problem
 Define inputs, outputs, constraints, and success metrics.

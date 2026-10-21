@@ -1,4 +1,4 @@
-﻿# 27-27-meta-learning - Meta-Learning
+# 27-27-meta-learning - Meta-Learning
 
 MAML, Reptile, few-shot learning, prototypical networks
 

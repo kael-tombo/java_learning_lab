@@ -1,4 +1,4 @@
-﻿# Security: Set Theory in Practice
+# Security: Set Theory in Practice
 
 ## RSA's Algebra Is Set Theory in Disguise
 

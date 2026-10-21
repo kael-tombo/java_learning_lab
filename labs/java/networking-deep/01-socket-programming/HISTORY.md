@@ -1,4 +1,4 @@
-﻿# Socket Programming -- History
+# Socket Programming -- History
 ## Historical Evolution
 
 ### Early Networking (1980s)

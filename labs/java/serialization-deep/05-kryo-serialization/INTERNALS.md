@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Internal Implementation
+# Kryo Serialization -- Internal Implementation
 
 ## Internal Architecture
 

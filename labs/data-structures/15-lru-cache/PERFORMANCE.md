@@ -1,4 +1,4 @@
-﻿# Performance of LRU Cache
+# Performance of LRU Cache
 
 ## Empirical Benchmarks
 

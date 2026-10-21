@@ -1,4 +1,4 @@
-﻿# SECURITY.md - Distributed Queues
+# SECURITY.md - Distributed Queues
 
 ## Overview
 This document covers Distributed Queues concepts related to SECURITY.

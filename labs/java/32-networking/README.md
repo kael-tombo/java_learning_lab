@@ -1,4 +1,4 @@
-﻿# Lab 32: Networking — Sockets, HTTP Client, URLs
+# Lab 32: Networking — Sockets, HTTP Client, URLs
 
 ## Overview
 Deep dive into Networking in Java. This lab provides comprehensive coverage of Sockets, HTTP Client, URLs with practical examples, theory, and exercises.

@@ -1,4 +1,4 @@
-﻿# How Federated Learning Works
+# How Federated Learning Works
 
 ## 1. Basic Idea
 Federated Learning works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

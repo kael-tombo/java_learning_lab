@@ -1,4 +1,4 @@
-﻿# Debugging Testing Failures
+# Debugging Testing Failures
 
 ## Reading Test Failure Output
 

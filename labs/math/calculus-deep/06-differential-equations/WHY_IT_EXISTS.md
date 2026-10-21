@@ -1,4 +1,4 @@
-﻿# Why It Exists: Differential Equations
+# Why It Exists: Differential Equations
 
 ## The Problem It Solves
 

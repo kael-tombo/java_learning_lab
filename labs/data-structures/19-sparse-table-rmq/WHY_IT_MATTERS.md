@@ -1,4 +1,4 @@
-﻿# Why Sparse Tables Matter
+# Why Sparse Tables Matter
 
 ## Real-World Impact
 

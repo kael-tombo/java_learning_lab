@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- Visual Guide
+# Reactive Streams -- Visual Guide
 ## Reactive Stream Flow
 Publisher -> [Operator1] -> [Operator2] -> Subscriber
 ## Backpressure Flow

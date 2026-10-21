@@ -1,4 +1,4 @@
-﻿# Why Distributed ID Generation Matters
+# Why Distributed ID Generation Matters
 
 Distributed ID generation is foundational:
 - Every distributed system needs unique identifiers

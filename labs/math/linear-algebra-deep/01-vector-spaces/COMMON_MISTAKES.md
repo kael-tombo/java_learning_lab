@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Vector Spaces
+# Common Mistakes: Vector Spaces
 
 ## Top 10 Common Mistakes
 

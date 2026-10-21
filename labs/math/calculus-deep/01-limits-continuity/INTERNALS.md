@@ -1,4 +1,4 @@
-﻿# Internals: Limits and Continuity Implementation
+# Internals: Limits and Continuity Implementation
 
 ## Deep Dive into Implementation Details
 

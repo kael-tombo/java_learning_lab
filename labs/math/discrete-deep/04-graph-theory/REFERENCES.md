@@ -1,4 +1,4 @@
-﻿# References: Graph Theory
+# References: Graph Theory
 
 ## Primary Sources
 

@@ -1,4 +1,4 @@
-﻿# Performance: Graph Algorithms
+# Performance: Graph Algorithms
 
 ## Representations Decide the Cost
 

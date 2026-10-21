@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Debugging
+# NIO Selectors -- Debugging
 
 ## Debugging Strategies
 

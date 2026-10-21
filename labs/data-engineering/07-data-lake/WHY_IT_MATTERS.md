@@ -1,4 +1,4 @@
-﻿# Why Data Lakes Matter
+# Why Data Lakes Matter
 
 ## Business Impact
 - **Cost**: 10-100x cheaper than data warehouses per TB

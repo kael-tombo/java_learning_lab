@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks - Quiz
+# Graph Neural Networks - Quiz
 
 ## Overview
 Assessment covering all Graph Neural Networks topics.

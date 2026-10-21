@@ -1,4 +1,4 @@
-﻿# Federated Learning - Theory
+# Federated Learning - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of Federated Learning.

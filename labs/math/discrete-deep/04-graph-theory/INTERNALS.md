@@ -1,4 +1,4 @@
-﻿# Internals: Graph Representations and Mechanics
+# Internals: Graph Representations and Mechanics
 
 ## Adjacency List
 

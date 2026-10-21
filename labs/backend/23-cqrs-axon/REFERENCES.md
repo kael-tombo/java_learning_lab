@@ -1,4 +1,4 @@
-﻿# References: CQRS Axon
+# References: CQRS Axon
 
 - AxonIQ Reference: https://docs.axoniq.io/reference-guide/
 - Axon Framework: https://github.com/AxonFramework/AxonFramework

@@ -1,4 +1,4 @@
-﻿# History of Sparse Tables
+# History of Sparse Tables
 
 - **1970s**: Range minimum query problem formalized
 - **1980s**: Sparse table described in algorithms literature

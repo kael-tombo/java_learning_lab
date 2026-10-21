@@ -1,4 +1,4 @@
-﻿# Why It Matters: Vector Calculus
+# Why It Matters: Vector Calculus
 
 ## Real-World Importance
 

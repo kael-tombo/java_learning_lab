@@ -1,4 +1,4 @@
-﻿# Reflection: Spring Cloud
+# Reflection: Spring Cloud
 
 ## Key Takeaways
 1. Service discovery eliminates hardcoded URLs and makes systems dynamic

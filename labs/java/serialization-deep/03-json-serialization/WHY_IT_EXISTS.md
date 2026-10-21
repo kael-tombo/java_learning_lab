@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Why It Exists
+# JSON Serialization -- Why It Exists
 
 ## Historical Context and Motivation
 

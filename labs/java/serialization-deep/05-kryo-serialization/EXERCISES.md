@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Exercises
+# Kryo Serialization -- Exercises
 
 ## Beginner Exercises
 

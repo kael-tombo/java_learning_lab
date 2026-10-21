@@ -1,4 +1,4 @@
-﻿# How Testing Works — Step by Step
+# How Testing Works — Step by Step
 
 ## Step 1: Test Discovery
 

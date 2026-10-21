@@ -1,4 +1,4 @@
-﻿# Visual Guide: GraphQL DGS
+# Visual Guide: GraphQL DGS
 
 `
 REST: /api/shows → returns ALL fields (overfetch)

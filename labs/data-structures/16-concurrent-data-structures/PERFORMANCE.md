@@ -1,4 +1,4 @@
-﻿# Performance of Concurrent Data Structures
+# Performance of Concurrent Data Structures
 
 ## Empirical Benchmarks
 

@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Why It Matters
+# Model Interpretability — Why It Matters
 
 Explanations decide actions: which feature to fix, which denial to
 uphold, which bias to investigate. A faithful attribution directs

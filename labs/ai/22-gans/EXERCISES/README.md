@@ -1,4 +1,4 @@
-﻿# Generative Adversarial Networks - Exercises
+# Generative Adversarial Networks - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

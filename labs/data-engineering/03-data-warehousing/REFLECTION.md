@@ -1,4 +1,4 @@
-﻿# Data Warehousing Reflection
+# Data Warehousing Reflection
 
 ## Key Learnings
 - Dimensional modeling is essential for analytical query performance

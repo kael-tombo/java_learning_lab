@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- Mathematical Foundation
+# WebFlux Deep Dive -- Mathematical Foundation
 ## 1. Backpressure Mathematics
 ### Request-N Pattern
 Subscriber requests N items: downstream produces at most N.

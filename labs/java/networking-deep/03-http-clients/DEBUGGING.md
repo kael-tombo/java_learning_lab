@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Debugging
+# HTTP Clients (Java 11+) -- Debugging
 
 ## Debugging Strategies
 

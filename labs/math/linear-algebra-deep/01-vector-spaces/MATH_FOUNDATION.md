@@ -1,4 +1,4 @@
-﻿# Vector Spaces — Math Foundation
+# Vector Spaces — Math Foundation
 
 All computations below were executed in exact rational arithmetic
 (Python `fractions`) and the stated values are the observed outputs,

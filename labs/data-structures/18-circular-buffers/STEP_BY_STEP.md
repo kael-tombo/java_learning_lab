@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Building a Circular Buffer
+# Step-by-Step: Building a Circular Buffer
 
 1. Allocate fixed-size Object array
 2. Initialize head=0, tail=0, size=0

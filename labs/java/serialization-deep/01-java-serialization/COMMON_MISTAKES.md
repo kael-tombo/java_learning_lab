@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Common Mistakes
+# Java Serialization -- Common Mistakes
 
 ## Top 20 Common Mistakes
 

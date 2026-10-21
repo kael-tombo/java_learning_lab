@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Mental Models
+# Kryo Serialization -- Mental Models
 
 ## Key Mental Models for Understanding Kryo Serialization
 

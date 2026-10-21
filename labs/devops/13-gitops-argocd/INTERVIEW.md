@@ -1,4 +1,4 @@
-﻿# ArgoCD & GitOps Interview Questions
+# ArgoCD & GitOps Interview Questions
 
 ## Beginner Level
 1. What is GitOps and what are its core principles?

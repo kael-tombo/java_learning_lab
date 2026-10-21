@@ -1,4 +1,4 @@
-﻿# Why Feature Stores Exist
+# Why Feature Stores Exist
 
 ## The Problem
 ML teams traditionally built features in silos - each team and model had its own feature engineering code. This led to duplicated work, inconsistent features between training and serving, and no feature sharing.

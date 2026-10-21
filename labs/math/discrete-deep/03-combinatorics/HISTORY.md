@@ -1,4 +1,4 @@
-﻿# History: Combinatorics
+# History: Combinatorics
 
 ## Counting Before the Name Existed
 

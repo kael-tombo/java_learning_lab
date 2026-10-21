@@ -1,4 +1,4 @@
-﻿# Why Data Governance Matters
+# Why Data Governance Matters
 
 ## Business Impact
 - **Trust**: Stakeholders trust governed data

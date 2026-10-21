@@ -1,4 +1,4 @@
-﻿# Why Skip Lists Matter
+# Why Skip Lists Matter
 
 ## Practical Impact
 

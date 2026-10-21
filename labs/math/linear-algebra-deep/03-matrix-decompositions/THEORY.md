@@ -1,4 +1,4 @@
-﻿# Matrix Decompositions — Theory
+# Matrix Decompositions — Theory
 
 ## 1. LU without pivoting
 

@@ -1,4 +1,4 @@
-﻿# History: Database Migration Strategies
+# History: Database Migration Strategies
 
 ## Evolution
 

@@ -1,4 +1,4 @@
-﻿# Why Distributed Caching Matters
+# Why Distributed Caching Matters
 
 In modern distributed systems, distributed-caching is essential because:
 - Systems are too large for single-node solutions

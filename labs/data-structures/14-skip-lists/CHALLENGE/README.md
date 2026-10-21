@@ -1,4 +1,4 @@
-﻿# Challenge: Concurrent Skip List
+# Challenge: Concurrent Skip List
 
 Implement a lock-free concurrent skip list supporting:
 1. Thread-safe insert, delete, search

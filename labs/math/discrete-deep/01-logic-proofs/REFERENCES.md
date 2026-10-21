@@ -1,4 +1,4 @@
-﻿# References: Logic and Proofs
+# References: Logic and Proofs
 
 ## Textbooks
 

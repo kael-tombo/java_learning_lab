@@ -1,4 +1,4 @@
-﻿# ArgoCD Code Deep Dive
+# ArgoCD Code Deep Dive
 
 ## ArgoCD Application YAML
 

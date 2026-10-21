@@ -1,4 +1,4 @@
-﻿# Multi-Task Learning - Exercises
+# Multi-Task Learning - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

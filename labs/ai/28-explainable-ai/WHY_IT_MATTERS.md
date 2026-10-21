@@ -1,4 +1,4 @@
-﻿# Why Explainable AI Matters
+# Why Explainable AI Matters
 
 ## Economic Impact
 Explainable AI drives automation, personalization, and optimization across industries. It creates new products and services while improving efficiency in existing processes.

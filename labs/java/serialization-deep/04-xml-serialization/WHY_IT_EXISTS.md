@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Why It Exists
+# XML Serialization -- Why It Exists
 
 ## Historical Context and Motivation
 

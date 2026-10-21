@@ -1,4 +1,4 @@
-﻿# Architecture: Generating Function Code
+# Architecture: Generating Function Code
 
 ## Separate Specification From Extraction
 

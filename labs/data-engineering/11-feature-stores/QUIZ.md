@@ -1,4 +1,4 @@
-﻿# Feature Store Quiz
+# Feature Store Quiz
 
 ## Question 1
 What is the primary purpose of a feature store?

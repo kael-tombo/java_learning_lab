@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: API Versioning & Documentation
+# Code Deep Dive: API Versioning & Documentation
 
 ## SpringDoc Auto-Configuration
 

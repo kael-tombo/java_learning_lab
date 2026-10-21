@@ -1,4 +1,4 @@
-﻿# Quiz — Distributed Monitoring
+# Quiz — Distributed Monitoring
 
 1. Prometheus scrapes metrics on? Answer: Pull model (HTTP)
 2. Thanos adds? Answer: Global query and long-term storage

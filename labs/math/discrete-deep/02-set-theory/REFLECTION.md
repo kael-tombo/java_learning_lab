@@ -1,4 +1,4 @@
-﻿# Reflection: Set Theory
+# Reflection: Set Theory
 
 ## What the Abstraction Actually Buys
 

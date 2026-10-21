@@ -1,4 +1,4 @@
-﻿# Lab 38: Memory Model — JMM, Happens-Before, GC
+# Lab 38: Memory Model — JMM, Happens-Before, GC
 
 ## Overview
 Deep dive into Memory Model in Java. This lab provides comprehensive coverage of JMM, Happens-Before, GC with practical examples, theory, and exercises.

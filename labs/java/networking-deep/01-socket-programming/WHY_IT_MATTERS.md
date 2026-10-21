@@ -1,4 +1,4 @@
-﻿# Socket Programming -- Why It Matters
+# Socket Programming -- Why It Matters
 ## Practical Importance in Real-World Development
 
 ### 1. Distributed Systems Foundation

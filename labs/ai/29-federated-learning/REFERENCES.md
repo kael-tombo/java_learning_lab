@@ -1,4 +1,4 @@
-﻿# References: Federated Learning
+# References: Federated Learning
 
 ## Textbooks
 - Goodfellow, Bengio, Courville: Deep Learning (MIT Press)

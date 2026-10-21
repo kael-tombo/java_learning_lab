@@ -1,4 +1,4 @@
-﻿# Reflection: Database Replication
+# Reflection: Database Replication
 
 ## Key Learnings
 

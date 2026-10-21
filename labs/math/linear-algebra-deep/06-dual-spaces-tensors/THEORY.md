@@ -1,4 +1,4 @@
-﻿# Dual Spaces and Tensors — Theory
+# Dual Spaces and Tensors — Theory
 
 ## 1. Dual space
 

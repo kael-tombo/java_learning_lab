@@ -1,4 +1,4 @@
-﻿# Why It Exists: Logic and Proofs
+# Why It Exists: Logic and Proofs
 
 ## The Problem: How Do We Know What Is True?
 

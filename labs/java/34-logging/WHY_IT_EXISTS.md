@@ -1,4 +1,4 @@
-﻿# Why Logging Exists
+# Why Logging Exists
 
 ## The Problem It Solves
 

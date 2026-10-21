@@ -1,4 +1,4 @@
-﻿# MINI_PROJECT
+# MINI_PROJECT
 
 This directory contains the MINI_PROJECT component for this lab.
 

@@ -1,4 +1,4 @@
-﻿# JSON Serialization -- Debugging
+# JSON Serialization -- Debugging
 
 ## Debugging Strategies
 

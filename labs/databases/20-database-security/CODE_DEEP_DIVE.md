@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: Database Security
+# Code Deep Dive: Database Security
 
 ## Architecture Overview
 This deep dive examines the Java implementation patterns used throughout this lab. The code leverages Java 21+ features including records, sealed classes, pattern matching, and virtual threads.

@@ -1,4 +1,4 @@
-﻿# Debugging: Query Optimization
+# Debugging: Query Optimization
 
 ## Common Issues and Solutions
 

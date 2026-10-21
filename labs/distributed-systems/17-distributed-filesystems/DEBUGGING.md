@@ -1,4 +1,4 @@
-﻿# Debugging — Distributed Filesystems
+# Debugging — Distributed Filesystems
 
 ## Common Issues
 1. **Race conditions**: Ensure thread-safe access to shared state

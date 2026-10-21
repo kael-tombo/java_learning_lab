@@ -1,4 +1,4 @@
-﻿# Security Considerations
+# Security Considerations
 
 1. Validate coordinate ranges
 2. Limit tree depth to prevent stack overflow

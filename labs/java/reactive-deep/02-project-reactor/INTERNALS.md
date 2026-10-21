@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Internals
+# Project Reactor -- Internals
 ## Internal Architecture
 ### Publisher Subscription
 Publisher creates Subscription on subscribe(). Subscription manages demand.

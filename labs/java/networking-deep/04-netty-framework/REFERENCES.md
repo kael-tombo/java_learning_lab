@@ -1,4 +1,4 @@
-﻿# Netty Framework -- References
+# Netty Framework -- References
 ## Further Reading
 
 ### Books

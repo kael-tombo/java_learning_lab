@@ -1,4 +1,4 @@
-﻿# Visual Guide: Multi-Tenancy
+# Visual Guide: Multi-Tenancy
 
 `
 DB-per-Tenant:      Schema-per-Tenant:   Discriminator:

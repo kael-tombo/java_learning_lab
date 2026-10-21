@@ -1,4 +1,4 @@
-﻿# Variational Autoencoders - Mini Project
+# Variational Autoencoders - Mini Project
 
 ## Overview
 Build a working Variational Autoencoders implementation from scratch.

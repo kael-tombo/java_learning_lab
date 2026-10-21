@@ -1,4 +1,4 @@
-﻿# Debugging — Distributed Monitoring
+# Debugging — Distributed Monitoring
 
 ## Common Issues
 1. **Race conditions**: Ensure thread-safe access to shared state

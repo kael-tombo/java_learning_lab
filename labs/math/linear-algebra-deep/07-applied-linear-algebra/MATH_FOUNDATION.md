@@ -1,4 +1,4 @@
-﻿# Applied Linear Algebra — Math Foundation
+# Applied Linear Algebra — Math Foundation
 
 All values computed in exact rational arithmetic (Python `fractions`).
 

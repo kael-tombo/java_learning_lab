@@ -1,4 +1,4 @@
-﻿# References: Eigenvalues Advanced
+# References: Eigenvalues Advanced
 
 ## Textbooks
 1. Standard Textbook on Calculus

@@ -1,4 +1,4 @@
-﻿# Why It Exists: Cassandra NoSQL
+# Why It Exists: Cassandra NoSQL
 
 ## The Fundamental Problem
 Databases have physical limits. No matter how powerful a single machine is, there are hard boundaries.

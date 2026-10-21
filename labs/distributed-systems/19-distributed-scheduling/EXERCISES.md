@@ -1,4 +1,4 @@
-﻿# Exercises — Distributed Scheduling
+# Exercises — Distributed Scheduling
 
 1. **Cron Parser (Easy)**: Implement 5-field cron parser
 2. **Next Fire Time (Medium)**: Calculate next fire time from expression

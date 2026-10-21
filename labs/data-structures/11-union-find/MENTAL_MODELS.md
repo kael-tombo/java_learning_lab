@@ -1,4 +1,4 @@
-﻿# Mental Models for Union-Find
+# Mental Models for Union-Find
 
 ## 1. The Family Tree Model
 

@@ -1,4 +1,4 @@
-﻿# Math Foundation: CockroachDB
+# Math Foundation: CockroachDB
 
 ## Mathematical Models and Formulas
 

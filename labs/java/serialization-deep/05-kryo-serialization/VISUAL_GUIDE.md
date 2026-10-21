@@ -1,4 +1,4 @@
-﻿# Kryo Serialization -- Visual Guide
+# Kryo Serialization -- Visual Guide
 
 ## Architecture Diagram
 

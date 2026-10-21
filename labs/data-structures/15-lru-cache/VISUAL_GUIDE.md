@@ -1,4 +1,4 @@
-﻿# Visual Guide to LRU Cache
+# Visual Guide to LRU Cache
 
 Capacity = 3
 

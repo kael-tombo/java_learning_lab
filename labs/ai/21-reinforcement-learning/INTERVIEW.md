@@ -1,4 +1,4 @@
-﻿# Interview Questions: Reinforcement Learning
+# Interview Questions: Reinforcement Learning
 
 ## Conceptual Questions
 1. What is Reinforcement Learning and how does it differ from traditional programming?

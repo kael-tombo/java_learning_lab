@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Why It Exists
+# gRPC Networking -- Why It Exists
 ## Historical Context and Motivation
 
 ### The Problem

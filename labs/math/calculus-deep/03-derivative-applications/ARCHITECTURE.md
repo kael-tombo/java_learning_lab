@@ -1,4 +1,4 @@
-﻿# Architecture: Derivative Applications Implementation
+# Architecture: Derivative Applications Implementation
 
 ## System Design
 

@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: Performance
+# Mathematical Foundation: Performance
 
 ## Little's Law
 L = λ * W (number of requests in system = arrival rate * response time)

@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- Performance
+# gRPC Networking -- Performance
 
 ## Performance Characteristics
 

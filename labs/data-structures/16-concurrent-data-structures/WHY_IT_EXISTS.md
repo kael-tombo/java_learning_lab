@@ -1,4 +1,4 @@
-﻿# Why Concurrent Data Structures Exist
+# Why Concurrent Data Structures Exist
 
 ## The Multi-Core Revolution
 

@@ -1,4 +1,4 @@
-﻿# Security — Theoretical Foundation
+# Security — Theoretical Foundation
 
 ## Core Concepts
 

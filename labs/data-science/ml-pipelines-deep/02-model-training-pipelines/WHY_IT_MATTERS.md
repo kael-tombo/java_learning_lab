@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Why It Matters
+# Model Training Pipelines — Why It Matters
 
 Every production model is retrained eventually, and every retrain is a
 chance to silently degrade. Validation gates are the cheapest quality

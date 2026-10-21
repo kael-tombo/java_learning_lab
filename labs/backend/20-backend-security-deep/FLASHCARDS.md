@@ -1,4 +1,4 @@
-﻿# Flashcards: Security
+# Flashcards: Security
 
 Card 1: CSRF prevention? A: Synchronizer token pattern
 Card 2: CORS header for allowed origins? A: Access-Control-Allow-Origin

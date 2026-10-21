@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks - Mathematical Foundations
+# Graph Neural Networks - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Graph Neural Networks.

@@ -1,4 +1,4 @@
-﻿# Performance: Federated Learning
+# Performance: Federated Learning
 
 ## 1. Performance Metrics
 Key metrics include throughput (samples/sec), latency (ms per prediction), memory usage, and GPU utilization.

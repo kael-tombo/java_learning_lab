@@ -1,4 +1,4 @@
-﻿# Architecture: Matrix Calculus Implementation
+# Architecture: Matrix Calculus Implementation
 
 ## System Design
 

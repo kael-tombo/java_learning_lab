@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Why It Exists
+# Model Interpretability — Why It Exists
 
 Interpretability exists because models that cannot be questioned cannot
 be trusted with consequential decisions. A credit denial, a medical

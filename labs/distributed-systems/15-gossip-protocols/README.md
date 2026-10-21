@@ -1,4 +1,4 @@
-﻿# 15 - Gossip Protocols
+# 15 - Gossip Protocols
 
 ## Overview
 Gossip protocols enable information dissemination in large-scale distributed systems through epidemic-style communication. This lab covers gossip dissemination, SWIM protocol, infection-style algorithms, and convergence properties.

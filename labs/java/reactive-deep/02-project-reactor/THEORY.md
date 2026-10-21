@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Theoretical Foundation
+# Project Reactor -- Theoretical Foundation
 ## Core Concepts
 ### 1. Reactive Manifesto
 Reactive systems are Responsive, Resilient, Elastic, and Message-Driven.

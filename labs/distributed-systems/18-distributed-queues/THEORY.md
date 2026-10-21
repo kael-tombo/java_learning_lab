@@ -1,4 +1,4 @@
-﻿# Theory of Distributed Queues
+# Theory of Distributed Queues
 
 ## 1. Why Distributed Queues?
 

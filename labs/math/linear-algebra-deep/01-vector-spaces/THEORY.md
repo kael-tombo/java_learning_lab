@@ -1,4 +1,4 @@
-﻿# Vector Spaces — Theory
+# Vector Spaces — Theory
 
 ## 1. What a Vector Space Is
 

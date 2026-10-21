@@ -1,4 +1,4 @@
-﻿# Vector Spaces — Flashcards
+# Vector Spaces — Flashcards
 
 ## Q/A
 

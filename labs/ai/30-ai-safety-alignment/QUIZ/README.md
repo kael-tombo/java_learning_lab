@@ -1,4 +1,4 @@
-﻿# AI Safety and Alignment - Quiz
+# AI Safety and Alignment - Quiz
 
 ## Overview
 Assessment covering all AI Safety and Alignment topics.

@@ -1,4 +1,4 @@
-﻿# How Circular Buffers Work
+# How Circular Buffers Work
 
 ## Pointer Arithmetic
 

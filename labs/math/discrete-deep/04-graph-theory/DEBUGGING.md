@@ -1,4 +1,4 @@
-﻿# Debugging: Graph Theory Code
+# Debugging: Graph Theory Code
 
 ## Symptom: Infinite Loop on a Cyclic Graph
 

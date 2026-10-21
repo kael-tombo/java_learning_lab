@@ -1,4 +1,4 @@
-﻿# Refactoring: Spring Batch
+# Refactoring: Spring Batch
 
 Before: Manual file processing with BufferedReader
 After: FlatFileItemReader with field mapping

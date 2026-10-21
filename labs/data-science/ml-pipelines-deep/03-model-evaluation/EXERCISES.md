@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Exercises
+# Model Evaluation — Exercises
 
 ## 1. Recompute the matrix first
 Cover the observed output. From y={1,0,1,1,0,1,0,0,1,0} and

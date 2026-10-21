@@ -1,4 +1,4 @@
-﻿# XML Serialization -- Visual Guide
+# XML Serialization -- Visual Guide
 
 ## Architecture Diagram
 

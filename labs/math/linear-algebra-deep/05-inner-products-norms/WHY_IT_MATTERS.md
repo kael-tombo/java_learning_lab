@@ -1,4 +1,4 @@
-﻿# Why It Matters: Inner Products and Norms
+# Why It Matters: Inner Products and Norms
 
 ## Real-World Importance
 

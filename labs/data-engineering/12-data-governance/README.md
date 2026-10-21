@@ -1,4 +1,4 @@
-﻿# Data Governance
+# Data Governance
 
 ## Overview
 Data governance encompasses the policies, processes, and technologies that ensure data is managed properly across an organization - including data cataloging, lineage tracking, metadata management, access control, and compliance.

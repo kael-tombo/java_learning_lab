@@ -1,4 +1,4 @@
-﻿# Interview Questions: Advanced String Algorithms
+# Interview Questions: Advanced String Algorithms
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

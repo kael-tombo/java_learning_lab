@@ -1,4 +1,4 @@
-﻿# Quiz: Mathematical Optimization
+# Quiz: Mathematical Optimization
 
 ## Question 1
 Gradient descent updates parameters in the direction of:

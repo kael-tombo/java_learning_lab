@@ -1,4 +1,4 @@
-﻿# Graph Neural Networks - Exercises
+# Graph Neural Networks - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

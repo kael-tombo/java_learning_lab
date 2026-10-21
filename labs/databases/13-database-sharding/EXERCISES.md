@@ -1,4 +1,4 @@
-﻿# Exercises: Database Sharding
+# Exercises: Database Sharding
 
 ## Beginner Level
 

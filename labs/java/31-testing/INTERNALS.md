@@ -1,4 +1,4 @@
-﻿# Testing — Internal Mechanics
+# Testing — Internal Mechanics
 
 ## JUnit 5 Architecture
 

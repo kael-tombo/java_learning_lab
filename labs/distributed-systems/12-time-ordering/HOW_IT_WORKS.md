@@ -1,4 +1,4 @@
-﻿# How Time Ordering Works
+# How Time Ordering Works
 
 The core challenge: distributed systems run on machines with independent clocks that drift. NTP helps but can't eliminate skew.
 

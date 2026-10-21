@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- Flashcards
+# JUnit 5 Advanced -- Flashcards
 Card 1: Q: @Test annotation? A: Marks a method as a test
 Card 2: Q: @Mock? A: Creates a mock object
 Card 3: Q: @InjectMocks? A: Injects mocks into the tested object

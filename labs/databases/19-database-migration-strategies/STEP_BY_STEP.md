@@ -1,4 +1,4 @@
-﻿# Step by Step: Database Migration Strategies
+# Step by Step: Database Migration Strategies
 
 ## Implementation Guide
 

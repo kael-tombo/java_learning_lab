@@ -1,4 +1,4 @@
-﻿# Netty Framework -- Common Mistakes
+# Netty Framework -- Common Mistakes
 
 ## Top 15 Common Mistakes
 

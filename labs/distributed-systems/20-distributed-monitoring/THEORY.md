@@ -1,4 +1,4 @@
-﻿# Theory of Distributed Monitoring
+# Theory of Distributed Monitoring
 
 ## 1. Why Distributed Monitoring?
 

@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- References
+# WebFlux Deep Dive -- References
 ## Resources
 - Reactive Streams: reactive-streams.org
 - Project Reactor: projectreactor.io

@@ -1,4 +1,4 @@
-﻿# Lab 21: Multi-Tenancy
+# Lab 21: Multi-Tenancy
 
 ## Overview
 Multi-tenancy allows a single application instance to serve multiple customers (tenants). Learn schema-per-tenant, database-per-tenant, and discriminator column approaches.

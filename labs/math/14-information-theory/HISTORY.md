@@ -1,4 +1,4 @@
-﻿# History of Information Theory
+# History of Information Theory
 
 ## Origins
 

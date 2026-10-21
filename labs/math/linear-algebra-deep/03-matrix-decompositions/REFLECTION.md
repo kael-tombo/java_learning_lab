@@ -1,4 +1,4 @@
-﻿# Reflection: Matrix Decompositions
+# Reflection: Matrix Decompositions
 
 ## Self-Assessment Questions
 

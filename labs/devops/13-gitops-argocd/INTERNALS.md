@@ -1,4 +1,4 @@
-﻿# ArgoCD Internals
+# ArgoCD Internals
 
 ## Reconciliation Loop Implementation
 The Application Controller implements a continuous reconciliation loop. Each application is processed in a worker goroutine that:

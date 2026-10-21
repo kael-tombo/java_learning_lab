@@ -1,4 +1,4 @@
-﻿# Reflection: Eigenvalues Advanced
+# Reflection: Eigenvalues Advanced
 
 ## Self-Assessment Questions
 

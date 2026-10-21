@@ -1,4 +1,4 @@
-﻿# Flashcards: Federated Learning
+# Flashcards: Federated Learning
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

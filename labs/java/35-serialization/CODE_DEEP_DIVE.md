@@ -1,4 +1,4 @@
-﻿# Serialization — Visual Guide
+# Serialization — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

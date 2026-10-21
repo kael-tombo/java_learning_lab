@@ -1,4 +1,4 @@
-﻿# Reflection: Number Theory
+# Reflection: Number Theory
 
 ## The Inverse Confusion Was Worth the Exercise
 

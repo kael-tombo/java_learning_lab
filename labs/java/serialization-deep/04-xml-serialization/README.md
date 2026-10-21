@@ -1,4 +1,4 @@
-﻿# XML Serialization
+# XML Serialization
 
 ## Overview
 JAXB marshalling/unmarshalling, @XmlRootElement, @XmlElement, @XmlJavaTypeAdapter, XStream, Jackson XML

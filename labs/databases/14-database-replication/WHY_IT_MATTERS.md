@@ -1,4 +1,4 @@
-﻿# Why It Matters: Database Replication
+# Why It Matters: Database Replication
 
 ## The Scalability Imperative
 Modern applications generate unprecedented data volumes. A single e-commerce transaction produces data across ordering, payment, inventory, and shipping. Social media platforms generate terabytes daily. IoT sensors produce continuous data streams.

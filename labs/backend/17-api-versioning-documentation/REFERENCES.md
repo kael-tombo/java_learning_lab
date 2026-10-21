@@ -1,4 +1,4 @@
-﻿# References: API Versioning & Documentation
+# References: API Versioning & Documentation
 
 - OpenAPI Specification 3.0: https://spec.openapis.org/oas/v3.0.3
 - SpringDoc Documentation: https://springdoc.org

@@ -1,4 +1,4 @@
-﻿# Distributed Queues - Interview Preparation
+# Distributed Queues - Interview Preparation
 
 > Key interview questions about distributed queue systems.
 

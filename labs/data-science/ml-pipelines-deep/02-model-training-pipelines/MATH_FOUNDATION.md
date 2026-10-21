@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Math Foundation
+# Model Training Pipelines — Math Foundation
 
 ## 1. Null rate
 For a column of n values with m nulls:

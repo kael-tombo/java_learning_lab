@@ -1,4 +1,4 @@
-﻿# Visual Guide: Derivative Applications
+# Visual Guide: Derivative Applications
 
 ## Conceptual Diagrams
 

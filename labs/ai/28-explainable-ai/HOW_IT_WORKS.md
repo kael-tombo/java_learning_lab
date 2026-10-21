@@ -1,4 +1,4 @@
-﻿# How Explainable AI Works
+# How Explainable AI Works
 
 ## 1. Basic Idea
 Explainable AI works by learning patterns from data through iterative optimization. The model starts with random parameters and gradually adjusts them to minimize a loss function that measures prediction error.

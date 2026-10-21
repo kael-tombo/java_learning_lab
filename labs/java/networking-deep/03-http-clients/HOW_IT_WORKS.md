@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- How It Works
+# HTTP Clients (Java 11+) -- How It Works
 ## Detailed Mechanical Explanation
 
 ### 1. Socket Creation and Binding

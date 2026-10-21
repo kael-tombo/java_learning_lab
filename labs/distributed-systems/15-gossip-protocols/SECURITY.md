@@ -1,4 +1,4 @@
-﻿# Security — Gossip Protocols
+# Security — Gossip Protocols
 
 ## Threats
 - Byzantine nodes spreading false information

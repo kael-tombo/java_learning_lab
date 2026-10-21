@@ -1,4 +1,4 @@
-﻿# Interview Questions: JUnit 5 Fundamentals
+# Interview Questions: JUnit 5 Fundamentals
 
 ## Company-Specific Focus
 

@@ -1,4 +1,4 @@
-﻿# Refactoring: Performance
+# Refactoring: Performance
 
 Before: Synchronous blocking I/O
 After: Asynchronous with WebFlux or virtual threads

@@ -1,4 +1,4 @@
-﻿# Architecture: Combinatorics in Code
+# Architecture: Combinatorics in Code
 
 ## Separate the Four Concerns
 

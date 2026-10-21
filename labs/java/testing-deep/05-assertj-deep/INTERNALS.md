@@ -1,4 +1,4 @@
-﻿# AssertJ Deep Dive -- Internals
+# AssertJ Deep Dive -- Internals
 ## Internal Architecture
 ### JUnit 5 Engine
 JUnit 5 uses a launcher API that discovers and executes tests.

@@ -1,4 +1,4 @@
-﻿# Security Considerations
+# Security Considerations
 
 1. **Data visibility**: Use volatile/Atomic for shared state
 2. **Deadlock prevention**: Consistent lock ordering

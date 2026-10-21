@@ -1,4 +1,4 @@
-﻿# AssertJ Deep Dive -- History
+# AssertJ Deep Dive -- History
 ## Testing Framework Evolution
 ### JUnit 4 (2006)
 Annotations introduced (@Test, @Before, @After).

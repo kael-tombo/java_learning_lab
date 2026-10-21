@@ -1,4 +1,4 @@
-﻿# Feature Stores — Why It Matters
+# Feature Stores — Why It Matters
 
 A leaked or skewed feature silently inflates offline metrics and then
 deflates production revenue. The damage is quiet: dashboards look fine

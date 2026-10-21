@@ -1,4 +1,4 @@
-﻿# Mental Models: Integral Fundamentals
+# Mental Models: Integral Fundamentals
 
 ## Conceptual Frameworks
 

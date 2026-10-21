@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Visual Guide
+# Protocol Buffers -- Visual Guide
 
 ## Architecture Diagram
 

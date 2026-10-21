@@ -1,4 +1,4 @@
-﻿# How Union-Find Works
+# How Union-Find Works
 
 ## Core Mechanics
 

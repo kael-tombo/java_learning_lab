@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Security
+# Protocol Buffers -- Security
 
 ## Security Considerations
 

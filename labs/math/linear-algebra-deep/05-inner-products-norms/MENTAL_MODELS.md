@@ -1,4 +1,4 @@
-﻿# Mental Models: Inner Products and Norms
+# Mental Models: Inner Products and Norms
 
 ## Conceptual Frameworks
 

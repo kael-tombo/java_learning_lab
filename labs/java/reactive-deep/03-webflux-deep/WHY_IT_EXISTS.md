@@ -1,4 +1,4 @@
-﻿# WebFlux Deep Dive -- Why It Exists
+# WebFlux Deep Dive -- Why It Exists
 ## Motivation
 ### The Problem
 Traditional blocking I/O does not scale efficiently.

@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Generative Adversarial Networks
+# Common Mistakes in Generative Adversarial Networks
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

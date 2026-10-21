@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — Theoretical Foundation
+# Model Training Pipelines — Theoretical Foundation
 
 ## Core Concept
 

@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- Exercises
+# NIO Selectors -- Exercises
 ## Beginner Exercises
 ### Exercise 1: Basic Server
 Implement a simple echo server that responds with the same message it receives.

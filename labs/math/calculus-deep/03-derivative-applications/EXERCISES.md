@@ -1,4 +1,4 @@
-﻿# Exercises: Derivative Applications
+# Exercises: Derivative Applications
 
 ## Theoretical Exercises
 

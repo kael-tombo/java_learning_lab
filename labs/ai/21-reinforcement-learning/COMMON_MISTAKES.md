@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Reinforcement Learning
+# Common Mistakes in Reinforcement Learning
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

@@ -1,4 +1,4 @@
-﻿# Self-Supervised Learning - Real-World Project
+# Self-Supervised Learning - Real-World Project
 
 ## Overview
 Build a production-ready Self-Supervised Learning system.

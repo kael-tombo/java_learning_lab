@@ -1,4 +1,4 @@
-﻿# Interview: Applied Linear Algebra
+# Interview: Applied Linear Algebra
 
 ## Common Interview Questions
 

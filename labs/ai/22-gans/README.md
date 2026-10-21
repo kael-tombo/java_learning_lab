@@ -1,4 +1,4 @@
-﻿# 22-22-gans - Generative Adversarial Networks
+# 22-22-gans - Generative Adversarial Networks
 
 GAN, DCGAN, WGAN, conditional GAN, training stability
 

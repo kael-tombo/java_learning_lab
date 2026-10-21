@@ -1,4 +1,4 @@
-﻿# Applied Linear Algebra
+# Applied Linear Algebra
 
 Micro-lab on least squares via the normal equations and power iteration
 with the Rayleigh quotient, all on hand-checkable numbers.

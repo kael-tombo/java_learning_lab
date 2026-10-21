@@ -1,4 +1,4 @@
-﻿# Interview Questions: MST Variants
+# Interview Questions: MST Variants
 
 ## LeetCode Problem Map
 | Problem | Difficulty | Company Signal | Pattern |

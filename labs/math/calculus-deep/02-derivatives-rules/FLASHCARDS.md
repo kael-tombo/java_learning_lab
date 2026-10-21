@@ -1,4 +1,4 @@
-﻿# Flashcards: Derivatives and Differentiation Rules
+# Flashcards: Derivatives and Differentiation Rules
 
 ## Front-Back Cards
 

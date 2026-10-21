@@ -1,4 +1,4 @@
-﻿# Step-by-Step — Distributed Locks
+# Step-by-Step — Distributed Locks
 
 ## Step 1: Setup
 1. Create project structure with Maven/Gradle

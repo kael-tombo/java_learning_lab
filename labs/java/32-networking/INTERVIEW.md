@@ -1,4 +1,4 @@
-﻿# Interview Questions: Networking
+# Interview Questions: Networking
 
 ## Company-Specific Focus
 

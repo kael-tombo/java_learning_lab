@@ -1,4 +1,4 @@
-﻿# Java Serialization -- References
+# Java Serialization -- References
 
 ## Further Reading
 

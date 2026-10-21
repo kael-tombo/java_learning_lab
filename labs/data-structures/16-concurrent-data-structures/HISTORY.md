@@ -1,4 +1,4 @@
-﻿# History of Concurrent Data Structures
+# History of Concurrent Data Structures
 
 ## Key Milestones
 

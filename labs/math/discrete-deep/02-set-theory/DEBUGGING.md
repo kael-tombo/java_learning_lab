@@ -1,4 +1,4 @@
-﻿# Debugging: Set Theory Code
+# Debugging: Set Theory Code
 
 ## Symptom: Duplicates Appear in a HashSet
 

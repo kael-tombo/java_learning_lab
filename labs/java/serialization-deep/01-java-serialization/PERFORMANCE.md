@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Performance
+# Java Serialization -- Performance
 
 ## Performance Characteristics
 

@@ -1,4 +1,4 @@
-﻿# JUnit 5 Fundamentals -- Security Testing
+# JUnit 5 Fundamentals -- Security Testing
 ## Security Testing Considerations
 ### Test Security Boundaries
 Verify authentication and authorization in integration tests.

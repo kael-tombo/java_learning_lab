@@ -1,4 +1,4 @@
-﻿# References: Data Pipelines
+# References: Data Pipelines
 
 ## Books
 - "Designing Data-Intensive Applications" by Martin Kleppmann

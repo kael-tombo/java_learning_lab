@@ -1,4 +1,4 @@
-﻿# Security Considerations: Numerical Methods
+# Security Considerations: Numerical Methods
 
 ## Security Principles
 

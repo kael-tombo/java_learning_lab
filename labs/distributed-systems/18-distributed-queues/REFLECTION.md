@@ -1,4 +1,4 @@
-﻿# Reflection — Distributed Queues
+# Reflection — Distributed Queues
 
 ## Key Questions
 1. How does this pattern handle edge cases?

@@ -1,4 +1,4 @@
-﻿# Internals: Integral Fundamentals Implementation
+# Internals: Integral Fundamentals Implementation
 
 ## Deep Dive into Implementation Details
 

@@ -1,4 +1,4 @@
-﻿# Debugging Segment Trees
+# Debugging Segment Trees
 
 ## Verification Techniques
 

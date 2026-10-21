@@ -1,4 +1,4 @@
-﻿# Dual Spaces and Tensors — Math Foundation
+# Dual Spaces and Tensors — Math Foundation
 
 All values computed in exact rational arithmetic (Python `fractions`).
 

@@ -1,4 +1,4 @@
-﻿# Information Theory: A Comprehensive Treatment
+# Information Theory: A Comprehensive Treatment
 
 ## 1. Entropy and Information
 

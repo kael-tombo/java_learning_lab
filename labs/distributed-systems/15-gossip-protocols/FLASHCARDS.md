@@ -1,4 +1,4 @@
-﻿# Flashcards — Gossip Protocols
+# Flashcards — Gossip Protocols
 
 1. Q: What is the primary purpose? A: Provide gossip-protocols at scale
 2. Q: Key components? A: Client, coordinator, workers, storage

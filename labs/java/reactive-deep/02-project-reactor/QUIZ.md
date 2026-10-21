@@ -1,4 +1,4 @@
-﻿# Project Reactor -- Quiz
+# Project Reactor -- Quiz
 ## Question 1: What is a Publisher?
 A: Source of data in reactive streams
 ## Question 2: What is backpressure?

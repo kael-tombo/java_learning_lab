@@ -1,4 +1,4 @@
-﻿# Common Mistakes: Database Migration Strategies
+# Common Mistakes: Database Migration Strategies
 
 ## Mistake 1: Choosing the Wrong Routing Key
 **Problem:** Selecting a key with low cardinality or highly skewed distribution.

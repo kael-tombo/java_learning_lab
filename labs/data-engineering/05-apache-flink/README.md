@@ -1,4 +1,4 @@
-﻿# Apache Flink
+# Apache Flink
 
 ## Overview
 Apache Flink is a distributed stream processing framework for real-time data processing with exactly-once semantics, event-time processing, and state management.

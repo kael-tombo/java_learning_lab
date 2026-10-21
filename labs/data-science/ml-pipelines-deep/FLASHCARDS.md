@@ -1,4 +1,4 @@
-﻿# ML Pipelines Deep Dive - Flashcards
+# ML Pipelines Deep Dive - Flashcards
 
 ## Card 1
 **Q**: What is 

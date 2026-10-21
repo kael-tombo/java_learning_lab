@@ -1,4 +1,4 @@
-﻿# Interview: Logic and Proofs
+# Interview: Logic and Proofs
 
 ## Question 1: Prove or Disprove — "If n² is divisible by 3, then n is divisible by 3"
 

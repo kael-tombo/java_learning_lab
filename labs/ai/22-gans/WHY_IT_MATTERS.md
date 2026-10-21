@@ -1,4 +1,4 @@
-﻿# Why Generative Adversarial Networks Matters
+# Why Generative Adversarial Networks Matters
 
 ## Economic Impact
 Generative Adversarial Networks drives automation, personalization, and optimization across industries. It creates new products and services while improving efficiency in existing processes.

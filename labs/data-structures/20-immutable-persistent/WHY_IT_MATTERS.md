@@ -1,4 +1,4 @@
-﻿# Why Immutable & Persistent Data Structures Matter
+# Why Immutable & Persistent Data Structures Matter
 
 ## Real-World Impact
 

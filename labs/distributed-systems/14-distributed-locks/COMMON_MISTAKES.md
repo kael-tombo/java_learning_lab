@@ -1,4 +1,4 @@
-﻿# Common Mistakes — Distributed Locks
+# Common Mistakes — Distributed Locks
 
 1. Not handling network failures (assume reliable network)
 2. Ignoring clock synchronization issues

@@ -1,4 +1,4 @@
-﻿# Exercises: Skip Lists
+# Exercises: Skip Lists
 
 ## Beginner
 1. Implement SkipListNode

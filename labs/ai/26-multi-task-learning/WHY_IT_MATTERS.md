@@ -1,4 +1,4 @@
-﻿# Why Multi-Task Learning Matters
+# Why Multi-Task Learning Matters
 
 ## Economic Impact
 Multi-Task Learning drives automation, personalization, and optimization across industries. It creates new products and services while improving efficiency in existing processes.

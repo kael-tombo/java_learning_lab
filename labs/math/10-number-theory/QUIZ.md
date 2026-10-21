@@ -1,4 +1,4 @@
-﻿# Quiz: Number Theory
+# Quiz: Number Theory
 
 ## Question 1
 What is gcd(123456, 789012)?

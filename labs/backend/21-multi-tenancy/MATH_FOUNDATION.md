@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: Multi-Tenancy
+# Mathematical Foundation: Multi-Tenancy
 
 ## Cost Analysis
 Cost(N) = infra_cost + per_tenant_cost * N * isolation_factor

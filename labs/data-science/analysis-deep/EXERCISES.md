@@ -1,4 +1,4 @@
-﻿# Analysis Deep Dive - Exercises
+# Analysis Deep Dive - Exercises
 
 ## Exercise 1: Basic Concepts
 Implement a Java class that demonstrates fundamental Analysis Deep Dive operations. Create methods for data input, processing, and output validation.

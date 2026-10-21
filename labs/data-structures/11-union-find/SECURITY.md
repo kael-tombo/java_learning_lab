@@ -1,4 +1,4 @@
-﻿# Security Considerations for Union-Find
+# Security Considerations for Union-Find
 
 ## Input Validation
 

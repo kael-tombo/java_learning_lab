@@ -1,4 +1,4 @@
-﻿# Model Evaluation — Reflection
+# Model Evaluation — Reflection
 
 ## What surprised you?
 That every headline number in the demo (0.8, 0.23617, 0.055) is only

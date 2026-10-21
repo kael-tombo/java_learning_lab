@@ -1,4 +1,4 @@
-﻿# References: Limits and Continuity
+# References: Limits and Continuity
 
 ## Textbooks
 

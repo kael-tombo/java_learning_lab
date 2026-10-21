@@ -1,4 +1,4 @@
-﻿# Flashcards: Reinforcement Learning
+# Flashcards: Reinforcement Learning
 
 **Q**: What is 
 **A**: Learning patterns from data without explicit programming.

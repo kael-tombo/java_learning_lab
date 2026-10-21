@@ -1,4 +1,4 @@
-﻿# How It Works: Numerical Methods
+# How It Works: Numerical Methods
 
 ## Conceptual Overview
 

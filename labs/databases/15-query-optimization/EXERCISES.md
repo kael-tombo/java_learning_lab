@@ -1,4 +1,4 @@
-﻿# Exercises: Query Optimization
+# Exercises: Query Optimization
 
 ## Beginner Level
 

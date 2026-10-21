@@ -1,4 +1,4 @@
-﻿# Feature Engineering
+# Feature Engineering
 
 Welcome to the atomic mastery lab for **Feature Engineering**. This lab is part of the Data Science Academy.
 

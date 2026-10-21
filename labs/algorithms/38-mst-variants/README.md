@@ -1,2 +1,2 @@
-﻿# Minimum Spanning Tree Variants — Overview
+# Minimum Spanning Tree Variants — Overview
 This lab covers advanced MST algorithms: Boruvka's algorithm (parallel-friendly), Steiner tree approximation (2-approximation), minimum bottleneck spanning tree (MBST), and Euclidean MST using Delaunay-like neighbor pruning. Each variant addresses different constraints: parallelism, additional Steiner vertices, bottleneck minimization, or geometric input.

@@ -1,4 +1,4 @@
-﻿# Time Series Analysis - Exercises
+# Time Series Analysis - Exercises
 
 ## Exercise 1: Basic Concepts
 Implement a Java class that demonstrates fundamental Time Series Analysis operations. Create methods for data input, processing, and output validation.

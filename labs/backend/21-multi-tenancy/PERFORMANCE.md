@@ -1,4 +1,4 @@
-﻿# Performance: Multi-Tenancy
+# Performance: Multi-Tenancy
 
 - Database-per-tenant: Separate connection pools per tenant, no shared contention
 - Schema-per-tenant: Shared connection pool, schema switching overhead

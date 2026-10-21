@@ -1,4 +1,4 @@
-﻿# Vector Spaces — Code Deep Dive
+# Vector Spaces — Code Deep Dive
 
 Stdlib only (`fractions`). Each block was executed; outputs are pasted.
 

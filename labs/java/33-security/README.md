@@ -1,4 +1,4 @@
-﻿# Lab 33: Security — JCA, JCE, Crypto
+# Lab 33: Security — JCA, JCE, Crypto
 
 ## Overview
 Deep dive into Security in Java. This lab provides comprehensive coverage of JCA, JCE, Crypto with practical examples, theory, and exercises.

@@ -1,4 +1,4 @@
-﻿# Generative Adversarial Networks - Mathematical Foundations
+# Generative Adversarial Networks - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Generative Adversarial Networks.

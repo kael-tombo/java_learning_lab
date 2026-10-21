@@ -1,4 +1,4 @@
-﻿# Reflection Prompts
+# Reflection Prompts
 
 ## Knowledge Check
 1. Without looking, write down the key interfaces and classes. How many did you remember?

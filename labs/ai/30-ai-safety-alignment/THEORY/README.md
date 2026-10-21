@@ -1,4 +1,4 @@
-﻿# AI Safety and Alignment - Theory
+# AI Safety and Alignment - Theory
 
 ## Overview
 This section provides comprehensive theoretical coverage of AI Safety and Alignment.

@@ -1,4 +1,4 @@
-﻿# Time Series Analysis - Flashcards
+# Time Series Analysis - Flashcards
 
 ## Card 1
 **Q**: What is 

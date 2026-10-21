@@ -1,4 +1,4 @@
-﻿# XML Serialization -- How It Works
+# XML Serialization -- How It Works
 
 ## Detailed Mechanical Explanation
 

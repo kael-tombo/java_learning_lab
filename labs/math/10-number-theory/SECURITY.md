@@ -1,4 +1,4 @@
-﻿# Security Considerations: Number Theory
+# Security Considerations: Number Theory
 
 ## Security Principles
 

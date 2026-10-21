@@ -1,4 +1,4 @@
-﻿# Quiz: AI Safety and Alignment
+# Quiz: AI Safety and Alignment
 
 ## Instructions
 30 questions covering AI Safety and Alignment concepts. Passing score: 70%.

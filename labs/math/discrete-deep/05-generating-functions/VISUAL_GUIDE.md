@@ -1,4 +1,4 @@
-﻿# Visual Guide: Generating Functions
+# Visual Guide: Generating Functions
 
 ## 1. Coefficients as a Sequence With Its Costume
 

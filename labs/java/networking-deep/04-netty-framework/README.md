@@ -1,4 +1,4 @@
-﻿# Netty Framework
+# Netty Framework
 
 Event-driven networking industrialized: boss/worker `EventLoop` threads
 drive `Channel`s through `ChannelPipeline`s of handlers, with pooled

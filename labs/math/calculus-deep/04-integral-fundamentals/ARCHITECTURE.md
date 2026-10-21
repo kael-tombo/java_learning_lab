@@ -1,4 +1,4 @@
-﻿# Architecture: Integral Fundamentals Implementation
+# Architecture: Integral Fundamentals Implementation
 
 ## System Design
 

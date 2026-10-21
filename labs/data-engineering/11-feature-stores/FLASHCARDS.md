@@ -1,4 +1,4 @@
-﻿# Feature Store Flashcards
+# Feature Store Flashcards
 
 ## Card 1
 **Front**: What is a feature store?

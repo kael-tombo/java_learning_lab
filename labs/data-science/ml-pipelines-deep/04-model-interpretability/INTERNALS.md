@@ -1,4 +1,4 @@
-﻿# Model Interpretability — Internals
+# Model Interpretability — Internals
 
 ## Permutation engine
 Holds the scored baseline, then per feature generates K shuffled column

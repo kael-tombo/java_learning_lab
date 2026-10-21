@@ -1,4 +1,4 @@
-﻿# XML Serialization -- References
+# XML Serialization -- References
 
 ## Further Reading
 

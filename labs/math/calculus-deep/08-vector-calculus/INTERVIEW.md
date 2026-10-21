@@ -1,4 +1,4 @@
-﻿# Interview: Vector Calculus
+# Interview: Vector Calculus
 
 ## Common Interview Questions
 

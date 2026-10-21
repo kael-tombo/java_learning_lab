@@ -1,4 +1,4 @@
-﻿# Why It Exists: Inner Products and Norms
+# Why It Exists: Inner Products and Norms
 
 ## The Problem It Solves
 Before the formal development of Inner Products and Norms, practitioners relied on approximate methods with unknown error bounds, intuitive reasoning without rigor, and ad-hoc techniques that did not generalize across problems.

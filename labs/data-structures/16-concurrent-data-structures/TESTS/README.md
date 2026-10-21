@@ -1,4 +1,4 @@
-﻿# Tests: Concurrent Data Structures
+# Tests: Concurrent Data Structures
 
 ## Test Files
 - ConcurrentDataStructuresTest.java - JUnit 5 concurrent tests

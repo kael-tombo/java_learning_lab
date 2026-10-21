@@ -1,4 +1,4 @@
-﻿# gRPC Networking -- History
+# gRPC Networking -- History
 ## Historical Evolution
 
 ### Early Networking (1980s)

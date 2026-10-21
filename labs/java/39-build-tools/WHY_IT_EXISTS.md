@@ -1,4 +1,4 @@
-﻿# Why Build Tools Exists
+# Why Build Tools Exists
 
 ## The Problem It Solves
 

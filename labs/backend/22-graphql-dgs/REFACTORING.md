@@ -1,4 +1,4 @@
-﻿# Refactoring: GraphQL DGS
+# Refactoring: GraphQL DGS
 
 Before: Multiple REST endpoints for related data
 After: Single GraphQL query with DataLoader batching

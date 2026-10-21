@@ -1,4 +1,4 @@
-﻿# Architecture — Distributed Queues
+# Architecture — Distributed Queues
 
 ## Queue System Architecture
 `

@@ -1,4 +1,4 @@
-﻿# Common Mistakes — Distributed Scheduling
+# Common Mistakes — Distributed Scheduling
 
 1. Not handling network failures (assume reliable network)
 2. Ignoring clock synchronization issues

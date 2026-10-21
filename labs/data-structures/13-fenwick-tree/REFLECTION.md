@@ -1,4 +1,4 @@
-﻿# Reflection: Fenwick Tree
+# Reflection: Fenwick Tree
 
 ## Key Insights
 

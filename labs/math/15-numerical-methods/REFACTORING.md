@@ -1,4 +1,4 @@
-﻿# Refactoring Guide: Numerical Methods
+# Refactoring Guide: Numerical Methods
 
 ## Code Smells to Address
 

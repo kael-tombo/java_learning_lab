@@ -1,4 +1,4 @@
-﻿# JUnit 5 Advanced -- How It Works
+# JUnit 5 Advanced -- How It Works
 ## How Testing Frameworks Work
 ### Test Discovery
 JUnit 5 discovers tests by scanning classpath for @Test annotations.

@@ -1,4 +1,4 @@
-﻿# 17 - Distributed Filesystems
+# 17 - Distributed Filesystems
 
 ## Overview
 Distributed filesystems provide scalable, fault-tolerant storage across multiple nodes. This lab covers HDFS, Ceph, MinIO, erasure coding, replication strategies, and POSIX vs object storage semantics.

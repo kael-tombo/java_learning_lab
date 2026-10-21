@@ -1,4 +1,4 @@
-﻿# Reactive Streams -- History
+# Reactive Streams -- History
 ## Reactive Evolution
 ### Reactive Extensions (.NET 2009)
 Rx.NET introduced Observable pattern for .NET.

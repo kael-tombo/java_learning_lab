@@ -1,4 +1,4 @@
-﻿# Flashcards: Vector Calculus
+# Flashcards: Vector Calculus
 
 ## Front-Back Cards
 

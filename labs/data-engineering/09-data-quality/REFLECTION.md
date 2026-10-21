@@ -1,4 +1,4 @@
-﻿# Data Quality Reflection
+# Data Quality Reflection
 
 ## Key Learnings
 - Quality must be built into every pipeline stage, not just checked at the end

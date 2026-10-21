@@ -1,4 +1,4 @@
-﻿# RSocket -- Common Mistakes
+# RSocket -- Common Mistakes
 ## Top 10 Common Mistakes
 1. Blocking in reactive pipeline (subscribe().block())
 2. Not handling backpressure

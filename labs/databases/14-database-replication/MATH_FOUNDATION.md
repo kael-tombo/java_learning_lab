@@ -1,4 +1,4 @@
-﻿# Math Foundation: Database Replication
+# Math Foundation: Database Replication
 
 ## Mathematical Models and Formulas
 

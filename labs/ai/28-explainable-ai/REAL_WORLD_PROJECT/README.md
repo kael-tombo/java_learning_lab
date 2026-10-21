@@ -1,4 +1,4 @@
-﻿# Explainable AI - Real-World Project
+# Explainable AI - Real-World Project
 
 ## Overview
 Build a production-ready Explainable AI system.

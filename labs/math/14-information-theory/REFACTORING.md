@@ -1,4 +1,4 @@
-﻿# Refactoring Guide: Information Theory
+# Refactoring Guide: Information Theory
 
 ## Code Smells to Address
 

@@ -1,4 +1,4 @@
-﻿# Mental Models: Differential Equations
+# Mental Models: Differential Equations
 
 ## Conceptual Frameworks
 

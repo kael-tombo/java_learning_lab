@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- Mathematical Foundation
+# HTTP Clients (Java 11+) -- Mathematical Foundation
 
 ## 1. HTTP Protocol Mathematics
 

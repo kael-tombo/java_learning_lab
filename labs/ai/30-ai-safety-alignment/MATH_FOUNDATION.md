@@ -1,4 +1,4 @@
-﻿# Mathematical Foundations of AI Safety and Alignment
+# Mathematical Foundations of AI Safety and Alignment
 
 ## 1. Introduction
 This document provides a comprehensive treatment of the mathematical concepts underlying AI Safety and Alignment. Understanding these foundations is essential for developing intuition, implementing algorithms correctly, and advancing to more complex topics.

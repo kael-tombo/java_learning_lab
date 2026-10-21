@@ -1,4 +1,4 @@
-﻿# Eigenvalues Advanced — Code Deep Dive
+# Eigenvalues Advanced — Code Deep Dive
 
 Stdlib only (`fractions`). Outputs pasted from execution.
 

@@ -1,4 +1,4 @@
-﻿# Reflection: Database Testing
+# Reflection: Database Testing
 
 ## Key Learnings
 

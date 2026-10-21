@@ -1,4 +1,4 @@
-﻿# Lab 15: Query Optimization
+# Lab 15: Query Optimization
 
 ## Focus
 Comprehensive deep-dive into query optimization with Java 21+ implementations, real-world patterns, distributed systems theory, and JUnit 5 integration tests.

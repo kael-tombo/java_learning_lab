@@ -1,4 +1,4 @@
-﻿# Internals: Performance
+# Internals: Performance
 
 ## JVM Code Cache
 JIT-compiled methods stored in code cache. If full, JIT stops. Monitor with -XX:+PrintCodeCache.

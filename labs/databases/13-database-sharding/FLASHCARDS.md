@@ -1,4 +1,4 @@
-﻿# Flashcards: Database Sharding
+# Flashcards: Database Sharding
 
 ## Q: What is database sharding?
 **A:** Strategy that distributes data across multiple independent database instances for scalability.

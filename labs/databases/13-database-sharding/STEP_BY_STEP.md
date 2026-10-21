@@ -1,4 +1,4 @@
-﻿# Step by Step: Database Sharding
+# Step by Step: Database Sharding
 
 ## Implementation Guide
 

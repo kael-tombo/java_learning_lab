@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- Common Mistakes
+# Protocol Buffers -- Common Mistakes
 
 ## Top 20 Common Mistakes
 

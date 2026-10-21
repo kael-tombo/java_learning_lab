@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Building a Sparse Table
+# Step-by-Step: Building a Sparse Table
 
 1. Allocate 2D array of size n × (log2(n) + 1)
 2. Fill level 0 with original array values

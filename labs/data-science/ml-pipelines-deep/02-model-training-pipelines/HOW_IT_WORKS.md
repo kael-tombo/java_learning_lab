@@ -1,4 +1,4 @@
-﻿# Model Training Pipelines — How It Works
+# Model Training Pipelines — How It Works
 
 ## 1. Trigger
 A pipeline launches on schedule (nightly), on data arrival, or manually.

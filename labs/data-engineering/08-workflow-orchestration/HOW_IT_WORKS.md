@@ -1,4 +1,4 @@
-﻿# How Workflow Orchestration Works
+# How Workflow Orchestration Works
 
 ## Airflow Architecture
 `python

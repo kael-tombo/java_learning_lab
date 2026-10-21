@@ -1,4 +1,4 @@
-﻿# Flashcards — Distributed Queues
+# Flashcards — Distributed Queues
 
 1. Q: What is the primary purpose? A: Provide distributed-queues at scale
 2. Q: Key components? A: Client, coordinator, workers, storage

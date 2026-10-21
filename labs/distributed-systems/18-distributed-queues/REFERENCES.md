@@ -1,4 +1,4 @@
-﻿# References — Distributed Queues
+# References — Distributed Queues
 
 ## Academic Papers
 1. Key papers in distributed systems and related areas

@@ -1,4 +1,4 @@
-﻿# Architecture: Server-Sent Events
+# Architecture: Server-Sent Events
 
 `
 Client â”€â”€â–¶ HTTP GET /events/stream

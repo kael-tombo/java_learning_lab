@@ -1,4 +1,4 @@
-﻿# Lab 18: File Processing with Spring Batch
+# Lab 18: File Processing with Spring Batch
 
 ## Overview
 Spring Batch provides a lightweight, comprehensive framework for batch processing. Learn chunk-oriented processing, readers/writers, scheduling, and fault tolerance.

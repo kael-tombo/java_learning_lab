@@ -1,4 +1,4 @@
-﻿# History: Graph Theory
+# History: Graph Theory
 
 ## The Königsberg Bridges (1736)
 

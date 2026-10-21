@@ -1,4 +1,4 @@
-﻿# Refactoring GitOps Workflows
+# Refactoring GitOps Workflows
 
 ## Common Refactoring Patterns
 

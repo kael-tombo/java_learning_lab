@@ -1,4 +1,4 @@
-﻿# Reflection: Logic and Proofs
+# Reflection: Logic and Proofs
 
 ## Question 1: Why Does Proof by Contradiction Work?
 

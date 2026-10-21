@@ -1,4 +1,4 @@
-﻿# Netty Framework — Theoretical Foundation
+# Netty Framework — Theoretical Foundation
 
 ## Core Concept (version-agnostic; 4.x architecture)
 

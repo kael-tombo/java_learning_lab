@@ -1,4 +1,4 @@
-﻿# Distributed Caching (Duplicate Lab) - Interview Preparation
+# Distributed Caching (Duplicate Lab) - Interview Preparation
 
 > Key interview questions about distributed caching strategies.
 

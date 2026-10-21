@@ -1,4 +1,4 @@
-﻿# Mental Models: Information Theory
+# Mental Models: Information Theory
 
 ## Conceptual Frameworks
 

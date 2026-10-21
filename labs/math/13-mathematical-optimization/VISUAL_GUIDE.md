@@ -1,4 +1,4 @@
-﻿# Visual Guide: Mathematical Optimization
+# Visual Guide: Mathematical Optimization
 
 ## Conceptual Diagrams
 

@@ -1,4 +1,4 @@
-﻿# Architecture: Database Security
+# Architecture: Database Security
 
 ## System Architecture
 

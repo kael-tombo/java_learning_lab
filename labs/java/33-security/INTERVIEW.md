@@ -1,4 +1,4 @@
-﻿# Interview Questions: Security
+# Interview Questions: Security
 
 ## Company-Specific Focus
 

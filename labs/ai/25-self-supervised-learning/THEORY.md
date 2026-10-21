@@ -1,4 +1,4 @@
-﻿# Self-Supervised Learning - Complete Theory
+# Self-Supervised Learning - Complete Theory
 
 ## 1. Introduction
 

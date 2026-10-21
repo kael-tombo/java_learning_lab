@@ -1,4 +1,4 @@
-﻿# Visual Guide to Segment Trees
+# Visual Guide to Segment Trees
 
 ## Part 1: Building the Tree
 

@@ -1,4 +1,4 @@
-﻿# HTTP Clients (Java 11+) -- References
+# HTTP Clients (Java 11+) -- References
 ## Further Reading
 
 ### Books

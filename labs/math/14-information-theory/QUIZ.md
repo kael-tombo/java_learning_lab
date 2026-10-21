@@ -1,4 +1,4 @@
-﻿# Quiz: Information Theory
+# Quiz: Information Theory
 
 ## Question 1
 Entropy measures:

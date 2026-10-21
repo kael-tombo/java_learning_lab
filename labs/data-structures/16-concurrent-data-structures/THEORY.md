@@ -1,4 +1,4 @@
-﻿# Theory: Concurrent Data Structures
+# Theory: Concurrent Data Structures
 
 ## Fundamentals
 

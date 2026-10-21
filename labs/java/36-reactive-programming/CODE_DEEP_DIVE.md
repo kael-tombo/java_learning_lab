@@ -1,4 +1,4 @@
-﻿# Reactive Programming — Visual Guide
+# Reactive Programming — Visual Guide
 
 ## ASCII Diagram: Architecture Overview
 

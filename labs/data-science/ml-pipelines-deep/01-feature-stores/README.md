@@ -1,4 +1,4 @@
-﻿# Lab 01 — Feature Stores
+# Lab 01 — Feature Stores
 
 ## Goal
 Understand why ML teams put features behind a store instead of ad-hoc

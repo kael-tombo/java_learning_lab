@@ -1,4 +1,4 @@
-﻿# Variational Autoencoders - Exercises
+# Variational Autoencoders - Exercises
 
 ## Overview
 Practice problems to reinforce learning.

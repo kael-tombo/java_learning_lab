@@ -1,4 +1,4 @@
-﻿# Performance Analysis: Number Theory
+# Performance Analysis: Number Theory
 
 ## Algorithmic Complexity
 

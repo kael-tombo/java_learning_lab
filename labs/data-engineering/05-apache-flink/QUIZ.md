@@ -1,4 +1,4 @@
-﻿# Apache Flink Quiz
+# Apache Flink Quiz
 
 ## Question 1
 What is a watermark in Flink?

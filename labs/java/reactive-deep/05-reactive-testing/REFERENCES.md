@@ -1,4 +1,4 @@
-﻿# Reactive Testing -- References
+# Reactive Testing -- References
 ## Resources
 - Reactive Streams: reactive-streams.org
 - Project Reactor: projectreactor.io

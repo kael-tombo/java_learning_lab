@@ -1,4 +1,4 @@
-﻿# Flashcards: GraphQL DGS
+# Flashcards: GraphQL DGS
 
 Card 1: DGS component annotation? A: @DgsComponent
 Card 2: Query annotation? A: @DgsQuery

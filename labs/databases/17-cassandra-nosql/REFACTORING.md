@@ -1,4 +1,4 @@
-﻿# Refactoring: Cassandra NoSQL
+# Refactoring: Cassandra NoSQL
 
 ## Common Refactoring Patterns
 

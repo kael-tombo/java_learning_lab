@@ -1,4 +1,4 @@
-﻿# References
+# References
 
 1. Bentley, J. L. (1975). Multidimensional binary search trees
 2. Finkel & Bentley (1974). Quad trees: a data structure for retrieval on composite keys

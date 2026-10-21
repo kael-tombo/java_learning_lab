@@ -1,4 +1,4 @@
-﻿# Quiz: Cassandra NoSQL
+# Quiz: Cassandra NoSQL
 
 ## Section 1: Fundamentals
 

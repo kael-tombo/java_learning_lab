@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: SparseTableMin.java
+# Code Deep Dive: SparseTableMin.java
 
 The sparse table implementation uses 2D arrays. The constructor precomputes all levels using dynamic programming. The query method uses the precomputed log table for O(1) index calculation.
 

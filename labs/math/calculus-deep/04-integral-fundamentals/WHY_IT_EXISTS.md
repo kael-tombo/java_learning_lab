@@ -1,4 +1,4 @@
-﻿# Why It Exists: Integral Fundamentals
+# Why It Exists: Integral Fundamentals
 
 ## The Problem It Solves
 

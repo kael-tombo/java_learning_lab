@@ -1,4 +1,4 @@
-﻿# GitOps & ArgoCD Quiz
+# GitOps & ArgoCD Quiz
 
 ## Section 1: GitOps Principles (20 Questions)
 

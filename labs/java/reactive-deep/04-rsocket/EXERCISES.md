@@ -1,4 +1,4 @@
-﻿# RSocket -- Exercises
+# RSocket -- Exercises
 ## Beginner Exercises
 ### Exercise 1: Create a simple Flux
 Create a Flux that emits 1 to 10 and subscribe to print each item.

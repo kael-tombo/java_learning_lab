@@ -1,4 +1,4 @@
-﻿# Interview: Multivariable Calculus
+# Interview: Multivariable Calculus
 
 ## Common Interview Questions
 

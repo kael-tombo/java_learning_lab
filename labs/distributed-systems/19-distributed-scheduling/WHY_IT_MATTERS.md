@@ -1,4 +1,4 @@
-﻿# Why Distributed Scheduling Matters
+# Why Distributed Scheduling Matters
 
 In modern distributed systems, distributed-scheduling is essential because:
 - Systems are too large for single-node solutions

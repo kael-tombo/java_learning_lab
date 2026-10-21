@@ -1,4 +1,4 @@
-﻿# Why It Matters: Derivative Applications
+# Why It Matters: Derivative Applications
 
 ## Real-World Importance
 

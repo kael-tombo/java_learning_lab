@@ -1,4 +1,4 @@
-﻿# Mockito Deep Dive -- Visual Guide
+# Mockito Deep Dive -- Visual Guide
 ## Test Lifecycle Flow
 @BeforeAll -> @BeforeEach -> @Test -> @AfterEach -> @AfterAll
 ## Mock Interaction Flow

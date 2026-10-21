@@ -1,4 +1,4 @@
-﻿# How Skip Lists Work
+# How Skip Lists Work
 
 ## Level Structure
 

@@ -1,4 +1,4 @@
-﻿# Architecture: Numerical Methods Implementation
+# Architecture: Numerical Methods Implementation
 
 ## Package Structure
 

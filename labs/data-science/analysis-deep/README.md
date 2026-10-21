@@ -1,4 +1,4 @@
-﻿# Analysis Deep Dive
+# Analysis Deep Dive
 
 Welcome to the atomic mastery lab for **Analysis Deep Dive**. This lab is part of the Data Science Academy.
 

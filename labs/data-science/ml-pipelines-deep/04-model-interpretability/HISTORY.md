@@ -1,4 +1,4 @@
-﻿# Model Interpretability — History (confident facts only)
+# Model Interpretability — History (confident facts only)
 
 ## What can be said safely
 - Shapley values come from Lloyd Shapley's cooperative game theory

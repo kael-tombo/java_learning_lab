@@ -1,4 +1,4 @@
-﻿# Build Tools — Math Foundation
+# Build Tools — Math Foundation
 
 ## Mathematical Concepts
 

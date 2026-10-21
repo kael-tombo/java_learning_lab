@@ -1,4 +1,4 @@
-﻿# Solutions: Concurrent Data Structures
+# Solutions: Concurrent Data Structures
 
 Exercise solutions in src/ directory.
 

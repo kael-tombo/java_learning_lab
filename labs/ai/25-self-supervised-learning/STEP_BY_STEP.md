@@ -1,4 +1,4 @@
-﻿# Step-by-Step: Self-Supervised Learning
+# Step-by-Step: Self-Supervised Learning
 
 ## Step 1: Understand the Problem
 Define inputs, outputs, constraints, and success metrics.

@@ -1,4 +1,4 @@
-﻿# Matrix Calculus — Code Deep Dive
+# Matrix Calculus — Code Deep Dive
 
 Stdlib only (`fractions`). Outputs pasted from execution.
 

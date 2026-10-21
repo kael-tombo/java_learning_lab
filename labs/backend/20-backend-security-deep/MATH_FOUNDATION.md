@@ -1,4 +1,4 @@
-﻿# Mathematical Foundation: Security
+# Mathematical Foundation: Security
 
 ## Rate Limiting Math
 Token bucket: Available tokens(t) = min(capacity, token(t-Î”t) + rate * Î”t)

@@ -1,4 +1,4 @@
-﻿# Mental Models: Logic and Proofs
+# Mental Models: Logic and Proofs
 
 ## 1. Logic as a Game with Rules
 

@@ -1,4 +1,4 @@
-﻿# Visual Guide: Database Migration Strategies
+# Visual Guide: Database Migration Strategies
 
 ## Architecture Diagrams
 

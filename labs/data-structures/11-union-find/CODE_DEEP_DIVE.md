@@ -1,4 +1,4 @@
-﻿# Code Deep Dive: DisjointSetUnion.java
+# Code Deep Dive: DisjointSetUnion.java
 
 ## Class Overview
 

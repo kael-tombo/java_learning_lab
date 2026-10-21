@@ -1,4 +1,4 @@
-﻿# Security Considerations: Mathematical Optimization
+# Security Considerations: Mathematical Optimization
 
 ## Security Principles
 

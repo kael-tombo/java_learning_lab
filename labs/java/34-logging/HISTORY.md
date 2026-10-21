@@ -1,4 +1,4 @@
-﻿# Logging — Evolution Across Versions
+# Logging — Evolution Across Versions
 
 ## Early Days (Java 1.0-1.4)
 

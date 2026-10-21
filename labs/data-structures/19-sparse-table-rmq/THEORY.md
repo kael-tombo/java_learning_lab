@@ -1,4 +1,4 @@
-﻿# Theory: Sparse Table & RMQ
+# Theory: Sparse Table & RMQ
 
 ## Fundamentals
 

@@ -1,4 +1,4 @@
-﻿# History of Data Governance
+# History of Data Governance
 
 ## Timeline
 - **1990s**: Basic data dictionary concepts

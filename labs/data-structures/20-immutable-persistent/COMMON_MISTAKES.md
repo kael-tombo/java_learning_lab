@@ -1,4 +1,4 @@
-﻿# Common Mistakes
+# Common Mistakes
 
 1. Mutable fields in supposedly immutable class
 2. Exposing internal references (defeats immutability)

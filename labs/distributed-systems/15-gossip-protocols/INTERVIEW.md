@@ -1,4 +1,4 @@
-﻿# Gossip Protocols - Interview Preparation
+# Gossip Protocols - Interview Preparation
 
 > Key interview questions about gossip-based communication protocols.
 

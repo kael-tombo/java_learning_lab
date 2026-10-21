@@ -1,4 +1,4 @@
-﻿# Refactoring: Database Testing
+# Refactoring: Database Testing
 
 ## Common Refactoring Patterns
 

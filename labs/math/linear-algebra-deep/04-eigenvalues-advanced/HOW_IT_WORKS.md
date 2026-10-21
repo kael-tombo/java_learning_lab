@@ -1,4 +1,4 @@
-﻿# How It Works: Eigenvalues Advanced
+# How It Works: Eigenvalues Advanced
 
 ## High-Level Explanation
 

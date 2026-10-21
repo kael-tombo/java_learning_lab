@@ -1,4 +1,4 @@
-﻿# Java Serialization -- Security
+# Java Serialization -- Security
 
 ## Security Considerations
 

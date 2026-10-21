@@ -1,4 +1,4 @@
-﻿# Flashcards: API Versioning & Documentation
+# Flashcards: API Versioning & Documentation
 
 **Card 1**: Q: What annotation adds operation documentation? A: @Operation
 

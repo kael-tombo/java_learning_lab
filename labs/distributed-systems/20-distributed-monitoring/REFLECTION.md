@@ -1,4 +1,4 @@
-﻿# Reflection — Distributed Monitoring
+# Reflection — Distributed Monitoring
 
 ## Key Questions
 1. How does this pattern handle edge cases?

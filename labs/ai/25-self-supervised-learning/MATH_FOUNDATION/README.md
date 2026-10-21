@@ -1,4 +1,4 @@
-﻿# Self-Supervised Learning - Mathematical Foundations
+# Self-Supervised Learning - Mathematical Foundations
 
 ## Overview
 This section covers the essential mathematics for understanding Self-Supervised Learning.

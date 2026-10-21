@@ -1,4 +1,4 @@
-﻿# Why It Matters: Eigenvalues Advanced
+# Why It Matters: Eigenvalues Advanced
 
 ## Real-World Importance
 

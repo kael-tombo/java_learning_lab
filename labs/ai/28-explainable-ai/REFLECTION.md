@@ -1,4 +1,4 @@
-﻿# Reflection: Explainable AI
+# Reflection: Explainable AI
 
 ## Self-Assessment
 - Can I explain Explainable AI to a non-technical person?

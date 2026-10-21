@@ -1,4 +1,4 @@
-﻿# Visual Guide: CockroachDB
+# Visual Guide: CockroachDB
 
 ## Architecture Diagrams
 

@@ -1,4 +1,4 @@
-﻿# NIO Selectors -- How It Works
+# NIO Selectors -- How It Works
 ## Detailed Mechanical Explanation
 
 ### 1. Socket Creation and Binding

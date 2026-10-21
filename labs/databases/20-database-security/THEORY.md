@@ -1,4 +1,4 @@
-﻿# Theory: Database Security
+# Theory: Database Security
 
 ## 1. Fundamental Concepts
 

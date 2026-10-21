@@ -1,4 +1,4 @@
-﻿# Visual Guide: Logic and Proofs
+# Visual Guide: Logic and Proofs
 
 ## Truth Table for P → Q
 

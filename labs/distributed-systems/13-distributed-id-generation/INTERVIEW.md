@@ -1,4 +1,4 @@
-﻿# Distributed ID Generation (Duplicate Lab) - Interview Preparation
+# Distributed ID Generation (Duplicate Lab) - Interview Preparation
 
 > Key interview questions about globally unique ID generation in distributed systems.
 

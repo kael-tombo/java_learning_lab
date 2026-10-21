@@ -1,4 +1,4 @@
-﻿# Common Mistakes in Self-Supervised Learning
+# Common Mistakes in Self-Supervised Learning
 
 ## 1. Data Mistakes
 - Data leakage: Using future information for prediction

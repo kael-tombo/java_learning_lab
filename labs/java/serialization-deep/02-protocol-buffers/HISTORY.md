@@ -1,4 +1,4 @@
-﻿# Protocol Buffers -- History
+# Protocol Buffers -- History
 
 ## Historical Evolution
 

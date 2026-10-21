@@ -1,4 +1,4 @@
-﻿# How It Works: Logic and Proofs
+# How It Works: Logic and Proofs
 
 ## How Truth Tables Work
 
