@@ -172,9 +172,10 @@ public class OrderService {
             scope.join();
             scope.throwIfFailed();
             
-            // String template for response generation
+            // Message built without the withdrawn String Templates preview
             return new OrderResponse(
-                STR."Order \{request.id()} processed for \{customer.resultNow().name()}",
+                "Order " + request.id() + " processed for "
+                    + customer.resultNow().name(),
                 inventory.resultNow().items()
             );
         }

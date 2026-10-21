@@ -470,7 +470,8 @@ public class MethodHandleVsReflection {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         MethodType mt = MethodType.methodType(int.class, int.class, int.class);
         MethodHandle mh = lookup.findVirtual(Target.class, "add", mt);
-        mh = mh.asType(mh.type().wrap()); // Ensure boxing for invoke
+        // No asType conversion: invokeExact requires the handle type and the
+        // call-site type to be identical — (Target,int,int)int as declared.
         t0 = System.nanoTime();
         sum = 0;
         for (int i = 0; i < ITERATIONS; i++) {
@@ -492,10 +493,13 @@ public class MethodHandleVsReflection {
 }
 ```
 
-**Typical results (Java 21, C2 compiled):**
-- Direct call: ~1.5ns/call (baseline)
-- MethodHandle (invokeExact): ~2.5ns/call (~1.7x slower)
-- Reflection (setAccessible): ~15ns/call (~10x slower)
+**Measured on one run (JDK 23, C2, 10M iterations — expect per-machine variance):**
+- Direct call: 0.5 ns/call (baseline; JIT folds the loop)
+- MethodHandle (invokeExact): 4.8 ns/call
+- Reflection (setAccessible): 22.8 ns/call
+
+The ordering is the durable claim: direct < MethodHandle < reflection, and the
+reflection penalty grows when the call site profile stays megamorphic.
 
 **Why MethodHandle is faster:**
 1. **invokeExact** avoids array allocation and boxing (the call site is strongly typed)
