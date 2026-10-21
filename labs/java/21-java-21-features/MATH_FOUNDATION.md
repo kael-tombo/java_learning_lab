@@ -62,7 +62,9 @@ The `reversed()` view implements `≤_C_rev` without copying, using a bijection 
 
 ## String Templates: Template Processing
 
-String templates implement a form of **string interpolation with context-free processing**. Formally, a template `T` with fragments `f₁...fₙ₊₁` and expressions `e₁...eₙ` is:
+> **Status**: String Templates were previewed in JDK 21/22 and withdrawn before JDK 23; the formal model below describes the withdrawn feature and its `String.formatted` analogue.
+
+String templates specified a form of **string interpolation with context-free processing**. Formally, a template `T` with fragments `f₁...fₙ₊₁` and expressions `e₁...eₙ` is:
 
 ```
 T = f₁ ~ e₁ ~ f₂ ~ e₂ ~ ... ~ fₙ ~ eₙ ~ fₙ₊₁
@@ -73,7 +75,7 @@ where `~` denotes concatenation. A processor `P` transforms this into:
 P(T) = process(f₁, e₁, f₂, e₂, ..., fₙ, eₙ, fₙ₊₁)
 ```
 
-For `STR`, `process` is identity on fragments and `toString()` on values:
+For `STR`, `process` is identity on fragments and `toString()` on values — the same shape as `"Hello %s".formatted(name)`, where the format string plays the fragments:
 ```
 STR(T) = f₁ + toString(e₁) + f₂ + toString(e₂) + ... + fₙ + toString(eₙ) + fₙ₊₁
 ```

@@ -8,7 +8,7 @@
 
 3. **Sequenced Collections**: Before Java 21, how did you access the last element of a `LinkedHashSet`? How many different approaches did the codebase use for different collection types?
 
-4. **String Templates**: Consider a codebase that builds SQL queries, HTML, or JSON by string concatenation. How many security vulnerabilities might be present? Would a template processor prevent them?
+4. **String Templates**: Consider a codebase that builds SQL queries, HTML, or JSON by string concatenation. How many security vulnerabilities might be present? A template processor was designed to prevent them — but the feature was previewed in JDK 21/22 and withdrawn before JDK 23. How would you close the same gap with `PreparedStatement` and escaping today?
 
 5. **Structured Concurrency**: In your experience with multithreaded code, how often have you encountered orphaned threads, leaked executors, or race conditions from missed task coordination? Would structured concurrency have prevented these?
 
@@ -58,7 +58,7 @@ Rate your understanding from 1 (novice) to 5 (expert) on each:
 - [ ] Switch expressions with type patterns
 - [ ] Record patterns and nested deconstruction
 - [ ] Sequenced Collections API
-- [ ] String Templates with custom processors
+- [ ] String Templates history (JEP 430/459, withdrawn before JDK 23) and `String.formatted` substitutes
 - [ ] StructuredTaskScope lifecycle management
 - [ ] Combining features in a single application
 

@@ -7,7 +7,7 @@ Java 21 upgrade ships records + virtual threads but keeps old `visitor` + `synch
 - Jackson (old version) deserializes `record Order` as nulls (no canonical-ctor support in pinned version) → downstream NPE pricing $0.
 - `synchronized` cache on virtual-thread path pins carriers → p99 doubles (JFR `jdk.VirtualThreadPinned` storm).
 - Sealed `Payment` switch kept a `default: throw` from migration; new `Voucher` permit silently hits default in one service still on old switch → wrong decline.
-- `--enable-preview` string-templates code merged to main → CI (no preview flag) fails, blocking hotfix.
+- String-templates code (`--enable-preview` on a machine with JDK 21/22) merged to main → CI (no preview flag) fails, blocking hotfix. In hindsight: the feature itself was later withdrawn before JDK 23, so the right long-term fix is rebuilding those strings on `String.formatted` (see Resolution).
 
 ## Investigation Tasks
 1. JFR: `jdk.VirtualThreadPinned` + `jdk.Deserialization` (if mapped) or allocation of fallback maps; `jdk.JavaMonitorEnter` on cache lock.

@@ -9,7 +9,7 @@
 
 **Q1: What are the main features delivered in Java 21?**
 
-**Candidate**: Java 21 (LTS, September 2023) includes: Virtual Threads (JEP 444, final), Record Patterns (JEP 440, final), Pattern Matching for switch (JEP 441, final), Sequenced Collections (JEP 431), String Templates (JEP 430, preview), Structured Concurrency (JEP 453, preview), Scoped Values (JEP 446, preview), Unnamed Patterns and Variables (JEP 443, preview), Unnamed Classes and Instance Main Methods (JEP 445, preview).
+**Candidate**: Java 21 (LTS, September 2023) includes: Virtual Threads (JEP 444, final), Record Patterns (JEP 440, final), Pattern Matching for switch (JEP 441, final), Sequenced Collections (JEP 431), String Templates (JEP 430, preview — withdrawn before JDK 23, so not on any current JDK), Structured Concurrency (JEP 453, preview), Scoped Values (JEP 446, preview), Unnamed Patterns and Variables (JEP 443, preview), Unnamed Classes and Instance Main Methods (JEP 445, preview).
 
 **Interviewer**: What are Sequenced Collections? Why were they needed?
 
@@ -52,14 +52,16 @@ catch (NumberFormatException _) { System.out.println("Bad number"); }
 if (obj instanceof Point(int x, _)) { System.out.println("x=" + x); }
 ```
 
-**Interviewer**: Explain String Templates (preview in Java 21).
+**Interviewer**: Explain String Templates.
 
-**Candidate**: String templates let you embed expressions in strings using `\{...}`:
+**Candidate**: String Templates were previewed in JDK 21 and 22 and then withdrawn before JDK 23 — no current JDK accepts the syntax, so interviewers expect you to know the status. The historical form embedded expressions in strings using `\{...}`:
 ```java
+// The withdrawn preview spelled this STR."The sum of \{x} and \{y} is \{x + y}".
+// Today's equivalent:
 int x = 10, y = 20;
-String s = STR."The sum of \{x} and \{y} is \{x + y}";
+String s = "The sum of %d and %d is %d".formatted(x, y, x + y);
 ```
-The `STR` template processor handles interpolation. Custom template processors can be created. This is more readable than concatenation or String.format.
+The `STR` processor would have handled interpolation, and custom processors could do the same for SQL or HTML. Worth mentioning: the fragments/expressions model survives conceptually in `String.formatted`.
 
 **Interviewer**: Migration path from Java 17 to 21 — what are the risks?
 
@@ -71,7 +73,7 @@ The `STR` template processor handles interpolation. Custom template processors c
 
 **Interviewer**: Final: Which of these features would you use in production immediately?
 
-**Candidate**: Virtual Threads (final), Record Patterns (final), Pattern Matching for switch (final), Sequenced Collections (final) — all safe for production. String Templates (preview), Structured Concurrency (preview), Scoped Values (preview) — evaluate carefully. Unnamed patterns — use immediately as a convention (even if preview, it's non-breaking).
+**Candidate**: Virtual Threads (final), Record Patterns (final), Pattern Matching for switch (final), Sequenced Collections (final) — all safe for production. Structured Concurrency and Scoped Values (preview) — evaluate carefully. String Templates — do not use at all: previewed in JDK 21/22, withdrawn before JDK 23; use `String.formatted` instead. Unnamed patterns — use immediately as a convention (even if preview, it's non-breaking).
 
 ---
 

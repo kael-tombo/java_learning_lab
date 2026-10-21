@@ -67,10 +67,12 @@ return switch (obj) {
     default -> -1;
 };
 
-// Java 21: String templates (preview)
-String json = STR."""
-    {"name": "\{name}", "age": \{age}}
-    """;
+// Java 21–22: String templates (preview, later withdrawn before JDK 23)
+// The historical preview syntax was STR."...\{expr}" — no current JDK accepts it.
+// The same JSON built with features that actually exist today:
+String json = """
+    {"name": "%s", "age": %d}
+    """.formatted(name, age);
 ```
 
 ### Collections & Streams
@@ -168,7 +170,7 @@ ScopedValue.runWhere(currentUser, user, () -> handler.handle(request));
 - [ ] Use pattern matching switch
 - [ ] Use sequenced collections
 - [ ] Consider generational ZGC for large heaps
-- [ ] Preview: String templates (`--enable-preview`)
+- [ ] Preview features where still live (structured concurrency; string templates were withdrawn before JDK 23 — `String.formatted` instead)
 
 ---
 

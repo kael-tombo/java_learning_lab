@@ -33,7 +33,7 @@ or a real parser (`Scanner`, CSV lib) for structured data.
 | Concatenate in loop? | `StringBuilder` with capacity hint |
 | Compare strings? | `equals`, never `==`; `Objects.equals` for nulls |
 | Bytes <-> String? | Always pass `StandardCharsets.UTF_8` |
-| Format a message? | Text blocks + `formatted`/`StringTemplate` over `+` chains |
+| Format a message? | Text blocks + `formatted` over `+` chains (the `StringTemplate` preview API was withdrawn before JDK 23) |
 | Validate input? | Precompiled `Pattern`, length caps, normalize first |
 
 ---

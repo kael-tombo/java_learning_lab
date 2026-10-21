@@ -38,13 +38,16 @@ Extend the expression evaluator from the code deep dive with more operations and
 // 5. Implement getNext(), addTask(), and reversed() for audit log
 ```
 
-## Exercise 4: Safe SQL Builder with String Templates
+## Exercise 4: Safe SQL Builder after the String Templates Withdrawal
+
+> **Status**: String Templates were previewed in JDK 21/22 and withdrawn before JDK 23 — the exercise is reframed to what compiles today.
 
 ```java
-// Create a custom StringTemplate processor for SQL:
-// 1. Build parameterized queries
-// 2. Support IN clauses with variable-length parameters
-// 3. Prevent SQL injection
+// Historically this exercise asked for a custom StringTemplate processor for SQL.
+// Without that (withdrawn) API, build the same safety yourself:
+// 1. Build parameterized queries with PreparedStatement (executeUpdate/executeQuery)
+// 2. Support IN clauses with variable-length parameters (dynamic ? placeholders)
+// 3. Prevent SQL injection — never concatenate user values into the SQL string
 // 4. Support WHERE, JOIN, and subquery patterns
 // 5. Log the generated SQL and parameters for debugging
 
@@ -96,7 +99,7 @@ Build a chat server that combines all Java 21 features:
 // 1. Each client connection handled by a virtual thread
 // 2. Messages are parsed using pattern matching switch
 // 3. Chat rooms are managed using SequencedCollection
-// 4. Message formatting uses String Templates
+// 4. Message formatting uses String.formatted (String Templates were withdrawn before JDK 23)
 // 5. User authentication runs in a StructuredTaskScope
 // 6. Handle at least 10,000 concurrent connections
 // 7. Handle disconnection with proper cleanup

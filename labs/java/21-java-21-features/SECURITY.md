@@ -64,51 +64,47 @@ String process(Document doc) {
 
 ## String Templates Security
 
-### Injection Prevention (Primary Security Feature)
-String templates provide built-in protection against injection attacks when using appropriate processors:
+> **Status**: String Templates (JEP 430/459) were previewed in JDK 21/22 and withdrawn before JDK 23. They are not available in any shipping JDK today — the code below compiles on current JDKs, and the section keeps the security lessons the withdrawn preview was designed to teach.
+
+### Injection Prevention (The Design Goal)
+The withdrawn preview aimed to make interpolation safe-by-default. The lesson survives with standard APIs:
 
 ```java
 // INSECURE: SQL injection via concatenation
 String query = "SELECT * FROM users WHERE name = '" + userName + "'";
 
-// SECURE: Template processor builds parameterized query
-var query = SQL."SELECT * FROM users WHERE name = \{userName}";
-// Generates: "SELECT * FROM users WHERE name = ?" with userName as parameter
+// SECURE: Parameterized statement keeps data out of the query structure
+PreparedStatement ps = conn.prepareStatement(
+    "SELECT * FROM users WHERE name = ?");
+ps.setString(1, userName);
 ```
 
 ### Cross-Site Scripting (XSS) Prevention
 ```java
-// Custom HTML template processor that escapes output
-StringTemplate.Processor<String, RuntimeException> HTML =
-    StringTemplate.Processor.of(st -> {
-        StringBuilder sb = new StringBuilder();
-        List<String> fragments = st.fragments();
-        List<Object> values = st.values();
-        for (int i = 0; i < fragments.size(); i++) {
-            sb.append(fragments.get(i));
-            if (i < values.size()) {
-                sb.append(escapeHtml(String.valueOf(values.get(i))));
-            }
-        }
-        return sb.toString();
-    });
+// Escape user-provided values before embedding them in HTML
+static String escapeHtml(String raw) {
+    return raw.replace("&", "&amp;").replace("<", "&lt;")
+              .replace(">", "&gt;").replace("\"", "&quot;");
+}
 
-// Safe: User input is automatically escaped
-String safeHtml = HTML."<div>\{userInput}</div>";
+// Safe: The value is escaped, so a user cannot inject markup
+String safeHtml = "<div>%s</div>".formatted(escapeHtml(userInput));
 ```
 
-### Template Injection
-If attackers can control template expressions, they could inject arbitrary expressions. Always ensure template expressions come from trusted sources:
+### Expression vs. Value Injection
+The historical preview also carried a subtle rule worth remembering: if attackers can control the *embedded expressions* themselves, they can inject arbitrary code. User-supplied text must never be allowed to become template (or query) structure — only user *values* should flow into interpolation:
 
 ```java
-// DANGEROUS: User controls template content
-String userControl = "Hello \{1+1}";
-String result = STR."\{userControl}";  // Not a template expression!
+// JavaScript-style danger (not compilable Java): user-chosen expressions
+// injected into code text is exactly what template attacks exploit in
+// languages that interpolate at runtime.
 
-// SAFE: User controls values, not template structure
+// SAFE in Java: user input is only ever a value passed to a parameter
 String userName = getUserInput();
-String result = STR."Hello \{userName}";  // User only provides the value
+String result = "Hello %s".formatted(escapeHtml(userName));
 ```
+
+The same distinction applies outside the (withdrawn) preview world: `String.formatted` evaluates only the arguments you hand it, and `PreparedStatement` binds only values — so a user can influence data, never structure.
 
 ## Structured Concurrency Security
 
@@ -136,6 +132,6 @@ Structured concurrency ensures that if a parent scope is cancelled, all child ta
 
 1. **Enable the Security Manager** (until removed) for sandboxing untrusted code in virtual threads
 2. **Use ScopedValue not ThreadLocal** for authentication tokens and security contexts
-3. **Validate template values** even when using safe template processors
+3. **Validate interpolated values** before embedding them in SQL or markup
 4. **Monitor virtual thread creation** for unusual spikes that could indicate an attack
 5. **Audit pattern matching exhaustiveness** in security-critical code paths

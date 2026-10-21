@@ -25,7 +25,7 @@ Accessing the last element of a `LinkedHashSet` required iterating through the e
 
 ### Dangerous String Composition (String Templates)
 
-Building strings with concatenation (`+`) or `String.format()` is error-prone, especially with user-provided data. SQL injection, XSS attacks, and formatting errors are direct consequences. **String Templates exist** to provide safe, composable, processor-aware string interpolation where the template processor can apply escaping or validation automatically.
+Building strings with concatenation (`+`) or `String.format()` is error-prone, especially with user-provided data. SQL injection, XSS attacks, and formatting errors are direct consequences. **String Templates were designed** to provide safe, composable, processor-aware string interpolation where the template processor can apply escaping or validation automatically — but they were previewed in JDK 21/22 and withdrawn before JDK 23, so the problem still needs manual answers (`String.formatted`, PreparedStatement, escaping) today.
 
 ### Unstructured Concurrency (Structured Concurrency)
 
@@ -37,7 +37,7 @@ Each feature was designed with specific goals:
 - **Virtual Threads**: Maintain backward compatibility, preserve the `Thread` API, eliminate blocking penalties
 - **Pattern Matching**: Gradual introduction (preview phases), exhaustiveness verification, composability
 - **Sequenced Collections**: Backward compatible via default methods, uniform across list/set/map
-- **String Templates**: Safety by default, pluggable processing, compile-time verification
+- **String Templates**: Safety by default, pluggable processing, compile-time verification (withdrawn before JDK 23 after two preview rounds)
 - **Structured Concurrency**: Task isolation, error propagation, deadline management
 
 In short, these features exist because the Java platform must evolve to meet modern application demands while preserving its core values of backward compatibility, readability, and robustness.

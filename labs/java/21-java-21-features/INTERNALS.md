@@ -81,11 +81,11 @@ Specialized implementations override these defaults for efficiency:
 
 ## String Templates: Compile-Time Processing
 
-String template expressions are desugared by the compiler into:
+String template expressions (previewed in JDK 21/22, withdrawn before JDK 23 — no current JDK accepts them) were desugared by the compiler into:
 
 ```java
-// Source: STR."Hello \{name}, you are \{age} years old"
-// Desugared:
+// Historical source (STR."..." preview syntax, withdrawn): STR."Hello \{name}, you are \{age} years old"
+// What the compiler did under the hood:
 StringTemplate.of(List.of("Hello ", ", you are ", " years old"), List.of(name, age))
     .process(STR);
 ```

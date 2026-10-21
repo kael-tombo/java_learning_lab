@@ -1,8 +1,10 @@
 package com.learning.lab21;
 
 /**
- * Demonstrates String templates and other Java 21 text block features.
- * Note: String templates (STR) were preview features and may vary by JDK build.
+ * Demonstrates Java 21 string features (text blocks, String.formatted).
+ * Note: String templates (STR."...") were previewed in JDK 21/22 and then
+ * withdrawn before JDK 23 — no current JDK accepts them, so this class
+ * uses String.formatted for interpolation instead.
  */
 public class StringTemplatesExample {
 

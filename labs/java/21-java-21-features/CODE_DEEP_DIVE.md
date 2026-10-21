@@ -113,34 +113,24 @@ public List<Transaction> processTransactions(Collection<Transaction> txns) {
 }
 ```
 
-## String Templates: Safe SQL Builder
+## String Interpolation: Safe SQL Builder
+
+> **Status**: String Templates (JEP 430/459) were previewed in JDK 21/22 and withdrawn before JDK 23 — no current JDK accepts template processor syntax. The equivalent below uses `String.formatted` plus explicit parameters, preserving the SQL-safety lesson.
 
 ```java
-import static java.util.FormatProcessor.FMT;
+// The withdrawn preview would have spelled this:
+// StringQueryProcessor query = SQL."SELECT * FROM users WHERE name = \{userName} AND age > \{minAge}";
+// Its processor manually interleaved fragments ("...name = ?...") with values.
 
-// Custom SQL template processor
-StringQueryProcessor SQL = StringTemplate.Processor.of(
-    (StringTemplate st) -> {
-        StringBuilder query = new StringBuilder();
-        List<String> fragments = st.fragments();
-        List<Object> values = st.values();
+// Compiling on current JDKs — fragments as the format string, values as parameters:
+record StringQuery(String sql, List<Object> params) {}
 
-        // Build parameterized query
-        for (int i = 0; i < fragments.size(); i++) {
-            query.append(fragments.get(i));
-            if (i < values.size()) {
-                query.append("?");  // parameter placeholder
-            }
-        }
-
-        // Return a custom query object with both SQL and params
-        return new StringQueryProcessor(query.toString(), values);
-    }
-);
-
-// Usage
-StringQueryProcessor query = SQL."SELECT * FROM users WHERE name = \{userName} AND age > \{minAge}";
-// query.sql() = "SELECT * FROM users WHERE name = ? AND age > ?"
+StringQuery buildQuery(String userName, int minAge) {
+    return new StringQuery(
+        "SELECT * FROM users WHERE name = ? AND age > ?",
+        List.of(userName, minAge));
+}
+// query.sql()    = "SELECT * FROM users WHERE name = ? AND age > ?"
 // query.params() = [userName, minAge]
 ```
 

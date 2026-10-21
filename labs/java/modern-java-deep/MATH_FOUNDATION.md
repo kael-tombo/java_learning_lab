@@ -97,19 +97,19 @@ record Point(int x, int y) { }
 
 ---
 
-### String Template vs Concatenation
+### String Interpolation vs Concatenation
 
 **Allocation Analysis:**
 ```java
 // Concatenation (per iteration)
-String s = "User: " + name + ", ID: " + id;  // 3 String objects + StringBuilder
+String s = "User: " + name + ", ID: " + id;  // 3 String fragments in play + StringBuilder
 
 // StringBuilder (explicit)
 String s = new StringBuilder("User: ").append(name).append(", ID: ").append(id).toString();
 // 1 StringBuilder + 1 String
 
-// String Template (STR)
-String s = STR."User: \{name}, ID: \{id}";  // 1 String (processor optimizes)
+// String.formatted (today)
+String s = "User: %s, ID: %s".formatted(name, id);  // format string + result String
 ```
 
 **Allocation Rate Comparison (1M ops/sec):**
@@ -117,7 +117,7 @@ String s = STR."User: \{name}, ID: \{id}";  // 1 String (processor optimizes)
 |--------|-----------------|---------------|
 | `+` concat | ~4M objects | High |
 | StringBuilder | ~2M objects | Medium |
-| String Template | ~1M objects | Low |
+| formatted | ~2M objects | Medium |
 
 ---
 
@@ -367,4 +367,4 @@ ScopedValue<Context> sv = ScopedValue.newInstance();
 | ScopedValue leak | 0 bytes vs ThreadLocal ~1KB/thread |
 | Structured concurrency work saved | `Σ (1-P(complete)) × work` |
 | Record memory | `16B header + fields` (no padding waste) |
-| String template allocation | 1 String vs 3+ for concatenation |
+| formatted() allocation | 2 String objects vs 3+ for concatenation |

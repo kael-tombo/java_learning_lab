@@ -81,8 +81,10 @@ String result = String.join(", ", items);
 ```java
 return "Value: " + obj.toString() + " (" + obj.hashCode() + ")";
 ```
-### After (Java 9+)
+### After (Java 15+)
 ```java
-return STR."Value: \{obj} (\{obj.hashCode()})";
+// "Value: %s (%d)".formatted(obj, obj.hashCode()) — the withdrawn JDK 21/22
+// string-templates preview would have spelled this STR."Value: \{obj} (\{obj.hashCode()})"
+return "Value: %s (%d)".formatted(obj, obj.hashCode());
 ```
 Or use StringBuilder for older versions.

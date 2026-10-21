@@ -94,8 +94,10 @@ SequencedMap (separate parallel hierarchy)
 
 ## String Template Processing
 
+String Templates were previewed in JDK 21/22 and withdrawn before JDK 23 — the pipeline below is historical, shown to explain the fragments/values model that this lab still teaches:
+
 ```
-Template: "Hello \{name}, age \{age}"
+Template: "Hello \{name}, age \{age}"   (withdrawn preview syntax)
 
 Fragments: ["Hello ", ", age ", ""]
 Values:    [name, age]
@@ -110,6 +112,9 @@ Processor (FMT):
 
 Custom SQL Processor:
   → PreparedStatement with ? parameters
+
+Compiling today, the same output comes from:
+  "Hello %s, age %d".formatted(name, age)
 ```
 
 ## Structured Concurrency Scope

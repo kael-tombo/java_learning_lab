@@ -1,4 +1,4 @@
-﻿# Modern Java Cheatsheet (Java 8-27)
+# Modern Java Cheatsheet (Java 8-27)
 
 > Quick reference for modern Java features with code snippets and interview context.
 
@@ -130,21 +130,22 @@ SequencedCollection<String> reversed = seq.reversed();
 
 ---
 
-## String Templates (Java 21 preview, Java 24 stable)
+## String Templates (JDK 21–22 preview, withdrawn before JDK 23)
 
-**What**: String interpolation with template processors (STR, FMT, RAW).
+**What**: String interpolation with template processors is NOT available in any shipping JDK. String Templates were previewed in JDK 21/22 and then withdrawn before JDK 23 — no current JDK accepts them, even with `--enable-preview`. Do not use `STR."..."` syntax.
+
+**The safe interpolation you get today — `String.formatted` and concatenation**:
 
 `java
 String name = "Alice";
 int age = 30;
-String message = STR."Hello \{name}, you are \{age} years old";
+String message = "Hello %s, you are %d years old".formatted(name, age);
 
-// With format processor
-String formatted = FMT."Price: %-10.2f\{total}";
+// With format specifiers
+String price = "Price: %-10.2f".formatted(total);
 `
 
-**When to use**: Dynamic string construction, SQL/JSON/HTML generation, logging.
-**Interview context**: "String templates eliminated string concatenation bugs and made SQL generation readable."
+**Interview context**: "String Templates aimed to eliminate string concatenation bugs in SQL/HTML generation, but the experts group declined to continue the preview after JDK 22, so Java still relies on `String.formatted` and text blocks for readable string construction."
 
 ---
 
@@ -477,7 +478,7 @@ HashMap<String, double> scores = new HashMap<>();
 | Record patterns | Java 19 | Java 21 | 440 |
 | Virtual threads | Java 19 | Java 21 | 444 |
 | Sequenced collections | — | Java 21 | 431 |
-| String templates | Java 21 | Java 24 | 459 |
+| String templates | Java 21 | Withdrawn before Java 23 — never shipped | 430/459 |
 | Stream Gatherers | Java 22 | Java 25 | 461 |
 | Structured concurrency | Java 19 | Java 25 | 462 |
 | Scoped values | Java 20 | Java 25 | 463 |

@@ -40,8 +40,10 @@ java --enable-preview --release 21 Main.java
 mvn -Dmaven.compiler.release=21 -DcompilerArgs="--enable-preview" test
 ```
 
-String templates and structured concurrency need `--enable-preview`
+Structured concurrency needs `--enable-preview`
 on JDK 21. Never ship preview flags to production without a rollout plan.
+(String Templates are the exception: previewed in JDK 21/22 and withdrawn before
+JDK 23 — no `--enable-preview` on any current JDK brings them back.)
 
 ## Sourced field notes (fetched Oct 2026 — verify before citing)
 

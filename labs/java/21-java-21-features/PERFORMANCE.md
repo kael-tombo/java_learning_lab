@@ -79,12 +79,12 @@ The `reversed()` view returns a view (not a copy) in `LinkedHashSet` and `TreeSe
 
 ## String Template Performance
 
-String templates have a one-time compilation overhead but the runtime performance is comparable to `StringBuilder`:
+String Templates were previewed in JDK 21/22 and withdrawn before JDK 23, so there is nothing to benchmark today. The preview's documented design goal was runtime performance comparable to `StringBuilder` concatenation:
 
 ```java
-// Equivalent code generated:
-// STR."Hello \{name}"
-// becomes:
+// Today's equivalent:
+String msg = "Hello %s".formatted(name);
+// conceptually builds the same output as:
 // new StringBuilder().append("Hello ").append(name).toString();
 ```
 

@@ -6,7 +6,7 @@
 - **JEP 441: Pattern Matching for switch** - https://openjdk.org/jeps/441
 - **JEP 440: Record Patterns** - https://openjdk.org/jeps/440
 - **JEP 431: Sequenced Collections** - https://openjdk.org/jeps/431
-- **JEP 430: String Templates (Preview)** - https://openjdk.org/jeps/430
+- **JEP 430: String Templates (Preview)** - https://openjdk.org/jeps/430 — previewed in JDK 21/22 (second preview: JEP 459), then withdrawn before JDK 23; no shipping JDK ships it
 - **JEP 453: Structured Concurrency (Preview)** - https://openjdk.org/jeps/453
 - **Java 21 Release Notes** - https://web.archive.org/web/20221221171624/https://jdk.java.net/21/release-notes
 

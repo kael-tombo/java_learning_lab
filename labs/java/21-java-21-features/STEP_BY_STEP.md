@@ -158,23 +158,21 @@ deque.addLast("Z");   // [A, B, C, Z]
 set.removeFirst();    // removes A
 ```
 
-## Step 8: String Templates
+## Step 8: String Building (String Templates were withdrawn)
 
-Enable preview features in your build tool:
-```bash
-javac --enable-preview --release 21 MyFile.java
-java --enable-preview MyFile
-```
+> **Status**: String Templates were previewed in JDK 21/22 and withdrawn before JDK 23. No current JDK accepts the syntax — `--enable-preview` does not help for this feature, since no shipping JDK contains it. Build interpolated strings with `String.formatted`:
 
-Usage:
 ```java
 String name = "João";
 int age = 30;
-String message = STR."Hello \{name}! Next year you'll be \{age + 1}";
+String message = "Hello %s! Next year you'll be %d".formatted(name, age + 1);
 
-// With format processor
+// The withdrawn preview would have spelled this:
+// STR."Hello \{name}! Next year you'll be \{age + 1}"
+
+// With format specifiers
 double price = 29.99;
-String formatted = FMT."Price: %-10s\{price}";
+String formatted = "Price: %10.2f".formatted(price);
 ```
 
 ## Step 9: Structured Concurrency

@@ -92,14 +92,18 @@ SequencedCollection<String> seq = new LinkedHashSet<>(List.of("A", "B", "C"));
 
 ## String Templates
 
-### Mistake 7: Using Templates Without the Processor Prefix
-```java
-// BAD: Missing STR. prefix — this is NOT a template
-String msg = "Hello \{name}";  // Literal string with backslash-brace
+> **Status**: String Templates were previewed in JDK 21/22 and withdrawn before JDK 23. No current JDK accepts `STR."..."` syntax — not even with `--enable-preview`. Do not enable previews expecting this feature.
 
-// GOOD: Use the processor
-String msg = STR."Hello \{name}";
+### Mistake 7: Expecting String Templates to Compile on Current JDKs
+```java
+// BAD: The withdrawn preview syntax — fails to compile on any JDK today
+String msg = "Hello \{name}";  // Also wrong: literal string with backslash-brace
+
+// GOOD: Use the APIs that actually exist
+String msg = "Hello %s".formatted(name);  // or "Hello " + name
 ```
+
+**Takeaway**: The feature was withdrawn wholesale — there is no preview flag that brings it back. On current JDKs build interpolated strings with `String.formatted`, concatenation, or text blocks. (`--enable-preview` still matters for other live preview features, but not this one.)
 
 ## Structured Concurrency
 
@@ -136,5 +140,5 @@ try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
 
 ## General Mistakes
 
-### Mistake 10: Not Setting --enable-preview for Preview Features
-Attempting to use String Templates or Structured Concurrency without enabling preview features results in compile errors. Always add `--enable-preview --release 21` to javac and `--enable-preview` to java commands.
+### Mistake 10: Misusing --enable-preview for Preview Features
+Preview features need `--enable-preview --release 21` at compile time and `--enable-preview` at runtime. This applies to live previews such as Structured Concurrency — but not to String Templates: that feature was withdrawn wholesale before JDK 23, so no `--enable-preview` flag brings it back on any current JDK.

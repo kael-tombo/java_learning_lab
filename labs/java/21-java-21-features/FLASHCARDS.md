@@ -38,7 +38,7 @@
 
 ## Card 10
 **Q**: What is a string template expression?
-**A**: An expression like `STR."Hello \{name}"` that combines a template processor (STR/FMT) with a template containing embedded expressions `\{...}`.
+**A**: A form like `STR."Hello \{name}"` that combined a template processor (STR/FMT) with a template containing embedded expressions `\{...}`. Status: it was previewed in JDK 21/22 and withdrawn before JDK 23 — today use `String.formatted` or concatenation instead.
 
 ## Card 11
 **Q**: What is StructuredTaskScope?
@@ -57,8 +57,8 @@
 **A**: Pattern matching eliminates the need for explicit casting, combines type checking and variable binding in one step, and enables exhaustive switch expressions.
 
 ## Card 15
-**Q**: What is the difference between `STR."..."` and `FMT."..."`?
-**A**: `STR` performs simple string interpolation. `FMT` (FormatProcessor) applies format specifiers from the template fragments, similar to `String.format()`.
+**Q**: What was the difference between `STR."..."` and `FMT."..."`, and do either work today?
+**A**: Historically, `STR` performed simple string interpolation and `FMT` (FormatProcessor) applied format specifiers from the template fragments, similar to `String.format()`. Neither works today: the feature was previewed in JDK 21/22 and then withdrawn before JDK 23, so `String.formatted` fills the `FMT` role on current JDKs.
 
 ## Card 16
 **Q**: Can virtual threads use ThreadLocal?

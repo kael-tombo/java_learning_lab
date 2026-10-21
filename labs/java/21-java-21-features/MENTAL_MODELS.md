@@ -36,15 +36,15 @@ This model works whether the line is a List (e.g., ArrayList), a Deque, or an or
 
 ## String Templates: The Mad Libs Book
 
-String templates are like a Mad Libs book. The book has fixed text with blanks to fill in:
+String Templates — previewed in JDK 21/22 and withdrawn before JDK 23, so this model is historical (apply it to `String.formatted` today) — work like a Mad Libs book. The book has fixed text with blanks to fill in:
 
 ```
 "Hello, \{name}! You have \{count} new messages."
 ```
 
-The `\{name}` and `\{count}` are the blanks. The **template processor** (like `STR`) is the person who fills in the blanks. Different processors fill them differently:
+The `\{name}` and `\{count}` are the blanks. The **template processor** would have filled in the blanks, with different processors filling them differently:
 - `STR`: Simple string interpolation (the literal interpretation)
-- `FMT`: Formatted output with format specifiers
+- `FMT`: Formatted output with format specifiers — the role `String.formatted` plays today
 - Custom processor (e.g., `SQL`): Builds parameterized queries safely
 
 The key mental shift: instead of building strings by gluing pieces together, you start with a template and let the processor handle the composition safely.

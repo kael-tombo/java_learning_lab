@@ -31,9 +31,11 @@ The `SequencedCollection<E>` interface introduces `addFirst`, `addLast`, `getFir
 
 ## String Templates - Theoretical Foundation
 
-String templates address the security and readability issues of string concatenation and formatting. The theoretical model treats a template as a combination of literal text and embedded expressions. A `StringTemplate` processor receives the template, processes it, and produces a result.
+> **Status**: String Templates were previewed in JDK 21/22 (JEP 430/459) and withdrawn before JDK 23 — no current JDK accepts them. The theoretical model is kept here because it shaped Java's thinking on safe interpolation; the practical takeaway today is `String.formatted`, text blocks, and escaping by hand.
 
-The key insight is that template processing is pluggable: different processors (like `STR`, `FMT`, or custom processors) can interpret the same template differently, enabling safe SQL construction, JSON building, or internationalization without escaping vulnerabilities.
+String templates addressed the security and readability issues of string concatenation and formatting. The theoretical model treats a template as a combination of literal text and embedded expressions. A `StringTemplate` processor receives the template, processes it, and produces a result.
+
+The key insight is that template processing is pluggable: different processors (like `STR`, `FMT`, or custom processors) can interpret the same template differently, enabling safe SQL construction, JSON building, or internationalization without escaping vulnerabilities. Withdrawing the preview does not invalidate the problem — injection-safe interpolation remains an open need that `String.formatted` only partly answers.
 
 ## Structured Concurrency - Theoretical Foundation
 

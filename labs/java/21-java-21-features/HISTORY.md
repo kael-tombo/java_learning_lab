@@ -45,8 +45,10 @@ The long gestation (8 years from proposal to delivery) reflects the challenge of
 ## String Templates
 
 - **Java 21 (Preview)**: JEP 430 — String Templates
+- **Java 22 (Second Preview)**: JEP 459 — refined but still under review
+- **Java 23**: Withdrawn — the experts group declined to continue the preview
 
-Still in preview in Java 21, this feature builds on Java's experience with `MessageFormat`, `String.format`, and external template engines (JSP, Thymeleaf, etc.).
+The feature built on Java's experience with `MessageFormat`, `String.format`, and external template engines (JSP, Thymeleaf, etc.), but after two preview rounds the experts group declined to continue the preview and the feature was discontinued wholesale. It is not part of any shipping JDK today; `String.formatted` remains the standard tool for interpolation.
 
 ## Structured Concurrency
 
@@ -66,5 +68,5 @@ Java 21 is an LTS release (every two years since Java 17). Its feature set repre
 | Pattern Matching for switch | Java 17 | Java 21 | 4 |
 | Record Patterns | Java 19 | Java 21 | 2 |
 | Sequenced Collections | Java 21 (direct) | Java 21 | 0 |
-| String Templates | Java 21 | Preview | Ongoing |
+| String Templates | Java 21 | Withdrawn before Java 23 (finalized: none) | 2 |
 | Structured Concurrency | Java 19 | Preview | Ongoing |

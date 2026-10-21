@@ -113,15 +113,20 @@ SequencedCollection<String> seq = (SequencedCollection<String>) getItems();
 String last = seq.getLast();
 ```
 
-## Refactoring String Building: Concatenation to Templates
+## Refactoring String Building: Concatenation to Safe Composition
+
+> **Status**: The JVM 21/22 previewed String Templates (of the form `STR."..."`) and later withdrew them before JDK 23. The refactor below targets what compiles today.
 
 ### Step 8: Safe String Composition
 ```java
 // Before — error-prone concatenation
 String html = "<div class='" + cssClass + "'>" + content + "</div>";
 
-// After — safe template
-String html = STR."<div class='\{cssClass}'>\{content}</div>";
+// After — composed with formatting (never embed raw user values)
+String html = "<div class='%s'>%s</div>".formatted(cssClass, content);
+
+// The withdrawn preview would have spelled this:
+// STR."<div class='\{cssClass}'>\{content}</div>"
 ```
 
 ## Refactoring Concurrency: Unstructured to Structured

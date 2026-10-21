@@ -860,7 +860,7 @@ ScopedValue.where(USER_ID, "user123", () -> {
 - **Sequenced Collections** — SequencedCollection, SequencedSet, SequencedMap interfaces
 - **Record Patterns (standard)** — deconstruct records in pattern matching
 - **Pattern Matching for Switch (standard)** — final, type patterns, guard clauses
-- **String Templates (preview)** — STR, FMT, RAW template processors
+- **String Templates (preview)** — STR, FMT, RAW template processors (withdrawn before JDK 23; not on any current JDK)
 - **Structured Concurrency (preview)** — StructuredTaskScope for managing tasks
 - **Scoped Values (preview)** — inheritable thread-locals for virtual threads
 - **Generational ZGC** — improved throughput and heap utilization
@@ -928,7 +928,7 @@ static String describe(Object obj) {
 - Update to Spring Boot 3.2+, which supports virtual threads  
 - Use jlink to create custom runtime images  
 - Migrate to records for DTOs and value objects  
-- Enable preview for string templates if desired  
+- Do NOT adopt string templates: the preview was withdrawn wholesale before JDK 23 — build interpolation on `String.formatted` instead  
 
 **Company Focus**: Any company writing new Java projects in 2024-2026.
 
@@ -974,7 +974,7 @@ var result = stream.gather(Gatherers.windowFixed(3))
 **Codename**: (none)  
 **LTS**: No  
 **Key Features**:
-- **String Templates (3rd preview)** — continued refinement
+- ~~String Templates (3rd preview)~~ — withdrawn before Java 23: the experts group declined to continue the preview
 - **Structured Concurrency (3rd preview)** — continued refinement
 - **Scoped Values (3rd preview)** — continued refinement  
 - **Foreign Function & Memory API (4th preview)** — nearing completion
@@ -1017,7 +1017,7 @@ class Child extends Parent {
 **Codename**: (none)  
 **LTS**: No  
 **Key Features**:
-- **String Templates (standard)** — finalized after multiple preview rounds
+- **String Templates — absent**: not in Java 24; the preview was withdrawn before Java 23 (no finalized form exists on any JDK)
 - **Stream Gatherers (2nd preview)** — continued refinement
 - **Class-File API (final)** — standard API for class file processing
 - **Foreign Function & Memory API (standard)** — finalized
@@ -1031,7 +1031,7 @@ class Child extends Parent {
 - **Scoped value support in all thread types**
 
 **Interview Relevance**: Medium  
-**Why**: String Templates finalized. Stream Gatherers and FFMI near completion.  
+**Why**: Stream Gatherers and FFMI near completion; String Templates stayed withdrawn (not finalized — use `String.formatted`).  
 **Sample Interview Question**:  
 Q: "What is the class-file API in Java 24?"  
 A: The Class-File API (standardized in Java 24) provides a standard, JDK-maintained API for parsing, transforming, and generating Java class files. Previously only possible with third-party libraries (ASM, ByteBuddy). The API follows a visitor pattern and supports constant pool, attributes, instructions, and annotations.

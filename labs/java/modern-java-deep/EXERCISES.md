@@ -164,49 +164,45 @@ public ProcessingResult process(Document doc) {
 
 ---
 
-## Exercise 5: String Templates (Preview)
+## Exercise 5: Safe SQL Query Builder (String Templates were withdrawn)
+
+> **Status**: String Templates were previewed in JDK 21/22 and withdrawn before JDK 23 — no current JDK accepts the processor syntax. The exercise targets the same goal (injection-safe SQL) with standard APIs.
 
 ### Task
-Build a safe SQL query builder using string templates.
+Build a safe SQL query builder whose call sites separate SQL fragments from user values.
 
 ### Requirements
-1. Create `SqlTemplate` processor
-2. Prevent SQL injection
-3. Support parameter binding
-4. Handle null values
+1. Create a `SqlTemplate.parse(String sqlWithPlaceholders, Object... params)` helper
+2. Prevent SQL injection — values never enter the SQL string
+3. Support parameter binding via `PreparedStatement` `?` placeholders
+4. Handle null values explicitly (`setObject` vs `setNull`)
 
 ### Code Template
 ```java
-// Preview feature - requires --enable-preview
-import java.util.StringTemplate;
-
 public class SqlTemplate {
-    public static StringTemplate.Processor<PreparedStatement> PREPARED = (template) -> {
-        String sql = template.fragments().get(0);
-        List<Object> params = new ArrayList<>();
-        
-        for (int i = 0; i < template.values().size(); i++) {
-            sql += "?";
-            if (i < template.fragments().size() - 1) {
-                sql += template.fragments().get(i + 1);
-            }
-            params.add(template.values().get(i));
-        }
-        
-        return conn -> {
-            PreparedStatement stmt = conn.prepareStatement(sql);
-            for (int i = 0; i < params.size(); i++) {
+    // Builds a PreparedStatement where every user value is a bound parameter.
+    // The withdrawn JDK 21/22 preview would have spelled the call site as:
+    //   PREPARED."SELECT * FROM \{table} WHERE \{column} = \{email}"
+    // — a processor doing the interleaving below automatically.
+    public static PreparedStatement prepare(Connection conn,
+                                            String sql,
+                                            Object... params) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        for (int i = 0; i < params.size(); i++) {
+            if (params.get(i) == null) {
+                stmt.setNull(i + 1, Types.NULL);
+            } else {
                 stmt.setObject(i + 1, params.get(i));
             }
-            return stmt;
-        };
-    };
+        }
+        return stmt;
+    }
 }
 
 // Usage
 String table = "users";
 String column = "email";
-var stmt = PREPARED."SELECT * FROM \{table} WHERE \{column} = \{email}";
+var stmt = SqlTemplate.prepare(conn, "SELECT * FROM " + table + " WHERE " + column + " = ?", email);
 ```
 
 ---
@@ -390,7 +386,7 @@ Benchmark all modern Java features against legacy equivalents.
 2. **Virtual vs Platform Threads** - throughput, latency, memory
 3. **Pattern Matching vs instanceof** - throughput
 4. **Sealed vs Visitor** - maintainability, performance
-5. **String Templates vs StringBuilder** - allocation, safety
+5. **Formatted Interpolation vs StringBuilder** - allocation, safety
 6. **ScopedValue vs ThreadLocal** - memory, inheritance
 
 ### JMH Template

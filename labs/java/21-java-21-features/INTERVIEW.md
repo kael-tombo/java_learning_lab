@@ -9,7 +9,7 @@
 
 ### Microsoft
 - Sequenced collections (JEP 431): the new interface hierarchy for ordered collections
-- String templates (JEP 430, preview): building dynamic strings with embedded expressions
+- String templates (JEP 430, previewed JDK 21/22 then withdrawn before JDK 23): what safe interpolation was designed to solve, and today's substitutes
 - Java 21 LTS adoption strategy for enterprise customers
 
 ### Amazon
@@ -52,7 +52,7 @@
 - **Pattern matching is exhaustive**: the compiler checks that all cases are covered; unmatched types result in compilation error
 - **Record patterns + sealed classes**: the perfect combination for algebraic data type modeling
 - **Switch on null**: Before Java 21, switch would NPE on null; now with pattern matching, null can be a case
-- **String templates**: Interpolation with \{expr\}, still preview in Java 21; use SLF4J-style or MessageFormat in production
+- **String templates**: Interpolation with \{expr\} — previewed in JDK 21/22, withdrawn before JDK 23, so say this in interviews; on current JDKs use `String.formatted`, SLF4J-style or MessageFormat in production
 
 ## Deep Dive Questions
 - **JVM continuation**: How does the JVM implement virtual threads? Use the Continuation class for yield/mount

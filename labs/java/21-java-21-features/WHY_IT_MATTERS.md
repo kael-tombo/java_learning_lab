@@ -35,16 +35,20 @@ According to code analysis studies, instanceof-check-cast patterns account for 3
 
 Before Java 21, accessing the last element of a NavigableSet required `set.last()`, but the same operation on a LinkedHashSet required iteration. This inconsistency caused subtle bugs when collection implementations were swapped. The Sequenced Collections API eliminates this by providing a uniform contract for all ordered collections.
 
-### String Templates: Security by Default
+### String Templates: Security by Default (Withdrawn)
 
-The OWASP Top 10 consistently lists injection attacks (SQL, XSS, etc.) as critical risks. String templates shift security left by allowing template processors to apply context-appropriate escaping automatically:
+The OWASP Top 10 consistently lists injection attacks (SQL, XSS, etc.) as critical risks. String Templates were designed to shift security left by letting template processors apply context-appropriate escaping automatically — but the feature was previewed in JDK 21/22 and withdrawn before JDK 23, so it cannot be used today. The same protection is still available with standard APIs:
 
 ```java
 // Dangerous with concatenation:
 String query = "SELECT * FROM users WHERE name = '" + userName + "'";
 
-// Safe with string templates:
-StringQueryProcessor query = SQL."SELECT * FROM users WHERE name = \{userName}";
+// Safe today — parameterized statement:
+PreparedStatement st = conn.prepareStatement("SELECT * FROM users WHERE name = ?");
+st.setString(1, userName);
+
+// The withdrawn preview would have spelled this:
+// SQL."SELECT * FROM users WHERE name = \{userName}"
 ```
 
 ### Structured Concurrency: Failure Isolation
@@ -59,6 +63,6 @@ In microservice architectures, a slow downstream service can cascade failures th
 - **Reduced infrastructure costs**: Virtual threads handle more connections per server
 - **Faster time-to-market**: Simpler concurrent code reduces development and debugging cycles
 - **Lower risk**: Compile-time exhaustiveness checks catch bugs before production
-- **Better security**: Template processors prevent injection attacks by design
+- **Better security**: Parameterized statements and escaping (the template processors that would have automated this were previewed in JDK 21/22 and withdrawn before JDK 23)
 
 These features represent Java's continued relevance in an era where languages like Go (goroutines), Kotlin (coroutines), and Rust (ownership) challenge traditional JVM dominance. Java 21 ensures the platform remains competitive for the next decade of enterprise development.

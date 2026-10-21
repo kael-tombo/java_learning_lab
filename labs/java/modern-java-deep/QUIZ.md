@@ -118,19 +118,21 @@ D) Predicate pattern
 
 ---
 
-### 8. String Templates (Preview)
+### 8. String Templates (Previewed JDK 21/22, Withdrawn Before JDK 23) — historical question
 ```java
+// The withdrawn preview spelled this STR."SELECT * FROM users WHERE name = \{name}".
+// No current JDK accepts it — this is what compiles today:
 String name = "Alice";
-String query = STR."SELECT * FROM users WHERE name = \{name}";
+String query = "SELECT * FROM users WHERE name = '%s'".formatted(name);
 ```
-What is the `STR` processor?
+What did the historical `STR` processor do?
 
 A) Standard interpolation processor
 B) Formatted output processor
 C) Raw template processor
 D) SQL-safe processor
 
-**Answer: A)** `STR` = standard interpolation; `FMT` = formatted; `RAW` = raw template
+**Answer: A)** `STR` = standard interpolation; `FMT` = formatted (today's `String.formatted`); `RAW` = raw template. All withdrawn before JDK 23 — the feature is not on any shipping JDK.
 
 ---
 
@@ -208,7 +210,7 @@ D) Creates User with age = -5
 **False** — Exhaustive switches on sealed types don't need default
 
 ### 18. String templates are a standard feature in Java 21.
-**False** — Preview feature, requires `--enable-preview`
+**False** — Even stronger than "not standard": they were previewed in JDK 21/22 and then withdrawn before JDK 23, so no current JDK has them at all (`--enable-preview` does not help). Use `String.formatted`.
 
 ### 18. `SequencedMap` extends `Map` and adds `reversed()`.
 **True** — Also adds `putFirst`, `putLast`, `firstEntry`, `lastEntry`

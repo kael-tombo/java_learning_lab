@@ -208,7 +208,7 @@ try (Arena arena = Arena.ofConfined()) {
 ### Phase 2: Core Patterns (Month 1-2)
 - [ ] Sealed hierarchies for domain
 - [ ] Result/Either for error handling
-- [ ] String templates (preview) for SQL/HTML
+- [ ] Safe SQL/HTML interpolation with `String.formatted` + escaping (String Templates preview was withdrawn before JDK 23)
 
 ### Phase 3: Concurrency Revolution (Month 2-3)
 - [ ] Virtual threads for web layer

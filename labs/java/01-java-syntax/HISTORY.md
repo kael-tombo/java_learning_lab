@@ -112,7 +112,7 @@ The single biggest expansion of Java syntax:
 
 - Pattern matching for `switch` (standard)
 - Record patterns (standard)
-- String templates (preview): `STR."Hello \{name}"`
+- String templates (preview): `STR."Hello \{name}"` — previewed in Java 21/22, withdrawn before Java 23 (no shipping JDK has it)
 - Unnamed patterns and variables (preview): `case _ ->`
 - Sequenced collections
 

@@ -99,20 +99,19 @@
 | Exhaustiveness | Compiler checks all cases covered for sealed types |
 | Return type | Common supertype of all case expressions |
 
-## String Templates (Preview)
+## String Templates (Previewed JDK 21/22, Withdrawn Before JDK 23)
 
 | Q | A |
 |---|---|
-| Enable preview | `--enable-preview` (compile & run) |
-| `STR` processor | Standard interpolation: `STR."Hello \{name}"` |
-| `FMT` processor | Formatted: `FMT."Name: \{name:%-10s}"` |
-| `RAW` processor | Raw template: `RAW."SELECT * FROM \{table}"` |
-| Custom processor | Implement `StringTemplate.Processor<R>` |
-| Template syntax | `\{expression}` in string literal |
-| Fragment access | `template.fragments()` - static parts |
-| Value access | `template.values()` - dynamic parts |
-| Security | Processors can validate/sanitize (e.g., SQL) |
-| Preview status | Java 21 preview, may change |
+| Status | Previewed in JDK 21/22 (JEP 430/459), then withdrawn before JDK 23 — not usable on any shipping JDK, even with `--enable-preview` |
+| Historical `STR` processor | Standard interpolation: `STR."Hello \{name}"` — replaced today by `String.formatted` |
+| Historical `FMT` processor | Formatted: `FMT."Name: \{name:%-10s}"` — the role `String.formatted` plays today |
+| Historical `RAW` processor | Raw template: `RAW."SELECT * FROM \{table}"` — no replacement shipped |
+| Historical custom processor | Implement `StringTemplate.Processor<R>` (API removed with the preview) |
+| Template syntax | `\{expression}` in string literal (historical) |
+| Fragment access | `template.fragments()` — static parts (historical API) |
+| Value access | `template.values()` — dynamic parts (historical API) |
+| Security lesson | The validation/sanitization idea (e.g., SQL) carries over to parameterized statements |
 
 ## Sequenced Collections
 

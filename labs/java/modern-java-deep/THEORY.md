@@ -229,27 +229,23 @@ void handle(Request req) {
 
 ---
 
-## String Templates (Java 21 Preview)
+## String Templates (Previewed JDK 21/22, Withdrawn Before JDK 23)
+
+> **Status**: String Templates (JEP 430/459) were previewed in JDK 21/22 and withdrawn before JDK 23 — no current JDK accepts this syntax, even with `--enable-preview`. The syntax is shown below for historical understanding; the working equivalent is `String.formatted`.
 
 ```java
 String name = "Alice";
 int age = 30;
 
-// STR - standard interpolation
-String json = STR."""
-    {"name": "\{name}", "age": \{age}}
-    """;
+// The withdrawn preview spelled these STR."..."/FMT."..."/RAW."..."...
+// The same values composed with APIs that exist today:
+String json = """
+    {"name": "%s", "age": %d}
+    """.formatted(name, age);
 
-// FMT - formatted
-String formatted = FMT."""
-    Name: \{name:%-10s}
-    Age: \{age:%03d}
-    """;
+String formatted = "Name: %-10s%nAge: %03d".formatted(name, age);
 
-// RAW - template processor
-String raw = RAW."""
-    SELECT * FROM users WHERE name = '\{name}'
-    """;
+String rawSql = "SELECT * FROM users WHERE name = '%s'".formatted(name);
 ```
 
 ---
@@ -304,7 +300,7 @@ interface SequencedMap<K, V> extends Map<K, V> {
 - [ ] Use pattern matching switch
 - [ ] Use sequenced collections
 - [ ] Consider generational ZGC
-- [ ] Preview: String templates (`--enable-preview`)
+- [ ] Preview features: structured concurrency, scoped values — String templates were previewed but withdrawn before JDK 23 (`String.formatted` instead)
 
 ---
 

@@ -97,23 +97,27 @@ The methods are added as default methods on existing classes where possible. For
 
 ## String Templates: Mechanics
 
+> **Status**: String Templates (JEP 430/459) were previewed in JDK 21/22 and withdrawn before JDK 23 — no current JDK accepts this syntax, even with `--enable-preview`. The model below is kept for historical understanding.
+
 ### Template Expression Structure
 ```java
+// The withdrawn preview spelled this STR."Hello \{name}, you are \{age} years old".
+// The equivalent that compiles today:
 String name = "João";
 int age = 30;
-String msg = STR."Hello \{name}, you are \{age} years old";
+String msg = "Hello %s, you are %d years old".formatted(name, age);
 ```
 
-A template expression consists of:
+The historical template expression consisted of:
 1. A **template processor** (`STR`, `FMT`, or custom)
 2. A dot (`.`)
 3. A **template** with embedded expressions `\{expr}`
 
-At compile time, the template is processed into a `StringTemplate` object containing:
+At compile time, the template was processed into a `StringTemplate` object containing:
 - `fragments()`: List of string literal pieces between expressions
 - `values()`: List of evaluated expression results
 
-The template processor then combines these as appropriate. `STR` simply interleaves fragments and values. `FMT` applies format specifiers from the fragments. Custom processors can do anything (e.g., build SQL, JSON, or HTML with validation).
+The template processor then combined these as appropriate. `STR` simply interleaved fragments and values; `FMT` applied format specifiers from the fragments. The model lives on conceptually in `String.formatted`, where the format string is the fragment and the arguments are the values.
 
 ## Structured Concurrency: Mechanics
 

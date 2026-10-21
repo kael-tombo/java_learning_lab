@@ -142,7 +142,9 @@ Model it explicitly.
 
 Preview detection: recognise the syntactic shapes that were preview (string
 templates `STR."..."`, unnamed patterns `_`, primitive patterns) and report them
-with a warning that the feature may be withdrawn.
+with a warning. For string templates the warning is now definite, not optional:
+the feature was previewed in JDK 21/22 (JEP 430/459) and withdrawn before JDK 23,
+so flagging that shape keeps dead syntax out of main.
 
 **Deliverable:** the `REMOVED` and `PREVIEW` sections, each with a
 known-real-world example.

@@ -258,41 +258,46 @@ if (r instanceof Rectangle(Point(int x1, int y1), Point(int x2, int y2))) { ... 
 
 ---
 
-## 6. String Templates (Preview)
+## 6. String Templates (Previewed JDK 21/22, Withdrawn Before JDK 23)
+
+No JDK ships `java.lang.StringTemplate` today — the API was pulled with the preview before JDK 23. The sketches below are the historical mechanics:
 
 ### Processor Interface
 ```java
-// java.lang.StringTemplate.Processor
+// java.lang.StringTemplate.Processor (historical, removed with the preview)
 @FunctionalInterface
 interface Processor<R> {
     R process(StringTemplate template);
 }
 
-// STR Processor (simplified)
-static final Processor<String> STR = template -> {
-    StringBuilder sb = new StringBuilder();
-    List<String> fragments = template.fragments();
-    List<Object> values = template.values();
-    
-    for (int i = 0; i < values.size(); i++) {
-        sb.append(fragments.get(i));
-        sb.append(values.get(i));
-    }
-    sb.append(fragments.get(fragments.size() - 1));
-    return sb.toString();
-};
+// STR Processor (simplified history) — the same interleave loop is
+// what String.formatted does with its format string + arguments today:
+// static final Processor<String> STR = template -> {
+//     StringBuilder sb = new StringBuilder();
+//     List<String> fragments = template.fragments();
+//     List<Object> values = template.values();
+//
+//     for (int i = 0; i < values.size(); i++) {
+//         sb.append(fragments.get(i));
+//         sb.append(values.get(i));
+//     }
+//     sb.append(fragments.get(fragments.size() - 1));
+//     return sb.toString();
+// };
 ```
 
 ### Template Representation
 ```java
-// STR."Hello \{name}"
+// Historical form (withdrawn): STR."Hello \{name}"
 // Fragments: ["Hello ", ""]
 // Values: [name]
-
-// FMT."Name: \{name:%-10s}"
+//
+// Historical form (withdrawn): FMT."Name: \{name:%-10s}"
 // Fragments: ["Name: ", ""]
 // Values: [name]
 // Format specifiers stored in template
+//
+// Today: "Hello %s".formatted(name) / "Name: %-10s".formatted(name)
 ```
 
 ---
@@ -470,7 +475,7 @@ class ReverseView<K,V> implements SequencedMap<K,V> {
 | Pattern Matching | `PatternMatching.java`, `SwitchExpr.java` |
 | Virtual Threads | `java/lang/VirtualThread.java`, `Continuation.java` |
 | Structured Concurrency | `StructuredTaskScope.java`, `Subtask.java` |
-| String Templates | `StringTemplate.java`, `Processor.java` |
+| String Templates | `StringTemplate.java`, `Processor.java` (historical — removed with the withdrawn preview) |
 | FFI | `jdk/internal/foreign/`, `Linker.java`, `Arena.java` |
 | ScopedValue | `ScopedValue.java` |
 | Sequenced Collections | `SequencedCollection.java`, `LinkedHashMap.java` |

@@ -947,14 +947,19 @@ public record Order(int id, String customer, List<LineItem> items, OrderStatus s
 public class OrderProcessor {
     
     // AOT-ready: this method will be pre-compiled natively
+    // String Templates were previewed in JDK 21/22 but withdrawn before JDK 23,
+    // so this uses String.formatted — the historical preview would have spelled
+    // this STR."Order \{order.id()} for ...".
     public static String formatOrderSummary(Order order) {
-        return STR."Order \{order.id()} for \{order.customer()}: $\{order.getTotal().toDouble()} — \{switch (order.status()) {
+        String status = switch (order.status()) {
             case Pending p -> "Pending";
             case Processing p -> "Processing"; 
-            case Shipped(var t) -> STR."Shipped (tracking: \{t})";
+            case Shipped(var t) -> "Shipped (tracking: %s)".formatted(t);
             case Delivered d -> "Delivered";
-            case Cancelled(var r) -> STR."Cancelled: \{r}";
-        }}";
+            case Cancelled(var r) -> "Cancelled: %s".formatted(r);
+        };
+        return "Order %d for %s: %s — %s".formatted(
+            order.id(), order.customer(), order.getTotal().toDouble(), status);
     }
     
     // Structured concurrency (standardized)
@@ -989,7 +994,6 @@ public class OrderProcessor {
     }
     
     public static void main(String[] args) throws Exception {
-        // String templates (finalized)
         var orders = List.of(
             new Order(1, "Alice", List.of(
                 new LineItem("Widget", 3, new Price(5.0)),
@@ -1000,8 +1004,9 @@ public class OrderProcessor {
             ), new Processing())
         );
         
-        // String template (STR processor)
-        System.out.println(STR."Processing \{orders.size()} orders");
+        // (String templates were previewed in JDK 21/22 but withdrawn before
+        // JDK 23 — plain String.formatted is used here instead.)
+        System.out.println("Processing %d orders".formatted(orders.size()));
         
         // AOT compilation — instant startup
         // (conceptual: JDK modules are pre-compiled to native code)
@@ -1011,20 +1016,20 @@ public class OrderProcessor {
         for (var order : orders) {
             totalPrice = totalPrice.add(order.getTotal());
         }
-        System.out.println(STR."Grand total: $\{totalPrice.toDouble()}");
+        System.out.println("Grand total: %s".formatted(totalPrice.toDouble()));
         
         // Structured concurrency + virtual threads
         processBatch(orders);
         
         // Universal generics — efficient primitive operations
         var prices = extractPrices(orders);
-        System.out.println(STR."Number of prices: \{prices.size()}");
+        System.out.println("Number of prices: %d".formatted(prices.size()));
         
         // Sequenced collections with value types
         var reversed = orders.reversed();
-        System.out.println(STR."Last order (reversed first): \{reversed.getFirst().customer()}");
+        System.out.println("Last order (reversed first): %s".formatted(reversed.getFirst().customer()));
     }
 }
 ```
 
-**Java 27 features demonstrated**: Value objects (inline class with value semantics), universal generics (`ArrayList<double>` — no autoboxing), string templates (STR processor), structured concurrency (StructuredTaskScope), AOT compilation, pattern composition with value types, advanced record patterns with value types.
+**Java 27 features demonstrated**: Value objects (inline class with value semantics), universal generics (`ArrayList<double>` — no autoboxing), string interpolation via `String.formatted` (the String Templates preview was withdrawn before JDK 23), structured concurrency (StructuredTaskScope), AOT compilation, pattern composition with value types, advanced record patterns with value types.

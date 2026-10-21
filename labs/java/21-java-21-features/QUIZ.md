@@ -41,12 +41,12 @@ C) The last element of the collection
 D) A new collection sorted in descending order
 
 ## Question 6
-In a string template expression, what does the template processor do?
+What did the template processor do in the String Templates feature (previewed in JDK 21/22 and withdrawn before JDK 23)?
 
-A) It validates that all expressions are compile-time constants
-B) It combines template fragments with evaluated values according to processor-specific rules
-C) It optimizes the string concatenation for performance
-D) It checks for SQL injection vulnerabilities
+A) It validated that all expressions are compile-time constants
+B) It combined template fragments with evaluated values according to processor-specific rules — the model lives on in `String.formatted`
+C) It optimized the string concatenation for performance
+D) It checked for SQL injection vulnerabilities
 
 ## Question 7
 What is the purpose of `StructuredTaskScope`?

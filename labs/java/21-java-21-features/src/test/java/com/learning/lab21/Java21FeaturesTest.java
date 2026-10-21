@@ -73,10 +73,13 @@ class Java21FeaturesTest {
     }
 
     @Test
-    @DisplayName("String template via STR processor")
+    @DisplayName("String interpolation compiles with String.formatted (String Templates STR.\"...\" were previewed in JDK 21/22 and withdrawn before JDK 23)")
     void stringTemplate() {
+        // String Templates (JEP 430/459, the withdrawn preview syntax was
+        // STR."Hello \{name}!") are not available on any current JDK.
+        // The equivalent today:
         String name = "World";
-        String result = STR."Hello \{name}!";
+        String result = "Hello %s!".formatted(name);
         assertEquals("Hello World!", result);
     }
 }

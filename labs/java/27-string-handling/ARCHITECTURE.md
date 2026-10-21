@@ -43,10 +43,12 @@ String json = """
     """;
 ```
 
-### String Templates (Java 21+, preview)
+### String Interpolation (JDK 21–22 preview, withdrawn before JDK 23)
+String Templates were previewed in JDK 21/22 and then withdrawn before JDK 23 — no current JDK accepts the `STR."..."` syntax, even with `--enable-preview`. The same result with `String.formatted`:
 ```java
-String message = STR."Hello \{name}, you are \{age} years old";
+String message = "Hello %s, you are %d years old".formatted(name, age);
 ```
+Conceptually, `formatted` keeps the fragments/values split the withdrawn preview taught: the format string holds the literal pieces, the arguments are the interpolated values.
 
 ### Record Patterns with Strings
 ```java

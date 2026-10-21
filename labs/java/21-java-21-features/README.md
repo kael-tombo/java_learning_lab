@@ -2,7 +2,7 @@
 
 ## Overview
 
-Java 21 (released September 2023) is a landmark LTS release that introduces several transformative features including Virtual Threads (Project Loom), Pattern Matching for switch, Record Patterns, Sequenced Collections, String Templates (Preview), and Structured Concurrency (Preview). This lab provides a comprehensive exploration of these features, their motivations, usage patterns, and best practices.
+Java 21 (released September 2023) is a landmark LTS release that introduces several transformative features including Virtual Threads (Project Loom), Pattern Matching for switch, Record Patterns, Sequenced Collections, and Structured Concurrency (Preview). This lab provides a comprehensive exploration of these features, their motivations, usage patterns, and best practices.
 
 ### Key Features Covered
 
@@ -10,7 +10,7 @@ Java 21 (released September 2023) is a landmark LTS release that introduces seve
 - **Pattern Matching for switch**: Enhanced switch expressions and statements that allow pattern matching on type, enabling more expressive and safer code.
 - **Record Patterns**: Deconstruction of record types directly in pattern matching, enabling nested pattern matching.
 - **Sequenced Collections**: New interfaces (`SequencedCollection`, `SequencedSet`, `SequencedMap`) providing uniform access to first/last elements and reverse-order traversal.
-- **String Templates (Preview)**: Template expressions that safely compose strings with embedded expressions, improving readability and security.
+- **String Templates (withdrawn)**: Template expressions that safely compose strings with embedded expressions. Previewed in JDK 21/22 (JEP 430/459) and withdrawn before JDK 23 — covered here historically; use `String.formatted` on current JDKs.
 - **Structured Concurrency (Preview)**: Structured approach to concurrent programming that treats groups of related tasks as a single unit of work.
 
 ### Prerequisites

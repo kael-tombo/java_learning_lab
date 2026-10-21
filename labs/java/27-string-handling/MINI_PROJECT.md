@@ -46,5 +46,5 @@ allocation blowups at 1M rows.
 | Validation | Precompiled capped regex + fuzz | Regex present | Recompiled/DoS-prone |
 | Tests + bench | 20+ tests + timed 100k run | 12+ tests | Happy-path only |
 
-Pass >= 70. Stretch: `STR.` string templates (JDK 21+); streaming render
+Pass >= 70. Stretch: safe interpolation with `String.formatted` (the JDK 21/22 `STR.` string-templates preview was withdrawn before JDK 23); streaming render
 with `Files.lines(charset)`; JFR allocation-diff memo.

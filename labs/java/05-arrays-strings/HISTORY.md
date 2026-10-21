@@ -64,9 +64,9 @@ Arrays: single and multi-dimensional, `length` field, bounds checking, covariant
 
 ## Java 21 (2023)
 
-- **String templates** (preview): `STR."Hello \{name}"` — string interpolation with safety
+- **String templates** (preview): `STR."Hello \{name}"` — string interpolation with safety; previewed in Java 21/22, withdrawn before Java 23
 - **Sequenced collections**: `SequencedCollection`, `SequencedSet`, `SequencedMap`
 
 ## Performance Trends
 
-String optimizations have been a major focus: compact strings (Java 9) reduced memory, text blocks (Java 15) improved readability, and string templates (Java 21) aim to reduce concatenation boilerplate.
+String optimizations have been a major focus: compact strings (Java 9) reduced memory, text blocks (Java 15) improved readability, and string templates (Java 21, previewed and then withdrawn before Java 23) targeted concatenation boilerplate — a gap `String.formatted` still fills.

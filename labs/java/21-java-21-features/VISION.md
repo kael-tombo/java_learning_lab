@@ -12,7 +12,7 @@
 ### 3. Patterns Over Branches
 `instanceof` patterns, `switch` patterns, record patterns replace visitor/cast ladders. Compiler checks exhaustiveness.
 ### 4. Concurrency Default Flips
-Virtual threads make blocking code scalable; `SequencedCollection`, string templates (preview), and scoped values complete the modern toolkit.
+Virtual threads make blocking code scalable; `SequencedCollection` and scoped values complete the modern toolkit. (String templates were dropped from the toolkit: previewed in JDK 21/22, withdrawn before JDK 23.)
 
 ---
 ## Decision Framework

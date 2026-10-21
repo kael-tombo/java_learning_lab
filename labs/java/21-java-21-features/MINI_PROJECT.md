@@ -33,4 +33,4 @@ Rewrite an `Order` processing module (POJOs + visitor + thread pool) into record
 | Virtual | Correct scope+deadline | Used | Pool kept |
 | Tests + LOC | 16+ tests, −30% proven | 10+ tests | No proof |
 
-Pass ≥ 70. Stretch: string-templates preview (with `--enable-preview` note) or scoped-value propagation demo.
+Pass ≥ 70. Stretch: string interpolation demo with `String.formatted` (the string-templates preview was withdrawn before JDK 23) or scoped-value propagation demo.
